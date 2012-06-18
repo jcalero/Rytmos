@@ -10,7 +10,6 @@ public class Lose : MonoBehaviour
     private string menuText = "You lost!\n\nYour final score was: " + Player.score + "\n\nPress the button to try again.";
     private int buttonHeight = 50;
     private int buttonWidth = 200;
-    Player player = new Player();
     #endregion
 
     #region Properties
@@ -28,7 +27,6 @@ public class Lose : MonoBehaviour
                             buttonWidth, buttonHeight),
                             "Try again!"))
         {
-            player.ResetStats();
             Application.LoadLevel("Game");
         }
     }

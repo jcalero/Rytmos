@@ -6,13 +6,10 @@ public class EnemySpawnScript : MonoBehaviour
 
     #region Fields
 
-    public GameObject EnemyPrefab;
+    public GameObject[] EnemyPrefabs;
     public float FirstSpawn;
-    public float SpawnRate;    
-
-    #endregion
-
-    #region Properties
+    public float SpawnRate;
+    public int randomSeed;
 
     #endregion
 
@@ -24,18 +21,13 @@ public class EnemySpawnScript : MonoBehaviour
         InvokeRepeating("SpawnEnemy", FirstSpawn, SpawnRate);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     void SpawnEnemy()
     {
-        Vector3 position = new Vector3(EnemyPrefab.transform.position.x,
-                                       EnemyPrefab.transform.position.y,
-                                       EnemyPrefab.transform.position.z);
-        Instantiate(EnemyPrefab, position, EnemyPrefab.transform.localRotation);
+        randomSeed = Random.Range(0, EnemyPrefabs.Length);
+        Vector3 position = new Vector3(EnemyPrefabs[randomSeed].transform.position.x,
+                                       EnemyPrefabs[randomSeed].transform.position.y,
+                                       EnemyPrefabs[randomSeed].transform.position.z);
+        Instantiate(EnemyPrefabs[randomSeed], position, EnemyPrefabs[randomSeed].transform.localRotation);
     }
 
     #endregion

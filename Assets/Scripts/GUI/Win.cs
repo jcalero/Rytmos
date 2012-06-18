@@ -11,15 +11,9 @@ public class Win : MonoBehaviour
     private string scoreText = "Your final health was: " + Player.health + "\nYour final score was: " + Player.score + "\nYour total score is: " + (Player.score * (Player.health * 0.1));
     private int buttonHeight = 50;
     private int buttonWidth = 200;
-    Player player = new Player();
-    #endregion
-
-    #region Properties
-
     #endregion
 
     #region Functions
-
     void OnGUI()
     {
         GUI.skin.box.wordWrap = true;
@@ -31,10 +25,8 @@ public class Win : MonoBehaviour
                             buttonWidth, buttonHeight),
                             "One More Time!"))
         {
-            player.ResetStats();
             Application.LoadLevel("Game");
         }
     }
-
     #endregion
 }

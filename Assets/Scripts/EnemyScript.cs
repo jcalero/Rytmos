@@ -8,16 +8,15 @@ public class EnemyScript : MonoBehaviour
     public float MinSpeed;
     public float MaxSpeed;
     public GameObject ExplosionPrefab;
-    public Color mainColor;
 
-    public int colorIndex;
 
-    private float CurrentSpeed;
+    //public int colorIndex;
+
+    private Color mainColor;
+    private float currentSpeed;
     private float x, y, z;
     private float fixX, fixY;
     private GameObject player;
-
-    private Color[] colors = new Color[]{Color.red, Color.green, Color.cyan, Color.blue, Color.yellow, new Color(.5f, 0f, .5f, 1f)};
 
     // Screen edges
     private float left;
@@ -29,27 +28,22 @@ public class EnemyScript : MonoBehaviour
 
     #region Functions
 
-    void Awake()
+    protected virtual void Awake()
     {
         left = Camera.main.ViewportToWorldPoint(new Vector3(0, 0, 10)).x;
         right = -left;
         bottom = Camera.main.ViewportToWorldPoint(new Vector3(0, 0, 10)).y;
         top = -bottom;
-		
+        player = GameObject.Find("Player");
     }
 
     // Use this for initialization
-	void Start () {
+    protected virtual void Start()
+    {
         SetPositionAndSpeed();
         SetColor();
-        player = GameObject.Find("Player");
-        iTween.MoveTo(gameObject, iTween.Hash("position", player.transform.position ,"speed", CurrentSpeed, "easetype", "linear", "looktarget", player.transform.position));
+        iTween.MoveTo(gameObject, iTween.Hash("position", player.transform.position ,"speed", currentSpeed, "easetype", "linear", "looktarget", player.transform.position));
 	}
-	
-	// Update is called once per frame
-	void Update () {
-        
-    }
 
     void OnTriggerEnter(Collider otherObject)
     {
@@ -85,8 +79,8 @@ public class EnemyScript : MonoBehaviour
 		
     }
 
-    void SetPositionAndSpeed() {
-        CurrentSpeed = Random.Range(MinSpeed, MaxSpeed);
+    protected void SetPositionAndSpeed() {
+        currentSpeed = Random.Range(MinSpeed, MaxSpeed);
 
         x = Random.Range(left, right);
         y = Random.Range(top, bottom);
@@ -102,11 +96,16 @@ public class EnemyScript : MonoBehaviour
         transform.position = new Vector3(x, y, z);
         }
 
+    protected Color MainColor
+    {
+        set { mainColor = value; }
+        get { return mainColor; }
+    }
+
     void SetColor()
     {
-        colorIndex = Random.Range(0, 5);
-        gameObject.renderer.material.color = colors[colorIndex];
-		gameObject.GetComponent<ParticleSystem>().startColor = colors[colorIndex];
+        gameObject.renderer.material.color = MainColor;
+        gameObject.GetComponent<ParticleSystem>().startColor = MainColor;
     }
 
     #endregion
