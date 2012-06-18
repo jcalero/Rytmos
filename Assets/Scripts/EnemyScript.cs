@@ -79,7 +79,7 @@ public class EnemyScript : MonoBehaviour
 		
 		//Makes sure it only emits particles when the object is a pulse, not of the same colour
 		if(otherObject.name == "Pulse(Clone)" &&
-            otherObject.gameObject.GetComponent<LineRenderer>().material.color == gameObject.renderer.material.color) {
+            otherObject.gameObject.GetComponent<LineRenderer>().material.color != gameObject.renderer.material.color) {
 				gameObject.GetComponent<ParticleSystem>().Emit(10);
 		}
 		
