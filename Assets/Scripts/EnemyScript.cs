@@ -62,22 +62,22 @@ public class EnemyScript : MonoBehaviour
             if (Player.health <= 0) 
                 Application.LoadLevel("Lose");
         }
-
+		
         if (otherObject.name == "Pulse(Clone)" &&
             otherObject.gameObject.GetComponent<LineRenderer>().material.color == gameObject.renderer.material.color)
         {
+			if(otherObject.name == "Pulse(Clone)") {
+				gameObject.GetComponent<ParticleSystem>().Emit(10);
+			} else {
             Player.score += 10;
 			Player.energy += 5;
             Instantiate(ExplosionPrefab, gameObject.transform.position, gameObject.transform.rotation);
             Destroy(gameObject);
-
+			}
+			
             if (Player.score >= 100)
                 Application.LoadLevel("Win");
         }
-		else 
-		{
-			gameObject.GetComponent<ParticleSystem>().Emit(10);
-		}
 		
     }
 

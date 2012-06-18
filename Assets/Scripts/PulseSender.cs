@@ -7,22 +7,29 @@ public class PulseSender : MonoBehaviour {
 	LineRenderer line;
 	SphereCollider sphereColl;
 	bool held;
-	Color lastColor;
+	bool transition;
+	Color finalColor;
 	public float amountToHit;
 	private float pulseHealth = 3;
+	private Vector2 lastPos;
+	
     //Material pulseMat;
 	
 	
 	// Use this for initialization
 	void Start () 
 	{
+		lastPos = Vector2.zero;
 		held = true;
-		lastColor = Color.clear;
+		transition = false;
+		finalColor = Color.clear;
 		line = gameObject.GetComponent<LineRenderer>();
 		line.SetVertexCount (segments+1);
 		line.useWorldSpace = false;
+		line.material.color = finalColor;
 		amountToHit = pulseHealth;
-		line.SetWidth(amountToHit/10, amountToHit/10); 
+		float lineWidth = amountToHit/10;
+		line.SetWidth(lineWidth, lineWidth); 
 		
 		sphereColl = gameObject.GetComponent<SphereCollider>();
 		
@@ -31,36 +38,59 @@ public class PulseSender : MonoBehaviour {
 	// Update is called once per frame
 	void Update () 
 	{
+		//Check if you are transitioning between colours
+		if(!(singleColourSelect(lastPos).Equals(singleColourSelect(Input.mousePosition)))) {
+			transition = true;	
+		}
+		
+		//If you have released the button, and the pulse is the current one, set it to be not held and set the Colour
 		if(Input.GetMouseButtonUp(0) && held) {
 			held = false;
-			lastColor = singleColourSelect(Input.mousePosition);
+			finalColor = singleColourSelect(Input.mousePosition);
 		}
+		
+		//What the colour should be - this is where the transition has to take place. 
 		Color chosen;
 		if(held) {
 			chosen = singleColourSelect(Input.mousePosition);
 		} else {
-			chosen = lastColor;	
+			chosen = finalColor;	
 		}
+		
+		//Create the circle, and set the line material
 		CreatePoints(chosen);
         line.material.color = chosen;
+		
+		//Increase both the radius of the pulse and the sphere collider. 
 		radius = radius + 3 * Time.deltaTime;
 		sphereColl.radius = radius + 0.1f;
+		
+		//If too big, destroy itself
 		if(radius > 10.2) {
 			Destroy(gameObject);
 		}
+		
+		//Debug statement
+		if(transition) {
+			print("Transition to : " + chosen);
+		}
+		
+		//Ready the values for the next update - needs boolean check for if currently transitioning
+		lastPos = Input.mousePosition;
+		transition = false;
 	}
 	
 	void OnTriggerEnter (Collider otherObject) 
 	{
-		//if (otherObject.name == "EnemyPrefab(Clone)" &&
-         //   otherObject.gameObject.GetComponent<MeshRenderer>().material.color == line.material.color)
-		//{
-			amountToHit--;
-			line.SetWidth(amountToHit/10, amountToHit/10);
-			if(amountToHit==0) {
-				Destroy(gameObject);
-			}
-		//}
+		amountToHit--;
+		float lineWidth = amountToHit/10;
+		if(lineWidth < .2f) {
+			lineWidth += .05f;	
+		}
+		line.SetWidth(lineWidth, lineWidth);
+		if(amountToHit==0) {
+			Destroy(gameObject);
+		}
 		
 	}
 	
