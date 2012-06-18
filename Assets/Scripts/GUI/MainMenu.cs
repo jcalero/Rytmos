@@ -10,7 +10,6 @@ public class MainMenu : MonoBehaviour
     private string menuText = "Welcome to Sperm Shooter!\n\nClick anywhere on the screen to kill the sperms, but make sure to match the color!";
     private int buttonHeight = 50;
     private int buttonWidth = 200;
-	Player player = (Player) GameObject.Find("Player").GetComponent<Player>();
     #endregion
 
     #region Properties
@@ -27,7 +26,6 @@ public class MainMenu : MonoBehaviour
                             buttonWidth, buttonHeight),
                             "Start Game"))
         {
-            player.ResetStats();
             Application.LoadLevel("Game");
         }
     }

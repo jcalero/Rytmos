@@ -35,7 +35,7 @@ public class PauseScript : MonoBehaviour
             if (!paused)
             {
                 paused = true;
-                Time.timeScale = 1;
+                Time.timeScale = 0f;
             }
             else
             {
