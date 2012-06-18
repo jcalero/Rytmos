@@ -72,7 +72,7 @@ public class PulseSender : MonoBehaviour {
 		
 		//Debug statement
 		if(transition) {
-			print("Transition to : " + chosen);
+			//print("Transition to : " + chosen);
 		}
 		
 		//Ready the values for the next update - needs boolean check for if currently transitioning
