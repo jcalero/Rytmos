@@ -5,9 +5,9 @@ public class GameHUD : MonoBehaviour
 {
 
     #region Fields
-    private int textHeight = 20;
+    private int textHeight = 22;
     private int textWidth = 200;
-    private string devText = "DevKeys: 1 - God Mode, 2 - Spawn Enemy, 3 - Massive Swarm";
+    private string devText = "[DevMode Enabled]     1 - God Mode,    2 - Spawn Enemy,    3 - Massive Swarm";
 
     private DevScript d;
     #endregion

@@ -17,6 +17,9 @@ public class EnemySquare : EnemyScript
     {
         colorIndex = Random.Range(0, colors.Length);
         MainColor = colors[colorIndex];
+        minSpeed = 0.5f;
+        maxSpeed = 2.5f;
+        health = 1;
         base.Start();
     }
     #endregion

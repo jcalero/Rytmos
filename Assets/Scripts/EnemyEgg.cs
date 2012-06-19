@@ -17,6 +17,9 @@ public class EnemyEgg : EnemyScript
     {
         colorIndex = Random.Range(0, colors.Length);
         MainColor = colors[colorIndex];
+        minSpeed = 3f;
+        maxSpeed = 3.5f;
+        health = 1;
         base.Start();
     }
     #endregion

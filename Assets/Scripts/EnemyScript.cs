@@ -5,9 +5,11 @@ public class EnemyScript : MonoBehaviour
 {
 
     #region Fields
-    public float MinSpeed;
-    public float MaxSpeed;
     public GameObject ExplosionPrefab;
+
+    protected float minSpeed;
+    protected float maxSpeed;
+    protected int health;
 
     private Color mainColor;
     private float currentSpeed;
@@ -46,7 +48,7 @@ public class EnemyScript : MonoBehaviour
     {
         if (otherObject.tag == "Player")
         {
-            Player.health -= 10;
+            Player.health -= 10 * health;
             Instantiate(ExplosionPrefab, gameObject.transform.position, gameObject.transform.rotation);
             Destroy(gameObject);
 
@@ -61,7 +63,7 @@ public class EnemyScript : MonoBehaviour
             Player.score += 10;
 			Player.energy += 5;
             Instantiate(ExplosionPrefab, gameObject.transform.position, gameObject.transform.rotation);
-            Destroy(gameObject);
+            DamageEnemy();
 		
 			
             if (Player.score >= 100)
@@ -77,7 +79,7 @@ public class EnemyScript : MonoBehaviour
     }
 
     protected void SetPositionAndSpeed() {
-        currentSpeed = Random.Range(MinSpeed, MaxSpeed);
+        currentSpeed = Random.Range(minSpeed, maxSpeed);
 
         x = Random.Range(left, right);
         y = Random.Range(top, bottom);
@@ -103,6 +105,15 @@ public class EnemyScript : MonoBehaviour
     {
         gameObject.renderer.material.color = MainColor;
         gameObject.GetComponent<ParticleSystem>().startColor = MainColor;
+    }
+
+    private void DamageEnemy()
+    {
+        health--;
+        if (health < 1)
+        {
+            Destroy(gameObject);
+        }
     }
 
     #endregion
