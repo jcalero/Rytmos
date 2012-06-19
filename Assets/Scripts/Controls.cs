@@ -5,37 +5,31 @@ public class Controls : MonoBehaviour
 {
 
     #region Fields
-    #endregion
-
-    #region Properties
-
+    private bool devMode;
+    private DevScript devScript;
     #endregion
 
     #region Functions
 
     void Awake()
     {
+        devScript = (DevScript)gameObject.GetComponent("DevScript");
         Screen.sleepTimeout = (int)SleepTimeout.NeverSleep;
     }
 
-    // Use this for initialization
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
     void Update()
     {
-        //if (Application.platform == RuntimePlatform.Android)
-        //{
-            if (Input.GetKey(KeyCode.Home) || Input.GetKey(KeyCode.Escape) || Input.GetKey("escape"))
-            {
-                Application.Quit();
-                return;
-            }
-        //}
+        if (Input.GetKey(KeyCode.Home) || Input.GetKey(KeyCode.Escape) || Input.GetKey("escape"))
+        {
+            Application.Quit();
+            return;
+        }
+        if (Input.GetKeyDown(KeyCode.BackQuote))
+        {
+            devScript.DevMode = !devScript.DevMode;
+        }
     }
+
 
     #endregion
 }

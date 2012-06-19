@@ -9,9 +9,6 @@ public class EnemyScript : MonoBehaviour
     public float MaxSpeed;
     public GameObject ExplosionPrefab;
 
-
-    //public int colorIndex;
-
     private Color mainColor;
     private float currentSpeed;
     private float x, y, z;
@@ -102,7 +99,7 @@ public class EnemyScript : MonoBehaviour
         get { return mainColor; }
     }
 
-    void SetColor()
+    protected void SetColor()
     {
         gameObject.renderer.material.color = MainColor;
         gameObject.GetComponent<ParticleSystem>().startColor = MainColor;

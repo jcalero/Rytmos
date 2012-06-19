@@ -8,9 +8,10 @@ public class Player : MonoBehaviour
     public static int startScore = 0;
     public static int startHealth = 100;
     public static int score;
-    public static int health;
     public static int startEnergy = 50;
+    
     public static int energy;
+    public static int health;
 
     public GameObject pulsePrefab;
 
@@ -18,10 +19,6 @@ public class Player : MonoBehaviour
     public float screenBottom;
 	
 	private float myTimer = 0;
-
-    #endregion
-
-    #region Properties
 
     #endregion
 

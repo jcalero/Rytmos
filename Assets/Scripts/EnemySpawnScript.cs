@@ -21,13 +21,19 @@ public class EnemySpawnScript : MonoBehaviour
         InvokeRepeating("SpawnEnemy", FirstSpawn, SpawnRate);
     }
 
-    void SpawnEnemy()
+    public void SpawnEnemy()
     {
         randomSeed = Random.Range(0, EnemyPrefabs.Length);
         Vector3 position = new Vector3(EnemyPrefabs[randomSeed].transform.position.x,
                                        EnemyPrefabs[randomSeed].transform.position.y,
                                        EnemyPrefabs[randomSeed].transform.position.z);
         Instantiate(EnemyPrefabs[randomSeed], position, EnemyPrefabs[randomSeed].transform.localRotation);
+    }
+
+    public void RestartSpawner()
+    {
+        CancelInvoke("SpawnEnemy");
+        Start();
     }
 
     #endregion
