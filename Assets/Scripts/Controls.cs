@@ -19,7 +19,7 @@ public class Controls : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKey(KeyCode.Home) || Input.GetKey(KeyCode.Escape) || Input.GetKey("escape"))
+        if (Input.GetKeyDown(KeyCode.Home) || Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown("escape"))
         {
             Application.Quit();
             return;

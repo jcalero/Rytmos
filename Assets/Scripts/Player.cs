@@ -52,13 +52,11 @@ public class Player : MonoBehaviour
 		Instantiate(colorFeedback, new Vector3(screenMiddleX, screenTop, 0), colorFeedback.transform.localRotation);
 		colorFeedback.GetComponent<ParticleSystem>().startColor = new Color(.5f, 0, .5f, 1);
 		Instantiate(colorFeedback, new Vector3(screenRight, screenTop, 0), colorFeedback.transform.localRotation);
-		
-		
 	}
 
     void Update()
     {	
-		gameObject.renderer.material.color = singleColourSelect(Input.mousePosition);
+		//gameObject.renderer.material.color = singleColourSelect(Input.mousePosition);
         if (Input.GetMouseButtonDown(0) && energy-10 >= 0 && Time.timeScale != 0)
         {
             Instantiate(pulsePrefab, new Vector3(0, 0, 0), pulsePrefab.transform.localRotation);
