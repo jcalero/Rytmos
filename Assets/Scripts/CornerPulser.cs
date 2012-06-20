@@ -3,7 +3,7 @@ using System.Collections;
 
 public class CornerPulser : MonoBehaviour {
 	ParticleSystem ps;
-	private float myTimer = 0;
+	//private float myTimer = 0;
 	private bool held = false; 
 	
 	// Use this for initialization
