@@ -19,6 +19,9 @@ public class CornerPulser : MonoBehaviour {
 		if(Input.GetMouseButtonUp (0)) {
 			held = false;	
 		}
+		
+		//Readd this if you want the corners to fire around the screen (personally, I think it's distracting
+		/*
 		if(!held) {
 			myTimer += Time.deltaTime;
 			if(ps.startColor == Color.red && myTimer >= 0f && myTimer < 1f) {
@@ -41,6 +44,8 @@ public class CornerPulser : MonoBehaviour {
 				ps.Emit(2);
 			}
 		} else {
+		*/
+		if(held) {
 			ps.Emit (2);	
 		}
 		
@@ -49,8 +54,8 @@ public class CornerPulser : MonoBehaviour {
 	//		ps.Emit (5);
 	//	}
 		
-		if(myTimer > 6f) {
-			myTimer = 0;	
-		}
+		//if(myTimer > 6f) {
+		//	myTimer = 0;	
+		//}
 	}
 }

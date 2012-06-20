@@ -17,11 +17,11 @@ public class Player : MonoBehaviour
     public GameObject pulsePrefab;
 	public GameObject colorFeedback;
 
-    public float screenLeft;
-    public float screenBottom;
-	private float screenTop;
-	private float screenRight;
-	private float screenMiddleX;
+    public static float screenLeft;
+    public static float screenBottom;
+	public static float screenTop;
+	public static float screenRight;
+	public static float screenMiddleX;
 	
 	private float myTimer = 0;
 
@@ -52,6 +52,8 @@ public class Player : MonoBehaviour
 		Instantiate(colorFeedback, new Vector3(screenMiddleX, screenTop, 0), colorFeedback.transform.localRotation);
 		colorFeedback.GetComponent<ParticleSystem>().startColor = new Color(.5f, 0, .5f, 1);
 		Instantiate(colorFeedback, new Vector3(screenRight, screenTop, 0), colorFeedback.transform.localRotation);
+		
+		
 	}
 
     void Update()

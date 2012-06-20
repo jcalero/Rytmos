@@ -7,21 +7,16 @@ public class PulseSender : MonoBehaviour {
 	LineRenderer line;
 	SphereCollider sphereColl;
 	bool held;
-	bool transition;
 	Color finalColor;
 	public float amountToHit;
 	private float pulseHealth = 3;
-	private Vector2 lastPos;
-	
-    //Material pulseMat;
+	float pulseMax;
 	
 	
 	// Use this for initialization
 	void Start () 
 	{
-		lastPos = Vector2.zero;
 		held = true;
-		transition = false;
 		finalColor = Color.clear;
 		line = gameObject.GetComponent<LineRenderer>();
 		line.SetVertexCount (segments+1);
@@ -33,15 +28,15 @@ public class PulseSender : MonoBehaviour {
 		
 		sphereColl = gameObject.GetComponent<SphereCollider>();
 		
+		
+		//Find distance for the radius
+		pulseMax = new Vector2(Player.screenLeft, Player.screenTop).magnitude;
+		
 	}
 	
 	// Update is called once per frame
 	void Update () 
 	{
-		//Check if you are transitioning between colours
-		if(!(singleColourSelect(lastPos).Equals(singleColourSelect(Input.mousePosition)))) {
-			transition = true;	
-		}
 		
 		//If you have released the button, and the pulse is the current one, set it to be not held and set the Colour
 		if(Input.GetMouseButtonUp(0) && held) {
@@ -66,18 +61,10 @@ public class PulseSender : MonoBehaviour {
 		sphereColl.radius = radius + 0.1f;
 		
 		//If too big, destroy itself
-		if(radius > 10.2) {
+		if(radius > pulseMax) {
 			Destroy(gameObject);
 		}
 		
-		//Debug statement
-		if(transition) {
-			//print("Transition to : " + chosen);
-		}
-		
-		//Ready the values for the next update - needs boolean check for if currently transitioning
-		lastPos = Input.mousePosition;
-		transition = false;
 	}
 	
 	void OnTriggerEnter (Collider otherObject) 
