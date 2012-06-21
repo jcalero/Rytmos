@@ -6,7 +6,8 @@ public class PulseSender : MonoBehaviour {
 	public float radius;
 	LineRenderer line;
 	SphereCollider sphereColl;
-	bool held;
+	public bool held;
+	public bool secondFinger;
 	Color finalColor;
 	public float amountToHit;
 	private float pulseHealth = 3;
@@ -17,6 +18,7 @@ public class PulseSender : MonoBehaviour {
 	void Start () 
 	{
 		held = true;
+		secondFinger = false;
 		finalColor = Color.clear;
 		line = gameObject.GetComponent<LineRenderer>();
 		line.SetVertexCount (segments+1);
@@ -38,9 +40,16 @@ public class PulseSender : MonoBehaviour {
 	void Update () 
 	{
 		
+		if(Input.GetMouseButtonDown(1) && held) {
+			secondFinger = true;	
+		}
+		if(Input.GetMouseButtonUp(1) && held) {
+			secondFinger = false;	
+		}
 		//If you have released the button, and the pulse is the current one, set it to be not held and set the Colour
 		if(Input.GetMouseButtonUp(0) && held) {
 			held = false;
+			secondFinger = false;	
 			finalColor = singleColourSelect(Input.mousePosition);
 		}
 		
@@ -57,11 +66,16 @@ public class PulseSender : MonoBehaviour {
         line.material.color = chosen;
 		
 		//Increase both the radius of the pulse and the sphere collider. 
-		radius = radius + 3 * Time.deltaTime;
-		sphereColl.radius = radius + 0.1f;
+		if(!secondFinger) {
+			radius = radius + 3 * Time.deltaTime;
+			sphereColl.radius = radius + 0.1f;
+		} else {
+			radius = radius - 3 * Time.deltaTime;
+			sphereColl.radius = radius + 0.1f;
+		}
 		
 		//If too big, destroy itself
-		if(radius > pulseMax) {
+		if(radius > pulseMax || (radius < .1 && secondFinger) || amountToHit == 0) {
 			Destroy(gameObject);
 		}
 		
@@ -70,11 +84,6 @@ public class PulseSender : MonoBehaviour {
 	void OnTriggerEnter (Collider otherObject) 
 	{
 		amountToHit--;
-		float lineWidth = amountToHit/10;
-		if(lineWidth < .2f) {
-			lineWidth += .05f;	
-		}
-		line.SetWidth(lineWidth, lineWidth);
 		if(amountToHit==0) {
 			Destroy(gameObject);
 		}
@@ -93,6 +102,12 @@ public class PulseSender : MonoBehaviour {
 			y = Mathf.Cos (Mathf.Deg2Rad * angle);			
 			line.SetPosition (i, new Vector3(x,y,z) * radius);
 			line.SetColors(new Color(c.r, c.g, c.b, ((amountToHit/pulseHealth)*.5f)+.5f)   ,new Color(c.r, c.g, c.b, ((amountToHit/pulseHealth)*.5f)+.5f));
+			line.material.SetColor("_Emission", new Color(c.r, c.g, c.b, c.a/3));
+			float lineWidth = amountToHit/10;
+			if(lineWidth < .2f) {
+			lineWidth += .05f;	
+			}
+			line.SetWidth(lineWidth, lineWidth);
 			angle += (360f / segments);
 		}
 	}
