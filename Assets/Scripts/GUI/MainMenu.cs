@@ -5,29 +5,81 @@ public class MainMenu : MonoBehaviour
 {
 
     #region Fields
-    private int textHeight = 300;
-    private int textWidth = 400;
-    private string menuText = "Welcome to Sperm Shooter!\n\nClick anywhere on the screen to kill the sperms, but make sure to match the color!";
-    private int buttonHeight = 50;
-    private int buttonWidth = 200;
-    #endregion
+    private UIDraggablePanel panel;
 
-    #region Properties
-
+    private Vector3 quitMenu;
+    private Vector3 mainMenu;
+    private Vector3 modeMenu;
+    private Vector3 highScoresMenu;
+    private Vector3 optionsMenu;
     #endregion
 
     #region Functions
 
-    void OnGUI()
+    private void Awake()
     {
-        GUI.Label(new Rect(Screen.width / 2 - textWidth / 2, 40, textWidth, textHeight), menuText);
-        if (GUI.Button(new Rect(Screen.width / 2 - buttonWidth / 2,
-                            Screen.height / 2 - buttonHeight / 2,
-                            buttonWidth, buttonHeight),
-                            "Start Game"))
-        {
-            Application.LoadLevel("Game");
-        }
+        panel = GameObject.Find("Panel (Draggable)").GetComponent<UIDraggablePanel>();
+        quitMenu = new Vector3(0f, 0f, 0f);
+        mainMenu = new Vector3(-650f, 0f, 0f);
+        modeMenu = new Vector3(-650f * 2, 0f, 0f);
+        highScoresMenu = new Vector3(-650f * 3, 0f, 0f);
+        optionsMenu = new Vector3(-650f * 4, 0f, 0f);
+    }
+
+    void Update()
+    {
+        if (Input.GetKey(KeyCode.Escape))
+            OnBackClicked();
+    }
+
+    void OnPlayClicked()
+    {
+        // Stop any current momentum to allow for Spring to begin.
+        panel.currentMomentum = Vector3.zero;
+        // Begin spring motion
+        SpringPanel.Begin(panel.gameObject, modeMenu, 13f);
+    }
+
+    void OnHighScoresClicked()
+    {
+        // Stop any current momentum to allow for Spring to begin.
+        panel.currentMomentum = Vector3.zero;
+        // Begin spring motion
+        SpringPanel.Begin(panel.gameObject, highScoresMenu, 13f);
+    }
+
+    void OnOptionsClicked()
+    {
+        // Stop any current momentum to allow for Spring to begin.
+        panel.currentMomentum = Vector3.zero;
+        // Begin spring motion
+        SpringPanel.Begin(panel.gameObject, optionsMenu, 13f);
+    }
+
+    void OnQuitClicked()
+    {
+        // Stop any current momentum to allow for Spring to begin.
+        panel.currentMomentum = new Vector3(0f, 0f, 0f);
+        // Begin spring motion
+        SpringPanel.Begin(panel.gameObject, quitMenu, 13f);
+    }
+
+    void OnBackClicked()
+    {
+        // Stop any current momentum to allow for Spring to begin.
+        panel.currentMomentum = Vector3.zero;
+        // Begin spring motion
+        SpringPanel.Begin(panel.gameObject, mainMenu, 13f);
+    }
+
+    void OnQuitConfirmedClicked()
+    {
+        Application.Quit();
+    }
+
+    void OnArcadeModeClicked()
+    {
+        Application.LoadLevel("Game");
     }
 
     #endregion

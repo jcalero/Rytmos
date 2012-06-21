@@ -19,11 +19,11 @@ public class Controls : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Home) || Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown("escape"))
-        {
-            Application.Quit();
-            return;
-        }
+        //if (Input.GetKeyDown(KeyCode.Home) || Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown("escape"))
+        //{
+        //    Application.Quit();
+        //    return;
+        //}
         if (Input.GetKeyDown(KeyCode.BackQuote))
         {
             devScript.DevMode = !devScript.DevMode;

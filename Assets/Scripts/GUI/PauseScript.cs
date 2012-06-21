@@ -34,7 +34,8 @@ public class PauseScript : MonoBehaviour
 
     void OnResumeClicked()
     {
-        StartCoroutine(resume());
+        //StartCoroutine(resume());
+        resume();
     }
 
     void OnMenuClicked()
@@ -47,13 +48,21 @@ public class PauseScript : MonoBehaviour
         Application.Quit();
     }
 
-    IEnumerator resume() 
+    //IEnumerator resume() 
+    //{
+    //    float pauseEndTime = Time.realtimeSinceStartup + 1;
+    //    while (Time.realtimeSinceStartup < pauseEndTime)
+    //    {
+    //        yield return 0;
+    //    }
+    //    paused = false;
+    //    NGUITools.FindCameraForLayer(LayerMask.NameToLayer("Pause Menu")).enabled = false;
+    //    Camera.main.GetComponent<AudioSource>().Play();
+    //    Time.timeScale = 1;
+    //}
+
+    void resume()
     {
-        float pauseEndTime = Time.realtimeSinceStartup + 1;
-        while (Time.realtimeSinceStartup < pauseEndTime)
-        {
-            yield return 0;
-        }
         paused = false;
         NGUITools.FindCameraForLayer(LayerMask.NameToLayer("Pause Menu")).enabled = false;
         Camera.main.GetComponent<AudioSource>().Play();
