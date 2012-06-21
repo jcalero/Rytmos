@@ -16,6 +16,10 @@ public class Player : MonoBehaviour
 
     public GameObject pulsePrefab;
 	public GameObject colorFeedback;
+    public LinkedSpriteManager spriteManager;
+
+    public GameObject touchPrefab;
+    private Sprite touchSprite;
 
     public static float screenLeft;
     public static float screenBottom;
@@ -31,6 +35,12 @@ public class Player : MonoBehaviour
 
     void Awake()
     {
+        // Creates and hides the touch feedback sprite
+        touchPrefab = GameObject.Find("TouchSprite");
+        spriteManager = GameObject.Find("SpriteManager").GetComponent<LinkedSpriteManager>();
+        touchSprite = spriteManager.AddSprite(touchPrefab, 0.25f, 0.25f, new Vector2(0f, 0.365f), new Vector2(0.63f, 0.63f), false);
+        touchSprite.hidden = true;
+
         screenLeft = Camera.main.ViewportToWorldPoint(new Vector3(0, 0, 10)).x;
         screenBottom = Camera.main.ViewportToWorldPoint(new Vector3(0, 0, 10)).y;
 		screenRight = Camera.main.ViewportToWorldPoint(new Vector3(1,0,10)).x;
@@ -61,6 +71,8 @@ public class Player : MonoBehaviour
 		//gameObject.renderer.material.color = singleColourSelect(Input.mousePosition);
         if (Input.GetMouseButtonDown(0) && energy-10 >= 0 && Time.timeScale != 0)
         {
+            Vector3 tempPos = new Vector3(Camera.main.ScreenToWorldPoint(Input.mousePosition).x, Camera.main.ScreenToWorldPoint(Input.mousePosition).y, 0f);
+            ShowTouchSprite(tempPos);
             Instantiate(pulsePrefab, new Vector3(0, 0, 0), pulsePrefab.transform.localRotation);
             energy -= 10;
         }
@@ -72,6 +84,19 @@ public class Player : MonoBehaviour
 		}
 		
 		
+    }
+
+    private void ShowTouchSprite(Vector3 pos)
+    {
+        touchSprite.SetColor(singleColourSelect(Input.mousePosition) + new Color(0.3f, 0.3f, 0.3f));
+        touchPrefab.transform.position = pos;
+        touchSprite.hidden = false;
+        iTween.ScaleFrom(touchPrefab, iTween.Hash("scale", new Vector3(1.3f, 1.3f, 1.3f),"time",0.3f,"oncomplete","HideTouchSprite","oncompletetarget",gameObject));
+    }
+
+    private void HideTouchSprite()
+    {
+        touchSprite.hidden = true;
     }
 
     public void ResetStats()
