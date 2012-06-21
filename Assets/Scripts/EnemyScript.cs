@@ -77,6 +77,21 @@ public class EnemyScript : MonoBehaviour
 		}
 		
     }
+	
+	void OnTriggerExit(Collider otherObject) 
+	{
+		if(otherObject.name == "SecondCollider" && 
+			otherObject.gameObject.transform.parent.GetComponent<LineRenderer>().material.color == gameObject.renderer.material.color) {
+		
+			Player.score += 10;
+			Player.energy += 5;
+           	Instantiate(ExplosionPrefab, gameObject.transform.position, gameObject.transform.rotation);
+           	DamageEnemy();
+			
+            if (Player.score >= 100)
+                Application.LoadLevel("Win");
+		}
+	}
 
     protected void SetPositionAndSpeed() {
         currentSpeed = Random.Range(minSpeed, maxSpeed);
