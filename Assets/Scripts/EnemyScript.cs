@@ -41,7 +41,7 @@ public class EnemyScript : MonoBehaviour
     {
         SetPositionAndSpeed();
         SetColor();
-        iTween.MoveTo(gameObject, iTween.Hash("position", player.transform.position ,"speed", currentSpeed, "easetype", "linear", "looktarget", player.transform.position));
+        iTween.MoveTo(gameObject, iTween.Hash("position", player.transform.position ,"speed", currentSpeed, "easetype", "linear", "looktarget", player.transform.position, "looktime", 0f));
 	}
 
     void OnTriggerEnter(Collider otherObject)
@@ -52,8 +52,11 @@ public class EnemyScript : MonoBehaviour
             Instantiate(ExplosionPrefab, gameObject.transform.position, gameObject.transform.rotation);
             Destroy(gameObject);
 
-            if (Player.health <= 0) 
+            if (Player.health <= 0)
+            {
+                Player.health = 0;
                 Application.LoadLevel("Lose");
+            }
         }
 		
         if (otherObject.name == "Pulse(Clone)" &&
@@ -62,6 +65,8 @@ public class EnemyScript : MonoBehaviour
 			
             Player.score += 10;
 			Player.energy += 5;
+            if (Player.energy > 50)
+                Player.energy = 50;
             Instantiate(ExplosionPrefab, gameObject.transform.position, gameObject.transform.rotation);
             DamageEnemy();
 		
@@ -78,20 +83,22 @@ public class EnemyScript : MonoBehaviour
 		
     }
 	
-	void OnTriggerExit(Collider otherObject) 
-	{
-		if(otherObject.name == "SecondCollider" && 
-			otherObject.gameObject.transform.parent.GetComponent<LineRenderer>().material.color == gameObject.renderer.material.color) {
+    //void OnTriggerExit(Collider otherObject) 
+    //{
+    //    if(otherObject.name == "SecondCollider" && 
+    //        otherObject.gameObject.transform.parent.GetComponent<LineRenderer>().material.color == gameObject.renderer.material.color) {
 		
-			Player.score += 10;
-			Player.energy += 5;
-           	Instantiate(ExplosionPrefab, gameObject.transform.position, gameObject.transform.rotation);
-           	DamageEnemy();
+    //        Player.score += 10;
+    //        Player.energy += 5;
+    //        if (Player.energy > 50)
+    //            Player.energy = 50;
+    //        Instantiate(ExplosionPrefab, gameObject.transform.position, gameObject.transform.rotation);
+    //        DamageEnemy();
 			
-            if (Player.score >= 100)
-                Application.LoadLevel("Win");
-		}
-	}
+    //        if (Player.score >= 100)
+    //            Application.LoadLevel("Win");
+    //    }
+    //}
 
     protected void SetPositionAndSpeed() {
         currentSpeed = Random.Range(minSpeed, maxSpeed);

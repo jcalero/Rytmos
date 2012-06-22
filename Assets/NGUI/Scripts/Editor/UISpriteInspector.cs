@@ -58,10 +58,10 @@ public class UISpriteInspector : UIWidgetInspector
 	override protected bool OnDrawProperties ()
 	{
 		mSprite = mWidget as UISprite;
-		ComponentSelector.Draw<UIAtlas>(mSprite.atlas as UIAtlas, OnSelectAtlas);
+		ComponentSelector.Draw<UIAtlas>(mSprite.atlas, OnSelectAtlas);
 		if (mSprite.atlas == null) return false;
 
-		string spriteName = SpriteField(mSprite.atlas as UIAtlas, mSprite.spriteName);
+		string spriteName = SpriteField(mSprite.atlas, mSprite.spriteName);
 
 		if (mSprite.spriteName != spriteName)
 		{

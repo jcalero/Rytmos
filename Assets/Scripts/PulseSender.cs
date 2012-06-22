@@ -12,7 +12,7 @@ public class PulseSender : MonoBehaviour {
 	public float amountToHit;
 	private float pulseHealth = 3;
 	float pulseMax;
-	
+    float timer = 0;
 	
 	// Use this for initialization
 	void Start () 
@@ -70,6 +70,15 @@ public class PulseSender : MonoBehaviour {
 			radius = radius + 3 * Time.deltaTime;
 			sphereColl.radius = radius + 0.1f;
 		} else {
+            timer += Time.deltaTime;
+            if (timer > 0.2f)
+            {
+                if (Player.energy > 1)
+                    Player.energy -= 2;
+                else
+                    secondFinger = false;
+                timer = 0;
+            }
 			radius = radius - 3 * Time.deltaTime;
 			sphereColl.radius = radius + 0.1f;
 		}

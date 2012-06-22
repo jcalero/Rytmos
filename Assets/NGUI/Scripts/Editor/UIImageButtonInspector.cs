@@ -46,13 +46,13 @@ public class UIImageButtonInspector : Editor
 
 		if (mButton.target != null)
 		{
-			ComponentSelector.Draw<UIAtlas>(sprite.atlas as UIAtlas, OnSelectAtlas);
+			ComponentSelector.Draw<UIAtlas>(sprite.atlas, OnSelectAtlas);
 
 			if (sprite.atlas != null)
 			{
-				string normal = UISpriteInspector.SpriteField(sprite.atlas as UIAtlas, "Normal", mButton.normalSprite);
-				string hover  = UISpriteInspector.SpriteField(sprite.atlas as UIAtlas, "Hover", mButton.hoverSprite);
-				string press  = UISpriteInspector.SpriteField(sprite.atlas as UIAtlas, "Pressed", mButton.pressedSprite);
+				string normal = UISpriteInspector.SpriteField(sprite.atlas, "Normal", mButton.normalSprite);
+				string hover  = UISpriteInspector.SpriteField(sprite.atlas, "Hover", mButton.hoverSprite);
+				string press  = UISpriteInspector.SpriteField(sprite.atlas, "Pressed", mButton.pressedSprite);
 
 				if (mButton.normalSprite != normal ||
 					mButton.hoverSprite != hover ||

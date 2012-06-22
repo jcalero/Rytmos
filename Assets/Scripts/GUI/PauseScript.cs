@@ -5,14 +5,16 @@ public class PauseScript : MonoBehaviour
 {
 
     #region Fields
-    private UIButton resumeButton;
-    private UIButton menuButton;
-    private UIButton exitButton;
-    private float timer;
     private bool paused = false;
+    private Camera menuCamera;
     #endregion
 
     #region Functions
+
+    void Awake()
+    {
+        menuCamera = NGUITools.FindCameraForLayer(LayerMask.NameToLayer("Pause Menu"));
+    }
 
     void Update()
     {
@@ -21,7 +23,7 @@ public class PauseScript : MonoBehaviour
             if (!paused)
             {
                 paused = true;
-                NGUITools.FindCameraForLayer(LayerMask.NameToLayer("Pause Menu")).enabled = true;
+                menuCamera.enabled = true;
                 Camera.main.GetComponent<AudioSource>().Pause();
                 Time.timeScale = 0f;
             }
@@ -34,32 +36,21 @@ public class PauseScript : MonoBehaviour
 
     void OnResumeClicked()
     {
-        //StartCoroutine(resume());
-        resume();
+        if (menuCamera.enabled)
+            resume();
     }
 
     void OnMenuClicked()
     {
-        resume("MainMenu");
+        if (menuCamera.enabled)
+            resume("MainMenu");
     }
 
     void OnQuitClicked()
     {
-        Application.Quit();
+        if (menuCamera.enabled)
+            Application.Quit();
     }
-
-    //IEnumerator resume() 
-    //{
-    //    float pauseEndTime = Time.realtimeSinceStartup + 1;
-    //    while (Time.realtimeSinceStartup < pauseEndTime)
-    //    {
-    //        yield return 0;
-    //    }
-    //    paused = false;
-    //    NGUITools.FindCameraForLayer(LayerMask.NameToLayer("Pause Menu")).enabled = false;
-    //    Camera.main.GetComponent<AudioSource>().Play();
-    //    Time.timeScale = 1;
-    //}
 
     void resume()
     {

@@ -203,21 +203,6 @@ public class UIPopupList : MonoBehaviour
 		}
 	}
 
-    /// <summary>
-    /// Copy from NGUITools 
-    /// Add a sprite appropriate for the specified atlas sprite.
-    /// It will be a UIBaseSlicedSprite if the sprite has an inner rect, and a regular sprite otherwise.
-    /// </summary>
-
-    private UISprite AddSprite(GameObject go, UIAtlas atlas, string spriteName)
-    {
-        UIAtlas.Sprite sp = (atlas != null) ? atlas.GetSprite(spriteName) : null;
-        UISprite sprite = (sp == null || sp.inner == sp.outer) ? NGUITools.AddWidget<UISprite>(go) : (UISprite)NGUITools.AddWidget<UISlicedSprite>(go);
-        sprite.atlas = atlas;
-        sprite.spriteName = spriteName;
-        return sprite;
-    }
-
 	/// <summary>
 	/// Localize the text label.
 	/// </summary>
@@ -462,7 +447,7 @@ public class UIPopupList : MonoBehaviour
 			t.localScale = Vector3.one;
 
 			// Add a sprite for the background
-			mBackground = AddSprite(mChild, atlas, backgroundSprite);
+			mBackground = NGUITools.AddSprite(mChild, atlas, backgroundSprite);
 			mBackground.pivot = UIWidget.Pivot.TopLeft;
 			mBackground.depth = NGUITools.CalculateNextDepth(mPanel.gameObject);
 			mBackground.color = backgroundColor;
@@ -474,7 +459,7 @@ public class UIPopupList : MonoBehaviour
 			mBackground.cachedTransform.localPosition = new Vector3(0f, bgPadding.y, 0f);
 
 			// Add a sprite used for the selection
-			mHighlight = AddSprite(mChild, atlas, highlightSprite);
+			mHighlight = NGUITools.AddSprite(mChild, atlas, highlightSprite);
 			mHighlight.pivot = UIWidget.Pivot.TopLeft;
 			mHighlight.color = highlightColor;
 
@@ -552,7 +537,7 @@ public class UIPopupList : MonoBehaviour
 
 			if (position == Position.Auto)
 			{
-				UICamera cam = (UICamera)UICamera.FindCameraForLayer(gameObject.layer);
+				UICamera cam = UICamera.FindCameraForLayer(gameObject.layer);
 
 				if (cam != null)
 				{

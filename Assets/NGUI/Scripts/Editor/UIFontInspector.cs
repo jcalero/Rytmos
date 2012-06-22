@@ -41,7 +41,7 @@ public class UIFontInspector : Editor
 		//NGUIEditorTools.RegisterUndo("Font Change", mFont);
 
 		mFont.replacement = obj as UIFont;
-		mReplacement = mFont.replacement as UIFont;
+		mReplacement = mFont.replacement;
 		UnityEditor.EditorUtility.SetDirty(mFont);
 		if (mReplacement == null) mType = FontType.Normal;
 	}
@@ -80,7 +80,7 @@ public class UIFontInspector : Editor
 		if (mFont.replacement != null)
 		{
 			mType = FontType.Reference;
-			mReplacement = mFont.replacement as UIFont;
+			mReplacement = mFont.replacement;
 		}
 
 		FontType after = (FontType)EditorGUILayout.EnumPopup("Font Type", mType);
@@ -99,7 +99,7 @@ public class UIFontInspector : Editor
 
 		if (mType == FontType.Reference)
 		{
-			ComponentSelector.Draw<UIFont>(mFont.replacement as UIFont, OnSelectFont);
+			ComponentSelector.Draw<UIFont>(mFont.replacement, OnSelectFont);
 
 			NGUIEditorTools.DrawSeparator();
 			GUILayout.Label("You can have one font simply point to\n" +
@@ -121,7 +121,7 @@ public class UIFontInspector : Editor
 		}
 
 		NGUIEditorTools.DrawSeparator();
-		ComponentSelector.Draw<UIAtlas>(mFont.atlas as UIAtlas, OnSelectAtlas);
+		ComponentSelector.Draw<UIAtlas>(mFont.atlas, OnSelectAtlas);
 
 		if (mFont.atlas != null)
 		{
@@ -133,7 +133,7 @@ public class UIFontInspector : Editor
 
 			if (mFont.bmFont.isValid)
 			{
-				string spriteName = UISlicedSpriteInspector.SpriteField(mFont.atlas as UIAtlas, mFont.spriteName);
+				string spriteName = UISlicedSpriteInspector.SpriteField(mFont.atlas, mFont.spriteName);
 
 				if (mFont.spriteName != spriteName)
 				{

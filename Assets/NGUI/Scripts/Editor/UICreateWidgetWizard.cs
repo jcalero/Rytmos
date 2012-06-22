@@ -746,7 +746,7 @@ public class UICreateWidgetWizard : EditorWindow
 				Mathf.Max(4f, spfg.inner.yMin - spfg.outer.yMin));
 
 			// Background sprite
-			UIBaseSprite sprite = NGUITools.AddSprite(go, UISettings.atlas, mListFG);
+			UISprite sprite = NGUITools.AddSprite(go, UISettings.atlas, mListFG);
 			sprite.depth = depth;
 			sprite.atlas = UISettings.atlas;
 			sprite.transform.localScale = new Vector3(150f + fgPadding.x * 2f, UISettings.font.size + fgPadding.y * 2f, 1f);

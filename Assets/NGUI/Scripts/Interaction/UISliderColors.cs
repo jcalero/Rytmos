@@ -14,39 +14,39 @@ using UnityEngine;
 [AddComponentMenu("NGUI/Examples/Slider Colors")]
 public class UISliderColors : MonoBehaviour
 {
-    public UISprite sprite;
+	public UISprite sprite;
 
-    public Color[] colors = new Color[] { Color.red, Color.yellow, Color.green };
+	public Color[] colors = new Color[] { Color.red, Color.yellow, Color.green };
 
-    UISlider mSlider;
+	UISlider mSlider;
 
-    void Start() { mSlider = GetComponent<UISlider>(); Update(); }
+	void Start () { mSlider = GetComponent<UISlider>(); Update(); }
 
-    void Update()
-    {
-        if (sprite == null || colors.Length == 0) return;
+	void Update ()
+	{
+		if (sprite == null || colors.Length == 0) return;
 
-        float val = mSlider.sliderValue;
-        val *= (colors.Length - 1);
-        int startIndex = Mathf.FloorToInt(val);
+		float val = mSlider.sliderValue;
+		val *= (colors.Length - 1);
+		int startIndex = Mathf.FloorToInt(val);
 
-        Color c = colors[0];
+		Color c = colors[0];
 
-        if (startIndex >= 0)
-        {
-            if (startIndex + 1 < colors.Length)
-            {
-                float factor = (val - startIndex);
-                c = Color.Lerp(colors[startIndex], colors[startIndex + 1], factor);
-            }
-            else if (startIndex < colors.Length)
-            {
-                c = colors[startIndex];
-            }
-            else c = colors[colors.Length - 1];
-        }
+		if (startIndex >= 0)
+		{
+			if (startIndex + 1 < colors.Length)
+			{
+				float factor = (val - startIndex);
+				c = Color.Lerp(colors[startIndex], colors[startIndex + 1], factor);
+			}
+			else if (startIndex < colors.Length)
+			{
+				c = colors[startIndex];
+			}
+			else c = colors[colors.Length - 1];
+		}
 
-        c.a = sprite.color.a;
-        sprite.color = c;
-    }
+		c.a = sprite.color.a;
+		sprite.color = c;
+	}
 }

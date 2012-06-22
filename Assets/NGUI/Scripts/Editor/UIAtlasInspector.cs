@@ -62,7 +62,7 @@ public class UIAtlasInspector : Editor
 		{
 			if (lbl.font != null && UIAtlas.CheckIfRelated(lbl.font.atlas, mAtlas) && lbl.font.spriteName == mSprite.name)
 			{
-				UIBaseFont font = lbl.font;
+				UIFont font = lbl.font;
 				lbl.font = null;
 				lbl.font = font;
 				EditorUtility.SetDirty(lbl);
@@ -83,7 +83,7 @@ public class UIAtlasInspector : Editor
 			//NGUIEditorTools.RegisterUndo("Atlas Change", mAtlas);
 
 			mAtlas.replacement = obj as UIAtlas;
-			mReplacement = mAtlas.replacement as UIAtlas;
+			mReplacement = mAtlas.replacement;
 			UnityEditor.EditorUtility.SetDirty(mAtlas);
 			if (mReplacement == null) mType = AtlasType.Normal;
 		}
@@ -103,7 +103,7 @@ public class UIAtlasInspector : Editor
 		if (mAtlas.replacement != null)
 		{
 			mType = AtlasType.Reference;
-			mReplacement = mAtlas.replacement as UIAtlas;
+			mReplacement = mAtlas.replacement;
 		}
 
 		AtlasType after = (AtlasType)EditorGUILayout.EnumPopup("Atlas Type", mType);
@@ -122,7 +122,7 @@ public class UIAtlasInspector : Editor
 
 		if (mType == AtlasType.Reference)
 		{
-			ComponentSelector.Draw<UIAtlas>(mAtlas.replacement as UIAtlas, OnSelectAtlas);
+			ComponentSelector.Draw<UIAtlas>(mAtlas.replacement, OnSelectAtlas);
 
 			NGUIEditorTools.DrawSeparator();
 			GUILayout.Label("You can have one atlas simply point to\n" +
