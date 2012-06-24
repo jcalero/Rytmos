@@ -14,7 +14,7 @@ public class EnemyScript : MonoBehaviour
     private Color mainColor;
     private float currentSpeed;
     private float x, y, z;
-    private float fixX, fixY;
+    private int fixPos;
     private GameObject player;
 
     // Screen edges
@@ -41,8 +41,8 @@ public class EnemyScript : MonoBehaviour
     {
         SetPositionAndSpeed();
         SetColor();
-        iTween.MoveTo(gameObject, iTween.Hash("position", player.transform.position ,"speed", currentSpeed, "easetype", "linear", "looktarget", player.transform.position, "looktime", 0f));
-	}
+        iTween.MoveTo(gameObject, iTween.Hash("position", player.transform.position, "speed", currentSpeed, "easetype", "linear", "looktarget", player.transform.position, "looktime", 0f));
+    }
 
     void OnTriggerEnter(Collider otherObject)
     {
@@ -58,43 +58,43 @@ public class EnemyScript : MonoBehaviour
                 Application.LoadLevel("Lose");
             }
         }
-		
+        
         if (otherObject.name == "Pulse(Clone)" &&
             otherObject.gameObject.GetComponent<LineRenderer>().material.color == gameObject.renderer.material.color)
         {
-			
+            
             Player.score += 10;
-			Player.energy += 5;
+            Player.energy += 5;
             if (Player.energy > 50)
                 Player.energy = 50;
             Instantiate(ExplosionPrefab, gameObject.transform.position, gameObject.transform.rotation);
             DamageEnemy();
-		
-			
+        
+            
             if (Player.score >= 100)
                 Application.LoadLevel("Win");
         }
-		
-		//Makes sure it only emits particles when the object is a pulse, not of the same colour
-		if(otherObject.name == "Pulse(Clone)" &&
+        
+        //Makes sure it only emits particles when the object is a pulse, not of the same colour
+        if(otherObject.name == "Pulse(Clone)" &&
             otherObject.gameObject.GetComponent<LineRenderer>().material.color != gameObject.renderer.material.color) {
-				gameObject.GetComponent<ParticleSystem>().Emit(10);
-		}
-		
+                gameObject.GetComponent<ParticleSystem>().Emit(10);
+        }
+        
     }
-	
+    
     //void OnTriggerExit(Collider otherObject) 
     //{
     //    if(otherObject.name == "SecondCollider" && 
     //        otherObject.gameObject.transform.parent.GetComponent<LineRenderer>().material.color == gameObject.renderer.material.color) {
-		
+        
     //        Player.score += 10;
     //        Player.energy += 5;
     //        if (Player.energy > 50)
     //            Player.energy = 50;
     //        Instantiate(ExplosionPrefab, gameObject.transform.position, gameObject.transform.rotation);
     //        DamageEnemy();
-			
+            
     //        if (Player.score >= 100)
     //            Application.LoadLevel("Win");
     //    }
@@ -107,11 +107,11 @@ public class EnemyScript : MonoBehaviour
         y = Random.Range(top, bottom);
         z = transform.localRotation.z;
 
-        fixX = Random.Range(1, -1);
+        fixPos = Random.Range(1, -1);
 
-        if (fixX <= 0)
+        if (fixPos == 0)
             x = Mathf.Sign(x) * right;
-        if (fixX > 0)
+        if (fixPos == 1)
             y = Mathf.Sign(y) * top;
 
         transform.position = new Vector3(x, y, z);

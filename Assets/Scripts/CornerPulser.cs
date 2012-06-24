@@ -20,7 +20,7 @@ public class CornerPulser : MonoBehaviour {
 			held = false;	
 		}
 		
-		//Readd this if you want the corners to fire around the screen (personally, I think it's distracting
+		//Readd this if you want the corners to fire around the screen (personally, I think it's distracting)
 		/*
 		if(!held) {
 			myTimer += Time.deltaTime;

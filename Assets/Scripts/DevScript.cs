@@ -17,7 +17,7 @@ public class DevScript : MonoBehaviour
 
     void Awake()
     {
-        enemySpawner = (EnemySpawnScript)GameObject.Find("EnemySpawner").GetComponent("EnemySpawnScript");
+        if (Application.loadedLevelName == "Game") enemySpawner = (EnemySpawnScript)GameObject.Find("EnemySpawner").GetComponent("EnemySpawnScript");
     }
 
     void Update()

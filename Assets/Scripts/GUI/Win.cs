@@ -19,14 +19,14 @@ public class Win : MonoBehaviour
         totalScoreLabel = GameObject.Find("TotalScoreValue").GetComponent<UILabel>();
     }
 
-    void Update()
+    void Start()
     {
         scoreLabel.text = Player.score.ToString();
         healthLabel.text = Player.health.ToString();
-        totalScoreLabel.text = "[AADDAA]" + CalculatedHealth;
+        totalScoreLabel.text = "[AADDAA]" + CalculatedScore;
     }
 
-    int CalculatedHealth
+    int CalculatedScore
     {
         get
         {

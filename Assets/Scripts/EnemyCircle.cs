@@ -8,11 +8,6 @@ public class EnemyCircle : EnemyScript
     #endregion
 
     #region Functions
-    protected override void Awake()
-    {
-        base.Awake();
-    }
-
     protected override void Start()
     {
         colorIndex = Random.Range(0, colors.Length);
