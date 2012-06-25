@@ -13,7 +13,6 @@ public class PulseSender : MonoBehaviour {
     private float pulseMax;
     private float timer = 0;
     
-    // Use this for initialization
     void Start () 
     {
         held = true;
@@ -28,35 +27,31 @@ public class PulseSender : MonoBehaviour {
 
         sphereColl = gameObject.GetComponent<SphereCollider>();
         
-        
         //Find distance for the radius
         pulseMax = new Vector2(Game.screenLeft, Game.screenTop).magnitude;
         
     }
     
-    // Update is called once per frame
     void Update () 
     {
         //If holding the second finger, increase timer and decrease energy
         if(Input.GetMouseButton(1) && held) {
-          	timer += Time.deltaTime;
+            timer += Time.deltaTime;
             if (timer > 0.2f)
             {
                 if (Player.energy > 1)
                     Player.energy -= 2;
                 else {
                     held = false;
-					finalColor = Level.singleColourSelect(Input.mousePosition);
-				}
+                    finalColor = Level.singleColourSelect(Input.mousePosition);
+                }
                 timer = 0;
             }
             radius = radius - 3 * Time.deltaTime;
         } else 
-			radius = radius + 3 * Time.deltaTime;
- 	
-		
+            radius = radius + 3 * Time.deltaTime;
 
-		//If you have released the button, and the pulse is the current one, set it to be not held and set the Colour
+        //If you have released the button, and the pulse is the current one, set it to be not held and set the Colour
         if(Input.GetMouseButtonUp(0) && held) {
             held = false;
             finalColor = Level.singleColourSelect(Input.mousePosition);
@@ -71,14 +66,14 @@ public class PulseSender : MonoBehaviour {
         
         
         //Create the circle, and set the line material
-        CreatePoints(chosen);
+        RedrawPoints(chosen);
         line.material.color = chosen;
-		sphereColl.radius = radius + 0.1f;
+        sphereColl.radius = radius + 0.1f;
         
         //If too big, destroy itself
         if(radius > pulseMax || (radius < .3f) || amountToHit == 0)
             Destroy(gameObject);
-		
+        
     }
     
     void OnTriggerEnter (Collider otherObject) 
@@ -90,7 +85,7 @@ public class PulseSender : MonoBehaviour {
         
     }
     
-    void CreatePoints (Color c) 
+    void RedrawPoints (Color c) 
     {
         float x;
         float y;
@@ -105,7 +100,7 @@ public class PulseSender : MonoBehaviour {
             line.material.SetColor("_Emission", new Color(c.r, c.g, c.b, c.a/3));
             float lineWidth = amountToHit/10;
             if(lineWidth < .2f) 
-            	lineWidth += .05f;	
+                lineWidth += .05f;	
             
             line.SetWidth(lineWidth, lineWidth);
             angle += (360f / segments);

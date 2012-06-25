@@ -10,63 +10,48 @@ public class PauseScript : MonoBehaviour
     #endregion
 
     #region Functions
-
-    void Awake()
-    {
+    void Awake() {
         menuCamera = NGUITools.FindCameraForLayer(LayerMask.NameToLayer("Pause Menu"));
     }
 
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Menu) || Input.GetKeyDown(KeyCode.Space))
-        {
-            if (!paused)
-            {
-                paused = true;
-                menuCamera.enabled = true;
-                Camera.main.GetComponent<AudioSource>().Pause();
-                Time.timeScale = 0f;
-            }
-            else
-            {
-                resume();
-            }
+    void Update() {
+        if (Game.Paused) {
+            pause();
+        } else if (paused) {
+            resume();
         }
     }
 
-    void OnResumeClicked()
-    {
+    void OnResumeClicked() {
         if (menuCamera.enabled)
             resume();
     }
 
-    void OnMenuClicked()
-    {
+    void OnMenuClicked() {
         if (menuCamera.enabled)
             resume("MainMenu");
     }
 
-    void OnQuitClicked()
-    {
+    void OnQuitClicked() {
         if (menuCamera.enabled)
             Application.Quit();
     }
 
-    void resume()
-    {
+    void pause() {
+        paused = true;
+        menuCamera.enabled = true;
+    }
+
+    void resume() {
         paused = false;
-        NGUITools.FindCameraForLayer(LayerMask.NameToLayer("Pause Menu")).enabled = false;
-        Camera.main.GetComponent<AudioSource>().Play();
-        Time.timeScale = 1;
+        menuCamera.enabled = false;
     }
     
-    void resume(string level)
-    {
+    void resume(string level) {
+        Game.Resume();
         paused = false;
         Time.timeScale = 1;
         Application.LoadLevel(level);
     }
-
-
     #endregion
 }

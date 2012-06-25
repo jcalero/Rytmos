@@ -3,7 +3,6 @@ using UnityEngine;
 public class EnemyCircle : EnemyScript
 {
     #region Fields
-    private Color[] colors = new Color[] { Color.red, Color.green, Color.cyan, Color.blue, Color.yellow, new Color(.5f, 0f, .5f, 1f) };
     private int colorIndex;
     #endregion
 

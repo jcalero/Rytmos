@@ -21,7 +21,7 @@ public class DevScript : MonoBehaviour
     }
 
     void Update() {
-        if (Game.DevMode) {
+        if (Game.DevMode && Application.loadedLevelName == "Game") {
             // Instantiate the enemySpawner script if not already instantiated (e.g. the level
             // this script was awaken in was a menu where there is no enemy spawner)
             if (enemySpawner == null) {

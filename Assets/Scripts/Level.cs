@@ -7,13 +7,14 @@ public class Level : MonoBehaviour {
     private static GameObject touchPrefab;
     private static Sprite touchSprite;
     private static Level Instance;
-    private Color purple = new Color(.5f, 0, .5f, 1f);
+
+    public static Color purple = new Color(.5f, 0, .5f, 1f);
 
     public GameObject[] particlesFeedback = new GameObject[6];
     public GameObject[] linePrefab = new GameObject[6];
     private LinkedSpriteManager spriteManager;
     #endregion
-
+    
     #region Functions
     void Awake() {
         // Local static reference to this class.
@@ -45,18 +46,18 @@ public class Level : MonoBehaviour {
     private void SetUpParticlesFeedback() {
         // Instantiate and set colours for the feedback particles.
         particlesFeedback[0].transform.localPosition = new Vector3(Game.screenLeft, Game.screenBottom, 0);
-		particlesFeedback[1].transform.localPosition = new Vector3(Game.screenMiddle, Game.screenBottom, 0);
-		particlesFeedback[2].transform.localPosition = new Vector3(Game.screenRight, Game.screenBottom, 0);
-		particlesFeedback[3].transform.localPosition = new Vector3(Game.screenLeft, Game.screenTop, 0);
-	    particlesFeedback[4].transform.localPosition = new Vector3(Game.screenMiddle, Game.screenTop, 0);
-	    particlesFeedback[5].transform.localPosition = new Vector3(Game.screenRight, Game.screenTop, 0);
+        particlesFeedback[1].transform.localPosition = new Vector3(Game.screenMiddle, Game.screenBottom, 0);
+        particlesFeedback[2].transform.localPosition = new Vector3(Game.screenRight, Game.screenBottom, 0);
+        particlesFeedback[3].transform.localPosition = new Vector3(Game.screenLeft, Game.screenTop, 0);
+        particlesFeedback[4].transform.localPosition = new Vector3(Game.screenMiddle, Game.screenTop, 0);
+        particlesFeedback[5].transform.localPosition = new Vector3(Game.screenRight, Game.screenTop, 0);
     }
 
     private void SetUpBorderLineFeedback() {
-		/*
-		 * Here we will possibly have to reallocate the possible lines if we are dealing with multiple lines
-		 */
-		
+        /*
+         * Here we will possibly have to reallocate the possible lines if we are dealing with multiple lines
+         */
+        
         //First line - Green to cyan
         linePrefab[0].GetComponent<LineRenderer>().SetPosition(0, new Vector3(Game.screenLeft, Game.screenBottom));
         linePrefab[0].GetComponent<LineRenderer>().SetPosition(1, new Vector3(Game.screenMiddle, Game.screenBottom));
@@ -100,7 +101,7 @@ public class Level : MonoBehaviour {
         if (angle > 0) {
             if (angle < 60) {
                 //Purple - top right.
-                return new Color(.5f, 0f, .5f, 1f);
+                return purple;
             } else {
                 if (angle > 120) {
                     //Yellow - Top left

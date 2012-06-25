@@ -12,6 +12,7 @@ public class Game : MonoBehaviour {
     public static float screenMiddle;
 
     private static bool devMode = false;        // True when devMode/debug Mode is enabled. Get's checked by DevScript.
+    private static bool paused = false;
     #endregion
 
     #region Functions
@@ -31,21 +32,42 @@ public class Game : MonoBehaviour {
     }
 
     void Update() {
-        //if (Input.GetKeyDown(KeyCode.Home) || Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown("escape"))
-        //{
-        //    Application.Quit();
-        //    return;
-        //}
-        if (Input.GetKeyDown(KeyCode.BackQuote)) {
+        if (Input.GetKeyDown(KeyCode.Home) || Input.GetKeyDown(KeyCode.Escape) ||
+            Input.GetKeyDown("escape") || Input.GetKeyDown(KeyCode.Space) && Application.loadedLevelName == "Game") {
+                if (!paused)
+                    Pause();
+                else
+                    Resume();
+            return;
+        }
+        if (Input.GetKeyDown(KeyCode.BackQuote) && Application.loadedLevelName == "Game") {
             devMode = !devMode;
         }
+    }
+
+    public static void Pause() {
+        AudioSource audio = Camera.main.GetComponent<AudioSource>();
+        if (audio != null)
+            audio.Pause();
+        Time.timeScale = 0f;
+        paused = !paused;
+        Debug.Log(">> Game paused.");
+    }
+
+    public static void Resume() {
+        AudioSource audio = Camera.main.GetComponent<AudioSource>();
+        if (audio != null)
+            audio.Play();
+        Time.timeScale = 1f;
+        paused = !paused;
+        Debug.Log(">> Game resumed.");
     }
 
     /// <summary>
     /// Runs when any new scene was loaded
     /// </summary>
     void OnLevelWasLoaded() {
-        Debug.Log("Level: \"" + Application.loadedLevelName + "\" was loaded.");
+        Debug.Log(">> Level: \"" + Application.loadedLevelName + "\" was loaded.");
     }
 
     /// <summary>
@@ -55,6 +77,13 @@ public class Game : MonoBehaviour {
         get { return devMode; }
     }
 
+    public static bool Paused {
+        get { return paused; }
+        set { paused = value; }
+    }
+
+    // TODO: Make a state engine for game states. For use when checking Pause state and
+    // devmode etc..
     //public static bool StateA {
 
     //    get {

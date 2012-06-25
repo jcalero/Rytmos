@@ -10,6 +10,7 @@ public class EnemyScript : MonoBehaviour
     protected float minSpeed;
     protected float maxSpeed;
     protected int health;
+    protected Color[] colors = new Color[] { Color.red, Color.green, Color.cyan, Color.blue, Color.yellow, Level.purple };
 
     private Color mainColor;
     private float currentSpeed;
