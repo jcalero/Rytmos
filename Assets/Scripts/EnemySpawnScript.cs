@@ -9,31 +9,30 @@ public class EnemySpawnScript : MonoBehaviour
     public GameObject[] EnemyPrefabs;
     public float FirstSpawn;
     public float SpawnRate;
-    public int randomSeed;
+    public int RandomSeed;
 
     #endregion
 
     #region Functions
 
     // Use this for initialization
-    void Start()
-    {
+    void Start() {
         InvokeRepeating("SpawnEnemy", FirstSpawn, SpawnRate);
     }
 
-    public void SpawnEnemy()
-    {
-        randomSeed = Random.Range(0, EnemyPrefabs.Length);
-        Vector3 position = new Vector3(EnemyPrefabs[randomSeed].transform.position.x,
-                                       EnemyPrefabs[randomSeed].transform.position.y,
-                                       EnemyPrefabs[randomSeed].transform.position.z);
-        Instantiate(EnemyPrefabs[randomSeed], position, EnemyPrefabs[randomSeed].transform.localRotation);
+    public void SpawnEnemy() {
+        RandomSeed = Random.Range(0, EnemyPrefabs.Length);
+        Vector3 position = EnemyPrefabs[RandomSeed].transform.position;
+        Instantiate(EnemyPrefabs[RandomSeed], position, EnemyPrefabs[RandomSeed].transform.localRotation);
     }
 
-    public void RestartSpawner()
-    {
-        CancelInvoke("SpawnEnemy");
+    public void RestartSpawner() {
+        StopSpawner();
         Start();
+    }
+
+    public void StopSpawner() {
+        CancelInvoke("SpawnEnemy");
     }
 
     #endregion

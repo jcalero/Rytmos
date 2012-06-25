@@ -10,10 +10,15 @@ public class Game : MonoBehaviour {
     public static float screenTop;
     public static float screenRight;
     public static float screenMiddle;
+
+    private static bool devMode = false;        // True when devMode/debug Mode is enabled. Get's checked by DevScript.
     #endregion
 
     #region Functions
     void Awake() {
+        // Stops phone screen from shutting down on timeout
+        Screen.sleepTimeout = (int)SleepTimeout.NeverSleep;
+
         // Make sure the game manager stays throughout all scenes.
         DontDestroyOnLoad(gameObject);
 
@@ -23,11 +28,44 @@ public class Game : MonoBehaviour {
         screenRight = -screenLeft;
         screenTop = -screenBottom;
         screenMiddle = 0f;
+    }
 
-        // Redundant checks given the camera is at (0,0). Saves (some) processing to not do this.
-        //screenRight = Camera.main.ViewportToWorldPoint(new Vector3(1,0,10)).x;
-        //screenTop = Camera.main.ViewportToWorldPoint(new Vector3(0,1,10)).y;
-        //screenMiddleX = Camera.main.ViewportToWorldPoint(new Vector3(.5f, 0, 10)).x;
+    void Update() {
+        //if (Input.GetKeyDown(KeyCode.Home) || Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown("escape"))
+        //{
+        //    Application.Quit();
+        //    return;
+        //}
+        if (Input.GetKeyDown(KeyCode.BackQuote)) {
+            devMode = !devMode;
+        }
+    }
+
+    /// <summary>
+    /// Runs when any new scene was loaded
+    /// </summary>
+    void OnLevelWasLoaded() {
+        Debug.Log("Level: \"" + Application.loadedLevelName + "\" was loaded.");
+    }
+
+    /// <summary>
+    /// Getter for DevMode value
+    /// </summary>
+    public static bool DevMode {
+        get { return devMode; }
+    }
+
+    //public static bool StateA {
+
+    //    get {
+    //        switch(State) }
+
+    //}
+
+    public enum State {
+        Playing,
+        Menu,
+        Paused
     }
     #endregion
 }

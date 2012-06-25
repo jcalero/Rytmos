@@ -7,16 +7,16 @@ public class GameHUD : MonoBehaviour
     #region Fields
     private int textHeight = 22;
     private int textWidth = 200;
-    private string devText = "[DevMode Enabled]     1 - God Mode,    2 - Spawn Enemy,    3 - Massive Swarm";
+    private string devText = "[DevMode Enabled]     1 - God Mode,    2 - Spawn Enemy,    3 - Massive Swarm,    4 - Stop Auto-spawn";
 
-    private DevScript d;
+   // private DevScript d;
     #endregion
 
     #region Functions
 
     void Awake()
     {
-        d = (DevScript)GameObject.Find("GameManager").GetComponent("DevScript");
+        //d = (DevScript)GameObject.Find("GameManager").GetComponent("DevScript");
     }
 
     void OnGUI()
@@ -24,7 +24,7 @@ public class GameHUD : MonoBehaviour
         GUI.Label(new Rect(10, 10, textWidth, textHeight), "Score: " + Player.score);
         GUI.Label(new Rect(10, 30, textWidth, textHeight), "Health: " + Player.health);
         GUI.Label(new Rect(10, 50, textWidth, textHeight), "Energy: " + Player.energy);
-        if (d.DevMode)
+        if (Game.DevMode)
         {
             GUI.Label(new Rect(10, Screen.height - 30, Screen.width, textHeight), devText);
         }
