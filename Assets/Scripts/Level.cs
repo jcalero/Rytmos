@@ -9,8 +9,8 @@ public class Level : MonoBehaviour {
     private static Level Instance;
     private Color purple = new Color(.5f, 0, .5f, 1f);
 
-    public GameObject particlesFeedback;
-    public GameObject linePrefab;
+    public GameObject[] particlesFeedback = new GameObject[6];
+    public GameObject[] linePrefab = new GameObject[6];
     private LinkedSpriteManager spriteManager;
     #endregion
 
@@ -44,63 +44,47 @@ public class Level : MonoBehaviour {
 
     private void SetUpParticlesFeedback() {
         // Instantiate and set colours for the feedback particles.
-        // TODO: This needs to be optimised, unecessary GetComponent calls, better to
-        // save the ParticleSystem reference at Awake() and reuse it here.
-        // Better yet, add them to the scene instead of instantiating?
-        particlesFeedback.GetComponent<ParticleSystem>().startColor = Color.green;
-        Instantiate(particlesFeedback, new Vector3(Game.screenLeft, Game.screenBottom, 0), particlesFeedback.transform.localRotation);
-        particlesFeedback.GetComponent<ParticleSystem>().startColor = Color.cyan;
-        Instantiate(particlesFeedback, new Vector3(Game.screenMiddle, Game.screenBottom, 0), particlesFeedback.transform.localRotation);
-        particlesFeedback.GetComponent<ParticleSystem>().startColor = Color.blue;
-        Instantiate(particlesFeedback, new Vector3(Game.screenRight, Game.screenBottom, 0), particlesFeedback.transform.localRotation);
-        particlesFeedback.GetComponent<ParticleSystem>().startColor = Color.yellow;
-        Instantiate(particlesFeedback, new Vector3(Game.screenLeft, Game.screenTop, 0), particlesFeedback.transform.localRotation);
-        particlesFeedback.GetComponent<ParticleSystem>().startColor = Color.red;
-        Instantiate(particlesFeedback, new Vector3(Game.screenMiddle, Game.screenTop, 0), particlesFeedback.transform.localRotation);
-        particlesFeedback.GetComponent<ParticleSystem>().startColor = new Color(.5f, 0, .5f, 1);
-        Instantiate(particlesFeedback, new Vector3(Game.screenRight, Game.screenTop, 0), particlesFeedback.transform.localRotation);
+        particlesFeedback[0].transform.localPosition = new Vector3(Game.screenLeft, Game.screenBottom, 0);
+		particlesFeedback[1].transform.localPosition = new Vector3(Game.screenMiddle, Game.screenBottom, 0);
+		particlesFeedback[2].transform.localPosition = new Vector3(Game.screenRight, Game.screenBottom, 0);
+		particlesFeedback[3].transform.localPosition = new Vector3(Game.screenLeft, Game.screenTop, 0);
+	    particlesFeedback[4].transform.localPosition = new Vector3(Game.screenMiddle, Game.screenTop, 0);
+	    particlesFeedback[5].transform.localPosition = new Vector3(Game.screenRight, Game.screenTop, 0);
     }
 
     private void SetUpBorderLineFeedback() {
-        //Universal line properties
-        linePrefab.GetComponent<LineRenderer>().SetVertexCount(2);
-        linePrefab.GetComponent<LineRenderer>().SetWidth(.2f, .2f);
-
+		/*
+		 * Here we will possibly have to reallocate the possible lines if we are dealing with multiple lines
+		 */
+		
         //First line - Green to cyan
-        linePrefab.GetComponent<LineRenderer>().SetPosition(0, new Vector3(Game.screenLeft, Game.screenBottom));
-        linePrefab.GetComponent<LineRenderer>().SetPosition(1, new Vector3(Game.screenMiddle, Game.screenBottom));
-        linePrefab.GetComponent<LineRenderer>().SetColors(Color.green, Color.cyan);
-        Instantiate(linePrefab, new Vector3(Game.screenLeft, Game.screenBottom, 0), linePrefab.transform.localRotation);
+        linePrefab[0].GetComponent<LineRenderer>().SetPosition(0, new Vector3(Game.screenLeft, Game.screenBottom));
+        linePrefab[0].GetComponent<LineRenderer>().SetPosition(1, new Vector3(Game.screenMiddle, Game.screenBottom));
 
         //Second line - Cyan to blue
-        linePrefab.GetComponent<LineRenderer>().SetPosition(0, new Vector3(Game.screenMiddle, Game.screenBottom));
-        linePrefab.GetComponent<LineRenderer>().SetPosition(1, new Vector3(Game.screenRight, Game.screenBottom));
-        linePrefab.GetComponent<LineRenderer>().SetColors(Color.cyan, Color.blue);
-        Instantiate(linePrefab, new Vector3(Game.screenMiddle, Game.screenBottom, 0), linePrefab.transform.localRotation);
+        linePrefab[1].GetComponent<LineRenderer>().SetPosition(0, new Vector3(Game.screenMiddle, Game.screenBottom));
+        linePrefab[1].GetComponent<LineRenderer>().SetPosition(1, new Vector3(Game.screenRight, Game.screenBottom));
 
         //Third line - blue to purple
-        linePrefab.GetComponent<LineRenderer>().SetPosition(0, new Vector3(Game.screenRight, Game.screenBottom));
-        linePrefab.GetComponent<LineRenderer>().SetPosition(1, new Vector3(Game.screenRight, Game.screenTop));
-        linePrefab.GetComponent<LineRenderer>().SetColors(Color.blue, purple);
-        Instantiate(linePrefab, new Vector3(Game.screenRight, Game.screenBottom, 0), linePrefab.transform.localRotation);
-
+        linePrefab[2].GetComponent<LineRenderer>().SetPosition(0, new Vector3(Game.screenRight, Game.screenBottom));
+        linePrefab[2].GetComponent<LineRenderer>().SetPosition(1, new Vector3(Game.screenRight, Game.screenTop));
+        
         //Fourth line - purple to red
-        linePrefab.GetComponent<LineRenderer>().SetPosition(0, new Vector3(Game.screenRight, Game.screenTop));
-        linePrefab.GetComponent<LineRenderer>().SetPosition(1, new Vector3(Game.screenMiddle, Game.screenTop));
-        linePrefab.GetComponent<LineRenderer>().SetColors(purple, Color.red);
-        Instantiate(linePrefab, new Vector3(Game.screenRight, Game.screenTop, 0), linePrefab.transform.localRotation);
+        linePrefab[3].GetComponent<LineRenderer>().SetPosition(0, new Vector3(Game.screenRight, Game.screenTop));
+        linePrefab[3].GetComponent<LineRenderer>().SetPosition(1, new Vector3(Game.screenMiddle, Game.screenTop));
+
 
         //Fifth line - red to yellow
-        linePrefab.GetComponent<LineRenderer>().SetPosition(0, new Vector3(Game.screenMiddle, Game.screenTop));
-        linePrefab.GetComponent<LineRenderer>().SetPosition(1, new Vector3(Game.screenLeft, Game.screenTop));
-        linePrefab.GetComponent<LineRenderer>().SetColors(Color.red, Color.yellow);
-        Instantiate(linePrefab, new Vector3(Game.screenMiddle, Game.screenTop, 0), linePrefab.transform.localRotation);
+        linePrefab[4].GetComponent<LineRenderer>().SetPosition(0, new Vector3(Game.screenMiddle, Game.screenTop));
+        linePrefab[4].GetComponent<LineRenderer>().SetPosition(1, new Vector3(Game.screenLeft, Game.screenTop));
 
         //Sixth line - yellow to green
-        linePrefab.GetComponent<LineRenderer>().SetPosition(0, new Vector3(Game.screenLeft, Game.screenTop));
-        linePrefab.GetComponent<LineRenderer>().SetPosition(1, new Vector3(Game.screenLeft, Game.screenBottom));
-        linePrefab.GetComponent<LineRenderer>().SetColors(Color.yellow, Color.green);
-        Instantiate(linePrefab, new Vector3(Game.screenLeft, Game.screenTop, 0), linePrefab.transform.localRotation);
+        linePrefab[5].GetComponent<LineRenderer>().SetPosition(0, new Vector3(Game.screenLeft, Game.screenTop));
+        linePrefab[5].GetComponent<LineRenderer>().SetPosition(1, new Vector3(Game.screenLeft, Game.screenBottom));
+
+        
+        
+        
     }
 
     /// <summary>

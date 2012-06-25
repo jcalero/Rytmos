@@ -36,7 +36,7 @@ public class Player : MonoBehaviour
             energy++;
             myTimer = 0;
         }
-        Level.singleColourSelect(Vector2.zero);
+
     }
 
     public void ResetStats() {
