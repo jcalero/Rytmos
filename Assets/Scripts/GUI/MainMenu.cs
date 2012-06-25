@@ -12,12 +12,16 @@ public class MainMenu : MonoBehaviour
     private Vector3 modeMenu;
     private Vector3 highScoresMenu;
     private Vector3 optionsMenu;
+
+    public bool skipMenu;
     #endregion
 
     #region Functions
 
     private void Awake()
     {
+        Debug.Log(Time.realtimeSinceStartup);
+        if (skipMenu) Application.LoadLevel("Game");
         panel = GameObject.Find("Panel (Draggable)").GetComponent<UIDraggablePanel>();
         quitMenu = new Vector3(0f, 0f, 0f);
         mainMenu = new Vector3(-650f, 0f, 0f);

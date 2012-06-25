@@ -23,14 +23,15 @@ public class Level : MonoBehaviour {
         // Creates and hides the touch feedback sprite
         touchPrefab = GameObject.Find("TouchSprite");
         spriteManager = GameObject.Find("SpriteManager").GetComponent<LinkedSpriteManager>();
-        touchSprite = spriteManager.AddSprite(touchPrefab, 0.25f, 0.25f, new Vector2(0f, 0.365f), new Vector2(0.63f, 0.63f), false);
-        touchSprite.hidden = true;
     }
 
     void Start() {
+        touchSprite = spriteManager.AddSprite(touchPrefab, 0.25f, 0.25f, new Vector2(0f, 0.365f), new Vector2(0.63f, 0.63f), false);
+        touchSprite.hidden = true;
+
         SetUpBorderLineFeedback();
         SetUpParticlesFeedback();
- }
+    }
 
     public static void ShowTouchSprite(Vector3 pos) {
         touchSprite.SetColor(singleColourSelect(Input.mousePosition) + new Color(0.3f, 0.3f, 0.3f));

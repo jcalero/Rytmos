@@ -11,6 +11,8 @@ public class Game : MonoBehaviour {
     public static float screenRight;
     public static float screenMiddle;
 
+    public bool isTemp;                         // Debug value for when the game manager is a temporary instance.
+
     private static bool devMode = false;        // True when devMode/debug Mode is enabled. Get's checked by DevScript.
     private static bool paused = false;
     #endregion
@@ -20,15 +22,16 @@ public class Game : MonoBehaviour {
         // Stops phone screen from shutting down on timeout
         Screen.sleepTimeout = (int)SleepTimeout.NeverSleep;
 
-        // Make sure the game manager stays throughout all scenes.
-        DontDestroyOnLoad(gameObject);
-
         // Define screen edges based on screen resolution (requires camera to be placed at XY origin, i.e. Vector3 (0, 0, _) )
         screenLeft = Camera.main.ViewportToWorldPoint(new Vector3(0, 0, 10)).x;
         screenBottom = Camera.main.ViewportToWorldPoint(new Vector3(0, 0, 10)).y;
         screenRight = -screenLeft;
         screenTop = -screenBottom;
         screenMiddle = 0f;
+    }
+
+    void Start() {
+        DontDestroyOnLoad(gameObject);
     }
 
     void Update() {
@@ -67,7 +70,7 @@ public class Game : MonoBehaviour {
     /// Runs when any new scene was loaded
     /// </summary>
     void OnLevelWasLoaded() {
-        Debug.Log(">> Level: \"" + Application.loadedLevelName + "\" was loaded.");
+        Debug.Log(">> Level: \"" + Application.loadedLevelName + "\" was loaded");
     }
 
     /// <summary>
