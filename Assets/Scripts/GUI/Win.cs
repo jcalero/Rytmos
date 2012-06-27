@@ -14,10 +14,17 @@ public class Win : MonoBehaviour {
     public UILabel scoreValueLabel;
     public UILabel healthValueLabel;
     public UILabel totalScoreLabel;
+    public UIInput nameInput;
+    public UIButton submitButton;
+    public UILabel submittedLabel;
+    public UILabel errorLabel;
+
+    private static Win instance;
     #endregion
 
     #region Functions
     void Start() {
+        instance = this;
         scoreValueLabel.text = Player.score.ToString();
         healthValueLabel.text = Player.health.ToString();
         totalScoreLabel.text = "[AADDAA]" + CalculatedScore;
@@ -47,6 +54,39 @@ public class Win : MonoBehaviour {
     /// </summary>
     void OnMainMenuClicked() {
         Application.LoadLevel("MainMenu");
+    }
+
+    /// <summary>
+    /// Button and input text handler for submitting highscore.
+    /// </summary>
+    void OnSubmit() {
+        errorLabel.text = "";                                   // Clear error text if any
+        string playerName = nameInput.text;                     // Set input box text to playerName
+        if (playerName.Length < 2) {                            // Error if input text is too short
+            nameInput.text = "";
+            errorLabel.text = "[F87431]Too short. Try again";
+            return;
+        }
+        HideSubmitBox();                                        // Hide the submit box and button
+        StartCoroutine(HSController.PostScores(playerName, CalculatedScore));       // Submit the highscore
+    }
+
+    void HideSubmitBox() {
+        submitButton.isEnabled = false;
+        submitButton.enabled = false;
+        submitButton.GetComponentInChildren<UISlicedSprite>().enabled = false;
+        submitButton.GetComponentInChildren<UILabel>().enabled = false;
+        nameInput.GetComponentInChildren<UISlicedSprite>().enabled = false;
+        nameInput.GetComponentsInChildren<UILabel>()[1].enabled = false;
+    }
+
+    public static void ShowSubmitBox() {
+        instance.submitButton.isEnabled = true;
+        instance.submitButton.enabled = true;
+        instance.submitButton.GetComponentInChildren<UISlicedSprite>().enabled = true;
+        instance.submitButton.GetComponentInChildren<UILabel>().enabled = true;
+        instance.nameInput.GetComponentInChildren<UISlicedSprite>().enabled = true;
+        instance.nameInput.GetComponentsInChildren<UILabel>()[1].enabled = true;
     }
     #endregion
 }

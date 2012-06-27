@@ -9,6 +9,7 @@ public class MainMenu : MonoBehaviour {
 
     #region Fields
     public UIDraggablePanel panel; // Inspector instance. Location: MainMenuManager.
+    public UIButton reloadButton;
 
     // Values for menu slider locations.
     private Vector3 quitMenu;
@@ -16,6 +17,9 @@ public class MainMenu : MonoBehaviour {
     private Vector3 modeMenu;
     private Vector3 highScoresMenu;
     private Vector3 optionsMenu;
+    private bool highscoresLoaded;
+
+    private static MainMenu instance;
 
     public bool skipMenu;           // Allows you to skip directly from the Main Menu to the Arcade game mode
     #endregion
@@ -25,6 +29,7 @@ public class MainMenu : MonoBehaviour {
     void Awake() {
         if (skipMenu) Application.LoadLevel("Game");
 
+        instance = this;
         quitMenu = new Vector3(0f, 0f, 0f);
         mainMenu = new Vector3(-650f, 0f, 0f);
         modeMenu = new Vector3(-650f * 2, 0f, 0f);
@@ -52,6 +57,12 @@ public class MainMenu : MonoBehaviour {
     /// Button handler for "Highscores" button
     /// </summary>
     void OnHighScoresClicked() {
+        // Fetch high-scores from server
+        if (!highscoresLoaded) {
+            StartCoroutine(HSController.GetScores());
+            highscoresLoaded = true;
+        }
+        DisableReloadButton();
         // Stop any current momentum to allow for Spring to begin.
         panel.currentMomentum = Vector3.zero;
         // Begin spring motion
@@ -100,6 +111,24 @@ public class MainMenu : MonoBehaviour {
     /// </summary>
     void OnArcadeModeClicked() {
         Application.LoadLevel("Game");
+    }
+
+    void OnReloadClicked() {
+        StartCoroutine(HSController.GetScores());
+    }
+
+    public static void DisableReloadButton() {
+        instance.reloadButton.isEnabled = false;
+        //instance.reloadButton.enabled = false;
+        //instance.reloadButton.GetComponentInChildren<UISlicedSprite>().enabled = false;
+        //instance.reloadButton.GetComponentInChildren<UILabel>().enabled = false;
+    }
+
+    public static void EnableReloadButton() {
+        instance.reloadButton.isEnabled = true;
+        //instance.reloadButton.enabled = true;
+        //instance.reloadButton.GetComponentInChildren<UISlicedSprite>().enabled = true;
+        //instance.reloadButton.GetComponentInChildren<UILabel>().enabled = true;
     }
     #endregion
 }
