@@ -1,28 +1,30 @@
 using UnityEngine;
 using System.Collections;
-
-public class MainMenu : MonoBehaviour
-{
+/// <summary>
+/// MainMenu.cs
+/// 
+/// Handles the display of the main menu. 
+/// </summary>
+public class MainMenu : MonoBehaviour {
 
     #region Fields
-    private UIDraggablePanel panel;
+    public UIDraggablePanel panel; // Inspector instance. Location: MainMenuManager.
 
+    // Values for menu slider locations.
     private Vector3 quitMenu;
     private Vector3 mainMenu;
     private Vector3 modeMenu;
     private Vector3 highScoresMenu;
     private Vector3 optionsMenu;
 
-    public bool skipMenu;
+    public bool skipMenu;           // Allows you to skip directly from the Main Menu to the Arcade game mode
     #endregion
 
     #region Functions
 
-    private void Awake()
-    {
-        Debug.Log(Time.realtimeSinceStartup);
+    void Awake() {
         if (skipMenu) Application.LoadLevel("Game");
-        panel = GameObject.Find("Panel (Draggable)").GetComponent<UIDraggablePanel>();
+
         quitMenu = new Vector3(0f, 0f, 0f);
         mainMenu = new Vector3(-650f, 0f, 0f);
         modeMenu = new Vector3(-650f * 2, 0f, 0f);
@@ -30,61 +32,74 @@ public class MainMenu : MonoBehaviour
         optionsMenu = new Vector3(-650f * 4, 0f, 0f);
     }
 
-    void Update()
-    {
+    void Update() {
+        // When the player presses "Escape" or "Back" on Android, returns to main menu screen.
         if (Input.GetKey(KeyCode.Escape))
             OnBackClicked();
     }
 
-    void OnPlayClicked()
-    {
+    /// <summary>
+    /// Button handler for "Play" button
+    /// </summary>
+    void OnPlayClicked() {
         // Stop any current momentum to allow for Spring to begin.
         panel.currentMomentum = Vector3.zero;
         // Begin spring motion
         SpringPanel.Begin(panel.gameObject, modeMenu, 13f);
     }
 
-    void OnHighScoresClicked()
-    {
+    /// <summary>
+    /// Button handler for "Highscores" button
+    /// </summary>
+    void OnHighScoresClicked() {
         // Stop any current momentum to allow for Spring to begin.
         panel.currentMomentum = Vector3.zero;
         // Begin spring motion
         SpringPanel.Begin(panel.gameObject, highScoresMenu, 13f);
     }
 
-    void OnOptionsClicked()
-    {
+    /// <summary>
+    /// Button handler for "Options" button
+    /// </summary>
+    void OnOptionsClicked() {
         // Stop any current momentum to allow for Spring to begin.
         panel.currentMomentum = Vector3.zero;
         // Begin spring motion
         SpringPanel.Begin(panel.gameObject, optionsMenu, 13f);
     }
 
-    void OnQuitClicked()
-    {
+    /// <summary>
+    /// Button handler for "Quit Game" button
+    /// </summary>
+    void OnQuitClicked() {
         // Stop any current momentum to allow for Spring to begin.
         panel.currentMomentum = new Vector3(0f, 0f, 0f);
         // Begin spring motion
         SpringPanel.Begin(panel.gameObject, quitMenu, 13f);
     }
 
-    void OnBackClicked()
-    {
+    /// <summary>
+    /// Button handler or "Back" button
+    /// </summary>
+    void OnBackClicked() {
         // Stop any current momentum to allow for Spring to begin.
         panel.currentMomentum = Vector3.zero;
         // Begin spring motion
         SpringPanel.Begin(panel.gameObject, mainMenu, 13f);
     }
 
-    void OnQuitConfirmedClicked()
-    {
+    /// <summary>
+    /// Button handler for "Yes, Quit Game" button
+    /// </summary>
+    void OnQuitConfirmedClicked() {
         Application.Quit();
     }
 
-    void OnArcadeModeClicked()
-    {
+    /// <summary>
+    /// Button handler for "Arcade" button
+    /// </summary>
+    void OnArcadeModeClicked() {
         Application.LoadLevel("Game");
     }
-
     #endregion
 }

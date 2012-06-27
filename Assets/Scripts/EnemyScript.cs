@@ -1,140 +1,134 @@
 using UnityEngine;
 using System.Collections;
-
-public class EnemyScript : MonoBehaviour
-{
+/// <summary>
+/// EnemyScript.cs
+/// 
+/// Main class for any enemy instance. Enemy types inherit from this class.
+/// </summary>
+public class EnemyScript : MonoBehaviour {
 
     #region Fields
-    public GameObject ExplosionPrefab;
+    public GameObject ExplosionPrefab;  // Inspector reference. Location: Enemy[Type]Prefab.
 
-    protected float minSpeed;
-    protected float maxSpeed;
-    protected int health;
+    // Protected values with access from its descendants
+    protected float minSpeed;           // The minimum random speed of the enemy
+    protected float maxSpeed;           // The maximum random speed of the enemy
+    protected int health;               // The health (nr of hits) of the enemy
     protected Color[] colors = new Color[] { Color.red, Color.green, Color.cyan, Color.blue, Color.yellow, Level.purple };
 
-    private Color mainColor;
-    private float currentSpeed;
-    private float x, y, z;
-    private int fixPos;
-    private GameObject player;
-
-    // Screen edges
-    private float left;
-    private float right;
-    private float top;
-    private float bottom;
-
+    private Color mainColor;            // The color of the enemy
+    private float currentSpeed;         // The speed of the enemy
+    private float x, y, z;              // Position coordinates of the enemy
+    private int fixPos;                 // Random value for moving the enemy off the screen
+    private GameObject player;          // The player
+    private int energyReturn = 2;       // The amount of energy to return to the player when an enemy dies.
     #endregion
 
     #region Functions
 
-    protected virtual void Awake()
-    {
-        left = Camera.main.ViewportToWorldPoint(new Vector3(0, 0, 10)).x;
-        right = -left;
-        bottom = Camera.main.ViewportToWorldPoint(new Vector3(0, 0, 10)).y;
-        top = -bottom;
+    protected virtual void Awake() {
         player = GameObject.Find("Player");
     }
 
-    // Use this for initialization
-    protected virtual void Start()
-    {
+    protected virtual void Start() {
         SetPositionAndSpeed();
         SetColor();
-        iTween.MoveTo(gameObject, iTween.Hash("position", player.transform.position, "speed", currentSpeed, "easetype", "linear", "looktarget", player.transform.position, "looktime", 0f));
+        // Start moving towards the player
+        iTween.MoveTo(gameObject, iTween.Hash("position", player.transform.position,
+                                              "speed", currentSpeed,
+                                              "easetype", "linear",
+                                              "looktarget", player.transform.position,
+                                              "looktime", 0f));
     }
 
-    void OnTriggerEnter(Collider otherObject)
-    {
-        if (otherObject.tag == "Player")
-        {
-            Player.health -= 10 * health;
+    // Triggered when the enemy collides with something
+    void OnTriggerEnter(Collider otherObject) {
+        // If the enemy collides with the player, reduce health of player, destroy the enemy.
+        if (otherObject.tag == "Player") {
+            Player.health -= 10 * health;       // Reduces the player health by 10 * the remaining enemy health
             Instantiate(ExplosionPrefab, gameObject.transform.position, gameObject.transform.rotation);
             Destroy(gameObject);
 
-            if (Player.health <= 0)
-            {
+            // If the player health is lower than 0, load the "Lose" level
+            if (Player.health <= 0) {
                 Player.health = 0;
                 Application.LoadLevel("Lose");
             }
         }
-        
+        // If the enemy collides with a pulse of the right color, reduce enemy health, increase score
         if (otherObject.name == "Pulse(Clone)" &&
-            otherObject.gameObject.GetComponent<LineRenderer>().material.color == gameObject.renderer.material.color)
-        {
-            
+            otherObject.gameObject.GetComponent<LineRenderer>().material.color == gameObject.renderer.material.color) {
+
             Player.score += 10;
-            Player.energy += 5;
-            if (Player.energy > 50)
-                Player.energy = 50;
             Instantiate(ExplosionPrefab, gameObject.transform.position, gameObject.transform.rotation);
             DamageEnemy();
-        
-            
+
+            // If the score is 100 or more, go to the "Win" level
             if (Player.score >= 100)
                 Application.LoadLevel("Win");
         }
-        
-        //Makes sure it only emits particles when the object is a pulse, not of the same colour
-        if(otherObject.name == "Pulse(Clone)" &&
-            otherObject.gameObject.GetComponent<LineRenderer>().material.color != gameObject.renderer.material.color) {
-                gameObject.GetComponent<ParticleSystem>().Emit(10);
-        }
-        
-    }
-    
-    //void OnTriggerExit(Collider otherObject) 
-    //{
-    //    if(otherObject.name == "SecondCollider" && 
-    //        otherObject.gameObject.transform.parent.GetComponent<LineRenderer>().material.color == gameObject.renderer.material.color) {
-        
-    //        Player.score += 10;
-    //        Player.energy += 5;
-    //        if (Player.energy > 50)
-    //            Player.energy = 50;
-    //        Instantiate(ExplosionPrefab, gameObject.transform.position, gameObject.transform.rotation);
-    //        DamageEnemy();
-            
-    //        if (Player.score >= 100)
-    //            Application.LoadLevel("Win");
-    //    }
-    //}
 
+        // If the enemy collides with a pulse of the wrong color, emit collision particles
+        if (otherObject.name == "Pulse(Clone)" &&
+            otherObject.gameObject.GetComponent<LineRenderer>().material.color != gameObject.renderer.material.color) {
+            gameObject.GetComponent<ParticleSystem>().Emit(10);
+        }
+
+    }
+
+    /// <summary>
+    /// Sets the initial position and speed of the enemy. Clamps the position to a location outside the screen.
+    /// </summary>
     protected void SetPositionAndSpeed() {
+        // Sets the speed of the enemy between minSpeed and max
         currentSpeed = Random.Range(minSpeed, maxSpeed);
 
-        x = Random.Range(left, right);
-        y = Random.Range(top, bottom);
-        z = transform.localRotation.z;
+        // Sets an initial position of the enemies to somewhere inside the game area
+        x = Random.Range(Game.screenLeft, Game.screenRight);
+        y = Random.Range(Game.screenTop, Game.screenBottom);
+        z = transform.localRotation.z;      // z is just the original z coordinate, probably 0.
 
-        fixPos = Random.Range(1, -1);
+        fixPos = Random.Range(1, -1);       // Sets fixPos to either 1 or 0 randomly
 
+        // If fixPos is 0 then move the enemy outside the screen along the x axis
+        // If fixPos is 1 move it along the y axis.
+        // This "clamps" the location of the enemy to somewhere just outside the screen
+        // but randomly between the four sides.
         if (fixPos == 0)
-            x = Mathf.Sign(x) * right;
+            x = Mathf.Sign(x) * Game.screenRight;
         if (fixPos == 1)
-            y = Mathf.Sign(y) * top;
+            y = Mathf.Sign(y) * Game.screenTop;
 
+        // Position the enemy on it's final position.
         transform.position = new Vector3(x, y, z);
-        }
+    }
 
-    protected Color MainColor
-    {
+    /// <summary>
+    /// Setter and Getter for the main colour of the enemy
+    /// </summary>
+    /// <value>The main colour of the enemy</value>
+    protected Color MainColor {
         set { mainColor = value; }
         get { return mainColor; }
     }
 
-    protected void SetColor()
-    {
+    /// <summary>
+    /// Sets the color of the material of the enemy to MainColor.
+    /// </summary>
+    protected void SetColor() {
         gameObject.renderer.material.color = MainColor;
         gameObject.GetComponent<ParticleSystem>().startColor = MainColor;
     }
 
-    private void DamageEnemy()
-    {
+    /// <summary>
+    /// Reduces the health of the enemy, destroys it if low on health and gives energy to the player
+    /// </summary>
+    private void DamageEnemy() {
         health--;
-        if (health < 1)
-        {
+        if (health < 1) {
+            Player.energy += energyReturn;            // Return a bit of energy when the enemy is killed
+            if (Player.energy > Player.maxEnergy)     // Make sure energy is never more than maxEnergy
+                Player.energy = Player.maxEnergy;
             Destroy(gameObject);
         }
     }

@@ -1,109 +1,115 @@
 using UnityEngine;
 using System.Collections;
-
+/// <summary>
+/// PulseSender.cs
+/// 
+/// Handles the pulse animation, color and events.
+/// </summary>
 public class PulseSender : MonoBehaviour {
-    private int segments = 50;
-    public float radius;
-    private LineRenderer line;
-    private SphereCollider sphereColl;
-    private bool held;
-    private Color finalColor = Color.clear;
-    public float amountToHit;
-    public float pulseHealth = 3;
-    private float pulseMax;
-    private float timer = 0;
-    
-    void Start () 
-    {
+    public float Radius;                            // The radius of he pulse
+    public float CurrentHealth;                     // Current health of the pulse
+    public float MaxHealth = 3;                     // Max health of the pulse
+
+    private int segments = 50;                      // The nr of segments the pulse has. Fewer means less "smooth".
+    private LineRenderer line;                      // The line renderer that creates the pulse
+    private SphereCollider sphereColl;              // The collider attatched to the pulse
+    private bool held;                              // Flag for whether the player is keeping his pulse "active"
+    private Color finalColor = Color.clear;         // The final color of the pulse once the player releases his finger
+    private float pulseMax;                         // Maximum range of the pulse
+    private float timer = 0;                        // Timer for energy cost when retracting the pulse
+    private float pulseBackEnergyRate = 0.1f;       // The rate at which the pulse retraction reduces energy. Lower = higher rate.
+
+    void Start() {
         held = true;
-        radius = .4f;
+        Radius = .4f;
         line = gameObject.GetComponent<LineRenderer>();
-        line.SetVertexCount (segments+1);
+        line.SetVertexCount(segments + 1);
         line.useWorldSpace = false;
         line.material.color = finalColor;
-        amountToHit = pulseHealth;
-        float lineWidth = amountToHit/10;
-        line.SetWidth(lineWidth, lineWidth); 
+        CurrentHealth = MaxHealth;
+        float lineWidth = CurrentHealth / 10;
+        line.SetWidth(lineWidth, lineWidth);
 
         sphereColl = gameObject.GetComponent<SphereCollider>();
-        
-        //Find distance for the radius
+
+        //Find distance for the maximum radius
         pulseMax = new Vector2(Game.screenLeft, Game.screenTop).magnitude;
-        
+
     }
-    
-    void Update () 
-    {
+
+    void Update() {
         //If holding the second finger, increase timer and decrease energy
-        if(Input.GetMouseButton(1) && held) {
+        if (Input.GetMouseButton(1) && held) {
             timer += Time.deltaTime;
-            if (timer > 0.2f)
-            {
+            if (timer > pulseBackEnergyRate) {
                 if (Player.energy > 1)
-                    Player.energy -= 2;
+                    Player.energy--;
                 else {
                     held = false;
                     finalColor = Level.singleColourSelect(Input.mousePosition);
                 }
                 timer = 0;
             }
-            radius = radius - 3 * Time.deltaTime;
-        } else 
-            radius = radius + 3 * Time.deltaTime;
+            Radius = Radius - 3 * Time.deltaTime;
+        } else
+            Radius = Radius + 3 * Time.deltaTime;
 
         //If you have released the button, and the pulse is the current one, set it to be not held and set the Colour
-        if(Input.GetMouseButtonUp(0) && held) {
+        if (Input.GetMouseButtonUp(0) && held) {
             held = false;
             finalColor = Level.singleColourSelect(Input.mousePosition);
         }
-        
+
         //What the colour should be - this is where the transition has to take place. 
         Color chosen;
-        if(held) 
+        if (held)
             chosen = Level.singleColourSelect(Input.mousePosition);
-        else 
-            chosen = finalColor;	
-        
-        
+        else
+            chosen = finalColor;
+
+
         //Create the circle, and set the line material
         RedrawPoints(chosen);
         line.material.color = chosen;
-        sphereColl.radius = radius + 0.1f;
-        
+        sphereColl.radius = Radius + 0.1f;
+
         //If too big, destroy itself
-        if(radius > pulseMax || (radius < .3f) || amountToHit == 0)
+        if (Radius > pulseMax || (Radius < .3f) || CurrentHealth == 0)
             Destroy(gameObject);
-        
+
     }
-    
-    void OnTriggerEnter (Collider otherObject) 
-    {
-        amountToHit--;
-        if(amountToHit==0) {
+
+    // Reduce pulse health if it collides with another object
+    void OnTriggerEnter(Collider otherObject) {
+        CurrentHealth--;
+        if (CurrentHealth == 0) {
             Destroy(gameObject);
         }
-        
+
     }
-    
-    void RedrawPoints (Color c) 
-    {
+
+    /// <summary>
+    ///  Recalculates point positions
+    /// </summary>
+    /// <param name="c">Color of the points/line</param>
+    void RedrawPoints(Color c) {
         float x;
         float y;
         float z = 0f;
         float angle = 0f;
-        
-        for(int i=0; i<(segments+1); i++) {
-            x = Mathf.Sin (Mathf.Deg2Rad * angle);
-            y = Mathf.Cos (Mathf.Deg2Rad * angle);			
-            line.SetPosition (i, new Vector3(x,y,z) * radius);
-            line.SetColors(new Color(c.r, c.g, c.b, ((amountToHit/pulseHealth)*.5f)+.5f)   ,new Color(c.r, c.g, c.b, ((amountToHit/pulseHealth)*.5f)+.5f));
-            line.material.SetColor("_Emission", new Color(c.r, c.g, c.b, c.a/3));
-            float lineWidth = amountToHit/10;
-            if(lineWidth < .2f) 
-                lineWidth += .05f;	
-            
+
+        for (int i = 0; i < (segments + 1); i++) {
+            x = Mathf.Sin(Mathf.Deg2Rad * angle);
+            y = Mathf.Cos(Mathf.Deg2Rad * angle);
+            line.SetPosition(i, new Vector3(x, y, z) * Radius);
+            line.SetColors(new Color(c.r, c.g, c.b, ((CurrentHealth / MaxHealth) * .5f) + .5f), new Color(c.r, c.g, c.b, ((CurrentHealth / MaxHealth) * .5f) + .5f));
+            line.material.SetColor("_Emission", new Color(c.r, c.g, c.b, c.a / 3));
+            float lineWidth = CurrentHealth / 10;
+            if (lineWidth < .2f)
+                lineWidth += .05f;
+
             line.SetWidth(lineWidth, lineWidth);
             angle += (360f / segments);
         }
-    }   
+    }
 }

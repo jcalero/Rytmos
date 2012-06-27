@@ -1,35 +1,34 @@
 using UnityEngine;
 using System.Collections;
-
-public class Lose : MonoBehaviour
-{
+/// <summary>
+/// Lose.cs
+/// 2012-06-27
+/// 
+/// Lose menu screen manager. Handles the display of score and text on the "Lose" scene.
+/// </summary>
+public class Lose : MonoBehaviour {
 
     #region Fields
-    UILabel scoreLabel;
-    UILabel healthLabel;
-    UILabel totalScoreLabel;
+    // These public game objects are set in the Editor/Inspector. 
+    // Location: UI Root (Lose Menu)
+    public UILabel scoreValueLabel;
+    public UILabel healthValueLabel;
+    public UILabel totalScoreLabel;
     #endregion
 
     #region Functions
-
-    void Awake()
-    {
-        scoreLabel = GameObject.Find("LevelScoreValue").GetComponent<UILabel>();
-        healthLabel = GameObject.Find("HealthValue").GetComponent<UILabel>();
-        totalScoreLabel = GameObject.Find("TotalScoreValue").GetComponent<UILabel>();
-    }
-
-    void Start()
-    {
-        scoreLabel.text = Player.score.ToString();
-        healthLabel.text = Player.health.ToString();
+    void Start() {
+        scoreValueLabel.text = Player.score.ToString();
+        healthValueLabel.text = Player.health.ToString();
         totalScoreLabel.text = "[AADDAA]" + CalculatedHealth;
     }
 
-    int CalculatedHealth
-    {
-        get
-        {
+    /// <summary>
+    /// Returns the final calculated score after the end of the game.
+    /// </summary>
+    /// <value>Calculated score (Health * Score * 0.1)</value>
+    int CalculatedHealth {
+        get {
             if (Player.health < 1)
                 return Player.score;
             else
@@ -37,15 +36,18 @@ public class Lose : MonoBehaviour
         }
     }
 
-    void OnPlayAgainClicked()
-    {
+    /// <summary>
+    /// Button handler for the "Try Again!" button
+    /// </summary>
+    void OnPlayAgainClicked() {
         Application.LoadLevel("Game");
     }
 
-    void OnMainMenuClicked()
-    {
+    /// <summary>
+    /// Button handler for the "Back to the Menu" button
+    /// </summary>
+    void OnMainMenuClicked() {
         Application.LoadLevel("MainMenu");
     }
-
     #endregion
 }

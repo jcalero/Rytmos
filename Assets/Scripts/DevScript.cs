@@ -1,16 +1,19 @@
 using UnityEngine;
 using System.Collections;
-
-public class DevScript : MonoBehaviour
-{
-
+/// <summary>
+/// DevScript.cs
+/// 
+/// Handles the dev/debug/cheat modes.
+/// </summary>
+public class DevScript : MonoBehaviour {
     #region Fields
+
     // TODO: Refactor this to something cleaner. Maybe an enum + case switch.
-    private bool devMode1 = false;
-    private bool devMode3 = false;
-    private bool devMode4 = false;
-    private float lastSpawnRate;
-    private float originalSpawnRate;
+    private bool devMode1 = false;          // Flag: God mode
+    private bool devMode3 = false;          // Flag: Massive Spawn
+    private bool devMode4 = false;          // Flag: No spawn
+    private float lastSpawnRate;            // Last spawn rate before it was last modified
+    private float originalSpawnRate;        // Original (default) spawn rate before any modifications
 
     private EnemySpawnScript enemySpawner;
     #endregion
