@@ -13,6 +13,7 @@ public class Player : MonoBehaviour
     public static int maxHealth = 100;          // Maximum health of the player
     public static int startEnergy = 50;         // Starting energy of the player
     public static int maxEnergy = 50;           // Maximum energy of the player
+    public static bool GodMode = false;         // God mode
     
     public static int energy;                   // Current energy of the player
     public static int health;                   // Current health of the player
