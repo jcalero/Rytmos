@@ -144,8 +144,13 @@ public class FileReader {
 		
 		int k = 0;
 		for(int i = 0; i < inputData.Length; i+=4) {
+			if(i+4 > inputData.Length) {
+				Debug.Log(i);
+				Debug.Log(inputData.Length);
+				break;
+			}
 			float left = System.BitConverter.ToInt16(inputData,i);
-			float right = System.BitConverter.ToInt16(inputData,i+2);
+			float right = right = System.BitConverter.ToInt16(inputData,i+2);
 			outData[k] = left + right;
 			k++;
 		}
@@ -162,7 +167,7 @@ public class FileReader {
 	/// <param name='obj'>
 	/// The WWW object used to yield.
 	/// </param>
-	private IEnumerator yieldRoutine(WWW obj) {
+	public static IEnumerator yieldRoutine(WWW obj) {
 		yield return obj;
 	}
 	
