@@ -40,7 +40,7 @@ public class EnemyEgg : EnemyScript {
             left = 521;
             bottom = 757;
             width = 263;
-            height = 180;
+            height = 165;
         }
 
         else if (MainColor == Level.purple) {
