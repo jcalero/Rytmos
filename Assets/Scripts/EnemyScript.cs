@@ -14,7 +14,7 @@ public class EnemyScript : MonoBehaviour {
     protected float minSpeed;           // The minimum random speed of the enemy
     protected float maxSpeed;           // The maximum random speed of the enemy
     protected int health;               // The health (nr of hits) of the enemy
-    protected Color[] colors = new Color[] { Color.red, Color.green, Color.cyan, Color.blue, Color.yellow, Level.purple };
+    protected Color[] colors;
 
     private Color mainColor;            // The color of the enemy
     private float currentSpeed;         // The speed of the enemy
@@ -27,6 +27,10 @@ public class EnemyScript : MonoBehaviour {
     #region Functions
 
     protected virtual void Awake() {
+		if(Level.sixColors) 
+			colors = new Color[] { Color.red, Color.green, Color.cyan, Color.blue, Color.yellow, Level.purple };	
+		else 
+			colors = new Color[] { Color.red, Color.cyan, Color.blue, Color.yellow };
         player = GameObject.Find("Player");
     }
 
