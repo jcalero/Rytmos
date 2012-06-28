@@ -61,8 +61,8 @@ public class MainMenu : MonoBehaviour {
         if (!highscoresLoaded) {
             StartCoroutine(HSController.GetScores());
             highscoresLoaded = true;
+            DisableReloadButton();
         }
-        DisableReloadButton();
         // Stop any current momentum to allow for Spring to begin.
         panel.currentMomentum = Vector3.zero;
         // Begin spring motion
@@ -114,6 +114,7 @@ public class MainMenu : MonoBehaviour {
     }
 
     void OnReloadClicked() {
+        DisableReloadButton();
         StartCoroutine(HSController.GetScores());
     }
 
