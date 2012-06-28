@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Collections;
 using Exocortex.DSP;
-using SoundTouch;
 
 public class SoundProcessor
 {
