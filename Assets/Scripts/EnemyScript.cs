@@ -62,9 +62,10 @@ public class EnemyScript : MonoBehaviour {
                 CreateExplosion();
                 DamageEnemy();
             }
-        } else {
-            gameObject.GetComponent<ParticleSystem>().Emit(10);
-        }
+         	else {
+            	gameObject.GetComponent<ParticleSystem>().Emit(10);
+        	}
+		}
     }
 
     /// <summary>
