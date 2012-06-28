@@ -1,5 +1,7 @@
 using UnityEngine;
 using System.Collections;
+using System;
+using System.Globalization;
 /// <summary>
 /// Level.cs
 /// 
@@ -20,6 +22,16 @@ public class Level : MonoBehaviour {
     public GameObject[] linePrefab = new GameObject[6];             // The six feedback screen lines. Inspector reference. Location: LevelManager
     public GameObject spriteManager;                                // Reference to the SpriteManager. Inspector reference. Location: LevelManager
     public GameObject touchPrefab;                                  // The touch sprite. Inspector reference. Location: LevelManager
+    public UILabel timerLabel;                                      // The timer label. Inspector reference. Location: LevelManager
+    public UILabel timeUpLabel;
+
+    public float levelTimer;                            // Timer showing the time left on this level
+    private float startTimer = 30;                      // Time to play on this level
+    private string timerString;                         // String to parse the time to
+    private string levelSeconds;                        // Seconds left as string
+    private string levelHundredths;                     // Hundredths seconds left as string
+    private bool displayTimer = true;                   // Used for the blinking of the timer
+    private bool levelFinished;                         // Flag for whether the timer has expired or not
     #endregion
 
     #region Functions
@@ -30,6 +42,8 @@ public class Level : MonoBehaviour {
     }
 
     void Start() {
+        levelTimer = startTimer;
+
         // Create and hide the touch sprite
         touchSprite = spriteManagerScript.AddSprite(touchPrefab, 0.25f, 0.25f, new Vector2(0f, 0.365f), new Vector2(0.63f, 0.63f), false);
         touchSprite.hidden = true;
@@ -39,6 +53,71 @@ public class Level : MonoBehaviour {
         SetUpParticlesFeedback();
     }
 
+    void Update() {
+        // Decrease the level timer and grab the seconds and hundredths
+        if (levelTimer > 0) {
+            levelTimer -= Time.deltaTime;
+            timerString = String.Format(levelTimer.ToString("00.00", CultureInfo.InvariantCulture));
+            levelSeconds = timerString.Split('.')[0];
+            levelHundredths = timerString.Split('.')[1];
+        }
+
+        // Update the timer label
+        if (displayTimer) {
+            timerLabel.text = levelSeconds + ":" + levelHundredths;
+
+            if (levelTimer < 10) {
+                timerLabel.text = "[FF2222]" + levelSeconds + ":" + levelHundredths;
+            }
+        } else {
+            timerLabel.text = "";
+        }
+
+        // If the player survives for 30 seconds, go to the "Win" level
+        if (levelTimer < 0 && !levelFinished) {
+            //Application.LoadLevel("Win");
+            levelFinished = true;
+            timeUpLabel.text = "[FF2222]Time's Up!";
+            Time.timeScale = 0f;
+            StartCoroutine(TimerEnd());
+        }
+
+        // If the score is 100 or more, go to the "Win" level
+        //if (Player.score >= 100)
+        //    Application.LoadLevel("Win");
+    }
+
+    IEnumerator TimerEnd() {
+        yield return StartCoroutine(TimerBlink());
+        Time.timeScale = 1f;
+        Application.LoadLevel("Win");
+    }
+    
+    IEnumerator TimerBlink() {
+        if (displayTimer) timerLabel.text = "[FF2222]00:00";
+        float blinkTime = Time.realtimeSinceStartup + 3f;
+        while (Time.realtimeSinceStartup < blinkTime) {
+            if (blinkTime - Time.realtimeSinceStartup > 2.5f) {
+                displayTimer = false;
+                yield return 0;
+            } else if (blinkTime - Time.realtimeSinceStartup > 2.0f) {
+                displayTimer = true;
+                yield return 0;
+            } else if (blinkTime - Time.realtimeSinceStartup > 1.5f) {
+                displayTimer = false;
+                yield return 0;
+            } else if (blinkTime - Time.realtimeSinceStartup > 1.0f) {
+                displayTimer = true;
+                yield return 0;
+            } else if (blinkTime - Time.realtimeSinceStartup > 0.5f) {
+                displayTimer = false;
+                yield return 0;
+            } else if (blinkTime - Time.realtimeSinceStartup > 0.01f) {
+                displayTimer = true;
+                yield return 0;
+            }
+        }
+    }
     /// <summary>
     /// Shows the touch sprite at the "pos" location with the respective colour
     /// on that position

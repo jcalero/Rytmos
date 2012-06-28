@@ -79,13 +79,22 @@ public class PulseSender : MonoBehaviour {
 
     }
 
+    void OnTriggerExit(Collider otherObject) {
+        if (otherObject.GetType() == typeof(BoxCollider)) {
+            CurrentHealth--;
+            if (CurrentHealth == 0)
+                Destroy(gameObject);
+        }
+    }
+
     // Reduce pulse health if it collides with another object
     void OnTriggerEnter(Collider otherObject) {
-        CurrentHealth--;
-        if (CurrentHealth == 0) {
-            Destroy(gameObject);
+        if (otherObject.GetType() == typeof(SphereCollider)) {
+            CurrentHealth--;
+            if (CurrentHealth == 0) {
+                Destroy(gameObject);
+            }
         }
-
     }
 
     /// <summary>

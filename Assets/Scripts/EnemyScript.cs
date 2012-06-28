@@ -34,11 +34,10 @@ public class EnemyScript : MonoBehaviour {
         SetPositionAndSpeed();
         SetColor();
         // Start moving towards the player
+        // TODO: Fix the auto-heading of sprites.
         iTween.MoveTo(gameObject, iTween.Hash("position", player.transform.position,
                                               "speed", currentSpeed,
-                                              "easetype", "linear",
-                                              "looktarget", player.transform.position,
-                                              "looktime", 0f));
+                                              "easetype", "linear"));
     }
 
     // Triggered when the enemy collides with something
@@ -46,7 +45,7 @@ public class EnemyScript : MonoBehaviour {
         // If the enemy collides with the player, reduce health of player, destroy the enemy.
         if (otherObject.tag == "Player") {
             Player.health -= 10 * health;       // Reduces the player health by 10 * the remaining enemy health
-            Instantiate(ExplosionPrefab, gameObject.transform.position, gameObject.transform.rotation);
+            CreateExplosion();
             Destroy(gameObject);
 
             // If the player health is lower than 0, load the "Lose" level
@@ -56,24 +55,16 @@ public class EnemyScript : MonoBehaviour {
             }
         }
         // If the enemy collides with a pulse of the right color, reduce enemy health, increase score
-        if (otherObject.name == "Pulse(Clone)" &&
-            otherObject.gameObject.GetComponent<LineRenderer>().material.color == gameObject.renderer.material.color) {
+        if (otherObject.name == "Pulse(Clone)") {
+            if (otherObject.gameObject.GetComponent<LineRenderer>().material.color == gameObject.renderer.material.color) {
 
-            Player.score += 10;
-            Instantiate(ExplosionPrefab, gameObject.transform.position, gameObject.transform.rotation);
-            DamageEnemy();
-
-            // If the score is 100 or more, go to the "Win" level
-            if (Player.score >= 100)
-                Application.LoadLevel("Win");
-        }
-
-        // If the enemy collides with a pulse of the wrong color, emit collision particles
-        if (otherObject.name == "Pulse(Clone)" &&
-            otherObject.gameObject.GetComponent<LineRenderer>().material.color != gameObject.renderer.material.color) {
+                Player.score += 10;
+                CreateExplosion();
+                DamageEnemy();
+            }
+        } else {
             gameObject.GetComponent<ParticleSystem>().Emit(10);
         }
-
     }
 
     /// <summary>
@@ -101,6 +92,9 @@ public class EnemyScript : MonoBehaviour {
 
         // Position the enemy on it's final position.
         transform.position = new Vector3(x, y, z);
+
+        float angle = Mathf.Atan2(gameObject.transform.position.y, gameObject.transform.position.x);
+        gameObject.GetComponentInChildren<Transform>().localEulerAngles = new Vector3(0f, 0f, Mathf.Rad2Deg * angle);
     }
 
     /// <summary>
@@ -123,7 +117,7 @@ public class EnemyScript : MonoBehaviour {
     /// <summary>
     /// Reduces the health of the enemy, destroys it if low on health and gives energy to the player
     /// </summary>
-    private void DamageEnemy() {
+    public void DamageEnemy() {
         health--;
         if (health < 1) {
             Player.energy += energyReturn;            // Return a bit of energy when the enemy is killed
@@ -131,6 +125,10 @@ public class EnemyScript : MonoBehaviour {
                 Player.energy = Player.maxEnergy;
             Destroy(gameObject);
         }
+    }
+
+    public void CreateExplosion() {
+        Instantiate(ExplosionPrefab, gameObject.transform.position, gameObject.transform.rotation);
     }
 
     #endregion
