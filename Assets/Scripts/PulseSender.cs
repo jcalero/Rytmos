@@ -8,7 +8,7 @@ using System.Collections;
 public class PulseSender : MonoBehaviour {
     public float Radius;                            // The radius of he pulse
     public float CurrentHealth;                     // Current health of the pulse
-    public float MaxHealth = 3;                     // Max health of the pulse
+    public float MaxHealth = 15;                     // Max health of the pulse
 
     private int segments = 50;                      // The nr of segments the pulse has. Fewer means less "smooth".
     private LineRenderer line;                      // The line renderer that creates the pulse
@@ -118,7 +118,7 @@ public class PulseSender : MonoBehaviour {
                 lineWidth += .05f;
 
             line.SetWidth(lineWidth, lineWidth);
-            angle += (360f / segments);
+            angle += (370f / segments - (370f/segments*0.01f));
         }
     }
 }

@@ -36,6 +36,7 @@ public class Game : MonoBehaviour {
 
     void Start() {
         DontDestroyOnLoad(gameObject);      // Makes sure this object is persistent between all scenes of the game
+		//AudioManager.initMusic(@"C:/Users/Samuel/Desktop/trudat.wav");
     }
 
     void Update() {
