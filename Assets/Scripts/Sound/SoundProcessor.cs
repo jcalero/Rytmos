@@ -334,7 +334,6 @@ public class SoundProcessor
 		
 		float[] fft;
 		float delta;
-		int counter;
 		
 		// FIRST PASS : "Binnify", Calculate Mean, Variance, Triggers
 		for (int j = 0; j < samples; j++) {
