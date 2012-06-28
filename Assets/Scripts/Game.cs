@@ -19,6 +19,7 @@ public class Game : MonoBehaviour {
 
     private static bool devMode = false;        // True when devMode/debug Mode is enabled. Gets checked by DevScript.
     private static bool paused = false;         // True when the game is paused
+    private static bool cheated = false;        // True when devMode was on at any point of the game
     #endregion
 
     #region Functions
@@ -51,7 +52,7 @@ public class Game : MonoBehaviour {
         }
         // Key input position for DevMode, only works in the "Game" level
         if (Input.GetKeyDown(KeyCode.BackQuote) && Application.loadedLevelName == "Game") {
-            devMode = !devMode;
+            DevMode = !DevMode;
         }
     }
 
@@ -86,6 +87,10 @@ public class Game : MonoBehaviour {
     /// </summary>
     public static bool DevMode {
         get { return devMode; }
+        private set {
+            devMode = value;
+            cheated = true;
+        }
     }
 
     /// <summary>
@@ -95,6 +100,11 @@ public class Game : MonoBehaviour {
     public static bool Paused {
         get { return paused; }
         set { paused = value; }
+    }
+
+    public static bool Cheated {
+        get { return cheated; }
+        set { cheated = value; }
     }
 
     // TODO: Make a state engine for game states. For use when checking Pause state and

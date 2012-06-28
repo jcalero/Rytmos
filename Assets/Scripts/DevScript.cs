@@ -16,6 +16,7 @@ public class DevScript : MonoBehaviour {
     private float originalSpawnRate;        // Original (default) spawn rate before any modifications
 
     private EnemySpawnScript enemySpawner;
+    private bool wasDevMode;
     #endregion
 
     #region Functions
@@ -25,6 +26,7 @@ public class DevScript : MonoBehaviour {
 
     void Update() {
         if (Game.DevMode && Application.loadedLevelName == "Game") {
+            wasDevMode = true;
             // Instantiate the enemySpawner script if not already instantiated (e.g. the level
             // this script was awaken in was a menu where there is no enemy spawner)
             if (enemySpawner == null) {
@@ -81,7 +83,22 @@ public class DevScript : MonoBehaviour {
                 devMode4 = false;
                 Debug.Log("Auto-Spawn Re-enabled with spawnrate: " + enemySpawner.SpawnRate);
             }
+        } else if (wasDevMode && Application.loadedLevelName == "Game") {
+            DisableAll();
+            wasDevMode = false;
         }
+    }
+
+    void DisableAll() {
+        enemySpawner.SpawnRate = originalSpawnRate;
+        enemySpawner.RestartSpawner();
+        Player.health = Player.startHealth;
+        Player.maxHealth = Player.startHealth;
+        Player.energy = Player.startEnergy;
+        Player.maxEnergy = Player.startEnergy;
+        devMode1 = false;
+        devMode3 = false;
+        devMode4 = false;
     }
 
     #endregion

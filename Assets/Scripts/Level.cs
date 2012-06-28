@@ -26,7 +26,7 @@ public class Level : MonoBehaviour {
     public UILabel timeUpLabel;
 
     public float levelTimer;                            // Timer showing the time left on this level
-    private float startTimer = 30;                      // Time to play on this level
+    private float startTimer = 30;                      // Time to play on this level in seconds
     private string timerString;                         // String to parse the time to
     private string levelSeconds;                        // Seconds left as string
     private string levelHundredths;                     // Hundredths seconds left as string
@@ -42,6 +42,8 @@ public class Level : MonoBehaviour {
     }
 
     void Start() {
+        Game.Cheated = false;       // Reset cheated value
+
         levelTimer = startTimer;
 
         // Create and hide the touch sprite
@@ -55,30 +57,34 @@ public class Level : MonoBehaviour {
 
     void Update() {
         // Decrease the level timer and grab the seconds and hundredths
-        if (levelTimer > 0) {
+        if (levelTimer > 0 && !levelFinished) {
             levelTimer -= Time.deltaTime;
             timerString = String.Format(levelTimer.ToString("00.00", CultureInfo.InvariantCulture));
             levelSeconds = timerString.Split('.')[0];
             levelHundredths = timerString.Split('.')[1];
         }
 
-        // Update the timer label
-        if (displayTimer) {
-            timerLabel.text = levelSeconds + ":" + levelHundredths;
-
-            if (levelTimer < 10) {
-                timerLabel.text = "[FF2222]" + levelSeconds + ":" + levelHundredths;
-            }
-        } else {
+        if (Game.Paused) {
             timerLabel.text = "";
+        } else {
+            // Update the timer label
+            if (displayTimer) {
+                if (levelTimer < 10) {
+                    timerLabel.text = "[FF2222]" + levelSeconds + ":" + levelHundredths;
+                } else {
+                    timerLabel.text = levelSeconds + ":" + levelHundredths;
+                }
+            } else {
+                timerLabel.text = "";
+            }
         }
-
         // If the player survives for 30 seconds, go to the "Win" level
         if (levelTimer < 0 && !levelFinished) {
-            //Application.LoadLevel("Win");
             levelFinished = true;
             timeUpLabel.text = "[FF2222]Time's Up!";
-            Time.timeScale = 0f;
+            levelSeconds = "00";        // Reset the timer for "in-between-updates" values that might slip in
+            levelHundredths = "00";     // Reset the timer for "in-between-updates" values that might slip in
+            Time.timeScale = 0f;        // Pause the enemies
             StartCoroutine(TimerEnd());
         }
 
@@ -94,7 +100,6 @@ public class Level : MonoBehaviour {
     }
     
     IEnumerator TimerBlink() {
-        if (displayTimer) timerLabel.text = "[FF2222]00:00";
         float blinkTime = Time.realtimeSinceStartup + 3f;
         while (Time.realtimeSinceStartup < blinkTime) {
             if (blinkTime - Time.realtimeSinceStartup > 2.5f) {

@@ -20,8 +20,8 @@ public class GameHUD : MonoBehaviour {
     // The Game HUD camera coordinates
     private float screenLeft;
     private float screenTop;
-    private float screenRight;
-    private float screenBottom;
+    //private float screenRight;
+    //private float screenBottom;
 
     // Label distance values
     private float labelSpacing = 0.1f;
@@ -35,9 +35,9 @@ public class GameHUD : MonoBehaviour {
     void Awake() {
         // Assign HUD camera coordinates
         screenLeft = NGUITools.FindCameraForLayer(LayerMask.NameToLayer("2D Menu")).ViewportToWorldPoint(new Vector3(0, 0, 0 )).x;
-        screenBottom = NGUITools.FindCameraForLayer(LayerMask.NameToLayer("2D Menu")).ViewportToWorldPoint(new Vector3(0, 0, 0)).y;
-        screenRight = -screenLeft;
-        screenTop = -screenBottom;
+        screenTop = NGUITools.FindCameraForLayer(LayerMask.NameToLayer("2D Menu")).ViewportToWorldPoint(new Vector3(0, 1, 0)).y;
+        //screenRight = -screenLeft;
+        //screenTop = -screenBottom;
     }
 
     void Start() {

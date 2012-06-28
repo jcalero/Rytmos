@@ -57,15 +57,13 @@ public class EnemyScript : MonoBehaviour {
         // If the enemy collides with a pulse of the right color, reduce enemy health, increase score
         if (otherObject.name == "Pulse(Clone)") {
             if (otherObject.gameObject.GetComponent<LineRenderer>().material.color == gameObject.renderer.material.color) {
-
                 Player.score += 10;
                 CreateExplosion();
                 DamageEnemy();
+            } else {
+                gameObject.GetComponent<ParticleSystem>().Emit(10);
             }
-         	else {
-            	gameObject.GetComponent<ParticleSystem>().Emit(10);
-        	}
-		}
+        }
     }
 
     /// <summary>
