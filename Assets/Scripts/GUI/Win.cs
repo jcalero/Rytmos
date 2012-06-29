@@ -28,8 +28,7 @@ public class Win : MonoBehaviour {
         scoreValueLabel.text = Player.score.ToString();
         healthValueLabel.text = Player.health.ToString();
         totalScoreLabel.text = "[AADDAA]" + CalculatedScore;
-        Debug.Log(Game.Cheated);
-        if (Game.Cheated) {
+        if (Game.Cheated || Player.maxHealth > 100) {
             HideSubmitBox();
             errorLabel.transform.localPosition = new Vector3(errorLabel.transform.localPosition.x, errorLabel.transform.localPosition.y + 30, errorLabel.transform.localPosition.z);
             errorLabel.text = "[FF2222]You cheater!";

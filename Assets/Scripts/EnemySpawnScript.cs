@@ -13,10 +13,10 @@ public class EnemySpawnScript : MonoBehaviour {
     public float SpawnRate;                 // The time between spawns
     
     private int RandomSeed;                 // The enemy type to spawn
-	
-	private GameObject cam;					// Camera gameobject to play audio
-	private int[] counters;					// "Pointers" for the triggers of each channel
-	private int pastSample;					// Used to sync framerate with music playback-rate
+    
+    private GameObject cam;					// Camera gameobject to play audio
+    private int[] counters;					// "Pointers" for the triggers of each channel
+    private int pastSample;					// Used to sync framerate with music playback-rate
 
     #endregion
 
@@ -24,39 +24,39 @@ public class EnemySpawnScript : MonoBehaviour {
 
     void Start() {
         InvokeRepeating("SpawnEnemy", FirstSpawn, SpawnRate); // Start repeatedly spawning enemies
-		//init ();
-		//playMusic();
+        //init ();
+        //playMusic();
     }
-	
-	void Update() {
-		if(AudioManager.triggers != null && cam != null && cam.audio.isPlaying) triggerEnemiesOnMusic();	
-	}
-	
-	void init() {
-		counters = new int[4];
-		pastSample = 0;	
-	}
-	
-	void playMusic() {
-		cam = GameObject.Find ("Main Camera");
-		cam.audio.clip = AudioManager.freader.getClip ();	// Set the camera's audio clip to the read data	
-		if(!cam.audio.isPlaying) cam.audio.Play ();	
-	}
-	
-	void triggerEnemiesOnMusic() {
-		
-		// Check where in the sound file we are at, and whether this has updated yet (framerate vs. music playback issue)
-		int sample = cam.audio.timeSamples;
-		if (sample > pastSample) {
-			pastSample = sample;
-			for (int t = 0; t < 3; t++) {
-				while (counters[t] < AudioManager.triggers[t].Length && AudioManager.triggers[t][counters[t]] < sample) {
-					counters [t]++;
-					SpawnEnemy(t);
-				}
-			}
-		}	
-	}
+    
+    void Update() {
+        if(AudioManager.triggers != null && cam != null && cam.audio.isPlaying) triggerEnemiesOnMusic();	
+    }
+    
+    void init() {
+        counters = new int[4];
+        pastSample = 0;	
+    }
+    
+    void playMusic() {
+        cam = GameObject.Find ("Main Camera");
+        cam.audio.clip = AudioManager.freader.getClip ();	// Set the camera's audio clip to the read data	
+        if(!cam.audio.isPlaying) cam.audio.Play ();	
+    }
+    
+    void triggerEnemiesOnMusic() {
+        
+        // Check where in the sound file we are at, and whether this has updated yet (framerate vs. music playback issue)
+        int sample = cam.audio.timeSamples;
+        if (sample > pastSample) {
+            pastSample = sample;
+            for (int t = 0; t < 3; t++) {
+                while (counters[t] < AudioManager.triggers[t].Length && AudioManager.triggers[t][counters[t]] < sample) {
+                    counters [t]++;
+                    SpawnEnemy(t);
+                }
+            }
+        }	
+    }
 
     /// <summary>
     /// Spawns an enemy of random type.

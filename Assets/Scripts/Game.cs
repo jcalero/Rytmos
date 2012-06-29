@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System.IO;
 /// <summary>
 /// Game.cs
 /// 
@@ -37,7 +38,7 @@ public class Game : MonoBehaviour {
 
     void Start() {
         DontDestroyOnLoad(gameObject);      // Makes sure this object is persistent between all scenes of the game
-		//AudioManager.initMusic(@"C:/Users/Samuel/Desktop/trudat.wav");
+        //AudioManager.initMusic(@"peppers.wav");
     }
 
     void Update() {
@@ -101,6 +102,7 @@ public class Game : MonoBehaviour {
         get { return paused; }
         set { paused = value; }
     }
+    
 
     public static bool Cheated {
         get { return cheated; }

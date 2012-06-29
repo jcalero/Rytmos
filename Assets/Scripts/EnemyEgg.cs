@@ -6,67 +6,50 @@ using UnityEngine;
 /// </summary>
 public class EnemyEgg : EnemyScript {
     #region Fields
-    private int colorIndex;         // The index in the colors list, defines what color the enemy will be.
-
     private LinkedSpriteManager spriteManager;
     private Sprite enemyEgg;
     #endregion
 
     #region Functions
+    protected override void Awake() {
+        minSpeed = 4f;                                  // Sets minimum speed
+        maxSpeed = 5f;                                  // Sets maximum speed
+        health = 1;                                     // Sets health
+        base.Awake();
+    }
+
     /// <summary>
     /// Overriding Start() to set unique values for this enemy type
     /// </summary>
     protected override void Start() {
-        colorIndex = Random.Range(0, colors.Length);    // Defines the colour
-        MainColor = colors[colorIndex];                 // Sets the colour
-        minSpeed = 3f;                                  // Sets minimum speed
-        maxSpeed = 3.5f;                                // Sets maximum speed
-        health = 1;                                     // Sets health
         spriteManager = GameObject.Find("EnemySpawner").GetComponent<LinkedSpriteManager>();
 
-        int left = 0;
-        int bottom = 0;
-        int width = 100;
-        int height = 100;
-
+        // Choose what sprite to show
         if (MainColor == Color.green) {
-            left   = 267;
-            bottom = 756;
-            width  = 253;
-            height = 245;
+            spriteName = "8-green";
+        } else if (MainColor == Color.red) {
+            spriteName = "12-red";
+        } else if (MainColor == Level.purple) {
+            spriteName = "4-purple";
+        } else if (MainColor == Color.cyan) {
+            spriteName = "1-cyan";
+        } else if (MainColor == Color.blue) {
+            spriteName = "7-blue";
+        } else if (MainColor == Color.yellow) {
+            spriteName = "5-yellow";
         }
 
-        else if (MainColor == Color.red) {
-            left = 521;
-            bottom = 757;
-            width = 263;
-            height = 165;
+        // Checks that the sprite name exists in the atlas, if not falls back to default sprite
+        if (SpriteAtlas.GetSprite(spriteName) == null) {
+            Debug.LogWarning("Sprite " + "\"" + spriteName + "\" " + "not found in atlas " + "\"" + SpriteAtlas + "\"" + ". Using default sprite, \"circle\".");
+            spriteName = "circle";
         }
+        // Calculate sprite atlas coordinates
+        base.CalculateSprite(SpriteAtlas, spriteName);
+        // Add sprite to game object
+        enemyEgg = spriteManager.AddSprite(gameObject, UVWidth, UVHeight, left, bottom, width, height, false);
 
-        else if (MainColor == Level.purple) {
-            left = 532;
-            bottom = 1023;
-            width = 264;
-            height = 264;
-        }
-
-        else if (MainColor == Color.cyan) {
-            left = 0;
-            bottom = 495;
-            width = 263;
-            height = 265;
-        }
-
-        else if (MainColor == Color.yellow || MainColor == Color.blue) {
-            left = 261;
-            bottom = 503;
-            width = 110;
-            height = 100;
-        }
-
-        enemyEgg = spriteManager.AddSprite(gameObject, 1f, 1f, left, bottom, width, height, false);
-
-        if (MainColor == Color.yellow || MainColor == Color.blue)
+        if (spriteName == "circle")
             enemyEgg.SetColor(MainColor);
 
         base.Start();                                   // Initialises the enemy by calling the Start() of EnemyScript

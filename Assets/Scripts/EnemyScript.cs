@@ -9,37 +9,47 @@ public class EnemyScript : MonoBehaviour {
 
     #region Fields
     public GameObject ExplosionPrefab;  // Inspector reference. Location: Enemy[Type]Prefab.
+    public UIAtlas SpriteAtlas;         // Inspector reference. Location: Enemy[Type]Prefab.
 
     // Protected values with access from its descendants
     protected float minSpeed;           // The minimum random speed of the enemy
     protected float maxSpeed;           // The maximum random speed of the enemy
     protected int health;               // The health (nr of hits) of the enemy
-    protected Color[] colors;
+    protected Color[] colors = new Color[] { Color.red, Color.green, Color.cyan, Color.blue, Color.yellow, Level.purple };
+    protected int colorIndex;         // The index in the colors list, defines what color the enemy will be.
+    //protected Color[] colors;
+
+    // Sprite parameters for Atlas-lookup
+    protected string spriteName = "default";
+    protected int left;
+    protected int bottom;
+    protected int width;
+    protected int height;
+    protected float UVHeight = 1f;
+    protected float UVWidth = 1f;
 
     private Color mainColor;            // The color of the enemy
     private float currentSpeed;         // The speed of the enemy
     private float x, y, z;              // Position coordinates of the enemy
     private int fixPos;                 // Random value for moving the enemy off the screen
-    private GameObject player;          // The player
     private int energyReturn = 2;       // The amount of energy to return to the player when an enemy dies.
     #endregion
 
     #region Functions
 
     protected virtual void Awake() {
-		if(Level.sixColors) 
-			colors = new Color[] { Color.red, Color.green, Color.cyan, Color.blue, Color.yellow, Level.purple };	
-		else 
-			colors = new Color[] { Color.red, Color.cyan, Color.blue, Color.yellow };
-        player = GameObject.Find("Player");
+        SetPositionAndSpeed();
+        if (Level.fourColors)
+            colors = new Color[] { Color.red, Color.cyan, Color.blue, Color.yellow };
+        colorIndex = Random.Range(0, colors.Length);    // Defines the colour
+        MainColor = colors[colorIndex];                 // Sets the colour
+        SetColor();
     }
 
     protected virtual void Start() {
-        SetPositionAndSpeed();
-        SetColor();
         // Start moving towards the player
         // TODO: Fix the auto-heading of sprites.
-        iTween.MoveTo(gameObject, iTween.Hash("position", player.transform.position,
+        iTween.MoveTo(gameObject, iTween.Hash("position", Vector3.zero,
                                               "speed", currentSpeed,
                                               "easetype", "linear"));
     }
@@ -60,7 +70,7 @@ public class EnemyScript : MonoBehaviour {
         }
         // If the enemy collides with a pulse of the right color, reduce enemy health, increase score
         if (otherObject.name == "Pulse(Clone)") {
-            if (otherObject.gameObject.GetComponent<LineRenderer>().material.color == gameObject.renderer.material.color) {
+            if (otherObject.gameObject.GetComponent<LineRenderer>().material.color == MainColor) {
                 Player.score += 10;
                 CreateExplosion();
                 DamageEnemy();
@@ -97,7 +107,7 @@ public class EnemyScript : MonoBehaviour {
         transform.position = new Vector3(x, y, z);
 
         float angle = Mathf.Atan2(gameObject.transform.position.y, gameObject.transform.position.x);
-        gameObject.GetComponentInChildren<Transform>().localEulerAngles = new Vector3(0f, 0f, Mathf.Rad2Deg * angle);
+        gameObject.GetComponentInChildren<Transform>().localEulerAngles = new Vector3(0f, 0f, Mathf.Rad2Deg * angle + 90);
     }
 
     /// <summary>
@@ -113,8 +123,30 @@ public class EnemyScript : MonoBehaviour {
     /// Sets the color of the material of the enemy to MainColor.
     /// </summary>
     protected void SetColor() {
-        gameObject.renderer.material.color = MainColor;
         gameObject.GetComponent<ParticleSystem>().startColor = MainColor;
+    }
+
+    /// <summary>
+    /// Calculates the corresponding sprite on an atlas given the sprite name.
+    /// </summary>
+    /// <param name="atlas">The atlas the sprite belongs to</param>
+    /// <param name="name">The name of the sprite</param>
+    protected void CalculateSprite(UIAtlas atlas, string name) {
+        UIAtlas.Sprite sprite = atlas.GetSprite(name);
+        if (sprite == null) {
+            Debug.LogError("No sprite with that name: " + name);
+            return;
+        }
+        left = (int)sprite.inner.xMin;
+        bottom = (int)sprite.inner.yMax;
+        width = (int)sprite.inner.width;
+        height = (int)sprite.inner.height;
+
+        float widthHeightRatio = sprite.inner.width / sprite.inner.height;
+        if (widthHeightRatio > 1)
+            UVHeight = 1f / widthHeightRatio;       // It's a "wide" sprite
+        else if (widthHeightRatio < 1)
+            UVWidth = 1f * widthHeightRatio;        // It's a "tall" sprite
     }
 
     /// <summary>
