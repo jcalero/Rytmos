@@ -8,7 +8,7 @@ public abstract class FourierTransform
   /** A constant indicating no window should be used on sample buffers. */
     public static readonly int NONE = 0;
   /** A constant indicating a Hamming window should be used on sample buffers. */
-  public static readonly int HAMMING = 1;
+  public const int HAMMING = 1;
   protected static readonly  int LINAVG = 2;
   protected static readonly  int LOGAVG = 3;
   protected static readonly  int NOAVG = 4;
@@ -207,7 +207,7 @@ public abstract class FourierTransform
   {
     switch (whichWindow)
     {
-      case 1: //Used to be HAMMING, in case of breakage
+      case HAMMING: //Used to be HAMMING, in case of breakage
         hamming(samples);
         break;
     }

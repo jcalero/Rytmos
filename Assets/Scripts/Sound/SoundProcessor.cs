@@ -316,13 +316,8 @@ public class SoundProcessor
 //    return (variance, variance_n)
 	}
 	
-	public int[][] calculateAllTheTriggers ()
-	{
-		
-		int samplesPerSecond = 44100;
-		int triggersPerSecond = 1000;
-		int bins = 4;
-		
+	public int[][] calculateAllTheTriggers (int samplesPerSecond,int triggersPerSecond,int bins)
+	{		
 		int sampleRate = samplesPerSecond / triggersPerSecond;
 		int samples = this.audioData.Length / sampleRate;
 		
@@ -365,7 +360,7 @@ public class SoundProcessor
 				localStDevs [i] = Mathf.Sqrt (localM2 [i] / (j+1));
 				
 				// Does the current sample pass the threshold of (mean + stDev)?
-				if (lowMidHighBins [i] > Mathf.Abs(localMeans [i]) + 8*localStDevs[i]) {
+				if (lowMidHighBins [i] > Mathf.Abs(localMeans [i]) + 5*localStDevs[i]) {
 					localTriggers [j] [i] = 1;
 				}
 				else {
@@ -401,9 +396,6 @@ public class SoundProcessor
 		return timeTriggers;
 		
 	}
-	
-	
-	
 	
 	//GETTERS ####################################
 	public float[] getVars ()

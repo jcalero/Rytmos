@@ -167,7 +167,7 @@ public class FileReader {
 	/// <param name='obj'>
 	/// The WWW object used to yield.
 	/// </param>
-	public static IEnumerator yieldRoutine(WWW obj) {
+	private static IEnumerator yieldRoutine(WWW obj) {
 		yield return obj;
 	}
 	

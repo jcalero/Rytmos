@@ -61,8 +61,8 @@ public class SpectrumProvider
 		if( useHamming )
 			fft.window(FFT.HAMMING);
 		
-        decoder.readSamples( samples );
-		decoder.readSamples( nextSamples );
+        decoder.readSamples( ref samples );
+		decoder.readSamples( ref nextSamples );
 	}
 	
 	/**
@@ -76,7 +76,7 @@ public class SpectrumProvider
 			float[] tmp = nextSamples;
 			nextSamples = samples;
 			samples = tmp;
-			if( decoder.readSamples( nextSamples ) == 0 )
+			if( decoder.readSamples( ref nextSamples ) == 0 )
 				return null;
 			currentSample -= samples.Length;
 		}
