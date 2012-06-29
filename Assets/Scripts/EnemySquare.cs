@@ -47,7 +47,7 @@ public class EnemySquare : EnemyScript {
         // Calculate sprite atlas coordinates
         base.CalculateSprite(SpriteAtlas, spriteName);
         // Add sprite to game object
-        enemySquare = spriteManager.AddSprite(gameObject, 1f, 1f, left, bottom, width, height, false);
+        enemySquare = spriteManager.AddSprite(gameObject, UVWidth, UVHeight, left, bottom, width, height, false);
 
         if (spriteName == "default")
             enemySquare.SetColor(MainColor);

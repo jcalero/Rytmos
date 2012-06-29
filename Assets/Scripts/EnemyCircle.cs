@@ -47,7 +47,7 @@ public class EnemyCircle : EnemyScript {
         // Calculate sprite atlas coordinates
         base.CalculateSprite(SpriteAtlas, spriteName);
         // Add sprite to game object
-        enemyCircle = spriteManager.AddSprite(gameObject, 1f, 1f, left, bottom, width, height, false);
+        enemyCircle = spriteManager.AddSprite(gameObject, UVWidth, UVHeight, left, bottom, width, height, false);
 
         if (spriteName == "default")
             enemyCircle.SetColor(MainColor);
