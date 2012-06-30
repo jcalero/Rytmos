@@ -21,11 +21,11 @@ public class DevScript : MonoBehaviour {
 
     #region Functions
     void Awake() {
-        if (Application.loadedLevelName == "Game") enemySpawner = (EnemySpawnScript)GameObject.Find("EnemySpawner").GetComponent("EnemySpawnScript");
+        if (Game.GameState.Equals(Game.State.Playing)) enemySpawner = (EnemySpawnScript)GameObject.Find("EnemySpawner").GetComponent("EnemySpawnScript");
     }
 
     void Update() {
-        if (Game.DevMode && Application.loadedLevelName == "Game") {
+        if (Game.DevMode && Game.GameState == Game.State.Playing) {
             wasDevMode = true;
             // Instantiate the enemySpawner script if not already instantiated (e.g. the level
             // this script was awaken in was a menu where there is no enemy spawner)
@@ -83,7 +83,7 @@ public class DevScript : MonoBehaviour {
                 devMode4 = false;
                 Debug.Log("Auto-Spawn Re-enabled with spawnrate: " + enemySpawner.SpawnRate);
             }
-        } else if (wasDevMode && Application.loadedLevelName == "Game") {
+        } else if (wasDevMode && Game.GameState == Game.State.Playing) {
             DisableAll();
             wasDevMode = false;
         }

@@ -5,8 +5,7 @@ using System.Collections;
 /// 
 /// Player manager. Handles player values and control.
 /// </summary>
-public class Player : MonoBehaviour
-{
+public class Player : MonoBehaviour {
     #region Fields
     public static int startScore = 0;           // Start score
     public static int startHealth = 100;        // Starting health of the player
@@ -14,7 +13,7 @@ public class Player : MonoBehaviour
     public static int startEnergy = 50;         // Starting energy of the player
     public static int maxEnergy = 50;           // Maximum energy of the player
     public static bool GodMode = false;         // God mode
-    
+
     public static int energy;                   // Current energy of the player
     public static int health;                   // Current health of the player
     public static int score;                    // Current score of the player
@@ -27,7 +26,7 @@ public class Player : MonoBehaviour
     #endregion
 
     #region Functions
-    void Awake() {
+    void Start() {
         // Resets player stats at the start of a level
         ResetStats();
     }
@@ -53,15 +52,26 @@ public class Player : MonoBehaviour
                 myTimer = 0;
             }
         }
+
+        // If the player health is lower than 0, load the "Lose" level
+        if (Player.health <= 0) {
+            Player.health = 0;
+            if (Game.GameMode.Equals(Game.Mode.DeathMatch)) {
+                Application.LoadLevel("Win");
+            } else {
+                Application.LoadLevel("Lose");
+            }
+        }
+
     }
 
     /// <summary>
     /// Reset the player stats to default values
     /// </summary>
-    public void ResetStats() {
+    public static void ResetStats() {
         score = startScore;
-        health = startHealth;
-        energy = startEnergy;
+        health = startHealth = maxHealth;
+        energy = startEnergy = maxEnergy;
     }
     #endregion
 }

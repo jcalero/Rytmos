@@ -19,12 +19,12 @@ public class HSController : MonoBehaviour {
     }
 
     // remember to use StartCoroutine when calling this function!
-    public static IEnumerator PostScores(string name, int score) {
+    public static IEnumerator PostScores(string name, int score, string table) {
         //This connects to a server side php script that will add the name and score to a MySQL DB.
         // Supply it with a string representing the players name and the players score.
         string hash = MD5Test.Md5Sum(name + score + instance.secretKey);
 
-        string post_url = instance.addScoreURL + "name=" + WWW.EscapeURL(name) + "&score=" + score + "&hash=" + hash;
+        string post_url = instance.addScoreURL + "name=" + WWW.EscapeURL(name) + "&score=" + score + "&table=" + table + "&hash=" + hash;
 
         instance.submittedLabel.text = "Submitting...";
         // Post the URL to the site and create a download object to get the result.
@@ -43,7 +43,7 @@ public class HSController : MonoBehaviour {
 
     // Get the scores from the MySQL DB to display in a GUIText.
     // remember to use StartCoroutine when calling this function!
-    public static IEnumerator GetScores() {
+    public static IEnumerator GetScores(string table) {
         if (instance.highscoresLoaded) {
             for (int cnt = 0; cnt < instance.names.Length; cnt++) {
                 instance.highscores[cnt].text = "";
@@ -53,8 +53,8 @@ public class HSController : MonoBehaviour {
         for (int cnt = 0; cnt < instance.names.Length; cnt++) {
             instance.highscores[cnt].text = "Loading Scores";
             instance.names[cnt].text = "Loading Scores";
-            string hs_name_url = instance.highscoreURL + "?position=" + cnt + "&field=1";
-            string hs_score_url = instance.highscoreURL + "?position=" + cnt + "&field=2";
+            string hs_name_url = instance.highscoreURL + "?position=" + cnt + "&field=1" + "&table=" + table;
+            string hs_score_url = instance.highscoreURL + "?position=" + cnt + "&field=2" + "&table=" + table;
             WWW hs_get = new WWW(hs_name_url);
             WWW hs_get_score = new WWW(hs_score_url);
             yield return hs_get;

@@ -20,19 +20,24 @@ public class Lose : MonoBehaviour {
     void Start() {
         scoreValueLabel.text = Player.score.ToString();
         healthValueLabel.text = Player.health.ToString();
-        totalScoreLabel.text = "[AADDAA]" + CalculatedHealth;
+        totalScoreLabel.text = "[AADDAA]" + CalculatedScore;
     }
 
     /// <summary>
     /// Returns the final calculated score after the end of the game.
     /// </summary>
     /// <value>Calculated score (Health * Score * 0.1)</value>
-    int CalculatedHealth {
+    int CalculatedScore {
         get {
-            if (Player.health < 1)
-                return Player.score;
-            else
-                return (int)(Player.health * 0.1 * Player.score);
+            if (Game.GameMode.Equals(Game.Mode.DeathMatch)) {
+                Debug.Log(Player.score + "* 10 = " + Player.score * 10);
+                return (int)(Player.score * 10);
+            } else {
+                if (Player.health < 1)
+                    return Player.score;
+                else
+                    return (int)(Player.health * 0.1 * Player.score);
+            }
         }
     }
 
@@ -40,7 +45,10 @@ public class Lose : MonoBehaviour {
     /// Button handler for the "Try Again!" button
     /// </summary>
     void OnPlayAgainClicked() {
-        Application.LoadLevel("Game");
+        if (Game.GameMode.Equals(Game.Mode.TimeAttack))
+            Application.LoadLevel("Game");
+        if (Game.GameMode.Equals(Game.Mode.DeathMatch))
+            Application.LoadLevel("DeathMatch");
     }
 
     /// <summary>

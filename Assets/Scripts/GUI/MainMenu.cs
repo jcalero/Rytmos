@@ -10,6 +10,10 @@ public class MainMenu : MonoBehaviour {
     #region Fields
     public UIDraggablePanel panel; // Inspector instance. Location: MainMenuManager.
     public UIButton reloadButton;
+    public UIButton nextButton;
+    public UIButton prevButton;
+    public UILabel highscoresTypeLabel;
+    public bool skipMenu;           // Allows you to skip directly from the Main Menu to the Arcade game mode
 
     // Values for menu slider locations.
     private Vector3 quitMenu;
@@ -19,9 +23,10 @@ public class MainMenu : MonoBehaviour {
     private Vector3 optionsMenu;
     private bool highscoresLoaded;
 
-    private static MainMenu instance;
+    private bool loadedDeathMatch;
+    private bool loadedTimeAttack = true;
 
-    public bool skipMenu;           // Allows you to skip directly from the Main Menu to the Arcade game mode
+    private static MainMenu instance;
     #endregion
 
     #region Functions
@@ -35,6 +40,8 @@ public class MainMenu : MonoBehaviour {
         modeMenu = new Vector3(-650f * 2, 0f, 0f);
         highScoresMenu = new Vector3(-650f * 3, 0f, 0f);
         optionsMenu = new Vector3(-650f * 4, 0f, 0f);
+
+        Game.GameState = Game.State.Menu;
     }
 
     void Update() {
@@ -59,7 +66,10 @@ public class MainMenu : MonoBehaviour {
     void OnHighScoresClicked() {
         // Fetch high-scores from server
         if (!highscoresLoaded) {
-            StartCoroutine(HSController.GetScores());
+            if (loadedDeathMatch)
+                StartCoroutine(HSController.GetScores("rytmos_hs_dm"));
+            if (loadedTimeAttack)
+                StartCoroutine(HSController.GetScores("rytmos_hs_30sec"));
             highscoresLoaded = true;
             DisableReloadButton();
         }
@@ -113,13 +123,48 @@ public class MainMenu : MonoBehaviour {
         Application.LoadLevel("Game");
     }
 
+    void OnChallengeModeClicked() {
+        Application.LoadLevel("DeathMatch");
+    }
+
+    void OnNextHighscoreClicked() {
+        if (loadedDeathMatch) {
+            highscoresTypeLabel.text = "Time Attack";
+            loadedTimeAttack = true;
+            loadedDeathMatch = false;
+        } else {
+            highscoresTypeLabel.text = "Survival";
+            loadedDeathMatch = true;
+            loadedTimeAttack = false;
+        }
+        OnReloadClicked();
+    }
+
+    void OnPrevHighscoreClicked() {
+        if (loadedDeathMatch) {
+            highscoresTypeLabel.text = "Time Attack";
+            loadedTimeAttack = true;
+            loadedDeathMatch = false;
+        } else {
+            highscoresTypeLabel.text = "Survival";
+            loadedDeathMatch = true;
+            loadedTimeAttack = false;
+        }
+        OnReloadClicked();
+    }
+
     void OnReloadClicked() {
         DisableReloadButton();
-        StartCoroutine(HSController.GetScores());
+        if (loadedDeathMatch)
+            StartCoroutine(HSController.GetScores("rytmos_hs_dm"));
+        if (loadedTimeAttack)
+            StartCoroutine(HSController.GetScores("rytmos_hs_30sec"));
     }
 
     public static void DisableReloadButton() {
         instance.reloadButton.isEnabled = false;
+        instance.nextButton.isEnabled = false;
+        instance.prevButton.isEnabled = false;
         //instance.reloadButton.enabled = false;
         //instance.reloadButton.GetComponentInChildren<UISlicedSprite>().enabled = false;
         //instance.reloadButton.GetComponentInChildren<UILabel>().enabled = false;
@@ -127,6 +172,8 @@ public class MainMenu : MonoBehaviour {
 
     public static void EnableReloadButton() {
         instance.reloadButton.isEnabled = true;
+        instance.nextButton.isEnabled = true;
+        instance.prevButton.isEnabled = true;
         //instance.reloadButton.enabled = true;
         //instance.reloadButton.GetComponentInChildren<UISlicedSprite>().enabled = true;
         //instance.reloadButton.GetComponentInChildren<UILabel>().enabled = true;

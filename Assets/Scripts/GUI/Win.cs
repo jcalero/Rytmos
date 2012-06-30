@@ -40,10 +40,14 @@ public class Win : MonoBehaviour {
     /// <value>Calculated score (Health * Score * 0.1)</value>
     int CalculatedScore {
         get {
-            if (Player.health < 1)
-                return Player.score;
-            else
-                return (int)(Player.health * 0.1 * Player.score);
+            if (Game.GameMode.Equals(Game.Mode.DeathMatch)) {
+                return (int)(Player.score * 10);
+            } else {
+                if (Player.health < 1)
+                    return Player.score;
+                else
+                    return (int)(Player.health * 0.1 * Player.score);
+            }
         }
     }
 
@@ -51,7 +55,10 @@ public class Win : MonoBehaviour {
     /// Button handler for the "Play Again!" button
     /// </summary>
     void OnPlayAgainClicked() {
-        Application.LoadLevel("Game");
+        if (Game.GameMode.Equals(Game.Mode.TimeAttack))
+            Application.LoadLevel("Game");
+        if (Game.GameMode.Equals(Game.Mode.DeathMatch))
+            Application.LoadLevel("DeathMatch");
     }
 
     /// <summary>
@@ -73,7 +80,10 @@ public class Win : MonoBehaviour {
             return;
         }
         HideSubmitBox();                                        // Hide the submit box and button
-        StartCoroutine(HSController.PostScores(playerName, CalculatedScore));       // Submit the highscore
+        if (Game.GameMode.Equals(Game.Mode.DeathMatch))
+            StartCoroutine(HSController.PostScores(playerName, CalculatedScore, "rytmos_hs_dm"));       // Submit the highscore to the DeathMatch DB
+        if (Game.GameMode.Equals(Game.Mode.TimeAttack))
+            StartCoroutine(HSController.PostScores(playerName, CalculatedScore, "rytmos_hs_30sec"));       // Submit the highscore to the TimeAttack DB
     }
 
     void HideSubmitBox() {

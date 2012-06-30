@@ -32,7 +32,8 @@ public class EnemyScript : MonoBehaviour {
     private float currentSpeed;         // The speed of the enemy
     private float x, y, z;              // Position coordinates of the enemy
     private int fixPos;                 // Random value for moving the enemy off the screen
-    private int energyReturn = 2;       // The amount of energy to return to the player when an enemy dies.
+
+    public static int energyReturn = 2;       // The amount of energy to return to the player when an enemy dies.
     #endregion
 
     #region Functions
@@ -61,12 +62,6 @@ public class EnemyScript : MonoBehaviour {
             Player.health -= 10 * health;       // Reduces the player health by 10 * the remaining enemy health
             CreateExplosion();
             Destroy(gameObject);
-
-            // If the player health is lower than 0, load the "Lose" level
-            if (Player.health <= 0) {
-                Player.health = 0;
-                Application.LoadLevel("Lose");
-            }
         }
         // If the enemy collides with a pulse of the right color, reduce enemy health, increase score
         if (otherObject.name == "Pulse(Clone)") {

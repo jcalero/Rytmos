@@ -21,6 +21,8 @@ public class Game : MonoBehaviour {
     private static bool devMode = false;        // True when devMode/debug Mode is enabled. Gets checked by DevScript.
     private static bool paused = false;         // True when the game is paused
     private static bool cheated = false;        // True when devMode was on at any point of the game
+    private static Mode mode;                    // Defines current/last game mode.
+    private static State state;                   // Defines the current game state.
     #endregion
 
     #region Functions
@@ -44,7 +46,7 @@ public class Game : MonoBehaviour {
     void Update() {
         // Key input condition for pausing the game
         if (Input.GetKeyDown(KeyCode.Home) || Input.GetKeyDown(KeyCode.Escape) ||
-            Input.GetKeyDown("escape") || Input.GetKeyDown(KeyCode.Space) && Application.loadedLevelName == "Game") {
+            Input.GetKeyDown("escape") || Input.GetKeyDown(KeyCode.Space) && GameState == State.Playing) {
             if (!paused)
                 Pause();
             else
@@ -52,9 +54,20 @@ public class Game : MonoBehaviour {
             return;
         }
         // Key input position for DevMode, only works in the "Game" level
-        if (Input.GetKeyDown(KeyCode.BackQuote) && Application.loadedLevelName == "Game") {
+        if (Input.GetKeyDown(KeyCode.BackQuote) && GameState == State.Playing) {
             DevMode = !DevMode;
         }
+
+        //if (Application.loadedLevelName == "Game" || Application.loadedLevelName == "DeathMatch") {
+        //    switch (mode) {
+        //        case Mode.TimeAttack:
+        //            break;
+        //        case Mode.DeathMatch:
+        //            break;
+        //        default:
+        //            break;
+        //    }
+        //}
     }
 
     // Global method for pausing the game.
@@ -79,8 +92,19 @@ public class Game : MonoBehaviour {
     /// <summary>
     /// Runs when any new scene was loaded
     /// </summary>
-    void OnLevelWasLoaded() {
+    void OnLevelWasLoaded(int level) {
         Debug.Log(">> Level: \"" + Application.loadedLevelName + "\" was loaded");
+        if (level == (int)LevelNames.Game) {
+            GameMode = Mode.TimeAttack;
+            GameState = State.Playing;
+        } else if (level == (int)LevelNames.DeathMatch) {
+            GameMode = Mode.DeathMatch;
+            GameState = State.Playing;
+        } else {
+            GameState = State.Menu;
+        }
+        DevMode = false;
+        Debug.Log(">> Current game mode: " + GameMode);
     }
 
     /// <summary>
@@ -90,7 +114,7 @@ public class Game : MonoBehaviour {
         get { return devMode; }
         private set {
             devMode = value;
-            cheated = true;
+            if (value) cheated = true;
         }
     }
 
@@ -102,29 +126,50 @@ public class Game : MonoBehaviour {
         get { return paused; }
         set { paused = value; }
     }
-    
+
 
     public static bool Cheated {
         get { return cheated; }
         set { cheated = value; }
     }
 
-    // TODO: Make a state engine for game states. For use when checking Pause state and
-    // devmode etc..
-    //public static bool StateA {
+    public static State GameState {
+        get { return state; }
+        set { state = value; }
+    }
 
-    //    get {
-    //        switch(State) }
+    public static Mode GameMode {
+        get { return mode; }
+        set { mode = value; }
+    }
 
-    //}
+
+    /// <summary>
+    /// Level order number given by the build settings. WARNING: Needs to be kept up to date manually if adding/removing scenes!
+    /// There is no way to automatically get the right order for the scenes so it might not be accurate if the order has changed
+    /// and this was not updated!
+    /// </summary>
+    public enum LevelNames {
+        SplashScreen,
+        MainMenu,
+        Game,
+        Win,
+        Lose,
+        DeathMatch
+    }
 
     /// <summary>
     /// Not in use at the moment.
     /// </summary>
     public enum State {
-        Playing,
         Menu,
+        Playing,
         Paused
+    }
+
+    public enum Mode {
+        TimeAttack,
+        DeathMatch
     }
     #endregion
 }
