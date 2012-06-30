@@ -23,8 +23,10 @@ public class MainMenu : MonoBehaviour {
     private Vector3 optionsMenu;
     private bool highscoresLoaded;
 
-    private bool loadedDeathMatch;
+    private bool loadedSurvival;
     private bool loadedTimeAttack = true;
+    private string survival = "rytmos_hs_dm";
+    private string timeAttack = "rytmos_hs_30sec";
 
     private static MainMenu instance;
     #endregion
@@ -42,6 +44,22 @@ public class MainMenu : MonoBehaviour {
         optionsMenu = new Vector3(-650f * 4, 0f, 0f);
 
         Game.GameState = Game.State.Menu;
+    }
+
+    void Start() {
+        // Fetch high-scores from server
+        if (!highscoresLoaded) {
+            if (loadedSurvival) {
+                StartCoroutine(HSController.GetScores(survival, true));
+                StartCoroutine(HSController.GetScores(timeAttack, false));
+            }
+            if (loadedTimeAttack) {
+                StartCoroutine(HSController.GetScores(survival, false));
+                StartCoroutine(HSController.GetScores(timeAttack, true));
+            }
+            highscoresLoaded = true;
+            DisableReloadButton();
+        }
     }
 
     void Update() {
@@ -64,15 +82,6 @@ public class MainMenu : MonoBehaviour {
     /// Button handler for "Highscores" button
     /// </summary>
     void OnHighScoresClicked() {
-        // Fetch high-scores from server
-        if (!highscoresLoaded) {
-            if (loadedDeathMatch)
-                StartCoroutine(HSController.GetScores("rytmos_hs_dm"));
-            if (loadedTimeAttack)
-                StartCoroutine(HSController.GetScores("rytmos_hs_30sec"));
-            highscoresLoaded = true;
-            DisableReloadButton();
-        }
         // Stop any current momentum to allow for Spring to begin.
         panel.currentMomentum = Vector3.zero;
         // Begin spring motion
@@ -128,55 +137,51 @@ public class MainMenu : MonoBehaviour {
     }
 
     void OnNextHighscoreClicked() {
-        if (loadedDeathMatch) {
+        if (loadedSurvival) {
             highscoresTypeLabel.text = "Time Attack";
             loadedTimeAttack = true;
-            loadedDeathMatch = false;
+            loadedSurvival = false;
+            HSController.ShowScores(timeAttack);
         } else {
             highscoresTypeLabel.text = "Survival";
-            loadedDeathMatch = true;
+            loadedSurvival = true;
             loadedTimeAttack = false;
+            HSController.ShowScores(survival);
         }
-        OnReloadClicked();
     }
 
     void OnPrevHighscoreClicked() {
-        if (loadedDeathMatch) {
+        if (loadedSurvival) {
             highscoresTypeLabel.text = "Time Attack";
             loadedTimeAttack = true;
-            loadedDeathMatch = false;
+            loadedSurvival = false;
+            HSController.ShowScores(timeAttack);
         } else {
             highscoresTypeLabel.text = "Survival";
-            loadedDeathMatch = true;
+            loadedSurvival = true;
             loadedTimeAttack = false;
+            HSController.ShowScores(survival);
         }
-        OnReloadClicked();
     }
 
     void OnReloadClicked() {
         DisableReloadButton();
-        if (loadedDeathMatch)
-            StartCoroutine(HSController.GetScores("rytmos_hs_dm"));
+        if (loadedSurvival)
+            StartCoroutine(HSController.GetScores(survival, true));
         if (loadedTimeAttack)
-            StartCoroutine(HSController.GetScores("rytmos_hs_30sec"));
+            StartCoroutine(HSController.GetScores(timeAttack, true));
     }
 
     public static void DisableReloadButton() {
         instance.reloadButton.isEnabled = false;
         instance.nextButton.isEnabled = false;
         instance.prevButton.isEnabled = false;
-        //instance.reloadButton.enabled = false;
-        //instance.reloadButton.GetComponentInChildren<UISlicedSprite>().enabled = false;
-        //instance.reloadButton.GetComponentInChildren<UILabel>().enabled = false;
     }
 
     public static void EnableReloadButton() {
         instance.reloadButton.isEnabled = true;
         instance.nextButton.isEnabled = true;
         instance.prevButton.isEnabled = true;
-        //instance.reloadButton.enabled = true;
-        //instance.reloadButton.GetComponentInChildren<UISlicedSprite>().enabled = true;
-        //instance.reloadButton.GetComponentInChildren<UILabel>().enabled = true;
     }
     #endregion
 }

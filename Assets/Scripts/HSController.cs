@@ -12,10 +12,18 @@ public class HSController : MonoBehaviour {
     public UILabel submittedLabel;
     public UILabel errorLabel;
 
+    public string[][] hsTimeAttack = new string[10][];
+    public string[][] hsSurvival = new string[10][];
+
     private static HSController instance;
 
     void Awake() {
         instance = this;
+
+        for (int i = 0; i < hsTimeAttack.Length; i++)
+            hsTimeAttack[i] = new string[2];
+        for (int i = 0; i < hsSurvival.Length; i++)
+            hsSurvival[i] = new string[2];
     }
 
     // remember to use StartCoroutine when calling this function!
@@ -41,18 +49,20 @@ public class HSController : MonoBehaviour {
         }
     }
 
-    // Get the scores from the MySQL DB to display in a GUIText.
+    // Get the scores from the MySQL DB to display in a UILabel.
     // remember to use StartCoroutine when calling this function!
-    public static IEnumerator GetScores(string table) {
-        if (instance.highscoresLoaded) {
+    public static IEnumerator GetScores(string table, bool show) {
+        if (instance.highscoresLoaded && show) {
             for (int cnt = 0; cnt < instance.names.Length; cnt++) {
                 instance.highscores[cnt].text = "";
                 instance.names[cnt].text = "";
             }
         }
         for (int cnt = 0; cnt < instance.names.Length; cnt++) {
-            instance.highscores[cnt].text = "Loading Scores";
-            instance.names[cnt].text = "Loading Scores";
+            if (show) {
+                instance.highscores[cnt].text = "Loading Scores";
+                instance.names[cnt].text = "Loading Scores";
+            }
             string hs_name_url = instance.highscoreURL + "?position=" + cnt + "&field=1" + "&table=" + table;
             string hs_score_url = instance.highscoreURL + "?position=" + cnt + "&field=2" + "&table=" + table;
             WWW hs_get = new WWW(hs_name_url);
@@ -65,12 +75,37 @@ public class HSController : MonoBehaviour {
             } else if (hs_get_score.error != null) {
                 print("There was an error getting the high score: " + hs_get_score.error);
             } else {
-                instance.names[cnt].text = (cnt + 1) + ". " + hs_get.text;
-                instance.highscores[cnt].text = hs_get_score.text; // this is a GUIText that will display the scores in game.
+                string name = (cnt + 1) + ". " + hs_get.text;
+                string score = hs_get_score.text;
+                if (table.Equals("rytmos_hs_dm")) {
+                    instance.hsSurvival[cnt][0] = name;
+                    instance.hsSurvival[cnt][1] = score;
+                }
+                if (table.Equals("rytmos_hs_30sec")) {
+                    instance.hsTimeAttack[cnt][0] = name;
+                    instance.hsTimeAttack[cnt][1] = score;
+                }
+                if (show) {
+                    instance.names[cnt].text = name;
+                    instance.highscores[cnt].text = score; // this is a GUIText that will display the scores in game.
+                }
             }
         }
         instance.highscoresLoaded = true;
         MainMenu.EnableReloadButton();
+    }
+
+    public static void ShowScores(string table) {
+        for (int cnt = 0; cnt < instance.names.Length; cnt++) {
+            if (table.Equals("rytmos_hs_dm")) {
+                instance.names[cnt].text = instance.hsSurvival[cnt][0]; ;
+                instance.highscores[cnt].text = instance.hsSurvival[cnt][1]; ;
+            }
+            if (table.Equals("rytmos_hs_30sec")) {
+                instance.names[cnt].text = instance.hsTimeAttack[cnt][0]; ;
+                instance.highscores[cnt].text = instance.hsTimeAttack[cnt][1]; ;
+            }
+        }
     }
 
 }
