@@ -151,7 +151,7 @@ public class FileReader {
 			}
 			float left = System.BitConverter.ToInt16(inputData,i);
 			float right = System.BitConverter.ToInt16(inputData,i+2);
-			outData[k] = left + right;
+			outData[k] = (left + right)/2;
 			k++;
 		}
 		
