@@ -12,8 +12,8 @@ public class EnemyGreen : EnemyScript {
 
     #region Functions
     protected override void Awake() {
-        minSpeed = 0.4f;                                // Sets minimum speed
-        maxSpeed = 0.8f;                                // Sets maximum speed
+        minSpeed = 1f;                                // Sets minimum speed
+        maxSpeed = 5f;                                // Sets maximum speed
         health = 1;                                     // Sets health
         base.Awake();
     }

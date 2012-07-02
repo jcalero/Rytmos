@@ -23,19 +23,13 @@ public class EnemySpawnScript : MonoBehaviour {
     #region Functions
 
     void Start() {
-        //InvokeRepeating("SpawnEnemy", FirstSpawn, SpawnRate); // Start repeatedly spawning enemies
-		SpawnEnemy(3, .5f, 6f, 0f);
-		SpawnEnemy(4, .5f, -6f, 0f);
-		SpawnEnemy(5, .5f, 0f, 3f);
-		SpawnEnemy(6, .5f, 0f, -3f);
-		SpawnEnemy(7, .5f, 6f, 6f);
-		SpawnEnemy(8, .5f, -6f, -6f);
+        InvokeRepeating("SpawnEnemy", FirstSpawn, SpawnRate); // Start repeatedly spawning enemies
         //init ();
         //playMusic();
     }
     
     void Update() {
-        if(AudioManager.triggers != null && cam != null && cam.audio.isPlaying) triggerEnemiesOnMusic();	
+		//       if(AudioManager.triggers != null && cam != null && cam.audio.isPlaying) triggerEnemiesOnMusic();
     }
     
     void init() {
@@ -56,10 +50,10 @@ public class EnemySpawnScript : MonoBehaviour {
         if (sample > pastSample) {
             pastSample = sample;
             for (int t = 0; t < 3; t++) {
-                while (counters[t] < AudioManager.triggers[t].Length && AudioManager.triggers[t][counters[t]] < sample) {
+               // while (counters[t] < AudioManager.triggers[t].Length && AudioManager.triggers[t][counters[t]] < sample) {
                     counters [t]++;
                     SpawnEnemy(t);
-                }
+               // }
             }
         }	
     }
@@ -68,8 +62,8 @@ public class EnemySpawnScript : MonoBehaviour {
     /// Spawns an enemy of random type.
     /// </summary>
     public void SpawnEnemy ()
-    {	
-        SpawnEnemy (Random.Range (0, EnemyPrefabs.Length));	
+    {	if(Level.fourColors) SpawnEnemy (Random.Range (0, 3));	
+		else SpawnEnemy (Random.Range (0, EnemyPrefabs.Length));	
     }
     
     /// <summary>
