@@ -9,7 +9,7 @@ public class SecondPulseCollider : MonoBehaviour {
     
     protected void OnTriggerExit (Collider otherObject) {
         if (otherObject.name == "Pulse(Clone)") {
-            if(otherObject.gameObject.GetComponent<LineRenderer>().material.color == gameObject.transform.parent.renderer.material.color) {
+           if (otherObject.gameObject.GetComponent<LineRenderer>().material.color == gameObject.transform.parent.GetComponent<EnemyScript>().MainColor) {
                 Player.score += 10;
                 Player.energy += 5;
                 if (Player.energy > 50)
