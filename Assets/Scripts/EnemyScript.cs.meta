@@ -1,9 +1,0 @@
-fileFormatVersion: 2
-guid: 3662a0f31014a854095595ff462b5c00
-MonoImporter:
-  serializedVersion: 2
-  defaultReferences:
-  - ExplosionPrefab: {instanceID: 0}
-  - SpriteAtlas: {instanceID: 0}
-  executionOrder: 0
-  icon: {instanceID: 0}
