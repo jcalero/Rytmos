@@ -16,24 +16,13 @@ public static class AudioManager {
 			peaks = SoundProcessor.getPeaks(new MockDecoder(data));
 		} else {
 			// Read Audio Data
-			freader = new FileReader (pathToMusicFile, FileReader.AudioFormat.WAV);
-			freader.read ();
+			freader = new FileReader (pathToMusicFile);
+			int success = (int)freader.read ();
 			while (freader.isReading())
 				yieldRoutine ();
-			peaks = SoundProcessor.getPeaks(new MockDecoder(freader.getData()));
+			if(success == (int)FileReader.ReadStatus.SUCCESS)
+				peaks = SoundProcessor.getPeaks(freader);
 		}
-		
-		Debug.Log("how many bands: " + peaks.Count);
-		for(int i = 0; i < peaks.Count; i++) {
-			
-			int count = 0;
-			Debug.Log("how many entries in peaks " + i + ": " + ((ArrayList)peaks[i]).Count);
-			for(int k = 0; k < ((ArrayList)peaks[i]).Count; k++) {
-				if((float)((ArrayList)peaks[i])[k] > 0) count++;
-			}
-			Debug.Log("number of peaks in " + i + ": " + count);
-		}
-		Debug.Log("#####################################");
 	}
 	
 	

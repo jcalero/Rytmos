@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections;
-using Exocortex.DSP;
 
 public class SoundProcessor
 {
@@ -32,8 +31,8 @@ public class SoundProcessor
 	
 	public static readonly int HOP_SIZE = 512;
 	public static readonly int HISTORY_SIZE = 50;
-	public static readonly float[] multipliers = { 2.5f, 2.5f, 2.5f };
-	public static readonly float[] bands = { 80, 4000, 4000, 10000, 10000, 16000 };
+	public static readonly float[] multipliers = { 1.5f, 1.5f, 1.5f, 1.5f, 1.5f, 1.5f };
+	public static readonly float[] bands = { 0, 500, 500, 2000, 2000, 4000, 4000, 8000, 8000, 16000, 16000, 22000 };
 	
 	
 	public static ArrayList getPeaks(DecoderInterface decoder)
