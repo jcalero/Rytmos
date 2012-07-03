@@ -23,7 +23,8 @@ public class EnemySpawnScript : MonoBehaviour {
     #region Functions
 
     void Start() {
-        InvokeRepeating("SpawnEnemy", FirstSpawn, SpawnRate); // Start repeatedly spawning enemies
+        //InvokeRepeating("SpawnEnemy", FirstSpawn, SpawnRate); // Start repeatedly spawning enemies
+		SpawnEnemy(0, 5f, 335);
         //init ();
         //playMusic();
     }
@@ -82,6 +83,28 @@ public class EnemySpawnScript : MonoBehaviour {
 		Vector3 position = EnemyPrefabs [prefab].transform.position;
         GameObject enemy = (GameObject) Instantiate (EnemyPrefabs [prefab], position, EnemyPrefabs [prefab].transform.localRotation);
 		enemy.GetComponent<EnemyScript>().SetPositionAndSpeed(speed, xpos, ypos);
+	}
+	
+	public void SpawnEnemy (int prefab, float speed, int percentage) {
+		float xpos;
+		float ypos;
+		if(percentage <= 25) {
+			xpos = Game.screenRight;
+			ypos = (Game.screenTop*2*percentage/25) + Game.screenBottom;
+		} else if (percentage <= 50) {
+			xpos = Game.screenRight - (Game.screenRight*2*(percentage-25)/25);
+			ypos = Game.screenTop;
+		} else if (percentage <= 75) {
+			xpos = Game.screenLeft;
+			ypos = Game.screenTop - (Game.screenTop*2*(percentage-50)/25);
+		} else if (percentage <= 100) {
+			xpos = (Game.screenRight*2*(percentage-75)/25) + Game.screenLeft;
+			ypos = Game.screenBottom;
+		} else {
+			SpawnEnemy(prefab, speed, percentage-100);
+			return;
+		}
+		SpawnEnemy(prefab, speed, xpos, ypos);
 	}
 
     /// <summary>
