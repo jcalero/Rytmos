@@ -23,6 +23,7 @@ public class Game : MonoBehaviour {
     private static bool cheated = false;        // True when devMode was on at any point of the game
     private static Mode mode;                    // Defines current/last game mode.
     private static State state;                   // Defines the current game state.
+	private static NumOfColors colors;			//Defines the amount of colors used in the game
     #endregion
 
     #region Functions
@@ -142,7 +143,11 @@ public class Game : MonoBehaviour {
         get { return mode; }
         set { mode = value; }
     }
-
+	
+	public static NumOfColors ColorMode {
+		get { return colors; }
+		set { colors = value; }
+	}
 
     /// <summary>
     /// Level order number given by the build settings. WARNING: Needs to be kept up to date manually if adding/removing scenes!
@@ -171,5 +176,10 @@ public class Game : MonoBehaviour {
         TimeAttack,
         DeathMatch
     }
+	
+	public enum NumOfColors {
+		Four,
+		Six
+	}
     #endregion
 }

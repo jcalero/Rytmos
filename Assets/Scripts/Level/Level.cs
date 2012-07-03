@@ -29,6 +29,7 @@ public class Level : MonoBehaviour {
     #region Functions
     protected virtual void Awake() {
         // Local static reference to this class.
+		if(Game.ColorMode == Game.NumOfColors.Four) fourColors = true;
         Instance = this;
         spriteManagerScript = spriteManager.GetComponent<LinkedSpriteManager>();
     }
