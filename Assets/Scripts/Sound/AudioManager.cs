@@ -4,8 +4,9 @@ using System.Collections;
 public static class AudioManager {
 	
 	public static FileReader freader;			// File Reader to get audio file
-	public static ArrayList peaks;				// Holds the triggers for the currently loaded audio file
+	public static float[][] peaks;				// Holds the triggers for the currently loaded audio file
 	private static GameObject cam;
+	private static AudioClip clip;
 
 		
 	public static void initMusic(string pathToMusicFile) {
@@ -22,10 +23,14 @@ public static class AudioManager {
 				yieldRoutine ();
 			if(success == (int)FileReader.ReadStatus.SUCCESS)
 				peaks = SoundProcessor.getPeaks(freader);
+			clip = freader.getClip();
+			freader = null;
 		}
 	}
 	
-	
+	public static AudioClip getAudioClip() {
+		return clip;
+	}
 	
 	public static void setCam(GameObject newCam) {
 		cam = newCam;

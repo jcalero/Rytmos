@@ -175,6 +175,11 @@ public class FileReader : DecoderInterface {
 		this.clip = AudioClip.Create("gameAudio",this.data.Length,channels,frequency,true,false);
 		this.clip.SetData((float[])channelData.ToArray(typeof(float)),0);
 		
+		monoData.Clear();
+		monoData = null;
+		channelData.Clear();
+		channelData = null;
+		
 		// Close streams
 		bS.close();
 		file.Close();

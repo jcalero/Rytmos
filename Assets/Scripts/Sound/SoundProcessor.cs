@@ -31,12 +31,13 @@ public class SoundProcessor
 	
 	public static readonly int HOP_SIZE = 512;
 	public static readonly int HISTORY_SIZE = 50;
-	public static readonly float[] multipliers = { 1.5f, 1.5f, 1.5f, 1.5f, 1.5f, 1.5f };
+	public static readonly float[] multipliers = { 2f, 2f, 2f, 2f, 2f, 2f };
 	public static readonly float[] bands = { 0, 500, 500, 2000, 2000, 4000, 4000, 8000, 8000, 16000, 16000, 22000 };
 	
 	
-	public static ArrayList getPeaks(DecoderInterface decoder)
-	{		
+	public static float[][] getPeaks(DecoderInterface decoder)
+	{	
+		
 		SpectrumProvider spectrumProvider = new SpectrumProvider( decoder, 1024, HOP_SIZE, true );			
 		float[] spectrum = spectrumProvider.nextSpectrum();
 		float[] lastSpectrum = new float[spectrum.Length];
@@ -81,17 +82,17 @@ public class SoundProcessor
 			prunnedSpectralFlux.Add(tempPSF);
 		}
 		
-		ArrayList peaks = new ArrayList();
+		float[][] peaks = new float[prunnedSpectralFlux.Count][];
 		for(int i = 0; i < prunnedSpectralFlux.Count; i++)
 		{
-			ArrayList tempPeaks = new ArrayList();
+			float[] tempPeaks = new float[((ArrayList)prunnedSpectralFlux[i]).Count -1];
 			for(int j = 0; j < ((ArrayList)prunnedSpectralFlux[i]).Count -1; j++){
 				if( (float)((ArrayList)prunnedSpectralFlux[i])[j] > (float)((ArrayList)prunnedSpectralFlux[i])[j+1] )
-     				tempPeaks.Add( (float)((ArrayList)prunnedSpectralFlux[i])[j] );
+     				tempPeaks[j] = ( (float)((ArrayList)prunnedSpectralFlux[i])[j] );
    				else
-      				tempPeaks.Add( 0f );	
+      				tempPeaks[j] = 0f;	
 			}
-			peaks.Add(tempPeaks);
+			peaks[i] = tempPeaks;
 		}
 		
 		return peaks;
