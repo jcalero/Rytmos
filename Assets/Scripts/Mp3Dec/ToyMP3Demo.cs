@@ -35,7 +35,7 @@ class ToyMP3Demo
 				loop++;
 			}
 		}
-		catch(Exception e)
+		catch(Exception)
 		{
 			//Console.WriteLine(e);
 		}

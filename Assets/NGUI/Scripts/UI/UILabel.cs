@@ -415,7 +415,7 @@ public class UILabel : UIWidget
 		mChanged = true;
 		hasChanged = false;
 		mLastText = mText;
-		mProcessedText = mText.Replace("\\n", "\n");
+        mProcessedText = (multiLine ? mText.Replace("\\n", "\n") : mText);
 
 		if (mPassword)
 		{

@@ -23,7 +23,8 @@ public class Game : MonoBehaviour {
     private static bool cheated = false;        // True when devMode was on at any point of the game
     private static Mode mode;                    // Defines current/last game mode.
     private static State state;                   // Defines the current game state.
-	private static NumOfColors colors;			//Defines the amount of colors used in the game
+    private static string filePath;             // File path to the selected song to be loaded.
+    private static NumOfColors colors;			//Defines the amount of colors used in the game
     #endregion
 
     #region Functions
@@ -132,6 +133,11 @@ public class Game : MonoBehaviour {
     public static bool Cheated {
         get { return cheated; }
         set { cheated = value; }
+    }
+
+    public static string Song {
+        get { return filePath; }
+        set { filePath = value; }
     }
 
     public static State GameState {
