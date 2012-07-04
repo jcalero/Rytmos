@@ -23,8 +23,7 @@ public class EnemySpawnScript : MonoBehaviour {
     #region Functions
 
     void Start() {
-        //InvokeRepeating("SpawnEnemy", FirstSpawn, SpawnRate); // Start repeatedly spawning enemies
-		SpawnEnemy(0, 5f, 335);
+        InvokeRepeating("SpawnEnemy", FirstSpawn, SpawnRate); // Start repeatedly spawning enemies
         //init ();
         //playMusic();
     }

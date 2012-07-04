@@ -5,6 +5,9 @@ public class SecondPulseCollider : MonoBehaviour {
     
     protected void Start () {
         transform.position = gameObject.transform.parent.transform.position;
+		transform.localEulerAngles = new Vector3(0, 0, -90);
+		float scale = (1/gameObject.transform.parent.localScale.x);
+		transform.localScale = new Vector3(scale, scale, scale);
     }
     
     protected void OnTriggerExit (Collider otherObject) {
