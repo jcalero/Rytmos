@@ -17,6 +17,7 @@ public class EnemySpawnScript : MonoBehaviour {
     private GameObject cam;					// Camera gameobject to play audio
     private int[] counters;					// "Pointers" for the triggers of each channel
 	private float timer;					// Used to sync framerate with music playback-rate
+	private float audioLength;
 
     #endregion
 
@@ -29,32 +30,49 @@ public class EnemySpawnScript : MonoBehaviour {
         playMusic();
         //InvokeRepeating("SpawnEnemy", FirstSpawn, SpawnRate); // Start repeatedly spawning enemies
 		//SpawnEnemy(0, 5f, 335);
-        InvokeRepeating("SpawnEnemy", FirstSpawn, SpawnRate); // Start repeatedly spawning enemies
+        //InvokeRepeating("SpawnEnemy", FirstSpawn, SpawnRate); // Start repeatedly spawning enemies
         //init ();
         //playMusic();
     }
     
     void Update() {
-		if(cam.audio.isPlaying) timer += Time.deltaTime;
-        if(AudioManager.peaks != null && cam != null && cam.audio.isPlaying) triggerEnemiesOnMusic();
+		if (timer >= audioLength){
+			cam.audio.Stop();
+			Application.LoadLevel("Win");			
+		}
+    	else if(AudioManager.peaks != null && cam != null && cam.audio.isPlaying) {
+			timer += Time.deltaTime;
+			triggerEnemiesOnMusic(timer);
+		}
     }
     
     void init() {
-        counters = new int[AudioManager.peaks.Length];	
-		timer = 3f;
+		cam = GameObject.Find ("Main Camera");
+		if(Game.Song != null && Game.Song != "") {
+			if(Game.Song != AudioManager.getCurrentSong()) AudioManager.initMusic(Game.Song);
+		} else if (cam.audio.clip != null) {
+			if(!AudioManager.isSongLoaded()) {
+				AudioManager.setCam(this.cam);
+				AudioManager.initMusic("");
+			}
+		}
+		while(!AudioManager.isSongLoaded()) yieldRoutine();
+		audioLength = cam.audio.clip.frequency;
+		Debug.Log("audio frequency from unity: " + audioLength);
+		Debug.Log("Audio frequency from mpg: " + AudioManager.frequency);
+		counters = new int[AudioManager.peaks.Length];
+		timer = 0f;
     }
     
     void playMusic() {
-        cam = GameObject.Find ("Main Camera");
         cam.audio.clip = AudioManager.getAudioClip();	// Set the camera's audio clip to the read data	
         if(!cam.audio.isPlaying) cam.audio.Play ();
 		Debug.Log("length of song in seconds :" + cam.audio.time);
     }
 	
-	void triggerEnemiesOnMusic() {
+	void triggerEnemiesOnMusic(float timer) {
 		for(int t = 0; t < AudioManager.peaks.Length; t++) {
-				
-			while(counters[t] * (2028f/44100f) < timer) {
+			while(counters[t] * (1024f/cam.audio.clip.frequency) < timer) {
 				counters[t]++;
 				if(	AudioManager.peaks[t][counters[t]] > 0) SpawnEnemy(t,3f,(int)((t/(float)AudioManager.peaks.Length)*100));
 			}
