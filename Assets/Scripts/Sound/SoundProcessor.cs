@@ -1,5 +1,6 @@
 using UnityEngine;
-using System.Collections;
+using System;
+using System.Collections.Generic;
 
 public class SoundProcessor
 {
@@ -38,12 +39,13 @@ public class SoundProcessor
 	public static float[][] getPeaks(DecoderInterface decoder)
 	{	
 		
+		// Get spectral flux
 		SpectrumProvider spectrumProvider = new SpectrumProvider( decoder, 1024, HOP_SIZE, true );			
 		float[] spectrum = spectrumProvider.nextSpectrum();
 		float[] lastSpectrum = new float[spectrum.Length];
-		ArrayList spectralFlux = new ArrayList();
+		List<List<float>> spectralFlux = new List<List<float>>();
 		for( int i = 0; i < bands.Length / 2; i++ )
-			spectralFlux.Add( new ArrayList( ) );
+			spectralFlux.Add( new List<float>() );
 				
 		do
 		{						
@@ -58,44 +60,114 @@ public class SoundProcessor
 					value = (value + Mathf.Abs(value))/2;
 					flux += value;
 				}
-				((ArrayList)spectralFlux[i/2]).Add( flux );
+				(spectralFlux[i/2]).Add( flux );
 			}
 					
 			System.Array.Copy( spectrum, 0, lastSpectrum, 0, spectrum.Length );
 		}
-		while( (spectrum = spectrumProvider.nextSpectrum() ) != null );				
+		while( (spectrum = spectrumProvider.nextSpectrum() ) != null );
 		
-		ArrayList thresholds = new ArrayList( );
-		ArrayList prunnedSpectralFlux = new ArrayList(spectralFlux.Count);
+		// Convert spectral flux arraylist to array
+		float[][] spectralFluxArray = new float[spectralFlux.Count][];
+		for(int i = 0; i < spectralFluxArray.Length; i++) {
+			spectralFluxArray[i] = spectralFlux[i].ToArray();
+		}
+		spectralFlux.Clear();
+		spectralFlux = null;
+		
+		// Get thresholds
+		float[][] thresholds = new float[bands.Length/2][];
+		float[][] prunnedSpectralFlux = new float[bands.Length/2][];
 		for( int i = 0; i < bands.Length / 2; i++ )
 		{
-			ArrayList threshold = new ThresholdFunction( HISTORY_SIZE, multipliers[i] ).calculate( (ArrayList) spectralFlux[i] );
-			thresholds.Add( threshold );
+			float[] threshold = new ThresholdFunction( HISTORY_SIZE, multipliers[i] ).calculate( spectralFluxArray[i] );
+			thresholds[i] = threshold;
 			
-			ArrayList tempPSF = new ArrayList(((ArrayList)spectralFlux[i]).Count);
-			for(int j = 0; j < ((ArrayList)spectralFlux[i]).Count; j++) {
-				if ((float)threshold[j] <= (float)((ArrayList)spectralFlux[i])[j] )
-		      		tempPSF.Add( (float)((ArrayList)spectralFlux[i])[j] - (float)threshold[j]  );
+			float[] tempPSF = new float[spectralFluxArray[i].Length];
+			for(int j = 0; j < spectralFluxArray[i].Length; j++) {
+				if (threshold[j] <= spectralFluxArray[i][j] )
+		      		tempPSF[j] = spectralFluxArray[i][j] - threshold[j];
 		  		else
-		      		tempPSF.Add( 0f );	
+		      		tempPSF[j] = 0;	
 			}
-			prunnedSpectralFlux.Add(tempPSF);
+			prunnedSpectralFlux[i] = tempPSF;
 		}
 		
-		float[][] peaks = new float[prunnedSpectralFlux.Count][];
-		for(int i = 0; i < prunnedSpectralFlux.Count; i++)
+		// Get Peaks
+		float[][] peaks = new float[prunnedSpectralFlux.Length][];
+		float alpha = 2f/21f;
+		for(int i = 0; i < prunnedSpectralFlux.Length; i++)
 		{
-			float[] tempPeaks = new float[((ArrayList)prunnedSpectralFlux[i]).Count -1];
-			for(int j = 0; j < ((ArrayList)prunnedSpectralFlux[i]).Count -1; j++){
-				if( (float)((ArrayList)prunnedSpectralFlux[i])[j] > (float)((ArrayList)prunnedSpectralFlux[i])[j+1] )
-     				tempPeaks[j] = ( (float)((ArrayList)prunnedSpectralFlux[i])[j] );
+			float[] tempPeaks = new float[prunnedSpectralFlux[i].Length -1];
+			float movingMean = 0;
+			bool first = true;
+			for(int j = 0; j < prunnedSpectralFlux[i].Length -1; j++){
+				if(prunnedSpectralFlux[i][j] > prunnedSpectralFlux[i][j+1] ) {
+					//if(first) movingMean = prunnedSpectralFlux[i][j];
+					if(prunnedSpectralFlux[i][j] >= movingMean) {
+						tempPeaks[j] = prunnedSpectralFlux[i][j];
+					} else {
+						tempPeaks[j] = 0f;
+					}
+					
+					movingMean = (alpha * prunnedSpectralFlux[i][j]) + ((1-alpha) * movingMean);
+				}
    				else
       				tempPeaks[j] = 0f;	
 			}
 			peaks[i] = tempPeaks;
 		}
 		
+//		// Clean "peaks" with queue "polish"
+//		int queueLength = (peakCounter/peaks.Length)/100;
+//		int halfQueueLength = queueLength/2;
+//		Debug.Log(queueLength);
+//		for(int i = 0; i < peaks.Length; i++) {
+//			LinkedList<float> avgQueue = new LinkedList<float>();
+//			
+//			for(int j = 0; j<peaks[i].Length; j++) {
+//				if(peaks[i][j] > 0) {
+//					if(avgQueue.Count < queueLength)
+//						avgQueue.AddLast(peaks[i][j]);
+//					else break;
+//				}
+//			}
+//			
+//			for(int j = 0; j<peaks[i].Length; j++) {
+//				
+//				if(peaks[i][j] > 0) {
+//					
+//					avgQueue.RemoveFirst();
+//					
+//					if(j + halfQueueLength < peaks[i].Length)
+//						avgQueue.AddLast(peaks[i][j+halfQueueLength]);
+//					
+//					float mean = calcMean(avgQueue);
+//					if(peaks[i][j] < mean) peaks[i][j] = 0;
+//				}	
+//			}
+//		}
 		return peaks;
+	}
+	
+	private static float calcMean (LinkedList<float> queue) {
+	
+		float mean = 0;
+		if(queue.Count == 0) return mean;
+		
+		LinkedListNode<float> first = queue.First;
+		LinkedListNode<float> next;
+		
+		mean += first.Value;
+		
+		while((next = first.Next) != null) {
+			mean += next.Value;
+		}
+		
+		mean /= queue.Count;
+		
+		return mean;
+		
 	}
 	
 //	

@@ -12,23 +12,24 @@ public class ThresholdFunction {
 		this.multiplier = multiplier;
 	}
    
-   	public ArrayList calculate( ArrayList spectralFlux )
-	{
-		ArrayList thresholds = new ArrayList( spectralFlux.Count );
+	public float[] calculate(float[] spectralFlux) {
+			
+		float[] thresholds = new float[ spectralFlux.Length ];
 		
-		for( int i = 0; i < spectralFlux.Count; i++ )
+		for( int i = 0; i < spectralFlux.Length; i++ )
 		{
 			float sum = 0;
 			int start = Mathf.Max( 0, i - historySize / 2);
-			int end = Mathf.Min( spectralFlux.Count-1, i + historySize / 2 );
+			int end = Mathf.Min( spectralFlux.Length-1, i + historySize / 2 );
 			for( int j = start; j <= end; j++ )
-				sum += (float)spectralFlux[j];
+				sum += spectralFlux[j];
 			sum /= (end-start);
 			sum *= multiplier;
-			thresholds.Add( sum );
+			thresholds[i] = sum ;
 		}
 		
 		return thresholds;
+		
 	}
    
 }
