@@ -13,6 +13,7 @@ public class FileReader : DecoderInterface {
 	private string path;
 	private float[] data;
 	private int readDataPointer;
+	private int frequency;
 	//private MP3 mp3Reader;
 	
 	// Supported Audio Formats.. not all of them are in yet!!
@@ -65,6 +66,10 @@ public class FileReader : DecoderInterface {
 		this.reading = false;
 		return ReadStatus.SUCCESS;
 		
+	}
+	
+	public int getFrequency() {
+		return frequency;	
 	}
 	
 	/// <summary>
@@ -127,6 +132,7 @@ public class FileReader : DecoderInterface {
 		// Convert byte data to float data
 		this.data = byteArrayToFloatArray(noHeader);
 		this.clip = fileLoader.GetAudioClip(true,false,AudioType.WAV);
+		this.frequency = 44100;
 		
 	}
 	
@@ -218,6 +224,8 @@ public class FileReader : DecoderInterface {
 		int _channels = channels.ToInt32();
 		int _encoding = encoding.ToInt32 ();
 		
+		this.frequency = _frequency;
+		
 		txtRate = _frequency.ToString ();
 		txtChannels = _channels.ToString ();
 		txtEnc = _encoding.ToString ();
@@ -268,6 +276,9 @@ public class FileReader : DecoderInterface {
 				dataCounter++;	
 			}			
         }
+		
+		Debug.Log("monoLength: " + this.data.Length);
+		Debug.Log("stereoLength: " + clipDataCounter);
 		
 		this.clip = AudioClip.Create("gameAudio",clipData.Length,_channels,_frequency,true,false);
 		this.clip.SetData(clipData,0);

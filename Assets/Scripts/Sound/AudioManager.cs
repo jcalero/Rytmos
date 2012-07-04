@@ -7,7 +7,9 @@ public static class AudioManager {
 	public static float[][] peaks;				// Holds the triggers for the currently loaded audio file
 	private static GameObject cam;
 	private static AudioClip clip;
-
+	private static bool songLoaded;
+	private static string currentlyLoadedSong;
+	public static int frequency;
 		
 	public static void initMusic(string pathToMusicFile) {
 		
@@ -15,6 +17,8 @@ public static class AudioManager {
 			float[] data = new float[cam.audio.clip.samples];
 			cam.audio.clip.GetData(data,0);
 			peaks = SoundProcessor.getPeaks(new MockDecoder(data));
+			songLoaded = true;
+			currentlyLoadedSong = "xXBACKgroundMUSICXx";
 		} else {
 			// Read Audio Data
 			freader = new FileReader (pathToMusicFile);
@@ -24,8 +28,20 @@ public static class AudioManager {
 			if(success == (int)FileReader.ReadStatus.SUCCESS)
 				peaks = SoundProcessor.getPeaks(freader);
 			clip = freader.getClip();
+			frequency = freader.getFrequency();
+			currentlyLoadedSong = pathToMusicFile;
+			
 			freader = null;
+			songLoaded = true;
 		}
+	}
+	
+	public static string getCurrentSong() {
+		return currentlyLoadedSong;	
+	}
+	
+	public static bool isSongLoaded () {
+		return songLoaded;
 	}
 	
 	public static AudioClip getAudioClip() {
