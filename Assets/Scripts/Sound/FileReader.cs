@@ -260,34 +260,46 @@ public class FileReader : DecoderInterface {
 		int len = MPGImport.mpg123_length(handle_mpg);
 		this.data = new float[len];
 		float[] clipData = new float[len*_channels];
+		
+		Debug.Log("len*_channels: " + (len*_channels));
+		Debug.Log("len: " + len);
+		
 		int dataCounter = 0;
 		int clipDataCounter = 0;
 		float maxVal = (float)short.MaxValue;
 		float fChan = (float)_channels;
 		
 		byte[] Buffer = new byte[FrameSize];
-		Debug.Log(FrameSize/4);
         while (0 == MPGImport.mpg123_read(handle_mpg, Buffer, FrameSize, out done))
         {
 			for(int i = 0; i < Buffer.Length; i+=_channels*2) {
 				
 				for (int j = 0; j < _channels*2; j+=2) {
 					float tempVal = System.BitConverter.ToInt16(Buffer,i+j);
-					this.data[dataCounter] += tempVal;
-					clipData[clipDataCounter] = tempVal/maxVal;
+					if(dataCounter < this.data.Length)
+						this.data[dataCounter] += tempVal;
+					if(clipDataCounter < clipData.Length)
+						clipData[clipDataCounter] = tempVal/maxVal;
 					clipDataCounter++;
 				}
-				this.data[dataCounter] /= fChan;
-				this.data[dataCounter] /= maxVal;
+				if(dataCounter < this.data.Length) {
+					this.data[dataCounter] /= fChan;
+					this.data[dataCounter] /= maxVal;
+				}
 				dataCounter++;	
 			}			
         }
 		
-		float[] tempData = new float[dataCounter];
+		Debug.Log("data.length: " + data.Length);
+		Debug.Log("dataCounter: " + dataCounter);
+		Debug.Log("clipDataCounter: "+ clipDataCounter);
+		Debug.Log("channels: " + _channels);
+		
+		float[] tempData = new float[(dataCounter < this.data.Length)? dataCounter : this.data.Length];
 		System.Array.Copy(this.data,tempData,tempData.Length);
 		this.data = tempData;
 		
-		tempData = new float[clipDataCounter];
+		tempData = new float[(clipDataCounter < clipData.Length)? clipDataCounter : clipData.Length];
 		System.Array.Copy(clipData,tempData,tempData.Length);
 		clipData = tempData;
 		

@@ -169,7 +169,6 @@ public class SoundProcessor
 		decoder.reset();
 		
 		float rollingAverage = min + 0.5f*(max-min);
-		Debug.Log("ravg: " + rollingAverage);
 		float alpha = 0.5f;		
 		bool alreadyInMax = false;
 		int sampleCounter = 0;
