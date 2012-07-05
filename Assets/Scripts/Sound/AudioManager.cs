@@ -11,6 +11,7 @@ public static class AudioManager {
 	private static string currentlyLoadedSong;
 	public static int frequency;
 	public static float audioLength;
+	public static int[] loudPartTimeStamps;
 		
 	public static void initMusic(string pathToMusicFile) {
 		
@@ -26,12 +27,16 @@ public static class AudioManager {
 			int success = (int)freader.read ();
 			while (freader.isReading())
 				yieldRoutine ();
-			if(success == (int)FileReader.ReadStatus.SUCCESS)
-				peaks = SoundProcessor.getPeaks(freader);
+			if(success != (int)FileReader.ReadStatus.SUCCESS)
+				return;
+				
 			clip = freader.getClip();
 			frequency = freader.getFrequency();
 			audioLength = freader.getAudioLengthInSecs();
 			currentlyLoadedSong = pathToMusicFile;
+			
+			peaks = SoundProcessor.getPeaks(freader);
+			loudPartTimeStamps = SoundProcessor.findVolumeLevels(freader);
 			
 			freader = null;
 			songLoaded = true;

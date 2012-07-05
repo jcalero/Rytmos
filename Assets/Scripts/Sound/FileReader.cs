@@ -357,6 +357,10 @@ public class FileReader : DecoderInterface {
 //		}
 	}
 	
+	public void reset() {
+		readDataPointer = 0;
+	}
+	
 	/// <summary>
 	/// Routine for yielding.
 	/// </summary>

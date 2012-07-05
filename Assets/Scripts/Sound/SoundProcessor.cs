@@ -150,6 +150,63 @@ public class SoundProcessor
 		return peaks;
 	}
 	
+	public static int[] findVolumeLevels(DecoderInterface decoder) {
+		
+		decoder.reset();
+		
+		List<int> volumeLevels = new List<int>();
+		float[] samples = new float[AudioManager.frequency/2];
+		float max = -1;
+		float min = 2; // amplitudes are between 0 and 1
+		
+		while(decoder.readSamples(ref samples) > 0) {
+			foreach(float sample in samples) {
+				if(Mathf.Abs(sample) > max) max = sample;
+				if(Mathf.Abs(sample) < min) min = sample;
+			}
+		}
+		
+		decoder.reset();
+		
+		float rollingAverage = min + 0.5f*(max-min);
+		Debug.Log("ravg: " + rollingAverage);
+		float alpha = 0.5f;		
+		bool alreadyInMax = false;
+		int sampleCounter = 0;
+		while(decoder.readSamples(ref samples) > 0) {
+			float avg = 0;
+			foreach(float sample in samples) {
+				avg+=Mathf.Abs(sample);
+			}
+			avg /= (float)samples.Length;
+			
+			rollingAverage = (alpha * avg) + ((1-alpha) * rollingAverage);
+			
+			// Have we found a part which classifies as "loud"?
+			if(rollingAverage > min + 0.1f*(max - min)) {
+				
+				// Are we already in a loud part?
+				if(!alreadyInMax) {
+					volumeLevels.Add(sampleCounter*samples.Length); // Add timestamp of hitting fast part
+					alreadyInMax = !alreadyInMax; // Set flag that we are now in a loud part
+				}
+				
+			} else if(alreadyInMax) {
+				// We now left the loud part, add ending timestamp
+				volumeLevels.Add(sampleCounter*samples.Length);
+				alreadyInMax = !alreadyInMax; // Set flag
+			}
+			
+			sampleCounter++;
+			
+		}
+		return volumeLevels.ToArray();
+		
+		
+	}
+	
+	
+	
 	private static float calcMean (LinkedList<float> queue) {
 	
 		float mean = 0;

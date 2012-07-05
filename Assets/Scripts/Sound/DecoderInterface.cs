@@ -11,5 +11,6 @@ public interface DecoderInterface
 	 * 
 	 * @param samples The number of read samples.
 	 */
-        int readSamples(ref float[] samples );
+    int readSamples(ref float[] samples );
+	void reset();
 }

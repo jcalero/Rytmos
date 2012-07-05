@@ -24,4 +24,8 @@ public class MockDecoder : DecoderInterface {
 		
 		return readLength;
 	}
+	
+	public void reset() {
+		pointer = 0;	
+	}
 }

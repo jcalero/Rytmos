@@ -25,7 +25,8 @@ public class EnemySpawnScript : MonoBehaviour {
 	private int[] spawnPositions;
 	private int currentlySelectedEnemy;
 	private int rotateDirection;
-
+	private int loudPartCounter;
+	private bool loudFlag;
     #endregion
 
     #region Functions
@@ -75,6 +76,8 @@ public class EnemySpawnScript : MonoBehaviour {
 		spawnPositions = new int[]{0,33,66};
 		currentlySelectedEnemy = 0;
 		rotateDirection = 1;
+		loudPartCounter = 0;
+		loudFlag = false;
     }
     
     void playMusic() {
@@ -85,6 +88,12 @@ public class EnemySpawnScript : MonoBehaviour {
 	void triggerEnemiesOnMusic(float timer) {
 		
 		/* Music related logic: */
+		if(loudPartCounter < AudioManager.loudPartTimeStamps.Length && AudioManager.loudPartTimeStamps[loudPartCounter]/(float)AudioManager.frequency < timer+0.5f) {
+			loudFlag = !loudFlag;
+			Debug.Log("loud part?: " + loudFlag);
+			Debug.Log("how many loud parts?" + (AudioManager.loudPartTimeStamps.Length/2));
+			loudPartCounter++;			
+		}
 		
 		// Iterate over every channel
 		for(int t = 0; t < AudioManager.peaks.Length; t++) {
@@ -113,7 +122,7 @@ public class EnemySpawnScript : MonoBehaviour {
 							case 1:
 								// These are more medium ranged frequencies, used to change the spawn position (for now at least)
 								for (int i = 0; i < spawnPositions.Length; i++) {
-									incrementSpawnPosition(ref spawnPositions[i],5,rotateDirection);
+									incrementSpawnPosition(ref spawnPositions[i],loudFlag? 10 : 1,rotateDirection);
 								}
 								break;
 							case 2:
@@ -134,11 +143,10 @@ public class EnemySpawnScript : MonoBehaviour {
 								break;								
 							}
 							
-							
-							
-							
+							// Update the time of last spawn
 							timers[t] = timer;
 						}
+						// Update the spawning restrictors
 						spawnRestrictors[t] = (spawnRestrictors[t]+1)%spawnDivisors[t];
 					}
 				}
