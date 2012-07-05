@@ -30,6 +30,7 @@ public class Level : MonoBehaviour {
     protected virtual void Awake() {
         // Local static reference to this class.
 		if(Game.ColorMode == Game.NumOfColors.Four) fourColors = true;
+		else fourColors = false;
         Instance = this;
         spriteManagerScript = spriteManager.GetComponent<LinkedSpriteManager>();
     }
@@ -43,7 +44,7 @@ public class Level : MonoBehaviour {
 
         // Set up level feedback stuff
         SetUpBorderLineFeedback();
-        SetUpParticlesFeedback();
+        //SetUpParticlesFeedback();
     }
     /// <summary>
     /// Shows the touch sprite at the "pos" location with the respective colour
@@ -68,7 +69,15 @@ public class Level : MonoBehaviour {
     /// <summary>
     /// Positions the particle feedbacks at the correct location of the screen
     /// </summary>
-    private void SetUpParticlesFeedback() {
+    public static void SetUpParticlesFeedback(int numOfSpawns, int enemy) {
+		EnemySpawnScript ess = Instance.enemySpawner.GetComponent<EnemySpawnScript>();
+		for(int i=0; i<numOfSpawns; i++) {
+			int percentage = ess.spawnPositions[i];
+			Instance.particlesFeedback[i].transform.localPosition = ess.findSpawnPositionVector(percentage);
+			Debug.Log (enemy);
+			Instance.particlesFeedback[i].GetComponent<ParticleSystem>().startColor = singleColourSelect(enemy);
+		}
+		/*
         if (fourColors) {
             particlesFeedback[1].transform.localPosition = new Vector3(Game.screenLeft, Game.screenBottom, 0); //Cyan
             particlesFeedback[2].transform.localPosition = new Vector3(Game.screenRight, Game.screenBottom, 0); //Blue
@@ -82,6 +91,7 @@ public class Level : MonoBehaviour {
             particlesFeedback[4].transform.localPosition = new Vector3(Game.screenMiddle, Game.screenTop, 0); //Red
             particlesFeedback[5].transform.localPosition = new Vector3(Game.screenRight, Game.screenTop, 0); //Purple
         }
+        */
 
     }
 
@@ -198,6 +208,25 @@ public class Level : MonoBehaviour {
             }
         }
     }
+	
+	public static Color singleColourSelect(int numColors) {
+		switch (numColors) {
+		case 0:
+			return Color.blue;
+		case 1:
+			return Color.cyan;
+		case 2:
+			return Color.yellow;
+		case 3:
+			return Color.red;
+		case 4:
+			return Level.purple;
+		case 5:
+			return Color.green;
+		default: 
+			return Color.black;
+		}
+	}
     #endregion
 
 }

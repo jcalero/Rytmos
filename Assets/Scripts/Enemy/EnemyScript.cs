@@ -29,7 +29,7 @@ public class EnemyScript : MonoBehaviour {
     protected float UVWidth = 1f;
 
     private Color mainColor;            // The color of the enemy
-    private float currentSpeed = 0;         // The speed of the enemy
+    protected float currentSpeed = 10;         // The speed of the enemy
     private float x, y, z;              // Position coordinates of the enemy
     private int fixPos;                 // Random value for moving the enemy off the screen
 
@@ -41,14 +41,12 @@ public class EnemyScript : MonoBehaviour {
     protected virtual void Awake() {
 		SetPositionAndSpeed();
         if (Level.fourColors) colors = new Color[] { Color.red, Color.cyan, Color.blue, Color.yellow };
-        colorIndex = Random.Range(0, colors.Length);    // Defines the colour
-        MainColor = colors[colorIndex];                 // Sets the colour
-        SetColor();
+   
     }
 
     protected virtual void Start() {
         // Start moving towards the player
-        // TODO: Fix the auto-heading of sprites.
+		SetColor();
         iTween.MoveTo(gameObject, iTween.Hash("position", Vector3.zero,
                                               "speed", currentSpeed,
                                               "easetype", "linear"));
@@ -79,7 +77,7 @@ public class EnemyScript : MonoBehaviour {
     /// </summary>
     protected void SetPositionAndSpeed() {
         // Sets the speed of the enemy between minSpeed and max
-        currentSpeed = Random.Range(minSpeed, maxSpeed);
+        //currentSpeed = Random.Range(minSpeed, maxSpeed);
 
         // Sets an initial position of the enemies to somewhere inside the game area
         x = Random.Range(Game.screenLeft, Game.screenRight);
@@ -103,7 +101,7 @@ public class EnemyScript : MonoBehaviour {
         
     }
 	
-	public void SetPositionAndSpeed(float speed, float xpos, float ypos) {	
+	public void SetPositionAndSpeed(float speed, float xpos, float ypos) {
 		currentSpeed = speed;
 		x = xpos;
 		y = ypos;

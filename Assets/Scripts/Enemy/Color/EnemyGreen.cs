@@ -15,7 +15,8 @@ public class EnemyGreen : EnemyScript {
         minSpeed = 1f;                                // Sets minimum speed
         maxSpeed = 5f;                                // Sets maximum speed
         health = 1;                                     // Sets health
-        base.Awake();
+		MainColor = Color.green;
+		base.Awake();
     }
 
     /// <summary>
@@ -23,7 +24,7 @@ public class EnemyGreen : EnemyScript {
     /// </summary>
     protected override void Start() {
         spriteManager = GameObject.Find("EnemySpawner").GetComponent<LinkedSpriteManager>();
-        MainColor = Color.green;
+
         spriteName = "8-green";
 
         // Checks that the sprite name exists in the atlas, if not falls back to default sprite

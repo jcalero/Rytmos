@@ -11,9 +11,10 @@ public class EnemySpawnScript : MonoBehaviour {
     public GameObject[] EnemyPrefabs;       // List of enemy types to spawn. Inspector reference. Location: EnemySpawner
     public float FirstSpawn;                // The delay the spawner will initialise itself with (time for first spawn)
     public float SpawnRate;                 // The time between spawns
+	public int[] spawnPositions;
+	private int currentlySelectedEnemy;
     
     private int RandomSeed;                 // The enemy type to spawn
-    
     private GameObject cam;					// Camera gameobject to play audio
     private int[] counters;					// "Pointers" for the triggers of each channel
 	private float timer;					// Used to sync framerate with music playback-rate
@@ -22,8 +23,7 @@ public class EnemySpawnScript : MonoBehaviour {
 	private readonly float timeThresh = 0.25f;
 	private int[] spawnRestrictors;
 	private int[] spawnDivisors;
-	private int[] spawnPositions;
-	private int currentlySelectedEnemy;
+
 	private int rotateDirection;
 	private int loudPartCounter;
 	private bool loudFlag;
@@ -32,15 +32,9 @@ public class EnemySpawnScript : MonoBehaviour {
     #region Functions
 
     void Start() {
-        //InvokeRepeating("SpawnEnemy", FirstSpawn, SpawnRate); // Start repeatedly spawning enemies
-		Debug.Log("start called");
+        //InvokeRepeating("SpawnEnemy", FirstSpawn, SpawnRate); // Start repeatedly spawning enemies		
         init ();
         playMusic();
-        //InvokeRepeating("SpawnEnemy", FirstSpawn, SpawnRate); // Start repeatedly spawning enemies
-		//SpawnEnemy(0, 5f, 335);
-        //InvokeRepeating("SpawnEnemy", FirstSpawn, SpawnRate); // Start repeatedly spawning enemies
-        //init ();
-        //playMusic();
     }
     
     void Update() {
@@ -67,7 +61,6 @@ public class EnemySpawnScript : MonoBehaviour {
 		while(!AudioManager.isSongLoaded()) yieldRoutine();
 		cam.audio.loop = false;
 		audioLength = AudioManager.audioLength;
-		Debug.Log("audioLength : "  + audioLength);
 		counters = new int[AudioManager.peaks.Length];
 		timers = new float[AudioManager.peaks.Length];
 		spawnRestrictors = new int[AudioManager.peaks.Length];
@@ -76,6 +69,7 @@ public class EnemySpawnScript : MonoBehaviour {
 		spawnPositions = new int[]{0,33,66};
 		currentlySelectedEnemy = 0;
 		rotateDirection = 1;
+		Level.SetUpParticlesFeedback(spawnPositions.Length, currentlySelectedEnemy);		
 		loudPartCounter = 0;
 		loudFlag = false;
     }
@@ -90,8 +84,6 @@ public class EnemySpawnScript : MonoBehaviour {
 		/* Music related logic: */
 		if(loudPartCounter < AudioManager.loudPartTimeStamps.Length && AudioManager.loudPartTimeStamps[loudPartCounter]/(float)AudioManager.frequency < timer+0.5f) {
 			loudFlag = !loudFlag;
-			Debug.Log("loud part?: " + loudFlag);
-			Debug.Log("how many loud parts?" + (AudioManager.loudPartTimeStamps.Length/2));
 			loudPartCounter++;			
 		}
 		
@@ -115,6 +107,7 @@ public class EnemySpawnScript : MonoBehaviour {
 							switch (t) {
 							case 0:
 								// This is the bass frequency, used for spawning enemies (for now at least)
+								Level.SetUpParticlesFeedback(spawnPositions.Length, currentlySelectedEnemy);
 								foreach(int spawnPosition in spawnPositions) {
 									SpawnEnemy(currentlySelectedEnemy,3f,spawnPosition);
 								}
@@ -122,8 +115,8 @@ public class EnemySpawnScript : MonoBehaviour {
 							case 1:
 								// These are more medium ranged frequencies, used to change the spawn position (for now at least)
 								for (int i = 0; i < spawnPositions.Length; i++) {
-									incrementSpawnPosition(ref spawnPositions[i],loudFlag? 10 : 1,rotateDirection);
-								}
+									incrementSpawnPosition(ref spawnPositions[i],10,rotateDirection);
+								}								
 								break;
 							case 2:
 								// These are even more medium ranged frequencies, used to change the direction (for now, again :P )
@@ -132,6 +125,7 @@ public class EnemySpawnScript : MonoBehaviour {
 								break;
 							case 3:
 								// Some higher frequencies to change the currently spawned enemy
+								Level.SetUpParticlesFeedback(spawnPositions.Length, currentlySelectedEnemy);
 								changeEnemy(ref currentlySelectedEnemy);
 								break;
 							case 4:
@@ -157,12 +151,19 @@ public class EnemySpawnScript : MonoBehaviour {
 	
 	private static void changeEnemy(ref int currentEnemy) {
 		int rnd = Random.Range(0,101);
-		if(rnd < 30) currentEnemy = 0;
-		else if(rnd < 55) currentEnemy = 1;
-		else if(rnd < 75) currentEnemy = 2;
-		else if(rnd < 85) currentEnemy = 3;
-		else if(rnd < 95) currentEnemy = 4;
-		else if(rnd < 101) currentEnemy = 5;
+		if(Level.fourColors) {
+			if(rnd < 25) currentEnemy = 0;
+			else if(rnd < 50) currentEnemy = 1;
+			else if(rnd < 75) currentEnemy = 2;
+			else if(rnd < 100) currentEnemy = 3;
+		} else {
+			if(rnd < 30) currentEnemy = 0;
+			else if(rnd < 55) currentEnemy = 1;
+			else if(rnd < 75) currentEnemy = 2;
+			else if(rnd < 85) currentEnemy = 3;
+			else if(rnd < 95) currentEnemy = 4;
+			else if(rnd < 101) currentEnemy = 5;
+		}
 		
 	}
 	
@@ -204,6 +205,11 @@ public class EnemySpawnScript : MonoBehaviour {
 	}
 	
 	public void SpawnEnemy (int prefab, float speed, int percentage) {
+		Vector3 temp = findSpawnPositionVector(percentage);
+		SpawnEnemy(prefab, speed, temp.x, temp.y);
+	}
+	
+	public Vector3 findSpawnPositionVector(int percentage) {
 		float xpos;
 		float ypos;
 		if(percentage <= 25) {
@@ -219,11 +225,10 @@ public class EnemySpawnScript : MonoBehaviour {
 			xpos = (Game.screenRight*2*(percentage-75)/25) + Game.screenLeft;
 			ypos = Game.screenBottom;
 		} else {
-			SpawnEnemy(prefab, speed, percentage-100);
-			return;
+			return findSpawnPositionVector (percentage-100);
 		}
-		SpawnEnemy(prefab, speed, xpos, ypos);
-	}
+		return new Vector3(xpos, ypos, 0);	
+	}	
 
     /// <summary>
     /// Restarts the Invoke method to allow new spawn rates to be initialised

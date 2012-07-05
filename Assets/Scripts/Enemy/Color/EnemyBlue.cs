@@ -6,6 +6,8 @@ using UnityEngine;
 /// </summary>
 public class EnemyBlue : EnemyScript {
     #region Fields
+	public float speed;
+	
     private LinkedSpriteManager spriteManager;
     private Sprite enemyCircle;
     #endregion
@@ -15,6 +17,7 @@ public class EnemyBlue : EnemyScript {
         minSpeed = 1f;                                // Sets minimum speed
         maxSpeed = 5f;                                // Sets maximum speed
         health = 1;                                     // Sets health
+		MainColor = Color.blue;
         base.Awake();
     }
 
@@ -22,8 +25,8 @@ public class EnemyBlue : EnemyScript {
     /// Overriding Start() to set unique values for this enemy type
     /// </summary>
     protected override void Start() {
+		speed = currentSpeed;
         spriteManager = GameObject.Find("EnemySpawner").GetComponent<LinkedSpriteManager>();
-        MainColor = Color.blue;
         spriteName = "7-blue";
 
         // Checks that the sprite name exists in the atlas, if not falls back to default sprite
