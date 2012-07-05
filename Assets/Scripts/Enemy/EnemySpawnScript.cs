@@ -48,6 +48,12 @@ public class EnemySpawnScript : MonoBehaviour {
 		}
     }
     
+	/// <summary>
+	/// Initialise this instance.
+	/// 
+	/// Find the camera and assign it the loaded audio clip
+	/// ...and then initialize a load of other stuff
+	/// </summary>
     void init() {
 		cam = GameObject.Find ("Main Camera");
 		if(Game.Song != null && Game.Song != "") {
