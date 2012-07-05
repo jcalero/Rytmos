@@ -18,6 +18,13 @@ public class EnemySpawnScript : MonoBehaviour {
     private int[] counters;					// "Pointers" for the triggers of each channel
 	private float timer;					// Used to sync framerate with music playback-rate
 	private float audioLength;
+	private float[] timers;
+	private readonly float timeThresh = 0.25f;
+	private int[] spawnRestrictors;
+	private int[] spawnDivisors;
+	private int[] spawnPositions;
+	private int currentlySelectedEnemy;
+	private int rotateDirection;
 
     #endregion
 
@@ -57,29 +64,106 @@ public class EnemySpawnScript : MonoBehaviour {
 			}
 		}
 		while(!AudioManager.isSongLoaded()) yieldRoutine();
-		audioLength = cam.audio.clip.frequency;
-		Debug.Log("audio frequency from unity: " + audioLength);
-		Debug.Log("Audio frequency from mpg: " + AudioManager.frequency);
+		cam.audio.loop = false;
+		audioLength = AudioManager.audioLength;
+		Debug.Log("audioLength : "  + audioLength);
 		counters = new int[AudioManager.peaks.Length];
+		timers = new float[AudioManager.peaks.Length];
+		spawnRestrictors = new int[AudioManager.peaks.Length];
+		spawnDivisors = new int[]{2,2,8,2,2,2};
 		timer = 0f;
+		spawnPositions = new int[]{0,33,66};
+		currentlySelectedEnemy = 0;
+		rotateDirection = 1;
     }
     
     void playMusic() {
         cam.audio.clip = AudioManager.getAudioClip();	// Set the camera's audio clip to the read data	
         if(!cam.audio.isPlaying) cam.audio.Play ();
-		Debug.Log("length of song in seconds :" + cam.audio.time);
     }
 	
 	void triggerEnemiesOnMusic(float timer) {
+		
+		/* Music related logic: */
+		
+		// Iterate over every channel
 		for(int t = 0; t < AudioManager.peaks.Length; t++) {
-			while(counters[t] * (1024f/cam.audio.clip.frequency) < timer) {
+			
+			// Sync peaks (can call them triggers) to the music
+			while(counters[t] * (1024f/(float)AudioManager.frequency) < timer) {
 				counters[t]++;
-				if(	AudioManager.peaks[t][counters[t]] > 0) SpawnEnemy(t,3f,(int)((t/(float)AudioManager.peaks.Length)*100));
+				
+				// Are the peaks withing range? Do we have a peak?
+				if(	counters[t] < AudioManager.peaks[t].Length && AudioManager.peaks[t][counters[t]] > 0) {
+					
+					// Filter out too frequent peaks
+					if(timer - timers[t] > timeThresh) {
+						
+						// Filter out every 2nd, or 3rd, or what ever specified trigger
+						if(spawnRestrictors[t] == 0) {
+							
+							/* Spawning/Gameplay related logic */
+							switch (t) {
+							case 0:
+								// This is the bass frequency, used for spawning enemies (for now at least)
+								foreach(int spawnPosition in spawnPositions) {
+									SpawnEnemy(currentlySelectedEnemy,3f,spawnPosition);
+								}
+								break;
+							case 1:
+								// These are more medium ranged frequencies, used to change the spawn position (for now at least)
+								for (int i = 0; i < spawnPositions.Length; i++) {
+									incrementSpawnPosition(ref spawnPositions[i],5,rotateDirection);
+								}
+								break;
+							case 2:
+								// These are even more medium ranged frequencies, used to change the direction (for now, again :P )
+								if(rotateDirection == 1) rotateDirection-=2;
+								else rotateDirection+=2;
+								break;
+							case 3:
+								// Some higher frequencies to change the currently spawned enemy
+								changeEnemy(ref currentlySelectedEnemy);
+								break;
+							case 4:
+								break;
+							case 5:
+								break;
+							default:
+								
+								break;								
+							}
+							
+							
+							
+							
+							timers[t] = timer;
+						}
+						spawnRestrictors[t] = (spawnRestrictors[t]+1)%spawnDivisors[t];
+					}
+				}
 			}
 
 		}		
 	}
 	
+	private static void changeEnemy(ref int currentEnemy) {
+		int rnd = Random.Range(0,101);
+		if(rnd < 30) currentEnemy = 0;
+		else if(rnd < 55) currentEnemy = 1;
+		else if(rnd < 75) currentEnemy = 2;
+		else if(rnd < 85) currentEnemy = 3;
+		else if(rnd < 95) currentEnemy = 4;
+		else if(rnd < 101) currentEnemy = 5;
+		
+	}
+	
+	private static void incrementSpawnPosition(ref int currentPos, int increment, int direction) {
+		currentPos += increment*direction;
+		if(currentPos > 100) currentPos -= 100;
+		else if (currentPos < 0) currentPos += 100;
+		//return currentPos;		
+	}
 		
 	public static IEnumerator yieldRoutine () {
 		yield return 0;

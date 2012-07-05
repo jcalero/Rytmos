@@ -10,6 +10,7 @@ public static class AudioManager {
 	private static bool songLoaded;
 	private static string currentlyLoadedSong;
 	public static int frequency;
+	public static float audioLength;
 		
 	public static void initMusic(string pathToMusicFile) {
 		
@@ -29,6 +30,7 @@ public static class AudioManager {
 				peaks = SoundProcessor.getPeaks(freader);
 			clip = freader.getClip();
 			frequency = freader.getFrequency();
+			audioLength = freader.getAudioLengthInSecs();
 			currentlyLoadedSong = pathToMusicFile;
 			
 			freader = null;

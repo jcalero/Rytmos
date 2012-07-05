@@ -14,6 +14,7 @@ public class FileReader : DecoderInterface {
 	private float[] data;
 	private int readDataPointer;
 	private int frequency;
+	private float audioLength;
 	//private MP3 mp3Reader;
 	
 	// Supported Audio Formats.. not all of them are in yet!!
@@ -70,6 +71,10 @@ public class FileReader : DecoderInterface {
 	
 	public int getFrequency() {
 		return frequency;	
+	}
+	
+	public float getAudioLengthInSecs() {
+		return this.audioLength;
 	}
 	
 	/// <summary>
@@ -133,6 +138,7 @@ public class FileReader : DecoderInterface {
 		this.data = byteArrayToFloatArray(noHeader);
 		this.clip = fileLoader.GetAudioClip(true,false,AudioType.WAV);
 		this.frequency = 44100;
+		this.audioLength = this.data.Length/(float)this.frequency;
 		
 	}
 	
@@ -277,13 +283,22 @@ public class FileReader : DecoderInterface {
 			}			
         }
 		
-		Debug.Log("monoLength: " + this.data.Length);
-		Debug.Log("stereoLength: " + clipDataCounter);
+		float[] tempData = new float[dataCounter];
+		System.Array.Copy(this.data,tempData,tempData.Length);
+		this.data = tempData;
 		
-		this.clip = AudioClip.Create("gameAudio",clipData.Length,_channels,_frequency,true,false);
+		tempData = new float[clipDataCounter];
+		System.Array.Copy(clipData,tempData,tempData.Length);
+		clipData = tempData;
+		
+		tempData = null;		
+		
+		this.clip = AudioClip.Create("gameAudio",clipData.Length/_channels,_channels,_frequency,true,false);
 		this.clip.SetData(clipData,0);
 		
 		clipData = null;
+		
+		this.audioLength = (clipDataCounter/(float)_channels)/(float)_frequency;
 		
 		MPGImport.mpg123_close(handle_mpg);
 		MPGImport.mpg123_delete(handle_mpg);
