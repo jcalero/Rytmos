@@ -39,14 +39,14 @@ public static class AudioManager {
 			// Read Audio Data
 			float start = Time.realtimeSinceStartup;
 			freader = new FileReader (pathToMusicFile);
-			int success = (int)freader.read ();
+			FileReader.ReadStatus success = freader.read ();
 			while (freader.isReading())
 				yieldRoutine ();
 			
 			Debug.Log("Time to read: " + (Time.realtimeSinceStartup-start));
 			
 			// Succeeded reading?
-			if(success != (int)FileReader.ReadStatus.SUCCESS)
+			if(success != FileReader.ReadStatus.SUCCESS)
 				return;
 			
 			// Set useful information, like AudioClip,length,etc..
@@ -56,12 +56,30 @@ public static class AudioManager {
 			currentlyLoadedSong = pathToMusicFile;
 			
 			start = Time.realtimeSinceStartup;
-			// Do the actual analysis!
-			peaks = SoundProcessor.getPeaks(freader);
-			loudPartTimeStamps = SoundProcessor.findVolumeLevels(freader);
-			Debug.Log("Time to analyze: " + (Time.realtimeSinceStartup-start));
 			
-			
+			// Check if this file already exists!
+			string cacheFile = FileWriter.convertToCacheFileName(pathToMusicFile);
+			System.IO.FileInfo fInf = new System.IO.FileInfo(cacheFile);
+			if(fInf.Exists) {
+				freader = new FileReader(cacheFile);
+				success = freader.read();
+				while(freader.isReading())
+					yieldRoutine();
+				if(success != FileReader.ReadStatus.SUCCESS) return;
+				//else..
+				peaks = freader.getPeaks();
+				loudPartTimeStamps = freader.getLoudnessData();
+				foreach(int i in loudPartTimeStamps) Debug.Log("bbb" + i);
+				
+			} else {
+				// Do the actual analysis!
+				peaks = SoundProcessor.getPeaks(freader);
+				loudPartTimeStamps = SoundProcessor.findVolumeLevels(freader);
+				Debug.Log("Time to analyze: " + (Time.realtimeSinceStartup-start));			
+				//Application.persistentDataPath;
+				
+				FileWriter.writeAnalysisData(pathToMusicFile,peaks,loudPartTimeStamps);
+			}
 			// Cleanup
 			freader = null;
 			songLoaded = true;

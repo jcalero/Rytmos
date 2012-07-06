@@ -3,22 +3,26 @@ using System.Collections;
 using MPG123Wrapper;
 using System;
 using System.Runtime.InteropServices;
+using System.IO;
+using System.Collections.Generic;
 
 public class FileReader : DecoderInterface {
 	
 	// Instance vars
 	private bool reading;
 	private AudioClip clip;
-	private AudioFormat format;
+	private FileFormat format;
 	private string path;
 	private float[] data;
 	private int readDataPointer;
 	private int frequency;
 	private float audioLength;
+	private float[][] analData;
+	private int[] loudTriggers;
 	//private MP3 mp3Reader;
 	
 	// Supported Audio Formats.. not all of them are in yet!!
-	public enum AudioFormat {WAV, OGG, MPEG, ERROR};
+	public enum FileFormat {WAV, OGG, MPEG, RYT, ERROR};
 	public enum ReadStatus {SUCCESS,FAIL,UNSUPPORTED_FORMAT};
 	
 	// Disable empty constructor
@@ -30,10 +34,11 @@ public class FileReader : DecoderInterface {
 		reading = false;
 		clip = null;
 		this.path = path;
-		if(path.EndsWith(".wav")) this.format = AudioFormat.WAV;
-		else if(path.EndsWith(".mp3")) this.format = AudioFormat.MPEG;
-		else if(path.EndsWith(".ogg")) this.format = AudioFormat.OGG;
-		else this.format = AudioFormat.ERROR;
+		if(path.EndsWith(".wav")) this.format = FileFormat.WAV;
+		else if(path.EndsWith(".mp3")) this.format = FileFormat.MPEG;
+		else if(path.EndsWith(".ogg")) this.format = FileFormat.OGG;
+		else if(path.EndsWith(".ryt")) this.format = FileFormat.RYT;
+		else this.format = FileFormat.ERROR;
 		readDataPointer = 0;
 		//if(this.format == AudioFormat.MPEG) mp3Reader = new MP3(this.path);
 	}
@@ -49,19 +54,22 @@ public class FileReader : DecoderInterface {
 			Debug.LogError("Path not specified!");
 			this.reading = false;
 			return ReadStatus.FAIL;			
-		} else if(this.format == AudioFormat.OGG || this.format == AudioFormat.ERROR) {
+		} else if(this.format == FileFormat.OGG || this.format == FileFormat.ERROR) {
 			Debug.Log("This format: " + this.format.ToString() + " is not supported yet");
 			this.reading = false;
 			return ReadStatus.UNSUPPORTED_FORMAT;	
 		}
 		
 		// Get audioclip according to file format
-		switch((int)this.format) {
-		case 0:
+		switch(this.format) {
+		case FileFormat.WAV:
 			readWAV();
 			break;
-		case 2:
+		case FileFormat.MPEG:
 			readMp3();
+			break;
+		case FileFormat.RYT:
+			readAnalData();
 			break;
 		}
 		this.reading = false;
@@ -117,6 +125,55 @@ public class FileReader : DecoderInterface {
 		}
 		
 		return this.data;
+	}
+	
+	public float[][] getPeaks() {
+		return this.analData;	
+	}
+	
+	public int[] getLoudnessData() {
+		return this.loudTriggers;	
+	}
+	
+	private void readAnalData() {
+		StreamReader reader = new StreamReader(this.path);
+		List<float[]> channelData = new List<float[]>();
+		while(!reader.EndOfStream) {
+			
+			// Read line, check if channel data or loudness data
+			String input = reader.ReadLine();
+			bool channel = false;
+			if(input.StartsWith("c")) channel = true;
+			input = input.Substring(input.IndexOf(':')+1); // Remove the channel/loudness data "flag" at the beginning
+			
+			// Read line into floats for channel data
+			if(channel) {
+				List<float> tempList = new List<float>();
+				foreach(string s in input.Split(';')) {
+					float result = -1;
+					float.TryParse(s,out result);
+					if(result > -1)
+						tempList.Add(result);
+				}
+				if(tempList.Count > 0 && tempList[tempList.Count-1] == 0)
+					tempList.RemoveAt(tempList.Count-1);
+				channelData.Add(tempList.ToArray());
+			}
+			// Read line into ints for loudness data
+			else {
+				List<int> tempList = new List<int>();
+				foreach(string s in input.Split(';')) {
+					int result = -1;
+					int.TryParse(s,out result);
+					if(result > -1)
+						tempList.Add(result);
+				}
+				if(tempList.Count > 0 && tempList[tempList.Count-1] == 0)
+					tempList.RemoveAt(tempList.Count-1);
+				this.loudTriggers = tempList.ToArray();
+			}	
+		}
+		this.analData = channelData.ToArray();
 	}
 	
 	private void readWAV() {

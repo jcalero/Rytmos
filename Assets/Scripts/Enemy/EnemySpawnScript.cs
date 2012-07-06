@@ -45,7 +45,7 @@ public class EnemySpawnScript : MonoBehaviour {
     	else if(AudioManager.peaks != null && cam != null && cam.audio.isPlaying) {
 			timer += Time.deltaTime;
 			triggerEnemiesOnMusic(timer);
-		}
+		} //else timer += Time.deltaTime;
     }
     
 	/// <summary>
@@ -97,11 +97,11 @@ public class EnemySpawnScript : MonoBehaviour {
 		for(int t = 0; t < AudioManager.peaks.Length; t++) {
 			
 			// Sync peaks (can call them triggers) to the music
-			while(counters[t] * (1024f/(float)AudioManager.frequency) < timer) {
+			while(counters[t] < AudioManager.peaks[t].Length && AudioManager.peaks[t][counters[t]] * (1024f/(float)AudioManager.frequency) < timer) {
 				counters[t]++;
 				
 				// Are the peaks withing range? Do we have a peak?
-				if(	counters[t] < AudioManager.peaks[t].Length && AudioManager.peaks[t][counters[t]] > 0) {
+				//if(	counters[t] < AudioManager.peaks[t].Length && AudioManager.peaks[t][counters[t]] > 0) {
 					
 					// Filter out too frequent peaks
 					if(timer - timers[t] > timeThresh) {
@@ -132,6 +132,7 @@ public class EnemySpawnScript : MonoBehaviour {
 										speed *= (spawnDist.magnitude)/maxMag;
 									}
 									SpawnEnemy (currentlySelectedEnemy, speed, spawnDist);
+									SpawnEnemy(currentlySelectedEnemy,loudFlag? 3 : 1,spawnPosition);
 								}
 								break;
 							case 1:
@@ -166,7 +167,7 @@ public class EnemySpawnScript : MonoBehaviour {
 						spawnRestrictors[t] = (spawnRestrictors[t]+1)%spawnDivisors[t];
 					}
 				}
-			}
+			//}
 
 		}		
 	}

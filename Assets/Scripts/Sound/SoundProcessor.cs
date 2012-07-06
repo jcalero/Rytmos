@@ -94,60 +94,24 @@ public class SoundProcessor
 		}
 		
 		// Get Peaks
-		float[][] peaks = new float[prunnedSpectralFlux.Length][];
+		List<float[]> peaks = new List<float[]>();
 		float alpha = 2f/21f;
-		for(int i = 0; i < prunnedSpectralFlux.Length; i++)
-		{
-			float[] tempPeaks = new float[prunnedSpectralFlux[i].Length -1];
+		for(int i = 0; i < prunnedSpectralFlux.Length; i++) {
+			
+			List<float> tempPeaks = new List<float>();
 			float movingMean = 0;
-			bool first = true;
+			
 			for(int j = 0; j < prunnedSpectralFlux[i].Length -1; j++){
 				if(prunnedSpectralFlux[i][j] > prunnedSpectralFlux[i][j+1] ) {
-					//if(first) movingMean = prunnedSpectralFlux[i][j];
-					if(prunnedSpectralFlux[i][j] >= movingMean) {
-						tempPeaks[j] = prunnedSpectralFlux[i][j];
-					} else {
-						tempPeaks[j] = 0f;
-					}
-					
+					if(prunnedSpectralFlux[i][j] >= movingMean) tempPeaks.Add(j);
+
 					movingMean = (alpha * prunnedSpectralFlux[i][j]) + ((1-alpha) * movingMean);
 				}
-   				else
-      				tempPeaks[j] = 0f;	
 			}
-			peaks[i] = tempPeaks;
+			peaks.Add(tempPeaks.ToArray());
 		}
 		
-//		// Clean "peaks" with queue "polish"
-//		int queueLength = (peakCounter/peaks.Length)/100;
-//		int halfQueueLength = queueLength/2;
-//		Debug.Log(queueLength);
-//		for(int i = 0; i < peaks.Length; i++) {
-//			LinkedList<float> avgQueue = new LinkedList<float>();
-//			
-//			for(int j = 0; j<peaks[i].Length; j++) {
-//				if(peaks[i][j] > 0) {
-//					if(avgQueue.Count < queueLength)
-//						avgQueue.AddLast(peaks[i][j]);
-//					else break;
-//				}
-//			}
-//			
-//			for(int j = 0; j<peaks[i].Length; j++) {
-//				
-//				if(peaks[i][j] > 0) {
-//					
-//					avgQueue.RemoveFirst();
-//					
-//					if(j + halfQueueLength < peaks[i].Length)
-//						avgQueue.AddLast(peaks[i][j+halfQueueLength]);
-//					
-//					float mean = calcMean(avgQueue);
-//					if(peaks[i][j] < mean) peaks[i][j] = 0;
-//				}	
-//			}
-//		}
-		return peaks;
+		return peaks.ToArray();
 	}
 	
 	public static int[] findVolumeLevels(DecoderInterface decoder) {

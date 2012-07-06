@@ -57,7 +57,7 @@ public class SpectrumProvider
 		this.nextSamples = new float[sampleWindowSize];
 		this.tempSamples = new float[sampleWindowSize];
 		this.hopSize = hopSize;			
-		fft = new FFT( sampleWindowSize, 44100 );
+		fft = new FFT( sampleWindowSize, AudioManager.frequency );
 		if( useHamming )
 			fft.window(FFT.HAMMING);
 		
