@@ -38,7 +38,24 @@ public class PulseSender : MonoBehaviour {
     }
 
     void Update() {
-        //If holding the second finger, increase timer and decrease energy
+		if(gameObject.transform.position!= new Vector3(0,0,0)) ChainPulse ();
+		else MainPulse ();
+
+    }
+	
+	void ChainPulse() {
+		Radius += 3 * Time.deltaTime;
+		RedrawPoints(finalColor);
+        line.material.color = finalColor;
+        sphereColl.radius = Radius + 0.1f;
+
+        //If too big, destroy itself
+        if (Radius > 1.5f || CurrentHealth == 0)
+            Destroy(gameObject);
+	}
+	
+	void MainPulse() {
+		//If holding the second finger, increase timer and decrease energy
         if (Input.GetMouseButton(1) && held) {
             timer += Time.deltaTime;
             if (timer > pulseBackEnergyRate) {
@@ -79,8 +96,7 @@ public class PulseSender : MonoBehaviour {
         //If too big, destroy itself
         if (Radius > pulseMax || (Radius < .3f) || CurrentHealth == 0)
             Destroy(gameObject);
-
-    }
+	}
 
     void OnTriggerExit(Collider otherObject) {
         if (otherObject.GetType() == typeof(BoxCollider) && Game.PowerupActive != Game.Powerups.MassivePulse) {
@@ -99,7 +115,12 @@ public class PulseSender : MonoBehaviour {
             }
         }
     }
-
+	
+	public void SetFinalColor(Color c) {
+		finalColor = c;
+		CurrentHealth = 1;
+	}
+	
     /// <summary>
     ///  Recalculates point positions
     /// </summary>

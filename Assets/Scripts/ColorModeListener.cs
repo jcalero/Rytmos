@@ -2,6 +2,10 @@ using UnityEngine;
 
 public class ColorModeListener : MonoBehaviour {
 	
+	void Awake() {
+		Game.SyncMode = true;
+		Game.ColorMode = Game.NumOfColors.Six;
+	}
 
 	void OnActivate(bool isChecked) {
 		//Check for four/six colors

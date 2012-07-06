@@ -10,6 +10,7 @@ public class EnemyScript : MonoBehaviour {
     #region Fields
     public GameObject ExplosionPrefab;  // Inspector reference. Location: Enemy[Type]Prefab.
     public UIAtlas SpriteAtlas;         // Inspector reference. Location: Enemy[Type]Prefab.
+	public GameObject PulsePrefab;		// Inspector reference. Location: Enemy[Type]Prefab.
 
     // Protected values with access from its descendants
     protected float minSpeed;           // The minimum random speed of the enemy
@@ -68,6 +69,13 @@ public class EnemyScript : MonoBehaviour {
                 	Player.score += 10;
                 CreateExplosion();
                 DamageEnemy();
+				
+				if(Game.PowerupActive == Game.Powerups.ChainReaction) {
+	                GameObject pulse = (GameObject) Instantiate(PulsePrefab, gameObject.transform.position, Quaternion.identity);
+					pulse.GetComponent<PulseSender>().SetFinalColor(mainColor);
+				}
+
+				
             } else {
                 gameObject.GetComponent<ParticleSystem>().Emit(10);
             }

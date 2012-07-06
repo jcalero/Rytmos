@@ -23,18 +23,27 @@ public class EnemySpawnScript : MonoBehaviour {
 	private readonly float timeThresh = 0.25f;
 	private int[] spawnRestrictors;
 	private int[] spawnDivisors;
+	
+	private bool resetColor;
+	private static int enemySelectedByPowerup = 0;
+	private float timeSlowTimer = 0;
+	private float timeSlowOldTime = 0;
+	private readonly float timeSlowTimerTotal = 5f;
 
 	private int rotateDirection;
 	private int loudPartCounter;
 	private bool loudFlag;
+	private bool decrease = true;
     #endregion
 
     #region Functions
 
     void Start() {
+		resetColor = true;
         //InvokeRepeating("SpawnEnemy", FirstSpawn, SpawnRate); // Start repeatedly spawning enemies		
         init ();
         playMusic();
+		
     }
     
     void Update() {
@@ -46,6 +55,41 @@ public class EnemySpawnScript : MonoBehaviour {
 			timer += Time.deltaTime;
 			triggerEnemiesOnMusic(timer);
 		} //else timer += Time.deltaTime;
+		
+		//Only spawn enemies of a single color for a bit. 
+		if(Game.PowerupActive == Game.Powerups.ChangeColor) {
+			if(resetColor) {
+				resetColor = false;
+				if(Level.fourColors) enemySelectedByPowerup = Random.Range(0,4);
+				else enemySelectedByPowerup = Random.Range(0,6);
+			}
+		} else resetColor = true;
+		
+		if(Game.PowerupActive == Game.Powerups.TimeSlow) {
+			if(Time.timeScale <= 1f) {
+				float timeDiff = timeSlowTimer - timeSlowOldTime;
+				if(timeDiff > 0.05f) timeSlowOldTime = timeSlowTimer;
+				timeSlowTimer += Time.deltaTime;
+				if(timeSlowTimer < timeSlowTimerTotal/2f && Time.timeScale > 0.5f && timeDiff > 0.05f) {
+					Time.timeScale -= .05f;
+					cam.audio.pitch -= .05f;
+				} else if (timeSlowTimer > timeSlowTimerTotal/2f && timeSlowTimer < timeSlowTimerTotal && Time.timeScale < 1f && timeDiff > 0.05f) {
+					cam.audio.pitch += .05f;
+					Time.timeScale += .05f;
+				} else if(timeSlowTimer > timeSlowTimerTotal) {
+					timeSlowTimer = 0;
+					timeSlowOldTime = 0;
+					Game.PowerupActive = Game.Powerups.None;
+				}
+			}
+
+		} 
+		if(Game.PowerupActive != Game.Powerups.TimeSlow) {
+			timeSlowTimer = 0;
+			timeSlowOldTime = 0;
+			Time.timeScale = 1;
+			cam.audio.pitch = 1;
+		}
     }
     
 	/// <summary>
@@ -72,7 +116,7 @@ public class EnemySpawnScript : MonoBehaviour {
 		spawnRestrictors = new int[AudioManager.peaks.Length];
 		spawnDivisors = new int[]{2,2,8,2,2,2};
 		timer = 0f;
-		spawnPositions = new int[]{0};
+		spawnPositions = new int[]{0,33,66};
 		currentlySelectedEnemy = 0;
 		rotateDirection = 1;
 		Level.SetUpParticlesFeedback(spawnPositions.Length, currentlySelectedEnemy);		
@@ -128,9 +172,8 @@ public class EnemySpawnScript : MonoBehaviour {
 								foreach(int spawnPosition in spawnPositions) {
 									Vector3 spawnDist = findSpawnPositionVector(spawnPosition);
 									float speed = 3f;
-									if(Game.SyncMode) {
-										speed *= (spawnDist.magnitude)/maxMag;
-									}
+									if(Game.SyncMode) speed *= (spawnDist.magnitude)/maxMag;									
+									if(Game.PowerupActive==Game.Powerups.ChangeColor) currentlySelectedEnemy = enemySelectedByPowerup;									
 									SpawnEnemy (currentlySelectedEnemy, speed, spawnDist);
 									SpawnEnemy(currentlySelectedEnemy,loudFlag? 3 : 1,spawnPosition);
 								}
@@ -174,20 +217,21 @@ public class EnemySpawnScript : MonoBehaviour {
 	
 	private static void changeEnemy(ref int currentEnemy) {
 		int rnd = Random.Range(0,101);
+		//Check if you are only using four colors, 
 		if(Level.fourColors) {
 			if(rnd < 25) currentEnemy = 0;
 			else if(rnd < 50) currentEnemy = 1;
 			else if(rnd < 75) currentEnemy = 2;
-			else if(rnd < 100) currentEnemy = 3;
+			else if(rnd < 100) currentEnemy = 3;				
 		} else {
+			//You are in six color mode, and check if the colorpowerup is not active
 			if(rnd < 30) currentEnemy = 0;
 			else if(rnd < 55) currentEnemy = 1;
 			else if(rnd < 75) currentEnemy = 2;
 			else if(rnd < 85) currentEnemy = 3;
 			else if(rnd < 95) currentEnemy = 4;
-			else if(rnd < 101) currentEnemy = 5;
+			else if(rnd < 101) currentEnemy = 5;			
 		}
-		
 	}
 	
 	private static void incrementSpawnPosition(ref int currentPos, int increment, int direction) {

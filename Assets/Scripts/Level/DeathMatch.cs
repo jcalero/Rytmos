@@ -59,6 +59,7 @@ public class DeathMatch : Level {
 		} else {
 			invincibility.enabled = false;
 		}
+		
     }
 
     IEnumerator DelayLabel() {

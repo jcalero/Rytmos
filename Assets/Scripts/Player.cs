@@ -21,11 +21,12 @@ public class Player : MonoBehaviour {
     public GameObject pulsePrefab;              // The pulse. Inspector reference. Location: Player
 
     private float myTimer = 0;                  // Timer for energy regeneration
-	private float invincTimer = 0;				// Timer for current invincibility duration
-	private readonly float invincTotalTime = 5f;// Total time for invincibility to last
+	private float pwTimer = 0;				// Timer for current invincibility duration
+	private readonly float pwTotalTime = 10f;// Total time for invincibility to last
     private int pulseCost = 10;                 // Cost of a pulse
     private float energyRegenRate = 0.5f;       // The rate at which the energy regenerates. Lower is faster.
-	private int invPulseCount = 0;
+	private int superPulseCount = 0;				// Counter for the amount of invincible pulses
+	private readonly int superPulseTotal = 3;		// Total amount of invincible pulses a player can send
     #endregion
 
     #region Functions
@@ -48,21 +49,24 @@ public class Player : MonoBehaviour {
 				if(Game.PowerupActive != Game.Powerups.MassivePulse) energy -= pulseCost;
 				else {
 					//Only allow 3 superpulses
-					invPulseCount++;
-					if(invPulseCount > 3) {
+					superPulseCount++;
+					if(superPulseCount > superPulseTotal) {
 						Game.PowerupActive = Game.Powerups.None;
-						invPulseCount = 0;
+						superPulseCount = 0;
 					}
 				}
 				
             }
 			
-			//If you have the invincibility powerup, increment its personal timer
-			if(Game.PowerupActive == Game.Powerups.Invincible) {
-				invincTimer += Time.deltaTime;
-				if(invincTimer > invincTotalTime) {
+			//If you have the invincibility, singleColor or chainPulse powerups, increment its personal timer
+			if(Game.PowerupActive == Game.Powerups.Invincible ||
+			   Game.PowerupActive == Game.Powerups.ChainReaction ||
+			   Game.PowerupActive == Game.Powerups.ChangeColor) {
+				pwTimer += Time.deltaTime;
+				if(pwTimer > pwTotalTime) {
+					Debug.Log ("Powerup: "+Game.PowerupActive+" deactivated");
 					Game.PowerupActive = Game.Powerups.None;
-					invincTimer = 0;
+					pwTimer = 0;
 				}
 			}
 
