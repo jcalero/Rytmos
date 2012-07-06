@@ -19,7 +19,7 @@ public class FileReader : DecoderInterface {
 	private float audioLength;
 	private float[][] analData;
 	private int[] loudTriggers;
-	//private MP3 mp3Reader;
+	private MP3 mp3Reader;
 	
 	// Supported Audio Formats.. not all of them are in yet!!
 	public enum FileFormat {WAV, OGG, MPEG, RYT, ERROR};
@@ -67,6 +67,8 @@ public class FileReader : DecoderInterface {
 			break;
 		case FileFormat.MPEG:
 			readMp3();
+			//mp3Reader = new MP3(this.path);
+			//this.frequency = mp3Reader.getFrequency();
 			break;
 		case FileFormat.RYT:
 			readAnalData();
@@ -407,7 +409,7 @@ public class FileReader : DecoderInterface {
 	}
 	
 	public int readSamples(ref float[] samples) {
-//		if(this.format == AudioFormat.WAV) {
+//		if(this.format == FileFormat.WAV) {
 			int readLength = samples.Length;
 			if(readDataPointer + samples.Length >= data.Length) readLength = samples.Length - ((readDataPointer + samples.Length) - data.Length);
 			
@@ -415,7 +417,7 @@ public class FileReader : DecoderInterface {
 			readDataPointer += readLength;
 			
 			return readLength;
-//		} else if(this.format == AudioFormat.MPEG) {
+//		} else if(this.format == FileFormat.MPEG) {
 //			int re = mp3Reader.readMp3(ref samples);
 //			if(re == 0) mp3Reader.close();
 //			return re;
@@ -428,7 +430,7 @@ public class FileReader : DecoderInterface {
 	
 	public void reset() {
 		readDataPointer = 0;
-	}
+	}	
 	
 	/// <summary>
 	/// Routine for yielding.
@@ -442,164 +444,173 @@ public class FileReader : DecoderInterface {
 	private static IEnumerator yieldRoutine(WWW obj) {
 		yield return obj;
 	}
-//	
-//	private class MP3 {
-//		
-//		IntPtr handle_mpg = new IntPtr();
-//		IntPtr errPtr = new IntPtr ();
-//		IntPtr frequency = new IntPtr();
-//		IntPtr channels = new IntPtr();
-//		IntPtr encoding = new IntPtr();
-//		IntPtr id3v1 = new IntPtr();
-//		IntPtr id3v2 = new IntPtr();
-//		IntPtr done = new IntPtr();
-//	
-//		String txtRate;	
-//		String txtChannels;
-//		String txtEnc;
-//		String txtArtist;
-//		String txtTitle;
-//		String path;
-//		
-//		int errorCheck;
-//		int _frequency;
-//		int _channels;
-//		int _encoding;
-//		int FrameSize;
-//		int len;
-//		float maxVal;
-//		float fChan;
-//		
-//		byte[] Buffer;
-//		byte[] overFlow;
-//		
-//		
-//		private MP3(){}
-//		public MP3(string path) {
-//			this.path = path;
-//			init();
-//		}
-//		
-//		protected void init() {
-//			
-//			MPGImport.mpg123_init ();
-//			
-//			handle_mpg = MPGImport.mpg123_new (null, errPtr);
-//			
-//			errorCheck = MPGImport.mpg123_open (handle_mpg, this.path);
-//			
-//			MPGImport.mpg123_getformat (handle_mpg, out frequency, out channels, out encoding);
-//			
-//			_frequency = frequency.ToInt32 ();
-//			_channels = channels.ToInt32();
-//			_encoding = encoding.ToInt32 ();
-//			
-//			txtRate = _frequency.ToString ();
-//			txtChannels = _channels.ToString ();
-//			txtEnc = _encoding.ToString ();
-//			
-//			MPGImport.mpg123_id3 (handle_mpg, out id3v1, out id3v2);
-//			MPGImport.mpg123_id3v1 MP3Data = new MPGImport.mpg123_id3v1 ();
-//			
-//			try {
-//				MP3Data = (MPGImport.mpg123_id3v1)Marshal.PtrToStructure (id3v1, (Type)typeof(MPGImport.mpg123_id3v1));
-//				
-//				txtArtist = new string (MP3Data.artist);
-//				txtTitle = new string (MP3Data.title);
-//				
-//			} catch (ArgumentNullException e) {
-//				String fuckoffwarnings = e.ToString ();
-//				Debug.Log ("No ID3v1 data");
-//				txtArtist = "N/A";
-//				txtTitle = "N/A";
-//			}
-//			
-//			MPGImport.mpg123_format_none (handle_mpg);
-//			MPGImport.mpg123_format (handle_mpg, _frequency, _channels, _encoding);
-//			
-//			FrameSize = MPGImport.mpg123_outblock(handle_mpg);
-//		
-//			len = MPGImport.mpg123_length(handle_mpg);
-//			//float[] clipData = new float[len*_channels];
-////			dataCounter = 0;
-////			int clipDataCounter = 0;
-//			maxVal = (float)short.MaxValue;
-//			fChan = (float)_channels;
-//			
-//			Buffer = new byte[FrameSize];
-//			overFlow = new byte[0];
-//			
-//		}
-//		
-//		public int readMp3(ref float[] outBuff) {			
-//			
-//			// Init Counters for the elements in a buffer
-//			int outBuffFillCounter = 0;
-//			int overFlowCounter = 0;
-//			
-//			// Check if we have any overflowing bytes from the previous buffer
-//			if(overFlow.Length > 0) {
-//				for(int i = 0; i < overFlow.Length; i+=_channels*2) {
-//					for (int j = 0; j < _channels*2; j+=2) {
-//						float tempVal = System.BitConverter.ToInt16(overFlow,i+j);
-//						outBuff[outBuffFillCounter] += tempVal;
-//						//clipData[clipDataCounter] = tempVal/maxVal;
-//						//clipDataCounter++;
-//					}
-//					outBuff[outBuffFillCounter] /= fChan;
-//					outBuff[outBuffFillCounter] /= maxVal;
-//					outBuffFillCounter++;
-//					if(outBuffFillCounter == outBuff.Length) {
-//						overFlowCounter = i+_channels*2;
-//						break;
-//					}
-//				}
-//				
-//				// If the overflow array holds more samples than we want, we will have to save the overflow again!!
-//				if(overFlowCounter > 0) {
-//					byte[] tempOverFlow = new byte[overFlow.Length - overFlowCounter];
-//					System.Array.Copy(overFlow,overFlowCounter,tempOverFlow,0,tempOverFlow.Length);
-//					overFlow = tempOverFlow;
-//					return outBuffFillCounter;
-//				}
-//			}
-//			
-//			// After adding the overflow form last time, get the next buffer
-//	        while (0 == MPGImport.mpg123_read(handle_mpg, Buffer, FrameSize, out done))
-//	        {
-//				for(int i = 0; i < Buffer.Length; i+=_channels*2) {
-//					
-//					for (int j = 0; j < _channels*2; j+=2) {
-//						float tempVal = System.BitConverter.ToInt16(Buffer,i+j);
-//						outBuff[outBuffFillCounter] += tempVal;
-//						//clipData[clipDataCounter] = tempVal/maxVal;
-//						//clipDataCounter++;
-//					}
-//					outBuff[outBuffFillCounter] /= fChan;
-//					outBuff[outBuffFillCounter] /= maxVal;
-//					outBuffFillCounter++;
-//					if(outBuffFillCounter == outBuff.Length) {
-//						overFlowCounter = i+(_channels*2);
-//						break;
-//					}
-//				}		
-//				
-//				if(outBuffFillCounter == outBuff.Length) break;
-//	        }
-//			
-//			overFlow = new byte[Buffer.Length - overFlowCounter];
-//			System.Array.Copy(Buffer,overFlowCounter,overFlow,0,overFlow.Length);
-//			return outBuffFillCounter;
-//		}
-//		
-//		public void close() {
-//			MPGImport.mpg123_close(handle_mpg);
-//			MPGImport.mpg123_delete(handle_mpg);
-//			MPGImport.mpg123_exit();
-//		}
-//		
-//		
-//	}
+	
+	private class MP3 {
+		
+		IntPtr handle_mpg = new IntPtr();
+		IntPtr errPtr = new IntPtr ();
+		IntPtr frequency = new IntPtr();
+		IntPtr channels = new IntPtr();
+		IntPtr encoding = new IntPtr();
+		IntPtr id3v1 = new IntPtr();
+		IntPtr id3v2 = new IntPtr();
+		IntPtr done = new IntPtr();
+	
+		String txtRate;	
+		String txtChannels;
+		String txtEnc;
+		String txtArtist;
+		String txtTitle;
+		String path;
+		
+		int errorCheck;
+		int _frequency;
+		int _channels;
+		int _encoding;
+		int FrameSize;
+		int len;
+		float maxVal;
+		float fChan;
+		
+		byte[] Buffer;
+		byte[] overFlow;
+		
+		
+		private MP3(){}
+		public MP3(string path) {
+			this.path = path;
+			init();
+		}
+		
+		protected void init() {
+			
+			MPGImport.mpg123_init ();
+			
+			handle_mpg = MPGImport.mpg123_new (null, errPtr);
+			
+			errorCheck = MPGImport.mpg123_open (handle_mpg, this.path);
+			
+			MPGImport.mpg123_getformat (handle_mpg, out frequency, out channels, out encoding);
+			
+			_frequency = frequency.ToInt32 ();
+			_channels = channels.ToInt32();
+			_encoding = encoding.ToInt32 ();
+			
+			txtRate = _frequency.ToString ();
+			txtChannels = _channels.ToString ();
+			txtEnc = _encoding.ToString ();
+			
+			MPGImport.mpg123_id3 (handle_mpg, out id3v1, out id3v2);
+			MPGImport.mpg123_id3v1 MP3Data = new MPGImport.mpg123_id3v1 ();
+			
+			try {
+				MP3Data = (MPGImport.mpg123_id3v1)Marshal.PtrToStructure (id3v1, (Type)typeof(MPGImport.mpg123_id3v1));
+				
+				txtArtist = new string (MP3Data.artist);
+				txtTitle = new string (MP3Data.title);
+				
+			} catch (ArgumentNullException e) {
+				String fuckoffwarnings = e.ToString ();
+				Debug.Log ("No ID3v1 data");
+				txtArtist = "N/A";
+				txtTitle = "N/A";
+			}
+			
+			MPGImport.mpg123_format_none (handle_mpg);
+			MPGImport.mpg123_format (handle_mpg, _frequency, _channels, _encoding);
+			
+			FrameSize = MPGImport.mpg123_outblock(handle_mpg);
+		
+			len = MPGImport.mpg123_length(handle_mpg);
+			//float[] clipData = new float[len*_channels];
+//			dataCounter = 0;
+//			int clipDataCounter = 0;
+			maxVal = (float)short.MaxValue;
+			fChan = (float)_channels;
+			
+			Buffer = new byte[FrameSize];
+			overFlow = new byte[0];
+			
+		}
+		
+		public int getFrequency() {
+			return _frequency;	
+		}
+		
+		public int readMp3(ref float[] outBuff) {			
+			
+			// Init Counters for the elements in a buffer
+			int outBuffFillCounter = 0;
+			int overFlowCounter = 0;
+			
+			// Check if we have any overflowing bytes from the previous buffer
+			if(overFlow.Length > 0) {
+				for(int i = 0; i < overFlow.Length; i+=_channels*2) {
+					for (int j = 0; j < _channels*2; j+=2) {
+						float tempVal = System.BitConverter.ToInt16(overFlow,i+j);
+						outBuff[outBuffFillCounter] += tempVal;
+						//clipData[clipDataCounter] = tempVal/maxVal;
+						//clipDataCounter++;
+					}
+					outBuff[outBuffFillCounter] /= fChan;
+					outBuff[outBuffFillCounter] /= maxVal;
+					outBuffFillCounter++;
+					
+					// Have we filled the entire output buffer?
+					if(outBuffFillCounter == outBuff.Length) {
+						if (i+(_channels*2) < overFlow.Length) overFlowCounter = i+(_channels*2);
+						else return outBuffFillCounter;
+						break;
+					}
+				}
+				
+				// If the overflow array holds more samples than we want, we will have to save the overflow again!!
+				if(overFlowCounter > 0) {
+					byte[] tempOverFlow = new byte[overFlow.Length - overFlowCounter];
+					System.Array.Copy(overFlow,overFlowCounter,tempOverFlow,0,tempOverFlow.Length);
+					overFlow = tempOverFlow;
+					return outBuffFillCounter;
+				}
+			}
+			
+			// After adding the overflow form last time, get the next buffer
+			bool whileFlag = true;
+	        while (0 == MPGImport.mpg123_read(handle_mpg, Buffer, FrameSize, out done) && outBuffFillCounter < outBuff.Length && whileFlag)
+	        {
+				for(int i = 0; i < Buffer.Length; i+=_channels*2) {
+					
+					for (int j = 0; j < _channels*2; j+=2) {
+						float tempVal = System.BitConverter.ToInt16(Buffer,i+j);
+						outBuff[outBuffFillCounter] += tempVal;
+					}
+					outBuff[outBuffFillCounter] /= fChan;
+					outBuff[outBuffFillCounter] /= maxVal;
+					outBuffFillCounter++;
+					
+					if(outBuffFillCounter == outBuff.Length) {
+						if (i+(_channels*2) < Buffer.Length) overFlowCounter = i+(_channels*2);
+						whileFlag = false;
+						break;
+					}
+				}
+	        }
+			
+			// Fill overflow if there is anything to fill
+			if(overFlowCounter > 0) {
+					overFlow = new byte[Buffer.Length - overFlowCounter];
+					System.Array.Copy(Buffer,overFlowCounter,overFlow,0,overFlow.Length);	
+			}
+			return outBuffFillCounter;
+		}
+		
+		public void close() {
+			MPGImport.mpg123_close(handle_mpg);
+			MPGImport.mpg123_delete(handle_mpg);
+			MPGImport.mpg123_exit();
+		}
+		
+		
+	}
 	
 	
 }
