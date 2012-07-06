@@ -89,7 +89,6 @@ public class FileBrowser : MonoBehaviour {
 
     private void Awake() {
         instance = this;
-        FileBrowserSelectButton.isEnabled = false;
     }
 
     private void Update() {
@@ -231,8 +230,8 @@ public class FileBrowser : MonoBehaviour {
         // Reset the table contents (to reset any previous rearrangements in other folders)
         instance.FileTable.Reposition();
 
-        Debug.Log("Directories: " + directories.Length);
-        Debug.Log("Files: " + files.Length);
+        //Debug.Log("Directories: " + directories.Length);
+        //Debug.Log("Files: " + files.Length);
         //foreach (string line in fullFileList) {
         //    string line2 = new DirectoryInfo(line).Name;
         //    Debug.Log(line2);

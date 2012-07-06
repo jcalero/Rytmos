@@ -49,17 +49,17 @@ public class FileLabel : MonoBehaviour {
             selectButton.isEnabled = false;
             FileBrowser.SelectedFileId = -1;
             FileBrowser.ReloadFileList();
-            Debug.Log("Folder id clicked on: " + id);
+            //Debug.Log("Folder id clicked on: " + id);
            // Debug.Log("Folder clicked on: " + FileBrowser.Directories[id]);
             //Debug.Log("Current directory: " + FileBrowser.CurrentDirectory);
         } else {
             if (!isActive) {
                 FileBrowser.SelectedFileId = id;
                 selectButton.isEnabled = true;
-                Debug.Log("File id clicked on: " + id);
-                if (FileBrowser.Files.Length > 0) {
-                    Debug.Log("File with id " + id + ": " + FileBrowser.Files[id]);
-                }
+                //Debug.Log("File id clicked on: " + id);
+                //if (FileBrowser.Files.Length > 0) {
+                //    Debug.Log("File with id " + id + ": " + FileBrowser.Files[id]);
+                //}
             } else {
                 FileBrowser.SelectedFileId = -1;
                 selectButton.isEnabled = false;

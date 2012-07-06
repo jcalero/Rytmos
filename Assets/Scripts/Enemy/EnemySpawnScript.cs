@@ -72,7 +72,7 @@ public class EnemySpawnScript : MonoBehaviour {
 		spawnRestrictors = new int[AudioManager.peaks.Length];
 		spawnDivisors = new int[]{2,2,8,2,2,2};
 		timer = 0f;
-		spawnPositions = new int[]{0,33,66};
+		spawnPositions = new int[]{0};
 		currentlySelectedEnemy = 0;
 		rotateDirection = 1;
 		Level.SetUpParticlesFeedback(spawnPositions.Length, currentlySelectedEnemy);		
