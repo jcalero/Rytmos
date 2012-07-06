@@ -38,7 +38,7 @@ public class EnemySpawnScript : MonoBehaviour {
     }
     
     void Update() {
-		if (timer >= audioLength || (!cam.audio.isPlaying && timer > 0)){
+		if (timer >= audioLength || (!Game.Paused && !cam.audio.isPlaying && timer > 0)){
 			cam.audio.Stop();
 			Application.LoadLevel("Win");			
 		}
