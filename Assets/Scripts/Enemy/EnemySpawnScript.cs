@@ -38,7 +38,7 @@ public class EnemySpawnScript : MonoBehaviour {
     }
     
     void Update() {
-		if (timer >= audioLength){
+		if (timer >= audioLength || (!cam.audio.isPlaying && timer > 0)){
 			cam.audio.Stop();
 			Application.LoadLevel("Win");			
 		}
@@ -114,8 +114,24 @@ public class EnemySpawnScript : MonoBehaviour {
 							case 0:
 								// This is the bass frequency, used for spawning enemies (for now at least)
 								Level.SetUpParticlesFeedback(spawnPositions.Length, currentlySelectedEnemy);
+								//Find magnitude of the furthest away
+								float maxMag = 0;
+								if(Game.SyncMode) {
+									foreach(int spawnPosition in spawnPositions) {
+										float currMaxMag = findSpawnPositionVector(spawnPosition).magnitude;
+										if(currMaxMag > maxMag) {
+											maxMag = currMaxMag;	
+										}
+									}
+								}
+
 								foreach(int spawnPosition in spawnPositions) {
-									SpawnEnemy(currentlySelectedEnemy,3f,spawnPosition);
+									Vector3 spawnDist = findSpawnPositionVector(spawnPosition);
+									float speed = 3f;
+									if(Game.SyncMode) {
+										speed *= (spawnDist.magnitude)/maxMag;
+									}
+									SpawnEnemy (currentlySelectedEnemy, speed, spawnDist);
 								}
 								break;
 							case 1:
@@ -213,6 +229,10 @@ public class EnemySpawnScript : MonoBehaviour {
 	public void SpawnEnemy (int prefab, float speed, int percentage) {
 		Vector3 temp = findSpawnPositionVector(percentage);
 		SpawnEnemy(prefab, speed, temp.x, temp.y);
+	}
+		
+	public void SpawnEnemy (int prefab, float speed, Vector3 dist) {
+		SpawnEnemy (prefab, speed, dist.x, dist.y);
 	}
 	
 	public Vector3 findSpawnPositionVector(int percentage) {

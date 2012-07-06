@@ -12,13 +12,15 @@ public class Level : MonoBehaviour {
 
     #region Fields
     private static Level Instance;                                  // The Instance of this class for self reference
+	
 
     public static Color purple = new Color(.5f, 0, .5f, 1f);
     public static bool fourColors = false;							// Used for dealing with multiple colors - currently 4 or 6
 
     protected LinkedSpriteManager spriteManagerScript;
     protected Sprite touchSprite;                                     // The SpriteManager created sprite
-
+	
+	
     public GameObject[] particlesFeedback = new GameObject[6];      // The six feedback particles. Inspector reference. Location: LevelManager
     public GameObject[] linePrefab = new GameObject[6];             // The six feedback screen lines. Inspector reference. Location: LevelManager
     public GameObject spriteManager;                                // Reference to the SpriteManager. Inspector reference. Location: LevelManager
@@ -46,6 +48,8 @@ public class Level : MonoBehaviour {
         SetUpBorderLineFeedback();
         //SetUpParticlesFeedback();
     }
+	
+	
     /// <summary>
     /// Shows the touch sprite at the "pos" location with the respective colour
     /// on that position
@@ -74,7 +78,6 @@ public class Level : MonoBehaviour {
 		for(int i=0; i<numOfSpawns; i++) {
 			int percentage = ess.spawnPositions[i];
 			Instance.particlesFeedback[i].transform.localPosition = ess.findSpawnPositionVector(percentage);
-			Debug.Log (enemy);
 			Instance.particlesFeedback[i].GetComponent<ParticleSystem>().startColor = singleColourSelect(enemy);
 		}
 		/*
@@ -99,7 +102,7 @@ public class Level : MonoBehaviour {
         /*
          * Here we will possibly have to reallocate the possible lines if we are dealing with different amounts of colours
          */
-
+		
         if (fourColors) {
             //First line - Cyan to Blue
             linePrefab[0].GetComponent<LineRenderer>().SetColors(Color.cyan, Color.blue);

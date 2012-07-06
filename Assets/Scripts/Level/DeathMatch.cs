@@ -17,6 +17,7 @@ public class DeathMatch : Level {
     private float minRate = 0.2f;
 
     public UILabel SurviveLabel;
+	public UILabel invincibility;	
     #endregion
 
     #region Functions
@@ -51,6 +52,13 @@ public class DeathMatch : Level {
         } else {
             timer += Time.deltaTime;
         }
+		
+		//If you invincible, display the words (TODO: Temporary fix, make more visual)
+		if(Game.PowerupActive == Game.Powerups.Invincible) {
+			invincibility.enabled = true;
+		} else {
+			invincibility.enabled = false;
+		}
     }
 
     IEnumerator DelayLabel() {

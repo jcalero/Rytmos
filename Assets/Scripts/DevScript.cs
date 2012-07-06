@@ -10,6 +10,7 @@ public class DevScript : MonoBehaviour {
 
     // TODO: Refactor this to something cleaner. Maybe an enum + case switch.
     private bool devMode1 = false;          // Flag: God mode
+	private bool devMode2 = false;			// Flag: Powerups
     private bool devMode3 = false;          // Flag: Massive Spawn
     private bool devMode4 = false;          // Flag: No spawn
     private float lastSpawnRate;            // Last spawn rate before it was last modified
@@ -56,6 +57,56 @@ public class DevScript : MonoBehaviour {
                 Debug.Log("Enemy spawned");
                 enemySpawner.SpawnEnemy();
             }
+			
+			if (Input.GetKeyDown(KeyCode.P) && !devMode2) {
+				Debug.Log ("Powerup Mode Enabled");
+				devMode2 = true;
+			} else if(Input.GetKeyDown(KeyCode.P) && devMode2) {
+				Debug.Log ("Powerup Mode Disabled");
+				devMode2 = false;
+				Game.PowerupActive = Game.Powerups.None;
+			}
+			
+			if(Input.GetKeyDown (KeyCode.A) && devMode2) {
+				if(Game.PowerupActive != Game.Powerups.ChainReaction) 
+					Game.PowerupActive = Game.Powerups.ChainReaction;
+				else 
+					Game.PowerupActive = Game.Powerups.None;
+				Debug.Log ("Chain reaction powerup active");
+			} 
+			
+			if(Input.GetKeyDown (KeyCode.S) && devMode2) {
+				if(Game.PowerupActive != Game.Powerups.ChangeColor) 
+					Game.PowerupActive = Game.Powerups.ChangeColor;
+				else 
+					Game.PowerupActive = Game.Powerups.None;
+				Debug.Log ("Change color powerup active");
+			}
+			
+			if(Input.GetKeyDown(KeyCode.D) && devMode2) {
+				if(Game.PowerupActive != Game.Powerups.Invincible) 
+					Game.PowerupActive = Game.Powerups.Invincible;
+				else 
+					Game.PowerupActive = Game.Powerups.None;
+				Debug.Log ("Invincible powerup active");
+			}
+			
+			if(Input.GetKeyDown(KeyCode.F) && devMode2) {
+				if(Game.PowerupActive != Game.Powerups.MassivePulse) 
+					Game.PowerupActive = Game.Powerups.MassivePulse;
+				else 
+					Game.PowerupActive = Game.Powerups.None;
+				
+				Debug.Log ("Massive pulse powerup active");
+			}
+			
+			if(Input.GetKeyDown (KeyCode.G) && devMode2) {
+				if(Game.PowerupActive != Game.Powerups.TimeSlow) 
+					Game.PowerupActive = Game.Powerups.TimeSlow;
+				else 
+					Game.PowerupActive = Game.Powerups.None;
+				Debug.Log ("Time slow powerup active");
+			}
 
             // Mega Swarm
             if (Input.GetKeyDown(KeyCode.Alpha3) && !devMode3) {

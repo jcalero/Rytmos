@@ -21,10 +21,13 @@ public class Game : MonoBehaviour {
     private static bool devMode = false;        // True when devMode/debug Mode is enabled. Gets checked by DevScript.
     private static bool paused = false;         // True when the game is paused
     private static bool cheated = false;        // True when devMode was on at any point of the game
+	private static bool syncMode = false;		// True on 'NigelMode Option' Selected
     private static Mode mode;                    // Defines current/last game mode.
     private static State state;                   // Defines the current game state.
     private static string filePath;             // File path to the selected song to be loaded.
     private static NumOfColors colors;			//Defines the amount of colors used in the game
+	private static Powerups powerups;			//Defines the currently active powerup
+	
     #endregion
 
     #region Functions
@@ -154,6 +157,16 @@ public class Game : MonoBehaviour {
 		get { return colors; }
 		set { colors = value; }
 	}
+	
+	public static bool SyncMode {
+		get { return syncMode; }
+		set { syncMode = value; }
+	}
+	
+	public static Powerups PowerupActive {
+		get { return powerups; }
+		set { powerups = value;} 		
+	}
 
     /// <summary>
     /// Level order number given by the build settings. WARNING: Needs to be kept up to date manually if adding/removing scenes!
@@ -187,5 +200,16 @@ public class Game : MonoBehaviour {
 		Four,
 		Six
 	}
+	
+	public enum Powerups {
+		None,
+		TimeSlow,
+		MassivePulse,				//Massive Pulse - No Energy to Send, Destroys All Enemies, Score Does not increase
+		ChainReaction,
+		Invincible, 
+		ChangeColor		
+	}
+	
+	
     #endregion
 }

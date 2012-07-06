@@ -56,14 +56,16 @@ public class EnemyScript : MonoBehaviour {
     void OnTriggerEnter(Collider otherObject) {
         // If the enemy collides with the player, reduce health of player, destroy the enemy.
         if (otherObject.tag == "Player") {
-            Player.health -= 10 * health;       // Reduces the player health by 10 * the remaining enemy health
+			if(Game.PowerupActive != Game.Powerups.Invincible) 
+            	Player.health -= 10 * health;       // Reduces the player health by 10 * the remaining enemy health
             CreateExplosion();
             Destroy(gameObject);
         }
         // If the enemy collides with a pulse of the right color, reduce enemy health, increase score
         if (otherObject.name == "Pulse(Clone)") {
-            if (otherObject.gameObject.GetComponent<LineRenderer>().material.color == MainColor) {
-                Player.score += 10;
+            if (otherObject.gameObject.GetComponent<LineRenderer>().material.color == MainColor || Game.PowerupActive == Game.Powerups.MassivePulse) {
+				if(Game.PowerupActive != Game.Powerups.MassivePulse)
+                	Player.score += 10;
                 CreateExplosion();
                 DamageEnemy();
             } else {
@@ -160,9 +162,11 @@ public class EnemyScript : MonoBehaviour {
     public void DamageEnemy() {
         health--;
         if (health < 1) {
-            Player.energy += energyReturn;            // Return a bit of energy when the enemy is killed
-            if (Player.energy > Player.maxEnergy)     // Make sure energy is never more than maxEnergy
-                Player.energy = Player.maxEnergy;
+			if(Game.PowerupActive != Game.Powerups.MassivePulse) {
+	            Player.energy += energyReturn;            // Return a bit of energy when the enemy is killed
+	            if (Player.energy > Player.maxEnergy)     // Make sure energy is never more than maxEnergy
+	                Player.energy = Player.maxEnergy;
+			}
             Destroy(gameObject);
         }
     }

@@ -21,8 +21,11 @@ public class Player : MonoBehaviour {
     public GameObject pulsePrefab;              // The pulse. Inspector reference. Location: Player
 
     private float myTimer = 0;                  // Timer for energy regeneration
+	private float invincTimer = 0;				// Timer for current invincibility duration
+	private readonly float invincTotalTime = 5f;// Total time for invincibility to last
     private int pulseCost = 10;                 // Cost of a pulse
     private float energyRegenRate = 0.5f;       // The rate at which the energy regenerates. Lower is faster.
+	private int invPulseCount = 0;
     #endregion
 
     #region Functions
@@ -41,9 +44,27 @@ public class Player : MonoBehaviour {
                 Level.ShowTouchSprite(tempPos);
                 // Create a pulse
                 Instantiate(pulsePrefab, new Vector3(0, 0, 0), pulsePrefab.transform.localRotation);
-                // Reduce the player energy
-                energy -= pulseCost;
+                // Reduce the player energy if not a superpulse
+				if(Game.PowerupActive != Game.Powerups.MassivePulse) energy -= pulseCost;
+				else {
+					//Only allow 3 superpulses
+					invPulseCount++;
+					if(invPulseCount > 3) {
+						Game.PowerupActive = Game.Powerups.None;
+						invPulseCount = 0;
+					}
+				}
+				
             }
+			
+			//If you have the invincibility powerup, increment its personal timer
+			if(Game.PowerupActive == Game.Powerups.Invincible) {
+				invincTimer += Time.deltaTime;
+				if(invincTimer > invincTotalTime) {
+					Game.PowerupActive = Game.Powerups.None;
+					invincTimer = 0;
+				}
+			}
 
             // Regenerate energy. 1 energy every 2 seconds.
             myTimer += Time.deltaTime;

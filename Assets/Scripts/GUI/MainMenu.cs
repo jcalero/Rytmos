@@ -119,8 +119,6 @@ public class MainMenu : MonoBehaviour {
         panel.currentMomentum = Vector3.zero;
         // Begin spring motion
         SpringPanel.Begin(panel.gameObject, optionsMenu, 13f);
-        FileBrowser.CurrentDirectory = Directory.GetDirectories(FileBrowser.CurrentDirectory)[0];
-        Debug.Log(FileBrowser.CurrentDirectory);
     }
 
     /// <summary>

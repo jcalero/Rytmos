@@ -15,7 +15,8 @@ public class TimeAttack : Level {
 
     public UILabel timerLabel;                                      // The timer label. Inspector reference. Location: LevelManager
     public UILabel timeUpLabel;
-
+	public UILabel invincibility;						
+	
     public float levelTimer;                            // Timer showing the time left on this level
     private float startTimer = 30;                      // Time to play on this level in seconds
     private string timerString;                         // String to parse the time to
@@ -67,6 +68,14 @@ public class TimeAttack : Level {
                 timerLabel.text = "";
             }
         }
+		
+		//If you invincible, display the words (TODO: Temporary fix, make more visual)
+		if(Game.PowerupActive == Game.Powerups.Invincible) {
+			invincibility.enabled = true;
+		} else {
+			invincibility.enabled = false;
+		}
+		
         // If the player survives for 30 seconds, go to the "Win" level
         if (levelTimer < 0 && !levelFinished) {
             levelFinished = true;

@@ -66,6 +66,9 @@ public class PulseSender : MonoBehaviour {
             chosen = Level.singleColourSelect(Input.mousePosition);
         else
             chosen = finalColor;
+		if(Game.PowerupActive==Game.Powerups.MassivePulse) {
+			chosen = Color.white;
+		}
 
 
         //Create the circle, and set the line material
@@ -80,7 +83,7 @@ public class PulseSender : MonoBehaviour {
     }
 
     void OnTriggerExit(Collider otherObject) {
-        if (otherObject.GetType() == typeof(BoxCollider)) {
+        if (otherObject.GetType() == typeof(BoxCollider) && Game.PowerupActive != Game.Powerups.MassivePulse) {
             CurrentHealth--;
             if (CurrentHealth == 0)
                 Destroy(gameObject);
@@ -89,7 +92,7 @@ public class PulseSender : MonoBehaviour {
 
     // Reduce pulse health if it collides with another object
     void OnTriggerEnter(Collider otherObject) {
-        if (otherObject.GetType() == typeof(SphereCollider)) {
+        if (otherObject.GetType() == typeof(SphereCollider) && Game.PowerupActive != Game.Powerups.MassivePulse) {
             CurrentHealth--;
             if (CurrentHealth == 0) {
                 Destroy(gameObject);
