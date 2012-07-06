@@ -10,21 +10,14 @@ public class MainMenu : MonoBehaviour {
 
     #region Fields
     public UIDraggablePanel panel; // Inspector instance. Location: MainMenuManager.
-    public UIPanel fileBrowser;
-    public UIPanel fileListPanel;
-    public UIPanel scrollBar;
-    public UIFont fileNameFont;
     public UIButton reloadButton;
     public UIButton nextButton;
     public UIButton prevButton;
     public UIButton ArcadeButton;
     public UIButton SurvivalButton;
     public UIButton StoryButton;
-    public UIButton FileBrowserSelectButton;
     public UILabel highscoresTypeLabel;
     public UILabel selectModeLabel;
-    public UITable fileTable;
-    public UITable folderTable;
     public bool skipMenu;           // Allows you to skip directly from the Main Menu to the Arcade game mode
 
     // Values for menu slider locations.
@@ -35,16 +28,6 @@ public class MainMenu : MonoBehaviour {
     private Vector3 optionsMenu;
 
     private bool highscoresLoaded;
-    private int maxNumFiles;
-    private int maxNumFolders;
-    private Vector3 fileBrowserAnchor = new Vector3(-125f, 110f, 0f);
-    GameObject lastFolder = null;
-    private string selectedLevel;
-    private bool fileBrowserEnabled;
-
-    //private ArrayList fileList = new ArrayList();
-    //private ArrayList folderList = new ArrayList();
-
     private bool loadedSurvival;
     private bool loadedTimeAttack = true;
     private string survival = "rytmos_hs_dm";
@@ -80,7 +63,6 @@ public class MainMenu : MonoBehaviour {
                 StartCoroutine(HSController.GetScores(timeAttack, true));
             }
             highscoresLoaded = true;
-            FileBrowserSelectButton.isEnabled = false;
             DisableReloadButton();
         }
     }
@@ -91,6 +73,7 @@ public class MainMenu : MonoBehaviour {
             OnBackClicked();
     }
 
+    #region Main Menu buttons
     /// <summary>
     /// Button handler for "Play" button
     /// </summary>
@@ -130,13 +113,15 @@ public class MainMenu : MonoBehaviour {
         // Begin spring motion
         SpringPanel.Begin(panel.gameObject, quitMenu, 13f);
     }
+    #endregion
 
+    #region Other menu buttons (Back, Quit-confirm)
     /// <summary>
     /// Button handler or "Back" button
     /// </summary>
     void OnBackClicked() {
-        if (fileBrowserEnabled) {
-            unLoadFileBrowser();
+        if (FileBrowser.Enabled) {
+            FileBrowser.UnloadFileBrowser();
             return;
         }
         // Stop any current momentum to allow for Spring to begin.
@@ -151,21 +136,27 @@ public class MainMenu : MonoBehaviour {
     void OnQuitConfirmedClicked() {
         Application.Quit();
     }
+    #endregion
 
+    #region Select Mode buttons (Shows file browser)
     /// <summary>
     /// Button handler for "Arcade" button
     /// </summary>
     void OnArcadeModeClicked() {
-        LoadFileBrowser("Game");
+        FileBrowser.LoadFileBrowser("Game");
         //Application.LoadLevel("Game");
     }
 
-
+    /// <summary>
+    /// Button handler for "Survival" button
+    /// </summary>
     void OnChallengeModeClicked() {
-        LoadFileBrowser("DeathMatch");
+        FileBrowser.LoadFileBrowser("DeathMatch");
         //Application.LoadLevel("DeathMatch");
     }
+    #endregion
 
+    #region Highscore buttons
     void OnNextHighscoreClicked() {
         if (loadedSurvival) {
             highscoresTypeLabel.text = "Time Attack";
@@ -201,245 +192,32 @@ public class MainMenu : MonoBehaviour {
         if (loadedTimeAttack)
             StartCoroutine(HSController.GetScores(timeAttack, true));
     }
+    #endregion
 
-    void LoadFileBrowser(string level) {
-        selectedLevel = level;
-        ArcadeButton.isEnabled = false;
-        ArcadeButton.transform.GetChild(0).gameObject.active = false;   // Hide Background
-        ArcadeButton.transform.GetChild(1).gameObject.active = false;   // Hide Label
-        SurvivalButton.isEnabled = false;
-        SurvivalButton.transform.GetChild(0).gameObject.active = false;   // Hide Background
-        SurvivalButton.transform.GetChild(1).gameObject.active = false;   // Hide Label
-        StoryButton.isEnabled = false;
-        StoryButton.transform.GetChild(0).gameObject.active = false;   // Hide Background
-        StoryButton.transform.GetChild(1).gameObject.active = false;   // Hide Label
-        selectModeLabel.text = "Select song";
-        selectModeLabel.transform.localPosition = new Vector3(selectModeLabel.transform.localPosition.x,
-                                                              selectModeLabel.transform.localPosition.y + 25,
-                                                              selectModeLabel.transform.localPosition.z);
-        selectModeLabel.transform.localScale = new Vector3(30, 30, 30);
+    #region Enable/Disable regions of the UI
+    public static void ToggleModeMenu(bool state) {
+        string labelText = "Choose Game Mode";
+        Vector3 labelPosition = new Vector3(0f, 134f, 0f);
+        Vector3 labelScale = new Vector3(40, 40, 1);
+        instance.ArcadeButton.isEnabled = state;
+        instance.ArcadeButton.transform.GetChild(0).gameObject.active = state;   // Show/Hide Background
+        instance.ArcadeButton.transform.GetChild(1).gameObject.active = state;   // Show/Hide Label
+        instance.SurvivalButton.isEnabled = state;
+        instance.SurvivalButton.transform.GetChild(0).gameObject.active = state;   // Show/Hide Background
+        instance.SurvivalButton.transform.GetChild(1).gameObject.active = state;   // Show/Hide Label
+        instance.StoryButton.isEnabled = state;
+        instance.StoryButton.transform.GetChild(0).gameObject.active = state;   // Show/Hide Background
+        instance.StoryButton.transform.GetChild(1).gameObject.active = state;   // Show/Hide Label
 
-        SetActiveState(fileBrowser, true);
-        SetActiveState(scrollBar, true);
-        SetActiveState(fileListPanel, true);
-
-        fileBrowserEnabled = true;
-
-        FileBrowser.Initialise();
-        
-        ReloadFileList();
-    }
-
-    void unLoadFileBrowser() {
-        SetActiveState(fileBrowser, false);
-        SetActiveState(scrollBar, false);
-        SetActiveState(fileListPanel, false);
-        FileBrowser.selectedFileId = -1;
-        fileBrowserEnabled = false;
-        RestoreModeMenu();
-    }
-
-    /// <summary>
-    /// Activate or deactivate the children of the specified transform recursively.
-    /// </summary>
-
-    void SetActiveState(Transform t, bool state) {
-        for (int i = 0; i < t.childCount; ++i) {
-            Transform child = t.GetChild(i);
-            //if (child.GetComponent<UIPanel>() != null) continue;
-
-            if (state) {
-                child.gameObject.active = true;
-                SetActiveState(child, true);
-            } else {
-                SetActiveState(child, false);
-                child.gameObject.active = false;
-            }
-        }
-    }
-
-    /// <summary>
-    /// Activate or deactivate the specified panel and all of its children.
-    /// </summary>
-
-    void SetActiveState(UIPanel panel, bool state) {
-        if (state) {
-            panel.gameObject.active = true;
-            SetActiveState(panel.transform, true);
-        } else {
-            SetActiveState(panel.transform, false);
-            panel.gameObject.active = false;
-        }
-    }
-
-
-
-    public void ReloadFileList() {
-        string[] directories = FileBrowser.Directories;
-        string[] files = FileBrowser.Files;
-        char separator = Path.DirectorySeparatorChar;
-        int numFolders = directories.Length;
-        int numFiles = files.Length;
-
-        folderTable.transform.localPosition = fileBrowserAnchor;
-
-        //Debug.Log("Current Directory: " + FileBrowser.CurrentDirectory);
-        //Debug.Log("Folders: " + numFolders + " (" + maxNumFolders + ")");
-        //Debug.Log("Files: " + numFiles + " (" + maxNumFiles + ")");
-
-        // If there are more folders than we have labels we need to add more
-        if (maxNumFolders < numFolders) {
-            // Generate new folder labels
-            for (int cnt = maxNumFolders; cnt < numFolders; cnt++) {
-                // Set up the label
-                UILabel newLabel = NGUITools.AddWidget<UILabel>(folderTable.gameObject);
-                newLabel.font = fileNameFont;
-                newLabel.text = new DirectoryInfo(directories[cnt]).Name + separator;
-                newLabel.color = Color.yellow;
-                newLabel.pivot = UIWidget.Pivot.Left;
-                newLabel.MakePixelPerfect();
-                BoxCollider col = newLabel.gameObject.AddComponent<BoxCollider>();
-                col.size = new Vector3(22f, 1.6f, 0f);
-                col.center = new Vector3(col.size.x / 2, 0f, 0f);
-                newLabel.gameObject.AddComponent<UIDragPanelContents>();
-
-                // Set up the click handler
-                FolderLabel folderLabel = newLabel.gameObject.AddComponent<FolderLabel>();
-                folderLabel.id = cnt;
-
-                // Set up the click handler
-                UIButtonMessage buttonMessage = newLabel.gameObject.AddComponent<UIButtonMessage>();
-                buttonMessage.functionName = "OnClicked";
-
-                // Save last folder for location reference to position the files below it
-                lastFolder = newLabel.gameObject;
-            }
-            // Update maxNumFolders
-            maxNumFolders = numFolders;
+        if (!state) {
+            labelText = "Select Song";
+            labelPosition = new Vector3(0f, 159f, 0f);
+            labelScale = new Vector3(30, 30, 1);
         }
 
-        // If there are more files than we have labels we need to add more
-        if (maxNumFiles < numFiles) {
-            // Generate files
-            for (int cnt = maxNumFiles; cnt < numFiles; cnt++) {
-                // Set up the label
-                UILabel newLabel = NGUITools.AddWidget<UILabel>(fileTable.gameObject);
-                newLabel.font = fileNameFont;
-                newLabel.text = Path.GetFileName(files[cnt]);
-                newLabel.pivot = UIWidget.Pivot.Left;
-                newLabel.MakePixelPerfect();
-                BoxCollider col = newLabel.gameObject.AddComponent<BoxCollider>();
-                col.size = new Vector3(22f, 1.6f, 0f);
-                col.center = new Vector3(col.size.x / 2, 0f, 0f);
-                newLabel.gameObject.AddComponent<UIDragPanelContents>();
-
-                // Pass messages to label script and filebrowser
-                FileLabel fileLabel = newLabel.gameObject.AddComponent<FileLabel>();
-                fileLabel.id = cnt;
-
-                // Set up the click handler
-                UIButtonMessage buttonMessage = newLabel.gameObject.AddComponent<UIButtonMessage>();
-                buttonMessage.functionName = "OnClicked";
-            }
-            // Update maxNumFiles
-            maxNumFiles = numFiles;
-        }
-
-        if (maxNumFolders > numFolders) {
-            for (int cnt = numFolders; cnt < maxNumFolders; cnt++) {
-                GameObject tempLabel = folderTable.transform.GetChild(cnt).gameObject;
-                tempLabel.gameObject.active = false;
-            }
-        }
-
-        if (maxNumFiles > numFiles) {
-            for (int cnt = numFiles; cnt < maxNumFiles; cnt++) {
-                GameObject tempLabel = fileTable.transform.GetChild(cnt).gameObject;
-                tempLabel.gameObject.active = false;
-            }
-        }
-
-        // Reload folders on old labels
-        for (int cnt = 0; cnt < numFolders; cnt++) {
-            // Re-enable old labels if needed
-            GameObject newLabelObject = folderTable.transform.GetChild(cnt).gameObject;
-            if (!newLabelObject.gameObject.active)
-                newLabelObject.gameObject.active = true;
-
-            // Set up the label
-            UILabel newLabel = folderTable.GetComponentsInChildren<UILabel>()[cnt];
-            newLabel.text = new DirectoryInfo(directories[cnt]).Name + separator;
-
-            // Assign label id
-            FolderLabel folderLabel = newLabel.gameObject.GetComponent<FolderLabel>();
-            folderLabel.id = cnt;
-
-            // Save last folder for location reference to position the files below it
-            if (numFolders > 0)
-                lastFolder = folderTable.transform.GetChild(numFolders - 1).gameObject;
-            else
-                lastFolder = folderTable.transform.GetChild(numFolders).gameObject;
-        }
-
-        // Reload filenames on old labels
-        for (int cnt = 0; cnt < numFiles; cnt++) {
-            // Re-enable old labels if needed
-            GameObject newLabelObject = fileTable.transform.GetChild(cnt).gameObject;
-            if (!newLabelObject.gameObject.active)
-                newLabelObject.gameObject.active = true;
-
-            // Set up the label
-            UILabel newLabel = fileTable.GetComponentsInChildren<UILabel>()[cnt];
-            if (!newLabel.gameObject.active)
-                newLabel.gameObject.active = true;
-            newLabel.text = Path.GetFileName(files[cnt]);
-
-            // Assign label id
-            FileLabel fileLabel = newLabel.gameObject.GetComponent<FileLabel>();
-            fileLabel.id = cnt;
-        }
-
-        folderTable.Reposition();
-        if (numFolders > 0) {
-            fileTable.transform.position = new Vector3(lastFolder.transform.position.x,
-                                                       lastFolder.transform.position.y - 0.04f,
-                                                       fileTable.transform.position.z);
-        } else {
-            fileTable.transform.localPosition = fileBrowserAnchor;
-        }
-
-        fileTable.Reposition();
-    }
-
-    private void OnFileBrowserUpClicked() {
-        if (Directory.GetParent(FileBrowser.CurrentDirectory) != null)
-            FileBrowser.CurrentDirectory = Directory.GetParent(FileBrowser.CurrentDirectory).FullName;
-        else
-            return;
-        fileListPanel.GetComponent<UIDraggablePanel>().ResetPosition();
-        FileBrowser.selectedFileId = -1;
-        FileBrowserSelectButton.isEnabled = false;
-        ReloadFileList();
-    }
-
-    private void OnFileBrowserSelectClicked() {
-        if (FileBrowser.SelectedFile == null)
-            return;
-        Game.Song = FileBrowser.SelectedFile;
-        Debug.Log("File selected: " + Game.Song);
-        Application.LoadLevel(selectedLevel);
-    }
-
-    private void RestoreModeMenu() {
-        ArcadeButton.isEnabled = true;
-        ArcadeButton.transform.GetChild(0).gameObject.active = true;   // Hide Background
-        ArcadeButton.transform.GetChild(1).gameObject.active = true;   // Hide Label
-        SurvivalButton.isEnabled = true;
-        SurvivalButton.transform.GetChild(0).gameObject.active = true;   // Hide Background
-        SurvivalButton.transform.GetChild(1).gameObject.active = true;   // Hide Label
-        StoryButton.isEnabled = true;
-        StoryButton.transform.GetChild(0).gameObject.active = true;   // Hide Background
-        StoryButton.transform.GetChild(1).gameObject.active = true;   // Hide Label
+        instance.selectModeLabel.text = labelText;
+        instance.selectModeLabel.transform.localPosition = labelPosition;
+        instance.selectModeLabel.transform.localScale = labelScale;
     }
 
     public static void DisableReloadButton() {
@@ -457,5 +235,7 @@ public class MainMenu : MonoBehaviour {
         instance.nextButton.isEnabled = true;
         instance.prevButton.isEnabled = true;
     }
+    #endregion
+
     #endregion
 }

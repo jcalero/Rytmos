@@ -5,44 +5,65 @@ public class FileLabel : MonoBehaviour {
 
     #region Fields
 
-    private UILabel label;
-    private bool isActive;
-    private UIButton selectButton;
-    Color oldColor;
+    // Inspector instances. Location: File Label (UI Root (2D) -> File Browser (Clipped Panel))
+    public UIButton selectButton;
+    public UIDraggablePanel fileListPanel;
 
+    public bool isFolder;
+
+    private UILabel label;
+    private Color oldColor;
+    private bool isActive;
+    
     public int id;
+    
     #endregion
 
     #region Functions
 
-    void Awake() {
+    private void Awake() {
         label = gameObject.GetComponent<UILabel>();
-        selectButton = GameObject.Find("SelectButton").GetComponent<UIButton>();
         oldColor = label.color;
     }
 
-    void Update() {
-        if (FileBrowser.selectedFileId == id) {
-            label.color = oldColor;
-            label.color = Color.red;
-            isActive = true;
-        } else {
-            label.color = oldColor;
-            isActive = false;
+    private void Update() {
+        if (isFolder) {
+            label.color = Color.yellow;
+        }
+        if (!isFolder) {
+            if (FileBrowser.SelectedFileId == id) {
+                label.color = oldColor;
+                label.color = Color.red;
+                isActive = true;
+            } else {
+                label.color = oldColor;
+                isActive = false;
+            }
         }
     }
 
     public void OnClicked() {
-        if (!isActive) {
-            FileBrowser.selectedFileId = id;
-            selectButton.isEnabled = true;
-            //Debug.Log("File id clicked on: " + id);
-            //if (FileBrowser.Files.Length > 0) {
-            //    Debug.Log("File with id " + id + ": " + FileBrowser.Files[id]);
-            //}
-        } else {
-            FileBrowser.selectedFileId = -1;
+        if (isFolder) {
+            fileListPanel.ResetPosition();
+            FileBrowser.CurrentDirectory = FileBrowser.Directories[id];
             selectButton.isEnabled = false;
+            FileBrowser.SelectedFileId = -1;
+            FileBrowser.ReloadFileList();
+            Debug.Log("Folder id clicked on: " + id);
+           // Debug.Log("Folder clicked on: " + FileBrowser.Directories[id]);
+            //Debug.Log("Current directory: " + FileBrowser.CurrentDirectory);
+        } else {
+            if (!isActive) {
+                FileBrowser.SelectedFileId = id;
+                selectButton.isEnabled = true;
+                Debug.Log("File id clicked on: " + id);
+                if (FileBrowser.Files.Length > 0) {
+                    Debug.Log("File with id " + id + ": " + FileBrowser.Files[id]);
+                }
+            } else {
+                FileBrowser.SelectedFileId = -1;
+                selectButton.isEnabled = false;
+            }
         }
     }
     #endregion
