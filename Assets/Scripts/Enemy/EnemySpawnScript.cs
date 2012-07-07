@@ -174,8 +174,7 @@ public class EnemySpawnScript : MonoBehaviour {
 									float speed = 3f;
 									if(Game.SyncMode) speed *= (spawnDist.magnitude)/maxMag;									
 									if(Game.PowerupActive==Game.Powerups.ChangeColor) currentlySelectedEnemy = enemySelectedByPowerup;									
-									SpawnEnemy (currentlySelectedEnemy, speed, spawnDist);
-									SpawnEnemy(currentlySelectedEnemy,loudFlag? 3 : 1,spawnPosition);
+									SpawnEnemy(currentlySelectedEnemy,loudFlag? speed : speed/2,spawnDist);
 								}
 								break;
 							case 1:
