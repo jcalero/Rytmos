@@ -559,7 +559,10 @@ public class FileReader : DecoderInterface {
 					// Have we filled the entire output buffer?
 					if(outBuffFillCounter == outBuff.Length) {
 						if (i+(_channels*2) < overFlow.Length) overFlowCounter = i+(_channels*2);
-						else return outBuffFillCounter;
+						else {
+							overFlow = new byte[0];
+							return outBuffFillCounter;
+						}
 						break;
 					}
 				}
@@ -572,6 +575,8 @@ public class FileReader : DecoderInterface {
 					return outBuffFillCounter;
 				}
 			}
+			
+			overFlow = new byte[0];
 			
 			// After adding the overflow form last time, get the next buffer
 			bool whileFlag = true;
@@ -589,6 +594,7 @@ public class FileReader : DecoderInterface {
 					
 					if(outBuffFillCounter == outBuff.Length) {
 						if (i+(_channels*2) < Buffer.Length) overFlowCounter = i+(_channels*2);
+						
 						whileFlag = false;
 						break;
 					}

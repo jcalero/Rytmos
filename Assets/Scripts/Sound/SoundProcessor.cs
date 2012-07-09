@@ -33,7 +33,7 @@ public class SoundProcessor
 	public static readonly int HOP_SIZE = 1024;
 	public static readonly int HISTORY_SIZE = 50;
 	public static readonly float[] multipliers = { 2f, 2f, 2f, 2f, 2f, 2f };
-	public static readonly float[] bands = { 0, 1000, 1000, 4000, 4000, 8000, 8000, 22000 };
+	public static readonly float[] bands = { 0, 1000, 1000, 4000, 4000, 8000, 8000, 22000};
 	// { 0, 500, 500, 2000, 2000, 4000, 4000, 8000, 8000, 16000, 16000, 22000 };
 	
 	public static float[][] getPeaks(DecoderInterface decoder)
@@ -110,6 +110,44 @@ public class SoundProcessor
 			}
 			peaks.Add(tempPeaks.ToArray());
 		}
+		
+//		float songBPM = 0;
+//		int closestChannel = 0;
+//		float closestMean = float.MaxValue;
+//		
+//		// Get the song bpm from the onset analysis over the entire spectrum
+//		for(int i = 0; i < peaks[peaks.Count-1].Length-1; i++) {
+//				float diff = peaks[peaks.Count-1][i+1] - peaks[peaks.Count-1][i];
+//				songBPM += diff;
+//		}
+//		songBPM /= peaks[peaks.Count-1].Length-1;
+//		
+//		// Check which channel fits most
+//		for(int j = 0; j < peaks.Count-1; j++) {
+//			float mean = 0;
+//			for(int i = 0; i < peaks[j].Length-1; i++) {
+//				float diff = peaks[j][i+1] - peaks[j][i];
+//				mean += diff;
+//			}
+//			mean /= peaks[j].Length-1;
+//			
+//			if(Math.Abs(songBPM - mean) < closestMean) {
+//				closestMean = Math.Abs(songBPM - mean);
+//				closestChannel = j;
+//			}
+//		}
+//		
+//		Debug.Log("closest Channel: " + closestChannel);
+//		peaks.RemoveAt(peaks.Count-1);
+//		float[] closetChan = peaks[closestChannel];
+//		peaks.RemoveAt(closestChannel);
+//		
+//		List<float[]> newPeaks = new List<float[]>();
+//		newPeaks.Add(closetChan);
+//		for(int i = 0; i < peaks.Count; i++) {
+//			newPeaks.Add(peaks[i]);
+//		}
+//		peaks = newPeaks;
 		
 		return peaks.ToArray();
 	}

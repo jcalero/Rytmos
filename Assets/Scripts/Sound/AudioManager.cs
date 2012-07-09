@@ -86,6 +86,22 @@ public static class AudioManager {
 		}
 	}
 	
+	public static int getCurrenAmplitude(int sample) {
+		if(clip == null) return 0;
+		sample = sample - sample/2;
+		if(sample < 0) sample = 0;
+		float[] data = new float[frequency/50];
+		if(sample + data.Length > clip.samples) sample = clip.samples - data.Length;
+		clip.GetData(data,sample);
+		
+		float mean = 0;
+		for(int i = 0; i < data.Length; i++) {
+				mean += data[i]*100.0f;
+		}
+		mean /= data.Length;
+		return (int)mean;
+	}
+	
 	public static string getCurrentSong() {
 		return currentlyLoadedSong;	
 	}
