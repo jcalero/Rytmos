@@ -45,7 +45,7 @@ public class Level : MonoBehaviour {
         touchSprite.hidden = true;
 
         // Set up level feedback stuff
-        SetUpBorderLineFeedback();
+        //SetUpBorderLineFeedback();
         //SetUpParticlesFeedback();
     }
 	
