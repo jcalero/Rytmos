@@ -33,7 +33,6 @@ public class EnemySpawnScript : MonoBehaviour {
 	private int rotateDirection;
 	private int loudPartCounter;
 	private bool loudFlag;
-	private bool decrease = true;
     #endregion
 
     #region Functions
@@ -87,8 +86,6 @@ public class EnemySpawnScript : MonoBehaviour {
 		if(Game.PowerupActive != Game.Powerups.TimeSlow) {
 			timeSlowTimer = 0;
 			timeSlowOldTime = 0;
-			Time.timeScale = 1;
-			cam.audio.pitch = 1;
 		}
     }
     
