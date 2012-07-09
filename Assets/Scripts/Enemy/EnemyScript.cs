@@ -64,7 +64,9 @@ public class EnemyScript : MonoBehaviour {
         }
         // If the enemy collides with a pulse of the right color, reduce enemy health, increase score
         if (otherObject.name == "Pulse(Clone)") {
-            if (otherObject.gameObject.GetComponent<LineRenderer>().material.color == MainColor || Game.PowerupActive == Game.Powerups.MassivePulse) {
+            if (otherObject.gameObject.GetComponent<PulseSender>().CurrentColor == MainColor ||
+				otherObject.gameObject.GetComponent<PulseSender>().SecondaryColor == MainColor ||
+				Game.PowerupActive == Game.Powerups.MassivePulse) {
 				if(Game.PowerupActive != Game.Powerups.MassivePulse)
                 	Player.score += 10;
                 CreateExplosion();
@@ -74,7 +76,6 @@ public class EnemyScript : MonoBehaviour {
 	                GameObject pulse = (GameObject) Instantiate(PulsePrefab, gameObject.transform.position, Quaternion.identity);
 					pulse.GetComponent<PulseSender>().SetFinalColor(mainColor);
 				}
-
 				
             } else {
                 gameObject.GetComponent<ParticleSystem>().Emit(10);

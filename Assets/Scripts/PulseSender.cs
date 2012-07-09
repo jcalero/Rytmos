@@ -8,6 +8,8 @@ using System.Collections;
 public class PulseSender : MonoBehaviour {
     public float Radius;                            // The radius of he pulse
     public float CurrentHealth;                     // Current health of the pulse
+	public Color CurrentColor;						// Currently selected color (discrete values)
+	public Color SecondaryColor;					// Used for the boundaries between discrete color selection to determine a hit
     public float MaxHealth = 3;                     // Max health of the pulse
 
     private int segments = 50;                      // The nr of segments the pulse has. Fewer means less "smooth".
@@ -27,6 +29,7 @@ public class PulseSender : MonoBehaviour {
         line.useWorldSpace = false;
         line.material.color = finalColor;
         CurrentHealth = MaxHealth;
+		CurrentColor = Color.clear;
         float lineWidth = CurrentHealth / 10;
         line.SetWidth(lineWidth, lineWidth);
 
@@ -63,7 +66,7 @@ public class PulseSender : MonoBehaviour {
                     Player.energy--;
                 else {
                     held = false;
-                    finalColor = Level.singleColourSelect(Input.mousePosition);
+                    finalColor = Level.continuousColourSelect(Input.mousePosition);
                 }
                 timer = 0;
             }
@@ -74,20 +77,24 @@ public class PulseSender : MonoBehaviour {
         //If you have released the button, and the pulse is the current one, set it to be not held and set the Colour
         if (Input.GetMouseButtonUp(0) && held) {
             held = false;
-            finalColor = Level.singleColourSelect(Input.mousePosition);
+            finalColor = Level.continuousColourSelect(Input.mousePosition);
+			CurrentColor = Level.singleColourSelect(Input.mousePosition);
         }
 
         //What the colour should be - this is where the transition has to take place. 
         Color chosen;
-        if (held)
-            chosen = Level.singleColourSelect(Input.mousePosition);
-        else
+        if (held) {
+            chosen = Level.continuousColourSelect(Input.mousePosition);
+			CurrentColor = Level.singleColourSelect(Input.mousePosition);
+		} else 
             chosen = finalColor;
-		if(Game.PowerupActive==Game.Powerups.MassivePulse) {
-			chosen = Color.white;
-		}
-
-
+		
+		if(Game.PowerupActive==Game.Powerups.MassivePulse) chosen = Color.white;
+		
+		
+		//Select the secondary color
+		if(held) SecondaryColor = Level.secondaryColourSelect(Input.mousePosition);
+		
         //Create the circle, and set the line material
         RedrawPoints(chosen);
         line.material.color = chosen;

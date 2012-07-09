@@ -44,6 +44,11 @@ public class EnemyGreen : EnemyScript {
         base.Start();                                   // Initialises the enemy by calling the Start() of EnemyScript
     }
 
+	void Update() {
+		if(transform.localPosition.x > 0) transform.localEulerAngles = new Vector3(0, 0, transform.localEulerAngles.z+3);
+		else transform.localEulerAngles = new Vector3(0,0,transform.localEulerAngles.z+3);
+	}
+
     void OnDestroy() {
         if (enemyCircle != null)
             spriteManager.RemoveSprite(enemyCircle);

@@ -168,7 +168,6 @@ public class Level : MonoBehaviour {
         float normalizedY = xy.y - (Screen.height / 2);
         float angle = (Mathf.Rad2Deg * Mathf.Atan2(normalizedY, normalizedX));
 
-
         if (fourColors) {
             if (angle > 0) {
                 if (angle > 90)
@@ -210,7 +209,64 @@ public class Level : MonoBehaviour {
                 }
             }
         }
-    }
+    } 
+	
+	public static Color secondaryColourSelect(Vector2 xy) {
+		float currAngle = mouseAngle(xy);
+		if(Mathf.Abs(currAngle) >= 170) {
+			if(currAngle > 0) return Color.green;
+			else return Color.yellow;
+		} else if(Mathf.Abs (currAngle) <= 10) {
+			if(currAngle > 0) return Color.blue;
+			else return Level.purple;
+		} else if(Mathf.Abs(currAngle) > 110 && Mathf.Abs (currAngle) <= 120) {
+			if(currAngle > 0) return Color.yellow;
+			else return Color.green;
+		} else if(Mathf.Abs (currAngle) >= 120 && Mathf.Abs(currAngle) < 130) {
+			if(currAngle > 0) return Color.red;
+			else return Color.cyan;
+		} else if(Mathf.Abs (currAngle) > 50 && Mathf.Abs (currAngle) <= 60) {
+			if(currAngle > 0) return Color.red;
+			else return Color.cyan;
+		} else if (Mathf. Abs(currAngle) >= 60 && Mathf. Abs(currAngle) < 70) {
+			if(currAngle > 0) return Level.purple;
+			else return Color.blue;
+		} else return Color.clear;
+	}
+	
+	public static Color continuousColourSelect(Vector2 xy) {
+        float normalizedX = xy.x - (Screen.width / 2);
+        float normalizedY = xy.y - (Screen.height / 2);
+        float angle = (Mathf.Rad2Deg * Mathf.Atan2(normalizedY, normalizedX));
+	
+		if(angle > 0) {
+			if(angle < 45) {
+				return new Color((((angle/45)*64)+64)/255, 0, (191 - (angle/45)*63)/255, 1);
+			} else if(angle < 90) {
+				return new Color(((((angle-45)/45)*128) + 127)/255, 0, (128 - ((angle - 45)/45)*128)/255, 1);
+			} else if(angle < 135) {
+				return new Color(1, (angle-90)/45, 0, 1);
+			} else {
+				return new Color( (255-((angle-135)/45)*128)/255, 1, 0, 1);
+			}
+		} else {
+			if(angle > -45) {
+				return new Color(((64-((angle/45)*-64)))/255, 0, (((angle/-45)*63)+191)/255, 1);
+			} else if(angle > -90) {
+				return new Color(0, 1-((angle+90)/45), 1, 1);
+			} else if(angle > -135) {
+				return new Color(0, 1, (angle+135)/45, 1);
+			} else {
+				return new Color((128-((angle+180)/45)*128)/255, 1, 0, 1);
+			}
+		}
+	}
+	
+	public static float mouseAngle(Vector2 xy) {
+		float normalizedX = xy.x - (Screen.width / 2);
+        float normalizedY = xy.y - (Screen.height / 2);
+        return (Mathf.Rad2Deg * Mathf.Atan2(normalizedY, normalizedX));
+	}
 	
 	public static Color singleColourSelect(int numColors) {
 		switch (numColors) {
