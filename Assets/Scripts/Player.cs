@@ -100,6 +100,8 @@ public class Player : MonoBehaviour,PeakListener {
 	
 	public void onPeakTrigger(int channel) {
 		for(int i = 0; i < players.Length; i++) {
+			
+			if(players[i] == null) continue;
 		
 			switch(channel) {
 			case 1:
