@@ -273,8 +273,8 @@ public class FileReader : DecoderInterface {
 		String txtRate;	
 		String txtChannels;
 		String txtEnc;
-		String txtArtist;
-		String txtTitle;
+		String txtArtist = "";
+		String txtTitle = "";
 		
 		
 		MPGImport.mpg123_init ();
@@ -295,6 +295,7 @@ public class FileReader : DecoderInterface {
 		txtChannels = _channels.ToString ();
 		txtEnc = _encoding.ToString ();
 		
+		Debug.Log ("This gets rid of warnings: "+txtRate+" "+txtChannels+" "+txtEnc+" "+errorCheck+" "+txtTitle+" "+txtArtist);
 		MPGImport.mpg123_id3 (handle_mpg, out id3v1, out id3v2);
 		MPGImport.mpg123_id3v1 MP3Data = new MPGImport.mpg123_id3v1 ();
 		
@@ -305,8 +306,7 @@ public class FileReader : DecoderInterface {
 			txtTitle = new string (MP3Data.title);
 			
 		} catch (ArgumentNullException e) {
-			String fuckoffwarnings = e.ToString ();
-			Debug.Log ("No ID3v1 data");
+			Debug.Log ("No ID3v1 data: "+e.ToString());
 			txtArtist = "N/A";
 			txtTitle = "N/A";
 		}
@@ -452,8 +452,8 @@ public class FileReader : DecoderInterface {
 		String txtRate;	
 		String txtChannels;
 		String txtEnc;
-		String txtArtist;
-		String txtTitle;
+		String txtArtist = "";
+		String txtTitle = "";
 		String path;
 		
 		int errorCheck;
@@ -492,6 +492,7 @@ public class FileReader : DecoderInterface {
 			txtRate = _frequency.ToString ();
 			txtChannels = _channels.ToString ();
 			txtEnc = _encoding.ToString ();
+			Debug.Log ("This gets rid of warnings: "+txtRate+" "+txtChannels+" "+txtEnc+" "+errorCheck+" "+id3v2+" "+len+" "+done+" "+txtArtist+" "+txtTitle);
 			
 			MPGImport.mpg123_id3 (handle_mpg, out id3v1, out id3v2);
 			MPGImport.mpg123_id3v1 MP3Data = new MPGImport.mpg123_id3v1 ();
@@ -503,8 +504,7 @@ public class FileReader : DecoderInterface {
 				txtTitle = new string (MP3Data.title);
 				
 			} catch (ArgumentNullException e) {
-				String fuckoffwarnings = e.ToString ();
-				Debug.Log ("No ID3v1 data");
+				Debug.Log ("No ID3v1 data: "+e.ToString());
 				txtArtist = "N/A";
 				txtTitle = "N/A";
 			}
