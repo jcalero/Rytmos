@@ -354,15 +354,8 @@ public class FileReader : DecoderInterface {
 		Debug.Log("clipDataCounter: "+ clipDataCounter);
 		Debug.Log("channels: " + _channels);
 		
-		float[] tempData = new float[(dataCounter < this.data.Length)? dataCounter : this.data.Length];
-		System.Array.Copy(this.data,tempData,tempData.Length);
-		this.data = tempData;
-		
-		tempData = new float[(clipDataCounter < clipData.Length)? clipDataCounter : clipData.Length];
-		System.Array.Copy(clipData,tempData,tempData.Length);
-		clipData = tempData;
-		
-		tempData = null;		
+		if(dataCounter < this.data.Length) Array.Resize<float>(ref this.data,dataCounter);
+		if(clipDataCounter < clipData.Length) Array.Resize<float>(ref clipData,clipDataCounter);		
 		
 		this.clip = AudioClip.Create("gameAudio",clipData.Length/_channels,_channels,_frequency,true,false);
 		this.clip.SetData(clipData,0);
