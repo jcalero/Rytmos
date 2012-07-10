@@ -5,7 +5,7 @@ using System.Collections;
 /// 
 /// Player manager. Handles player values and control.
 /// </summary>
-public class Player : MonoBehaviour {
+public class Player : MonoBehaviour,PeakListener {
     #region Fields
     public static int startScore = 0;           // Start score
     public static int startHealth = 100;        // Starting health of the player
@@ -27,11 +27,19 @@ public class Player : MonoBehaviour {
     private float energyRegenRate = 0.5f;       // The rate at which the energy regenerates. Lower is faster.
 	private int superPulseCount = 0;				// Counter for the amount of invincible pulses
 	private readonly int superPulseTotal = 3;		// Total amount of invincible pulses a player can send
+	
+	private MeshRenderer[] players;
+	private Color playerColor;
     #endregion
 
     #region Functions
     void Start() {
         // Resets player stats at the start of a level
+		players = gameObject.GetComponentsInChildren<MeshRenderer>();
+		playerColor = new Color(1,1,1,1);
+		
+		PeakTriggerManager.addSelfToListenerList(this);
+		
         ResetStats();
     }
 
@@ -89,6 +97,32 @@ public class Player : MonoBehaviour {
         }
 
     }
+	
+	public void onPeakTrigger(int channel) {
+		for(int i = 0; i < players.Length; i++) {
+		
+			switch(channel) {
+			case 1:
+				playerColor.a = 0.8f + 0.2f*Random.Range(0,101)/100f;
+				players[i].material.SetColor("_Color",playerColor);
+				break;
+			case 2:
+				playerColor.r = Random.Range(0,101)/100f;
+				players[i].material.SetColor("_Color",playerColor);
+				break;
+			case 3:				
+				playerColor.g = Random.Range(0,101)/100f;
+				players[i].material.SetColor("_Color",playerColor);
+				break;
+			case 4:
+				playerColor.b = Random.Range(0,101)/100f;
+				players[i].material.SetColor("_Color",playerColor);
+				break;
+			}
+		}
+	}
+	
+	public void setLoudFlag(bool flag) {}
 
     /// <summary>
     /// Reset the player stats to default values
