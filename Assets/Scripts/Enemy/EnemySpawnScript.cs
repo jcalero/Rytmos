@@ -38,11 +38,8 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
     #region Functions
 
     void Start() {
-		resetColor = true;
-        //InvokeRepeating("SpawnEnemy", FirstSpawn, SpawnRate); // Start repeatedly spawning enemies		
-        init ();
-        playMusic();
-		
+		resetColor = true;	
+        init ();		
     }
     
     void Update() {
@@ -50,10 +47,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 			cam.audio.Stop();
 			Application.LoadLevel("Win");			
 		}
-    	else if(AudioManager.peaks != null && cam != null && cam.audio.isPlaying) {
-			timer += Time.deltaTime;
-			//triggerEnemiesOnMusic(timer);
-		} //else timer += Time.deltaTime;
+    	else if(AudioManager.peaks != null && cam != null && cam.audio.isPlaying) timer += Time.deltaTime;
 		
 		//Only spawn enemies of a single color for a bit. 
 		if(Game.PowerupActive == Game.Powerups.ChangeColor) {
@@ -96,35 +90,22 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	/// ...and then initialize a load of other stuff
 	/// </summary>
     void init() {
+		
 		PeakTriggerManager.addSelfToListenerList(this);
-		cam = GameObject.Find ("Main Camera");
-		if(Game.Song != null && Game.Song != "") {
-			if(Game.Song != AudioManager.getCurrentSong()) AudioManager.initMusic(Game.Song);
-		} else if (cam.audio.clip != null) {
-			if(!AudioManager.isSongLoaded()) {
-				AudioManager.setCam(this.cam);
-				AudioManager.initMusic("");
-			}
-		}
-		while(!AudioManager.isSongLoaded()) yieldRoutine();
-		cam.audio.loop = false;
+		
+		cam = GameObject.Find("Main Camera");
 		audioLength = AudioManager.audioLength;
-		counters = new int[AudioManager.peaks.Length];
+		
+		timer = 0f;
 		timers = new float[AudioManager.peaks.Length];
 		spawnRestrictors = new int[AudioManager.peaks.Length];
 		spawnDivisors = new int[]{2,2,8,2,2,2};
-		timer = 0f;
 		spawnPositions = new int[]{0,33,66};
+	
 		currentlySelectedEnemy = 0;
 		rotateDirection = 1;
 		Level.SetUpParticlesFeedback(spawnPositions.Length, currentlySelectedEnemy);		
-		loudPartCounter = 0;
 		loudFlag = false;
-    }
-    
-    void playMusic() {
-        cam.audio.clip = AudioManager.getAudioClip();	// Set the camera's audio clip to the read data	
-        if(!cam.audio.isPlaying) cam.audio.Play ();
     }
 	
 	public void setLoudFlag(bool flag) {
@@ -194,90 +175,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		}
 	}
 	
-	void triggerEnemiesOnMusic(float timer) {
-		
-		/* Music related logic: */
-		if(loudPartCounter < AudioManager.loudPartTimeStamps.Length && AudioManager.loudPartTimeStamps[loudPartCounter]/(float)AudioManager.frequency < timer+0.5f) {
-			loudFlag = !loudFlag;
-			loudPartCounter++;			
-		}
-		
-		// Iterate over every channel
-		for(int t = 0; t < AudioManager.peaks.Length; t++) {
-			
-			// Sync peaks (can call them triggers) to the music
-			while(counters[t] < AudioManager.peaks[t].Length && AudioManager.peaks[t][counters[t]] * (1024f/(float)AudioManager.frequency) < timer) {
-				counters[t]++;
-				
-				// Are the peaks withing range? Do we have a peak?
-				//if(	counters[t] < AudioManager.peaks[t].Length && AudioManager.peaks[t][counters[t]] > 0) {
-					
-					// Filter out too frequent peaks
-					if(timer - timers[t] > timeThresh) {
-						
-						// Filter out every 2nd, or 3rd, or what ever specified trigger
-						if(spawnRestrictors[t] == 0) {
-							
-							/* Spawning/Gameplay related logic */
-							switch (t) {
-							case 0:
-								// This is the bass frequency, used for spawning enemies (for now at least)
-								Level.SetUpParticlesFeedback(spawnPositions.Length, currentlySelectedEnemy);
-								//Find magnitude of the furthest away
-								float maxMag = 0;
-								if(Game.SyncMode) {
-									foreach(int spawnPosition in spawnPositions) {
-										float currMaxMag = findSpawnPositionVector(spawnPosition).magnitude;
-										if(currMaxMag > maxMag) {
-											maxMag = currMaxMag;	
-										}
-									}
-								}
-
-								foreach(int spawnPosition in spawnPositions) {
-									Vector3 spawnDist = findSpawnPositionVector(spawnPosition);
-									float speed = 3f;
-									if(Game.SyncMode) speed *= (spawnDist.magnitude)/maxMag;									
-									if(Game.PowerupActive==Game.Powerups.ChangeColor) currentlySelectedEnemy = enemySelectedByPowerup;									
-									SpawnEnemy(currentlySelectedEnemy,loudFlag? speed : speed/2,spawnDist);
-								}
-								break;
-							case 1:
-								// These are more medium ranged frequencies, used to change the spawn position (for now at least)
-								for (int i = 0; i < spawnPositions.Length; i++) {
-									incrementSpawnPosition(ref spawnPositions[i],10,rotateDirection);
-								}								
-								break;
-							case 2:
-								// These are even more medium ranged frequencies, used to change the direction (for now, again :P )
-								if(rotateDirection == 1) rotateDirection-=2;
-								else rotateDirection+=2;
-								break;
-							case 3:
-								// Some higher frequencies to change the currently spawned enemy
-								Level.SetUpParticlesFeedback(spawnPositions.Length, currentlySelectedEnemy);
-								changeEnemy(ref currentlySelectedEnemy);
-								break;
-							case 4:
-								break;
-							case 5:
-								break;
-							default:
-								
-								break;								
-							}
-							
-							// Update the time of last spawn
-							timers[t] = timer;
-						}
-						// Update the spawning restrictors
-						spawnRestrictors[t] = (spawnRestrictors[t]+1)%spawnDivisors[t];
-					}
-				}
-			//}
-
-		}		
-	}
+	
 	
 	private static void changeEnemy(ref int currentEnemy) {
 		int rnd = Random.Range(0,101);
