@@ -5,7 +5,7 @@ using System.Collections;
 /// 
 /// Handles the spawning of the enemies.
 /// </summary>
-public class EnemySpawnScript : MonoBehaviour {
+public class EnemySpawnScript : MonoBehaviour,PeakListener {
 
     #region Fields
     public GameObject[] EnemyPrefabs;       // List of enemy types to spawn. Inspector reference. Location: EnemySpawner
@@ -32,7 +32,7 @@ public class EnemySpawnScript : MonoBehaviour {
 
 	private int rotateDirection;
 	private int loudPartCounter;
-	private bool loudFlag;
+	public bool loudFlag;
     #endregion
 
     #region Functions
@@ -52,7 +52,7 @@ public class EnemySpawnScript : MonoBehaviour {
 		}
     	else if(AudioManager.peaks != null && cam != null && cam.audio.isPlaying) {
 			timer += Time.deltaTime;
-			triggerEnemiesOnMusic(timer);
+			//triggerEnemiesOnMusic(timer);
 		} //else timer += Time.deltaTime;
 		
 		//Only spawn enemies of a single color for a bit. 
@@ -96,6 +96,7 @@ public class EnemySpawnScript : MonoBehaviour {
 	/// ...and then initialize a load of other stuff
 	/// </summary>
     void init() {
+		PeakTriggerManager.addSelfToListenerList(this);
 		cam = GameObject.Find ("Main Camera");
 		if(Game.Song != null && Game.Song != "") {
 			if(Game.Song != AudioManager.getCurrentSong()) AudioManager.initMusic(Game.Song);
@@ -125,6 +126,73 @@ public class EnemySpawnScript : MonoBehaviour {
         cam.audio.clip = AudioManager.getAudioClip();	// Set the camera's audio clip to the read data	
         if(!cam.audio.isPlaying) cam.audio.Play ();
     }
+	
+	public void setLoudFlag(bool flag) {
+		loudFlag = flag;		
+	}
+	
+	public void onPeakTrigger(int channel) {
+		
+		if(timer - timers[channel] > timeThresh) {			
+			// Filter out every 2nd, or 3rd, or what ever specified trigger
+			if(spawnRestrictors[channel] == 0) {
+				
+				/* Spawning/Gameplay related logic */
+				switch (channel) {
+				case 0:
+					// This is the bass frequency, used for spawning enemies (for now at least)
+					Level.SetUpParticlesFeedback(spawnPositions.Length, currentlySelectedEnemy);
+					//Find magnitude of the furthest away
+					float maxMag = 0;
+					if(Game.SyncMode) {
+						foreach(int spawnPosition in spawnPositions) {
+							float currMaxMag = findSpawnPositionVector(spawnPosition).magnitude;
+							if(currMaxMag > maxMag) {
+								maxMag = currMaxMag;	
+							}
+						}
+					}
+
+					foreach(int spawnPosition in spawnPositions) {
+						Vector3 spawnDist = findSpawnPositionVector(spawnPosition);
+						float speed = 3f;
+						if(Game.SyncMode) speed *= (spawnDist.magnitude)/maxMag;									
+						if(Game.PowerupActive==Game.Powerups.ChangeColor) currentlySelectedEnemy = enemySelectedByPowerup;									
+						SpawnEnemy(currentlySelectedEnemy,loudFlag? speed : speed/2,spawnDist);
+					}
+					break;
+				case 1:
+					// These are more medium ranged frequencies, used to change the spawn position (for now at least)
+					for (int i = 0; i < spawnPositions.Length; i++) {
+						incrementSpawnPosition(ref spawnPositions[i],10,rotateDirection);
+					}								
+					break;
+				case 2:
+					// These are even more medium ranged frequencies, used to change the direction (for now, again :P )
+					if(rotateDirection == 1) rotateDirection-=2;
+					else rotateDirection+=2;
+					break;
+				case 3:
+					// Some higher frequencies to change the currently spawned enemy
+					Level.SetUpParticlesFeedback(spawnPositions.Length, currentlySelectedEnemy);
+					changeEnemy(ref currentlySelectedEnemy);
+					break;
+				case 4:
+					break;
+				case 5:
+					break;
+				default:
+					
+					break;								
+				}
+				
+				// Update the time of last spawn
+				timers[channel] = timer;
+			}
+			// Update the spawning restrictors
+			spawnRestrictors[channel] = (spawnRestrictors[channel]+1)%spawnDivisors[channel];
+		}
+	}
 	
 	void triggerEnemiesOnMusic(float timer) {
 		
