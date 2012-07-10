@@ -143,6 +143,7 @@ public class MainMenu : MonoBehaviour {
     /// Button handler for "Arcade" button
     /// </summary>
     void OnArcadeModeClicked() {
+        Game.GameMode = Game.Mode.DeathMatch;
         FileBrowser.LoadFileBrowser("Game");
         //Application.LoadLevel("Game");
     }
@@ -151,7 +152,7 @@ public class MainMenu : MonoBehaviour {
     /// Button handler for "Survival" button
     /// </summary>
     void OnChallengeModeClicked() {
-        FileBrowser.LoadFileBrowser("DeathMatch");
+        //FileBrowser.LoadFileBrowser("DeathMatch");
         //Application.LoadLevel("DeathMatch");
     }
     #endregion

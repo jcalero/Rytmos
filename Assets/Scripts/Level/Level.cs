@@ -22,7 +22,7 @@ public class Level : MonoBehaviour {
 	
 	
     public GameObject[] particlesFeedback = new GameObject[6];      // The six feedback particles. Inspector reference. Location: LevelManager
-    public GameObject[] linePrefab = new GameObject[6];             // The six feedback screen lines. Inspector reference. Location: LevelManager
+    //public GameObject[] linePrefab = new GameObject[6];             // The six feedback screen lines. Inspector reference. Location: LevelManager
     public GameObject spriteManager;                                // Reference to the SpriteManager. Inspector reference. Location: LevelManager
     public GameObject touchPrefab;                                  // The touch sprite. Inspector reference. Location: LevelManager
     public EnemySpawnScript enemySpawner;                           // The enemy spawn script.
@@ -98,65 +98,65 @@ public class Level : MonoBehaviour {
 
     }
 
-    private void SetUpBorderLineFeedback() {
-        /*
-         * Here we will possibly have to reallocate the possible lines if we are dealing with different amounts of colours
-         */
+    //private void SetUpBorderLineFeedback() {
+    //    /*
+    //     * Here we will possibly have to reallocate the possible lines if we are dealing with different amounts of colours
+    //     */
 		
-        if (fourColors) {
-            //First line - Cyan to Blue
-            linePrefab[0].GetComponent<LineRenderer>().SetColors(Color.cyan, Color.blue);
-            linePrefab[0].GetComponent<LineRenderer>().SetPosition(0, new Vector3(Game.screenLeft, Game.screenBottom));
-            linePrefab[0].GetComponent<LineRenderer>().SetPosition(1, new Vector3(Game.screenRight, Game.screenBottom));
+    //    if (fourColors) {
+    //        //First line - Cyan to Blue
+    //        linePrefab[0].GetComponent<LineRenderer>().SetColors(Color.cyan, Color.blue);
+    //        linePrefab[0].GetComponent<LineRenderer>().SetPosition(0, new Vector3(Game.screenLeft, Game.screenBottom));
+    //        linePrefab[0].GetComponent<LineRenderer>().SetPosition(1, new Vector3(Game.screenRight, Game.screenBottom));
 
-            //Second line - Blue to Red
-            linePrefab[1].GetComponent<LineRenderer>().SetColors(Color.blue, Color.red);
-            linePrefab[1].GetComponent<LineRenderer>().SetPosition(0, new Vector3(Game.screenRight, Game.screenBottom));
-            linePrefab[1].GetComponent<LineRenderer>().SetPosition(1, new Vector3(Game.screenRight, Game.screenTop));
+    //        //Second line - Blue to Red
+    //        linePrefab[1].GetComponent<LineRenderer>().SetColors(Color.blue, Color.red);
+    //        linePrefab[1].GetComponent<LineRenderer>().SetPosition(0, new Vector3(Game.screenRight, Game.screenBottom));
+    //        linePrefab[1].GetComponent<LineRenderer>().SetPosition(1, new Vector3(Game.screenRight, Game.screenTop));
 
-            //Third line - Red to Yellow
-            linePrefab[2].GetComponent<LineRenderer>().SetColors(Color.red, Color.yellow);
-            linePrefab[2].GetComponent<LineRenderer>().SetPosition(0, new Vector3(Game.screenRight, Game.screenTop));
-            linePrefab[2].GetComponent<LineRenderer>().SetPosition(1, new Vector3(Game.screenLeft, Game.screenTop));
+    //        //Third line - Red to Yellow
+    //        linePrefab[2].GetComponent<LineRenderer>().SetColors(Color.red, Color.yellow);
+    //        linePrefab[2].GetComponent<LineRenderer>().SetPosition(0, new Vector3(Game.screenRight, Game.screenTop));
+    //        linePrefab[2].GetComponent<LineRenderer>().SetPosition(1, new Vector3(Game.screenLeft, Game.screenTop));
 
-            //Fourth line - Yellow to Cyan
-            linePrefab[3].GetComponent<LineRenderer>().SetColors(Color.yellow, Color.cyan);
-            linePrefab[3].GetComponent<LineRenderer>().SetPosition(0, new Vector3(Game.screenLeft, Game.screenTop));
-            linePrefab[3].GetComponent<LineRenderer>().SetPosition(1, new Vector3(Game.screenLeft, Game.screenBottom));
+    //        //Fourth line - Yellow to Cyan
+    //        linePrefab[3].GetComponent<LineRenderer>().SetColors(Color.yellow, Color.cyan);
+    //        linePrefab[3].GetComponent<LineRenderer>().SetPosition(0, new Vector3(Game.screenLeft, Game.screenTop));
+    //        linePrefab[3].GetComponent<LineRenderer>().SetPosition(1, new Vector3(Game.screenLeft, Game.screenBottom));
 
-            //Move the other ones off the screen
-            linePrefab[4].GetComponent<LineRenderer>().SetPosition(0, new Vector3(Game.screenRight + 10, Game.screenTop + 10));
-            linePrefab[4].GetComponent<LineRenderer>().SetPosition(1, new Vector3(Game.screenMiddle + 10, Game.screenTop + 10));
-            linePrefab[5].GetComponent<LineRenderer>().SetPosition(0, new Vector3(Game.screenRight + 10, Game.screenTop + 10));
-            linePrefab[5].GetComponent<LineRenderer>().SetPosition(1, new Vector3(Game.screenMiddle + 10, Game.screenTop + 10));
-        } else {
-            //First line - Green to cyan
-            linePrefab[0].GetComponent<LineRenderer>().SetPosition(0, new Vector3(Game.screenLeft, Game.screenBottom));
-            linePrefab[0].GetComponent<LineRenderer>().SetPosition(1, new Vector3(Game.screenMiddle, Game.screenBottom));
+    //        //Move the other ones off the screen
+    //        linePrefab[4].GetComponent<LineRenderer>().SetPosition(0, new Vector3(Game.screenRight + 10, Game.screenTop + 10));
+    //        linePrefab[4].GetComponent<LineRenderer>().SetPosition(1, new Vector3(Game.screenMiddle + 10, Game.screenTop + 10));
+    //        linePrefab[5].GetComponent<LineRenderer>().SetPosition(0, new Vector3(Game.screenRight + 10, Game.screenTop + 10));
+    //        linePrefab[5].GetComponent<LineRenderer>().SetPosition(1, new Vector3(Game.screenMiddle + 10, Game.screenTop + 10));
+    //    } else {
+    //        //First line - Green to cyan
+    //        linePrefab[0].GetComponent<LineRenderer>().SetPosition(0, new Vector3(Game.screenLeft, Game.screenBottom));
+    //        linePrefab[0].GetComponent<LineRenderer>().SetPosition(1, new Vector3(Game.screenMiddle, Game.screenBottom));
 
-            //Second line - Cyan to blue
-            linePrefab[1].GetComponent<LineRenderer>().SetPosition(0, new Vector3(Game.screenMiddle, Game.screenBottom));
-            linePrefab[1].GetComponent<LineRenderer>().SetPosition(1, new Vector3(Game.screenRight, Game.screenBottom));
+    //        //Second line - Cyan to blue
+    //        linePrefab[1].GetComponent<LineRenderer>().SetPosition(0, new Vector3(Game.screenMiddle, Game.screenBottom));
+    //        linePrefab[1].GetComponent<LineRenderer>().SetPosition(1, new Vector3(Game.screenRight, Game.screenBottom));
 
-            //Third line - blue to purple
-            linePrefab[2].GetComponent<LineRenderer>().SetPosition(0, new Vector3(Game.screenRight, Game.screenBottom));
-            linePrefab[2].GetComponent<LineRenderer>().SetPosition(1, new Vector3(Game.screenRight, Game.screenTop));
+    //        //Third line - blue to purple
+    //        linePrefab[2].GetComponent<LineRenderer>().SetPosition(0, new Vector3(Game.screenRight, Game.screenBottom));
+    //        linePrefab[2].GetComponent<LineRenderer>().SetPosition(1, new Vector3(Game.screenRight, Game.screenTop));
 
-            //Fourth line - purple to red
-            linePrefab[3].GetComponent<LineRenderer>().SetPosition(0, new Vector3(Game.screenRight, Game.screenTop));
-            linePrefab[3].GetComponent<LineRenderer>().SetPosition(1, new Vector3(Game.screenMiddle, Game.screenTop));
+    //        //Fourth line - purple to red
+    //        linePrefab[3].GetComponent<LineRenderer>().SetPosition(0, new Vector3(Game.screenRight, Game.screenTop));
+    //        linePrefab[3].GetComponent<LineRenderer>().SetPosition(1, new Vector3(Game.screenMiddle, Game.screenTop));
 
-            //Fifth line - red to yellow
-            linePrefab[4].GetComponent<LineRenderer>().SetPosition(0, new Vector3(Game.screenMiddle, Game.screenTop));
-            linePrefab[4].GetComponent<LineRenderer>().SetPosition(1, new Vector3(Game.screenLeft, Game.screenTop));
+    //        //Fifth line - red to yellow
+    //        linePrefab[4].GetComponent<LineRenderer>().SetPosition(0, new Vector3(Game.screenMiddle, Game.screenTop));
+    //        linePrefab[4].GetComponent<LineRenderer>().SetPosition(1, new Vector3(Game.screenLeft, Game.screenTop));
 
-            //Sixth line - yellow to green
-            linePrefab[5].GetComponent<LineRenderer>().SetPosition(0, new Vector3(Game.screenLeft, Game.screenTop));
-            linePrefab[5].GetComponent<LineRenderer>().SetPosition(1, new Vector3(Game.screenLeft, Game.screenBottom));
-        }
+    //        //Sixth line - yellow to green
+    //        linePrefab[5].GetComponent<LineRenderer>().SetPosition(0, new Vector3(Game.screenLeft, Game.screenTop));
+    //        linePrefab[5].GetComponent<LineRenderer>().SetPosition(1, new Vector3(Game.screenLeft, Game.screenBottom));
+    //    }
 
 
-    }
+    //}
 
     /// <summary>
     /// Helper function to find the colour from a given screen coordinate. I.e. Input.mousePosition

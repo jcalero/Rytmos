@@ -45,10 +45,7 @@ public class Lose : MonoBehaviour {
     /// Button handler for the "Try Again!" button
     /// </summary>
     void OnPlayAgainClicked() {
-        if (Game.GameMode.Equals(Game.Mode.TimeAttack))
-            Application.LoadLevel("Game");
-        if (Game.GameMode.Equals(Game.Mode.DeathMatch))
-            Application.LoadLevel("DeathMatch");
+        Application.LoadLevel("Game");
     }
 
     /// <summary>
