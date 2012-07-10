@@ -69,7 +69,6 @@ public static class AudioManager {
 				//else..
 				peaks = freader.getPeaks();
 				loudPartTimeStamps = freader.getLoudnessData();
-				foreach(int i in loudPartTimeStamps) Debug.Log("bbb" + i);
 				
 			} else {
 				// Do the actual analysis!
