@@ -25,23 +25,29 @@ public class PeakTriggerManager : MonoBehaviour {
 		}
 		while(!AudioManager.isSongLoaded()) yieldRoutine();
 		
+		cam.audio.clip = AudioManager.getAudioClip();
 		cam.audio.loop = false;
 		counters = new int[AudioManager.peaks.Length];
 		timer = 0f;		
 		loudPartCounter = 0;
-		loudFlag = false;	
+		loudFlag = false;
+		cam.audio.Play();
 	}
 
 	// Use this for initialization
 	void Start () {
-
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		
-		timer += Time.deltaTime;
-		/* Music related logic: */
+		if (timer >= AudioManager.audioLength || (!Game.Paused && !cam.audio.isPlaying && timer > 0)){
+			cam.audio.Stop();		
+		} else if(AudioManager.peaks != null && cam != null && cam.audio.isPlaying) {
+			timer += Time.deltaTime;
+		}
+		
+		/* Update the flags for loud parts of a song */
 		if(loudPartCounter < AudioManager.loudPartTimeStamps.Length && AudioManager.loudPartTimeStamps[loudPartCounter]/(float)AudioManager.frequency < timer+0.5f) {
 			loudFlag = !loudFlag;
 			foreach(PeakListener l in listeners) l.setLoudFlag(loudFlag);
