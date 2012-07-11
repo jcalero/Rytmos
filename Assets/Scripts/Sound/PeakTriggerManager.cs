@@ -42,10 +42,6 @@ public class PeakTriggerManager : MonoBehaviour {
 				
 	}
 	
-	void OnDestroy() {
-		AudioManager.closeMusicStream();	
-	}
-	
 	public static void addSelfToListenerList(PeakListener self) {
 		listeners.Add(self);
 	}
