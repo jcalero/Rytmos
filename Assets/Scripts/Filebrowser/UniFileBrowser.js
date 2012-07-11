@@ -7,7 +7,7 @@ import System.IO;
 import UnityEngine.GUILayout;
 import System.Collections.Generic;
 
-var filterFiles = false;			// Filter file names by the items in the filterFileExtensions array
+var filterFiles = true;			// Filter file names by the items in the filterFileExtensions array
 var filterFileExtensions : String[];// When filterFiles is true, show only the files with these extensions
 var autoAddExtension = false;		// When saving, automatically add this extension to file names
 var addedExtension : String;		// Extension to use if automatically adding when saving
@@ -119,7 +119,7 @@ function Awake () {
 }
 
 function SetDefaultPath () {
-    filePath = Application.dataPath;
+    if (filePath == null) { filePath = Application.dataPath; };
     switch (Application.platform) {
         case RuntimePlatform.OSXEditor:
             filePath = filePath.Substring(0, filePath.LastIndexOf(pathChar)) + pathChar;
@@ -130,6 +130,7 @@ function SetDefaultPath () {
             filePath = filePath.Replace("/", "\\");
             filePath = filePath.Substring(0, filePath.LastIndexOf(pathChar)) + pathChar;
             cmdKey1 = KeyCode.LeftControl; cmdKey2 = KeyCode.RightControl;
+            filePath = Directory.GetCurrentDirectory();
             windowsSystem = true;
             break;
         case RuntimePlatform.OSXPlayer:
@@ -142,11 +143,13 @@ function SetDefaultPath () {
             filePath = filePath.Replace("/", "\\");
             filePath = filePath.Substring(0, filePath.LastIndexOf(pathChar)) + pathChar;
             cmdKey1 = KeyCode.LeftControl; cmdKey2 = KeyCode.RightControl;
+            filePath = Directory.GetCurrentDirectory();
             windowsSystem = true;
             break;
         case RuntimePlatform.IPhonePlayer:
         case RuntimePlatform.Android:
-            filePath = Application.persistentDataPath + pathChar;
+//            if (filePath == null || filePath == Application.dataPath) { filePath = Application.persistentDataPath + pathChar; };
+            filePath = Directory.GetCurrentDirectory();
             break;
         default:
             Debug.LogError("You are not using a supported platform");
