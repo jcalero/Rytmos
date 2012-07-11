@@ -103,8 +103,8 @@ public static class AudioManager {
 			lastSamples = false;
 			currentBuffer = 1;
 			
-			buffer1Clip = AudioClip.Create("main_music1",audioBufferSize/freader.getChannels(),freader.getChannels(),frequency,true,false);
-			buffer2Clip = AudioClip.Create("main_music2",audioBufferSize/freader.getChannels(),freader.getChannels(),frequency,true,false);
+			buffer1Clip = AudioClip.Create("main_music1",audioBufferSize/freader.getChannels(),freader.getChannels(),frequency,false,false);
+			buffer2Clip = AudioClip.Create("main_music2",audioBufferSize/freader.getChannels(),freader.getChannels(),frequency,false,false);
 			
 			// Fill audio buffer with the first few samples
 			initBuffers();
