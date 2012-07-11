@@ -116,13 +116,9 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	public void onPeakTrigger(int channel) {
 		
 		if(timer - timers[channel] > timeThresh) {			
-			// Filter out every 2nd, or 3rd, or what ever specified trigger
-			Debug.Log("aaa");
-		
+			// Filter out every 2nd, or 3rd, or what ever specified trigger		
 			if(spawnRestrictors[channel] == 0) {
-				
-				Debug.Log("bbb");
-				
+								
 				/* Spawning/Gameplay related logic */
 				switch (channel) {
 				case 0:
@@ -145,7 +141,6 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 						if(Game.SyncMode) speed *= (spawnDist.magnitude)/maxMag;									
 						if(Game.PowerupActive==Game.Powerups.ChangeColor) currentlySelectedEnemy = enemySelectedByPowerup;									
 						SpawnEnemy(currentlySelectedEnemy,loudFlag? speed : speed/2,spawnDist);
-						Debug.Log("ccc");
 					}
 					break;
 				case 1:
