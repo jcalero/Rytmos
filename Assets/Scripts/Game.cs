@@ -230,8 +230,8 @@ public class Game : MonoBehaviour {
     }
 	
 	public enum NumOfColors {
-		Four,
-		Six
+		Six,
+		Four
 	}
 	
 	public enum Powerups {
