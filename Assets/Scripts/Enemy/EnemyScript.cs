@@ -66,8 +66,8 @@ public class EnemyScript : MonoBehaviour {
         if (otherObject.name == "Pulse(Clone)") {
             if (otherObject.gameObject.GetComponent<PulseSender>().CurrentColor == MainColor ||
 				otherObject.gameObject.GetComponent<PulseSender>().SecondaryColor == MainColor ||
-				Game.PowerupActive == Game.Powerups.MassivePulse) {
-				if(Game.PowerupActive != Game.Powerups.MassivePulse)
+				otherObject.gameObject.GetComponent<PulseSender>().CurrentColor == Color.white) {
+				if(otherObject.gameObject.GetComponent<PulseSender>().CurrentColor != Color.white)
                 	Player.score += 10;
                 CreateExplosion();
                 DamageEnemy();

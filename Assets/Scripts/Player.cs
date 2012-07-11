@@ -67,20 +67,25 @@ public class Player : MonoBehaviour,PeakListener {
 				sentPulse = true;
 				resetGlowTimers();
                 // Reduce the player energy if not a superpulse
-				if(Game.PowerupActive != Game.Powerups.MassivePulse) energy -= pulseCost;
-				else {
+				if(Game.PowerupActive != Game.Powerups.MassivePulse) {
+					energy -= pulseCost;
+					superPulseCount = 0;
+				} else {
 					//Only allow 3 superpulses
 					superPulseCount++;
 					if(superPulseCount > superPulseTotal) {
 						Game.PowerupActive = Game.Powerups.None;
+						energy -= pulseCost;
 						superPulseCount = 0;
 					}
 				}
 				
             }
 			
+			//Used for animating the ring when the player sends a pulse
 			if(sentPulse) sentPulse = animRing(true, true, .1f, .1f, .3f, .3f, 1f);
 			else if(sentPulseTwo) sentPulseTwo = animRing (false, false, .1f, .1f, .3f, 1f, .3f);
+			
 			//If you have the invincibility, singleColor or chainPulse powerups, increment its personal timer
 			if(Game.PowerupActive == Game.Powerups.Invincible ||
 			   Game.PowerupActive == Game.Powerups.ChainReaction ||

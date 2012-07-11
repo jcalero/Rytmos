@@ -79,6 +79,11 @@ public class PulseSender : MonoBehaviour {
             held = false;
             finalColor = Level.continuousColourSelect(Input.mousePosition);
 			CurrentColor = Level.singleColourSelect(Input.mousePosition);
+			if(Game.PowerupActive==Game.Powerups.MassivePulse) {
+				finalColor = Color.white;
+				CurrentColor = Color.white;
+			}
+			
         }
 
         //What the colour should be - this is where the transition has to take place. 
@@ -86,11 +91,14 @@ public class PulseSender : MonoBehaviour {
         if (held) {
             chosen = Level.continuousColourSelect(Input.mousePosition);
 			CurrentColor = Level.singleColourSelect(Input.mousePosition);
+			if(Game.PowerupActive==Game.Powerups.MassivePulse) {
+				chosen = Color.white;
+				CurrentColor = Color.white;
+			}
 		} else 
             chosen = finalColor;
 		
-		if(Game.PowerupActive==Game.Powerups.MassivePulse) chosen = Color.white;
-		
+
 		
 		//Select the secondary color
 		if(held) SecondaryColor = Level.secondaryColourSelect(Input.mousePosition);
@@ -115,7 +123,7 @@ public class PulseSender : MonoBehaviour {
 
     // Reduce pulse health if it collides with another object
     void OnTriggerEnter(Collider otherObject) {
-        if (otherObject.GetType() == typeof(SphereCollider) && Game.PowerupActive != Game.Powerups.MassivePulse) {
+        if (otherObject.GetType() == typeof(SphereCollider) && CurrentColor != Color.white) {
             CurrentHealth--;
             if (CurrentHealth == 0) {
                 Destroy(gameObject);
