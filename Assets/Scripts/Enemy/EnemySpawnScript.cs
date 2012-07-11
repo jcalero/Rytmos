@@ -43,11 +43,12 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
     }
     
     void Update() {
-		if (timer >= audioLength || (!Game.Paused && !cam.audio.isPlaying && timer > 0)){
-			cam.audio.Stop();
+		
+		timer += Time.deltaTime;
+		
+		if (timer >= audioLength){
 			Application.LoadLevel("Win");			
 		}
-    	else if(AudioManager.peaks != null && cam != null && cam.audio.isPlaying) timer += Time.deltaTime;
 		
 		//Only spawn enemies of a single color for a bit. 
 		if(Game.PowerupActive == Game.Powerups.ChangeColor) {
@@ -116,7 +117,11 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		
 		if(timer - timers[channel] > timeThresh) {			
 			// Filter out every 2nd, or 3rd, or what ever specified trigger
+			Debug.Log("aaa");
+		
 			if(spawnRestrictors[channel] == 0) {
+				
+				Debug.Log("bbb");
 				
 				/* Spawning/Gameplay related logic */
 				switch (channel) {
@@ -140,6 +145,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 						if(Game.SyncMode) speed *= (spawnDist.magnitude)/maxMag;									
 						if(Game.PowerupActive==Game.Powerups.ChangeColor) currentlySelectedEnemy = enemySelectedByPowerup;									
 						SpawnEnemy(currentlySelectedEnemy,loudFlag? speed : speed/2,spawnDist);
+						Debug.Log("ccc");
 					}
 					break;
 				case 1:
