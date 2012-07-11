@@ -16,6 +16,8 @@ public class MainMenu : MonoBehaviour {
     public UIButton ArcadeButton;
     public UIButton SurvivalButton;
     public UIButton StoryButton;
+    public UIButton BackModeButton;
+    public UIPanel FileBrowserPanel;
     public UILabel highscoresTypeLabel;
     public UILabel selectModeLabel;
     public bool skipMenu;           // Allows you to skip directly from the Main Menu to the Arcade game mode
@@ -144,7 +146,11 @@ public class MainMenu : MonoBehaviour {
     /// </summary>
     void OnArcadeModeClicked() {
         Game.GameMode = Game.Mode.DeathMatch;
-        FileBrowser.LoadFileBrowser("Game");
+        ToggleModeMenu(false);
+        ToggleBackModeButton(false);
+        ToggleFileBrowserPanel(true);
+        GameObject.Find("FileBrowser").SendMessage("OpenFileWindow");
+        //FileBrowser.LoadFileBrowser("Game");
         //Application.LoadLevel("Game");
     }
 
@@ -219,6 +225,16 @@ public class MainMenu : MonoBehaviour {
         instance.selectModeLabel.text = labelText;
         instance.selectModeLabel.transform.localPosition = labelPosition;
         instance.selectModeLabel.transform.localScale = labelScale;
+    }
+
+    public static void ToggleFileBrowserPanel(bool state) {
+        Game.SetActiveState(instance.FileBrowserPanel, state);
+    }
+
+    public static void ToggleBackModeButton(bool state) {
+        instance.BackModeButton.isEnabled = state;
+        instance.BackModeButton.transform.GetChild(0).gameObject.active = state;   // Show/Hide Background
+        instance.BackModeButton.transform.GetChild(1).gameObject.active = state;   // Show/Hide Label
     }
 
     public static void DisableReloadButton() {

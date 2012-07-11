@@ -24,7 +24,7 @@ public class Game : MonoBehaviour {
 	private static bool syncMode = false;		// True on 'NigelMode Option' Selected
     private static Mode mode;                    // Defines current/last game mode.
     private static State state;                   // Defines the current game state.
-    private static string filePath;             // File path to the selected song to be loaded.
+    private static string filePath = "D:\\Documents\\Unity Projects\\RytMos\\Rytmos\\08 - The Polyphonic Spree - Soldier Girl.mp3";             // File path to the selected song to be loaded.
     private static NumOfColors colors;			//Defines the amount of colors used in the game
 	private static Powerups powerups;			//Defines the currently active powerup
 	
@@ -110,6 +110,39 @@ public class Game : MonoBehaviour {
         }
         DevMode = false;
         Debug.Log(">> Current game mode: " + GameMode);
+    }
+
+    /// <summary>
+    /// Activate or deactivate the children of the specified transform recursively.
+    /// Used for showing/hiding the filebrowser
+    /// </summary>
+    public static void SetActiveState(Transform t, bool state) {
+        for (int i = 0; i < t.childCount; ++i) {
+            Transform child = t.GetChild(i);
+            //if (child.GetComponent<UIPanel>() != null) continue;
+
+            if (state) {
+                child.gameObject.active = true;
+                SetActiveState(child, true);
+            } else {
+                SetActiveState(child, false);
+                child.gameObject.active = false;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Activate or deactivate the specified panel and all of its children.
+    /// Used for showing/hiding the filebrowser
+    /// </summary>
+    public static void SetActiveState(UIPanel panel, bool state) {
+        if (state) {
+            panel.gameObject.active = true;
+            SetActiveState(panel.transform, true);
+        } else {
+            SetActiveState(panel.transform, false);
+            panel.gameObject.active = false;
+        }
     }
 
     /// <summary>

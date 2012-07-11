@@ -1,1 +1,0 @@
-Welcome to UniFileBrowser! The documentation is an .rtf file, which you'll need to open outside of Unity to read.
