@@ -15,10 +15,10 @@ public class AudioPlayer : MonoBehaviour {
 	
 	void Awake() {
 		audioSources = gameObject.GetComponentsInChildren<AudioSource>();
-
+		Debug.Log("AWAKE THE KRAKEN!");
 		if(Game.Song != null && Game.Song != "") {
 			if(Game.Song != AudioManager.getCurrentSong()) AudioManager.initMusic(Game.Song);
-			// else reset audioclips!!!!
+			else if(AudioManager.isSongLoaded()) AudioManager.reset();
 		} else if (audioSources[0].clip != null) {
 			if(!AudioManager.isSongLoaded()) {
 				AudioManager.setCam(gameObject);
@@ -42,7 +42,7 @@ public class AudioPlayer : MonoBehaviour {
 		pauseFlag = false;
 	}
 	// Use this for initialization
-	void Start () {		
+	void Start () {
 		audioSources[currentSource].Play();
 	}
 	
@@ -96,6 +96,8 @@ public class AudioPlayer : MonoBehaviour {
 			}
 		}
 	}
+	
+	
 	
 //	public void pause() {
 //		if(audioSources[0] != null && audioSources[1] != null){

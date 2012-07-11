@@ -15,7 +15,7 @@ public static class AudioManager {
 	private static GameObject cam;				// Main Camera reference. If set, the ingame music is used instead of anything loaded at runtime!
 	private static AudioClip buffer1Clip;		// AudioClip reference for the loaded music file
 	private static AudioClip buffer2Clip;		// AudioClip reference for the loaded music file
-	private static bool songLoaded;				// Flag if the song has finished loading
+	private static bool songLoaded = false;		// Flag if the song has finished loading
 	private static string currentlyLoadedSong;	// Path to the currently loaded song (can be used to check if a new song is loaded)
 	public static int frequency;				// Sampling Frequency of the music file, needed for time syncing
 	public static float audioLength;			// Total length in seconds (float) of the music file
@@ -97,7 +97,6 @@ public static class AudioManager {
 			// Initialize our audio buffer	
 			freader.reset();
 			audioBufferSize = frequency*freader.getChannels();
-			Debug.Log(audioBufferSize);
 			buffer1Played = true;
 			buffer2Played = true;
 			lastSamples = false;
@@ -129,6 +128,12 @@ public static class AudioManager {
 	}
 	
 	private static void initBuffers() {
+		
+		buffer1Played = true;
+		buffer2Played = true;
+		lastSamples = false;
+		currentBuffer = 1;
+		
 		float[] buffer = new float[audioBufferSize];
 		Debug.Log("buffer: "+ buffer.Length);
 		
@@ -144,7 +149,6 @@ public static class AudioManager {
 		
 		if(currentBuffer == 2 && buffer1Played) {
 			// Swap out bottom half
-			Debug.Log("updating bottom half");
 			if(freader.readSamples(ref buffer,false) < buffer.Length) lastSamples = true;
 			
 			buffer1Clip.SetData(buffer,0);
@@ -155,8 +159,6 @@ public static class AudioManager {
 			
 		} else if(currentBuffer == 1 && buffer2Played) {
 			// Swap out top half
-			//System.Array.Copy(buffer,0,audioBuffer,buffer.Length,buffer.Length);
-			Debug.Log("updating top half");
 			if(freader.readSamples(ref buffer,false) < buffer.Length) lastSamples = true;
 
 			buffer2Clip.SetData(buffer,0);
@@ -198,6 +200,11 @@ public static class AudioManager {
 	
 	public static IEnumerator yieldRoutine () {
 		yield return 0;
+	}
+	
+	public static void reset() {
+		freader.reset();
+		initBuffers();
 	}
 	
 }
