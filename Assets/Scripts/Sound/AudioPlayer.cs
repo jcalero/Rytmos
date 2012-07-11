@@ -10,6 +10,8 @@ public class AudioPlayer : MonoBehaviour {
 	private bool bufferSource1;
 	private bool bufferSource2;
 	private float timer;
+	private int pauseSample;
+	private bool pauseFlag;
 	
 	void Awake() {
 		audioSources = gameObject.GetComponentsInChildren<AudioSource>();
@@ -35,7 +37,9 @@ public class AudioPlayer : MonoBehaviour {
 		bufferSource1 = false;
 		bufferSource2 = true;
 		
-		timer = 0f;	
+		timer = 0f;
+		pauseSample = 0;
+		pauseFlag = false;
 	}
 	// Use this for initialization
 	void Start () {		
@@ -45,28 +49,75 @@ public class AudioPlayer : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		
-		if(AudioManager.lastSamples) {
-			return;
-		}
-		
-		if (timer >= AudioManager.audioLength){
-			audioSources[currentSource].Stop();
-		} else if(audioSources[0].clip != null && audioSources[1].clip != null && gameObject != null) {
-			
-			if(audioSources[0].timeSamples > 0 && bufferSource2) {
-				StartCoroutine(AudioManager.updateMusic());
-				audioSources[1].Play((ulong)(audioSources[0].clip.samples - audioSources[0].timeSamples));
-				bufferSource2 = false;
-				bufferSource1 = true;
-			} else if(audioSources[1].timeSamples > 0 && bufferSource1) {
-				StartCoroutine(AudioManager.updateMusic());
-				audioSources[0].Play((ulong)(audioSources[1].clip.samples - audioSources[1].timeSamples));
-				bufferSource1 = false;
-				bufferSource2 = true;
+		if(Game.Paused) {
+			pauseFlag = true;
+			if(audioSources[currentSource].isPlaying) {
+				if(audioSources[currentSource].isPlaying) audioSources[currentSource].Pause();
+				if(audioSources[currentSource == 1? 0:1].isPlaying) audioSources[currentSource == 1? 0:1].Stop();
+				
+				Debug.Log("test12: " + audioSources[currentSource == 1? 0:1].timeSamples);
+				pauseSample = audioSources[currentSource].timeSamples;
+				Debug.Log("pausesample: "+ pauseSample);
+				
+				Debug.Log("current: " + currentSource);
+				Debug.Log("other: " + (currentSource == 1? 0:1));
+			}
+		} else if(!Game.Paused) {
+			if(pauseFlag) {
+				if(!audioSources[currentSource].isPlaying) audioSources[currentSource].Play();
+				if(!audioSources[currentSource == 1? 0:1].isPlaying) audioSources[currentSource == 1? 0:1].Play((ulong)(audioSources[currentSource].clip.samples - pauseSample));
+				pauseSample = 0;
+				pauseFlag = false;
 			}
 			
-			timer += Time.deltaTime;
+			if(AudioManager.lastSamples) {
+				return;
+			}
+			
+			if (timer >= AudioManager.audioLength){
+				audioSources[currentSource].Stop();
+			} else if(audioSources[0].clip != null && audioSources[1].clip != null && gameObject != null) {
+				
+				if(audioSources[0].timeSamples > 0 && audioSources[0].isPlaying && bufferSource2 && !audioSources[1].isPlaying) {
+					StartCoroutine(AudioManager.updateMusic());
+					audioSources[1].Play((ulong)(audioSources[0].clip.samples - audioSources[0].timeSamples));
+					bufferSource2 = false;
+					bufferSource1 = true;
+					currentSource = 0;
+				} else if(audioSources[1].timeSamples > 0 && audioSources[1].isPlaying && bufferSource1 && !audioSources[0].isPlaying) {
+					StartCoroutine(AudioManager.updateMusic());
+					audioSources[0].Play((ulong)(audioSources[1].clip.samples - audioSources[1].timeSamples));
+					bufferSource1 = false;
+					bufferSource2 = true;
+					currentSource = 1;
+				}
+				
+				timer += Time.deltaTime;
+			}
 		}
-	
 	}
+	
+//	public void pause() {
+//		if(audioSources[0] != null && audioSources[1] != null){
+//			pauseFlag = true;
+//			if(audioSources[currentSource].isPlaying) {
+//				if(audioSources[currentSource].isPlaying) audioSources[currentSource].Pause();
+//				if(audioSources[currentSource == 1? 0:1].isPlaying) audioSources[currentSource == 1? 0:1].Stop();
+//				
+//				pauseSample = audioSources[currentSource].timeSamples;
+//			}
+//		}
+//	}
+//	
+//	public void play() {
+//		if(audioSources[0] != null && audioSources[1] != null){
+//			if(pauseFlag) {
+//				if(!audioSources[currentSource].isPlaying) audioSources[currentSource].Play();
+//				if(!audioSources[currentSource == 1? 0:1].isPlaying) audioSources[currentSource == 1? 0:1].Play((ulong)(audioSources[currentSource].clip.samples - pauseSample));
+//				pauseSample = 0;
+//				pauseFlag = false;
+//			}
+//			
+//		}
+//	}
 }
