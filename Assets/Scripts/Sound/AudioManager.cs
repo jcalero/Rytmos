@@ -5,129 +5,128 @@ using System.Threading;
 using System;
 
 /// <summary>
-/// Audio manager. Static class which can be accessed from anywhere to read information about the loaded music file.
+/// Audio manager. Static class to provide information about the loaded music file.
 /// </summary>
-public static class AudioManager {
-	
-	public static FileReader freader;			// File Reader to get audio file
+public static class AudioManager
+{
+	#region public vars
+	/*Variables provided for other classes*/
+	public static FileReader freader;			// File Reader reference which does all the I/O
 	public static float[][] peaks;				// Holds the triggers for the currently loaded audio file
 	public static int[] loudPartTimeStamps;		// Holds the triggers for loud/quiet parts of the audio file
-	private static GameObject cam;				// Main Camera reference. If set, the ingame music is used instead of anything loaded at runtime!
-	private static AudioClip buffer1Clip;		// AudioClip reference for the loaded music file
-	private static AudioClip buffer2Clip;		// AudioClip reference for the loaded music file
+	public static int frequency;				// Sampling Frequency of the music file, needed for time syncing
+	public static int channels;					// Number of channels in the music file
+	public static float audioLength;			// Total length in seconds (float) of the music file
+	public static int audioBufferSize;			// How many samples we want to store in each buffer
+	public static bool lastSamples;				// Used to notify AudioPlayer that we have reached the end of the song
+	#endregion
+	
+	#region private vars
+	/*Variables for internal logic*/
+	private static AudioSource ingameMusic;		// Reference which needs to be set if we want to use music which we prvovide ingame!
+	private static AudioClip buffer1Clip;		// AudioClip reference for the buffered music file, part 1
+	private static AudioClip buffer2Clip;		// AudioClip reference for the buffered music file, part 2
 	private static bool songLoaded = false;		// Flag if the song has finished loading
 	private static string currentlyLoadedSong;	// Path to the currently loaded song (can be used to check if a new song is loaded)
-	public static int frequency;				// Sampling Frequency of the music file, needed for time syncing
-	public static float audioLength;			// Total length in seconds (float) of the music file
-	public static int audioBufferSize;
+	
+	/*Flags used to keep track of the two audiobuffers*/
 	private static bool buffer1Played;
 	private static bool buffer2Played;
-	public static bool lastSamples;
 	private static int currentBuffer;
-//	private static Object locker;
-	private static Thread readThread;
-	private static bool runThread;
-	private static bool updateOnce;
+	#endregion
 	
 	/// <summary>
 	/// Initializes the static class.
 	/// Loads the music, analyzes the music, stores useful information about it.
-	/// THIS FUNCTION WILL REANALYZE MUSIC! LONG RUNTIME!
+	/// THIS FUNCTION WILL ANALYZE MUSIC UNLESS IT FINDS A CACHE FILE!
+	/// (analysis takes ages!)
 	/// </summary>
 	/// <param name='pathToMusicFile'>
 	/// Path to music file.
 	/// </param>
-	public static void initMusic(string pathToMusicFile) {
+	public static void initMusic (string pathToMusicFile)
+	{
 		
 		// If the cam object has been set, analyze the music file which is loaded as the background music in unity
 		// May be useful for the story mode
-		if(cam!=null) {
-			float[] data = new float[cam.audio.clip.samples];
-			cam.audio.clip.GetData(data,0);
-			peaks = SoundProcessor.getPeaks(new MockDecoder(data));
+		if (ingameMusic != null) {
+			float[] data = new float[ingameMusic.audio.clip.samples];
+			ingameMusic.audio.clip.GetData (data, 0);
+			peaks = SoundProcessor.getPeaks (new MockDecoder (data));
 			songLoaded = true;
 			currentlyLoadedSong = "xXBACKgroundMUSICXx";
-		// If the cam object is not set, analyze the music file which has been passed
-		} else {
-			// Read Audio Data
+			// If the AudioSource object is not set, analyze the music file which has been passed
+		} else {			
+			// Read Audio Data/Initialize everything to read on the fly
 			float start = Time.realtimeSinceStartup;
 			freader = new FileReader (pathToMusicFile);
 			FileReader.ReadStatus success = freader.read ();
-			while (freader.isReading())
-				yieldRoutine ();
+			while (freader.isReading()) {
+			}
 			
-			Debug.Log("Time to read: " + (Time.realtimeSinceStartup-start));
+			Debug.Log ("Time to read: " + (Time.realtimeSinceStartup - start));
 			
-			// Succeeded reading?
-			if(success != FileReader.ReadStatus.SUCCESS)
+			// Succeeded reading? (Which means it found the file when we're just streaming)
+			if (success != FileReader.ReadStatus.SUCCESS)
 				return;
 			
-			// Set useful information, like AudioClip,length,etc..
-			//clip = freader.getClip();			
-			frequency = freader.getFrequency();
-			audioLength = freader.getAudioLengthInSecs();
+			// Set useful information, like AudioClip,length,etc..	
+			frequency = freader.getFrequency ();
+			channels = freader.getChannels ();
+			audioLength = freader.getAudioLengthInSecs ();
 			currentlyLoadedSong = pathToMusicFile;
 			
 			start = Time.realtimeSinceStartup;
 			
-			// Check if this file already exists!
-			string cacheFile = FileWriter.convertToCacheFileName(pathToMusicFile);
-			System.IO.FileInfo fInf = new System.IO.FileInfo(cacheFile);
-			if(fInf.Exists) {
-				FileReader rytFile = new FileReader(cacheFile);
-				success = rytFile.read();
-				while(rytFile.isReading())
-					yieldRoutine();
-				if(success != FileReader.ReadStatus.SUCCESS) return;
-				//else..
-				peaks = rytFile.getPeaks();
-				loudPartTimeStamps = rytFile.getLoudnessData();
-				rytFile.close();
+			// Check if we have a cache file for the current song
+			string cacheFile = FileWriter.convertToCacheFileName (pathToMusicFile);
+			System.IO.FileInfo fInf = new System.IO.FileInfo (cacheFile);
+			
+			if (fInf.Exists) {
+				// We have a cache file, so we just read the peaks etc from there.
+				FileReader rytFile = new FileReader (cacheFile);
+				success = rytFile.read ();
+				while (rytFile.isReading()) {
+				}				
+				if (success != FileReader.ReadStatus.SUCCESS)
+					return;
+				
+				peaks = rytFile.getPeaks ();
+				loudPartTimeStamps = rytFile.getLoudnessData ();
+				rytFile.close ();
 				rytFile = null;
 				
 			} else {
-				// Do the actual analysis!
-				peaks = SoundProcessor.getPeaks(freader);
-				loudPartTimeStamps = SoundProcessor.findVolumeLevels(freader);
-				Debug.Log("Time to analyze: " + (Time.realtimeSinceStartup-start));			
+				// We have no cache file, so do the actual analysis!
+				peaks = SoundProcessor.getPeaks (freader);
+				loudPartTimeStamps = SoundProcessor.findVolumeLevels (freader);
+				Debug.Log ("Time to analyze: " + (Time.realtimeSinceStartup - start));			
 				//Application.persistentDataPath;
-				FileWriter.writeAnalysisData(pathToMusicFile,peaks,loudPartTimeStamps);
+				FileWriter.writeAnalysisData (pathToMusicFile, peaks, loudPartTimeStamps);
 			}
 			
-			// Initialize our audio buffer	
-			freader.reset();
-			audioBufferSize = frequency*freader.getChannels();
+			// Now that we have analyzed the song, we need to reset & initialize everything for playback
+			freader.reset ();
+			audioBufferSize = frequency * channels;
 			buffer1Played = true;
 			buffer2Played = true;
 			lastSamples = false;
 			currentBuffer = 1;
 			
-			buffer1Clip = AudioClip.Create("main_music1",audioBufferSize/freader.getChannels(),freader.getChannels(),frequency,false,false);
-			buffer2Clip = AudioClip.Create("main_music2",audioBufferSize/freader.getChannels(),freader.getChannels(),frequency,false,false);
+			buffer1Clip = AudioClip.Create ("main_music1", audioBufferSize / channels, channels, frequency, false, false);
+			buffer2Clip = AudioClip.Create ("main_music2", audioBufferSize / channels, channels, frequency, false, false);
 			
 			// Fill audio buffer with the first few samples
-			initBuffers();
+			initBuffers ();
 			songLoaded = true;
 		}
 	}
 	
-	public static int getCurrentAmplitude(int sample) {
-		if(buffer1Clip == null) return 0;
-		sample = sample - sample/2;
-		if(sample < 0) sample = 0;
-		float[] data = new float[frequency/50];
-		if(sample + data.Length > buffer1Clip.samples) sample = buffer1Clip.samples - data.Length;
-		buffer1Clip.GetData(data,sample);
-		
-		float mean = 0;
-		for(int i = 0; i < data.Length; i++) {
-				mean += data[i]*100.0f;
-		}
-		mean /= data.Length;
-		return (int)mean;
-	}
-	
-	private static void initBuffers() {
+	/// <summary>
+	/// Initializes the buffers for audio playback.
+	/// </summary>
+	private static void initBuffers ()
+	{
 		
 		buffer1Played = true;
 		buffer2Played = true;
@@ -135,33 +134,42 @@ public static class AudioManager {
 		currentBuffer = 1;
 		
 		float[] buffer = new float[audioBufferSize];
-		Debug.Log("buffer: "+ buffer.Length);
 		
-		freader.readSamples(ref buffer,false);
+		freader.readSamples (ref buffer, false);
 		
-		buffer1Clip.SetData(buffer,0);
+		buffer1Clip.SetData (buffer, 0);
 	}
-
-	public static IEnumerator updateMusic() {
-		if(buffer1Clip == null || buffer2Clip == null || lastSamples) yield return 0;
+	
+	/// <summary>
+	/// Updates the music buffers: If we are playing the second buffer, update the first and vice versa.
+	/// </summary>
+	/// <returns>
+	/// Nothing, really. Just the yield stuff for coroutine funcionality
+	/// </returns>
+	public static IEnumerator updateMusic ()
+	{
+		if (buffer1Clip == null || buffer2Clip == null || lastSamples)
+			yield return 0;
 	
 		float[] buffer = new float[audioBufferSize];
 		
-		if(currentBuffer == 2 && buffer1Played) {
+		if (currentBuffer == 2 && buffer1Played) {
 			// Swap out bottom half
-			if(freader.readSamples(ref buffer,false) < buffer.Length) lastSamples = true;
+			if (freader.readSamples (ref buffer, false) < buffer.Length)
+				lastSamples = true;
 			
-			buffer1Clip.SetData(buffer,0);
+			buffer1Clip.SetData (buffer, 0);
 			
 			buffer1Played = false;
 			buffer2Played = true;
 			currentBuffer = 1;
 			
-		} else if(currentBuffer == 1 && buffer2Played) {
+		} else if (currentBuffer == 1 && buffer2Played) {
 			// Swap out top half
-			if(freader.readSamples(ref buffer,false) < buffer.Length) lastSamples = true;
+			if (freader.readSamples (ref buffer, false) < buffer.Length)
+				lastSamples = true;
 
-			buffer2Clip.SetData(buffer,0);
+			buffer2Clip.SetData (buffer, 0);
 
 			buffer2Played = false;
 			buffer1Played = true;
@@ -170,41 +178,89 @@ public static class AudioManager {
 		yield return 0;
 	}
 	
-	public static void closeMusicStream() {
-		freader.close();
+	/// <summary>
+	/// Closes the music stream.
+	/// </summary>
+	public static void closeMusicStream ()
+	{
+		freader.close ();
 		freader = null;
 	}
 	
-	public static string getCurrentSong() {
+	/// <summary>
+	/// Gets the current amplitude. NOT IMPLEMENTED
+	/// </summary>
+	/// <returns>
+	/// The current amplitude.
+	/// </returns>
+	/// <param name='sample'>
+	/// Sample.
+	/// </param>
+	public static int getCurrentAmplitude (int sample)
+	{
+//		if(buffer1Clip == null) return 0;
+//		sample = sample - sample/2;
+//		if(sample < 0) sample = 0;
+//		float[] data = new float[frequency/50];
+//		if(sample + data.Length > buffer1Clip.samples) sample = buffer1Clip.samples - data.Length;
+//		buffer1Clip.GetData(data,sample);
+//		
+//		float mean = 0;
+//		for(int i = 0; i < data.Length; i++) {
+//				mean += data[i]*100.0f;
+//		}
+//		mean /= data.Length;
+//		return (int)mean;
+		return 0;
+	}
+	
+	/// <summary>
+	/// Gets the string (path) of the song which is currently loaded by AudioManager
+	/// </summary>
+	/// <returns>
+	/// The current song.
+	/// </returns>
+	public static string getCurrentSong ()
+	{
 		return currentlyLoadedSong;	
 	}
 	
-	public static bool isSongLoaded () {
+	public static bool isSongLoaded ()
+	{
 		return songLoaded;
 	}
 	
-	public static AudioClip getAudioClip() {
-		if(currentBuffer == 1) return buffer1Clip;
+	public static AudioClip getAudioClip ()
+	{
+		if (currentBuffer == 1)
+			return buffer1Clip;
 		return buffer2Clip;
 	}
 	
-	public static AudioClip getAudioClip(int clip) {
-		if(clip == 1) return buffer1Clip;
-		else if(clip == 2) return buffer2Clip;
-		else return null;
+	public static AudioClip getAudioClip (int clip)
+	{
+		if (clip == 1)
+			return buffer1Clip;
+		else if (clip == 2)
+			return buffer2Clip;
+		else
+			return null;
 	}
 	
-	public static void setCam(GameObject newCam) {
-		cam = newCam;
+	public static void setCam (AudioSource reference)
+	{
+		ingameMusic = reference;
 	}
 	
-	public static IEnumerator yieldRoutine () {
+	public static IEnumerator yieldRoutine ()
+	{
 		yield return 0;
 	}
 	
-	public static void reset() {
-		freader.reset();
-		initBuffers();
+	public static void reset ()
+	{
+		freader.reset ();
+		initBuffers ();
 	}
 	
 }

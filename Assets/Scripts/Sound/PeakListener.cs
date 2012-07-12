@@ -1,8 +1,15 @@
 using UnityEngine;
 using System.Collections;
 
-public interface PeakListener {
+/// <summary>
+/// Peak listener Interface.
+/// This interface is required to be extended by classes
+/// which want to be alerted when a peak is triggered.
+/// </summary>
+public interface PeakListener
+{
 	
-	void onPeakTrigger(int channel);
-	void setLoudFlag(bool flag);
+	void onPeakTrigger (int channel);
+
+	void setLoudFlag (bool flag);
 }
