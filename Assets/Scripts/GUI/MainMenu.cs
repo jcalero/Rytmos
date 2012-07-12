@@ -122,10 +122,6 @@ public class MainMenu : MonoBehaviour {
     /// Button handler or "Back" button
     /// </summary>
     void OnBackClicked() {
-        if (FileBrowser.Enabled) {
-            FileBrowser.UnloadFileBrowser();
-            return;
-        }
         // Stop any current momentum to allow for Spring to begin.
         panel.currentMomentum = Vector3.zero;
         // Begin spring motion

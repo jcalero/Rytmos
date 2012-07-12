@@ -21,7 +21,7 @@ public class Background : MonoBehaviour {
     }
 
     void Update() {
-        if (timer > 3) {
+        if (timer > 2.5) {
             directionU = Random.Range(-1, 1);
             directionV = Random.Range(-1, 1);
             if (directionU == 0)
@@ -36,8 +36,10 @@ public class Background : MonoBehaviour {
         float rateU = 0.5f * Time.deltaTime;
         float rateV = 0.5f * Time.deltaTime;
 
-        Vector2 curOffset = renderer.material.GetTextureOffset("_Illum");
-        renderer.material.SetTextureOffset("_Illum", new Vector2(curOffset.x + rateU * directionU, curOffset.y + rateV * directionV));
+        //Vector2 curOffset = renderer.material.GetTextureOffset("_MainTex");
+        //renderer.material.SetTextureOffset("_MainTex", new Vector2(curOffset.x + rateU * directionU, curOffset.y + rateV * directionV));
+        Vector4 curOffset = renderer.lightmapTilingOffset;
+        renderer.lightmapTilingOffset = new Vector4(curOffset.x, curOffset.y, curOffset.z + rateU * (float)directionU, curOffset.w + rateV * (float)directionV);
     }
 
     #endregion

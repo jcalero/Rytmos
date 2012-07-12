@@ -130,7 +130,6 @@ function SetDefaultPath () {
             filePath = filePath.Replace("/", "\\");
             filePath = filePath.Substring(0, filePath.LastIndexOf(pathChar)) + pathChar;
             cmdKey1 = KeyCode.LeftControl; cmdKey2 = KeyCode.RightControl;
-            filePath = Directory.GetCurrentDirectory();
             windowsSystem = true;
             break;
         case RuntimePlatform.OSXPlayer:
@@ -143,7 +142,6 @@ function SetDefaultPath () {
             filePath = filePath.Replace("/", "\\");
             filePath = filePath.Substring(0, filePath.LastIndexOf(pathChar)) + pathChar;
             cmdKey1 = KeyCode.LeftControl; cmdKey2 = KeyCode.RightControl;
-            filePath = Directory.GetCurrentDirectory();
             windowsSystem = true;
             break;
         case RuntimePlatform.IPhonePlayer:
@@ -765,7 +763,8 @@ private function SelectFile () : IEnumerator {
     selectFileInProgress = false;
 }
 
-private function OnUpClicked () {
+// Button handler for the file browser up button, needs to be protected or the compiler thinks the method is never used.
+protected function OnUpClicked () {
 	if (pathList.Length > 1) {
 		BuildPathList(1);
 		UpdateDirectoryLabel();

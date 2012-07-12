@@ -101,7 +101,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		timers = new float[AudioManager.peaks.Length];
 		spawnRestrictors = new int[AudioManager.peaks.Length];
 		spawnDivisors = new int[]{2,2,8,2,2,2};
-		spawnPositions = new int[]{0,33,66};
+		spawnPositions = new int[]{0, 33, 66};
 	
 		currentlySelectedEnemy = 0;
 		rotateDirection = 1;

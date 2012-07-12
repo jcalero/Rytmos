@@ -18,13 +18,16 @@ public class Level : MonoBehaviour {
     public static bool fourColors = false;							// Used for dealing with multiple colors - currently 4 or 6
 
     protected LinkedSpriteManager spriteManagerScript;
+    protected SpriteManager bgSpriteManagerScript;
     protected Sprite touchSprite;                                     // The SpriteManager created sprite
 	
 	
     public GameObject[] particlesFeedback = new GameObject[6];      // The six feedback particles. Inspector reference. Location: LevelManager
     //public GameObject[] linePrefab = new GameObject[6];             // The six feedback screen lines. Inspector reference. Location: LevelManager
     public GameObject spriteManager;                                // Reference to the SpriteManager. Inspector reference. Location: LevelManager
+    public GameObject bgSpriteManager;                                // Reference to the SpriteManager. Inspector reference. Location: LevelManager
     public GameObject touchPrefab;                                  // The touch sprite. Inspector reference. Location: LevelManager
+    public GameObject backgroundObject;
     public EnemySpawnScript enemySpawner;                           // The enemy spawn script.
     #endregion
 
@@ -35,10 +38,13 @@ public class Level : MonoBehaviour {
 		else fourColors = false;
         Instance = this;
         spriteManagerScript = spriteManager.GetComponent<LinkedSpriteManager>();
+        bgSpriteManagerScript = bgSpriteManager.GetComponent<SpriteManager>();
     }
 
     protected virtual void Start() {
         Game.Cheated = false;       // Reset cheated value
+
+        bgSpriteManagerScript.AddSprite(backgroundObject, 1f, 1f, Vector2.zero, new Vector2(1f, 1f), false);
 
         // Create and hide the touch sprite
         touchSprite = spriteManagerScript.AddSprite(touchPrefab, 0.25f, 0.25f, new Vector2(0f, 0.365f), new Vector2(0.63f, 0.63f), false);
