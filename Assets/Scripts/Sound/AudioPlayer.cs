@@ -98,6 +98,33 @@ public class AudioPlayer : MonoBehaviour
 		}
 	}
 	
+	public static float Pitch {
+		get {
+			if(audioSources[currentSource] != null) 
+			{
+				Debug.Log("returning: " + audioSources[currentSource].pitch);
+				return audioSources[currentSource].pitch;
+			}
+			else 
+				return 0f;
+		}
+		set 
+		{ 
+			if (audioSources [currentSource] != null && audioSources[currentSource==1?0:1] != null)
+			{
+				Debug.Log("Setting: "+ value);
+				audioSources[currentSource].pitch = value;
+				audioSources[currentSource==1?0:1].pitch = value;
+			}
+		}
+		
+	}
+	
+	public static void setPitch(float pitch) {
+		audioSources[currentSource].pitch = pitch;
+		audioSources[currentSource==1?0:1].pitch = 1f;
+	}
+	
 	/// <summary>
 	/// Play the music. NOT TESTED YET!
 	/// </summary>

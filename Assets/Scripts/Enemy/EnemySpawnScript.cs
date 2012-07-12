@@ -66,9 +66,9 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 				timeSlowTimer += Time.deltaTime;
 				if(timeSlowTimer < timeSlowTimerTotal/2f && Time.timeScale > 0.5f && timeDiff > 0.05f) {
 					Time.timeScale -= .05f;
-					cam.audio.pitch -= .05f;
+					AudioPlayer.Pitch -= .05f;
 				} else if (timeSlowTimer > timeSlowTimerTotal/2f && timeSlowTimer < timeSlowTimerTotal && Time.timeScale < 1f && timeDiff > 0.05f) {
-					cam.audio.pitch += .05f;
+					AudioPlayer.Pitch += .05f;
 					Time.timeScale += .05f;
 				} else if(timeSlowTimer > timeSlowTimerTotal) {
 					timeSlowTimer = 0;
