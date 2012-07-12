@@ -24,7 +24,7 @@ public class Game : MonoBehaviour {
 	private static bool syncMode = false;		// True on 'NigelMode Option' Selected
     private static Mode mode;                    // Defines current/last game mode.
     private static State state;                   // Defines the current game state.
-    private static string filePath = "D:\\Documents\\Unity Projects\\RytMos\\Rytmos\\08 - The Polyphonic Spree - Soldier Girl.mp3";             // File path to the selected song to be loaded.
+    private static string filePath;             // File path to the selected song to be loaded.
     private static NumOfColors colors;			//Defines the amount of colors used in the game
 	private static Powerups powerups;			//Defines the currently active powerup
 	

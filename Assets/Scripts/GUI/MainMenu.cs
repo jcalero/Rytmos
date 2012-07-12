@@ -145,8 +145,11 @@ public class MainMenu : MonoBehaviour {
         ToggleModeMenu(false);
         ToggleBackModeButton(false);
         ToggleFileBrowserPanel(true);
-        GameObject.Find("FileBrowser").SendMessage("OpenFileWindow");
-        //FileBrowser.LoadFileBrowser("Game");
+        GameObject fb = GameObject.Find("FileBrowser");
+        Debug.Log("Game.Path before sending it: " + Game.Path);
+        if (!string.IsNullOrEmpty(Game.Path)) fb.SendMessage("OpenFileWindow", Game.Path);
+        else fb.SendMessage("OpenFileWindow", "");
+
         //Application.LoadLevel("Game");
     }
 

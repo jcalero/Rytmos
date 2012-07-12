@@ -622,8 +622,18 @@ public function SetGameObject (go : GameObject) {
     objectToSendTo = go;
 }
 
-public function OpenFileWindow () {
+public function OpenFileWindow ( path : String ) {
     if (fileWindowOpen) return;
+    if (path != "") {
+        switch (Application.platform) {
+            case RuntimePlatform.WindowsEditor:
+                filePath = path + "\\";
+                break;
+            case RuntimePlatform.Android:
+                filePath = path + "/";
+                break;
+        }
+    }
 
     showFiles = true;
     fileType = FileType.Open;
