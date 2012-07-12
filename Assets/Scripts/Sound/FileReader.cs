@@ -21,6 +21,7 @@ public class FileReader : DecoderInterface {
 	private int[] loudTriggers;
 	private MP3 mp3Reader;
 	private int channels;
+	private int mp3FrameSize;
 	
 	// Supported Audio Formats.. not all of them are in yet!!
 	public enum FileFormat {WAV, OGG, MPEG, RYT, ERROR};
@@ -71,6 +72,7 @@ public class FileReader : DecoderInterface {
 			mp3Reader = new MP3(this.path);
 			this.frequency = mp3Reader.getFrequency();
 			this.channels = mp3Reader.getChannels();
+			this.mp3FrameSize = mp3Reader.getFrameSize();
 			break;
 		case FileFormat.RYT:
 			readAnalData();
@@ -83,6 +85,11 @@ public class FileReader : DecoderInterface {
 	
 	public int getFrequency() {
 		return frequency;	
+	}
+	
+	public int getFrameSize() {
+		if(this.format == FileFormat.MPEG) return this.mp3FrameSize;
+		else return 0;
 	}
 	
 	public float getAudioLengthInSecs() {
@@ -555,78 +562,27 @@ public class FileReader : DecoderInterface {
 			return _channels;	
 		}
 		
+		public int getFrameSize() {
+			return FrameSize;	
+		}
+		
 		public int readMp3ForPlayback(ref float[] outBuff) {
-					
+			
 			// Init Counters for the elements in a buffer
 			int outBuffFillCounter = 0;
-			int overFlowCounter = 0;
-			bool loopFlag = true;
-			
-			// Check if we have any overflowing bytes from the previous buffer
-			if(overFlow.Length > 0) {
-				
-				loopFlag = true;
-				for(int i = 0; i < overFlow.Length  && loopFlag; i+=_channels*2) {
-					
-					for (int j = 0; j < _channels*2  && loopFlag; j+=2) {
-						
-						float tempVal = System.BitConverter.ToInt16(overFlow,i+j);
-						outBuff[outBuffFillCounter] = tempVal/maxVal;
-						outBuffFillCounter++;
-						
-						// Have we filled the entire output buffer?
-						if(outBuffFillCounter == outBuff.Length) {
-							
-							if (i+(_channels*2) < overFlow.Length) {
-								overFlowCounter = i+(_channels*2);
-								loopFlag = false;
-								break;
-							}
-							else {
-								overFlow = new byte[0];
-								return outBuffFillCounter;
-							}
-						}
-					}
-				}
-				
-				// If the overflow array holds more samples than we want, we will have to save the overflow again!!
-				if(overFlowCounter > 0) {
-					byte[] tempOverFlow = new byte[overFlow.Length - overFlowCounter];
-					System.Array.Copy(overFlow,overFlowCounter,tempOverFlow,0,tempOverFlow.Length);
-					overFlow = tempOverFlow;
-					return outBuffFillCounter;
-				}
-			}
-			
-			// All overflow should have been passed to outBuff at this point, so we reset the array
-			overFlow = new byte[0];
-			loopFlag = true;
-			// After adding the overflow form last time, get the next buffer
-	        while (loopFlag && outBuffFillCounter < outBuff.Length && 0 == MPGImport.mpg123_read(handle_mpg, Buffer, FrameSize, out done))
+
+	        while (outBuffFillCounter < outBuff.Length && 0 == MPGImport.mpg123_read(handle_mpg, Buffer, FrameSize, out done))
 	        {
-				for(int i = 0; i < Buffer.Length && loopFlag; i+=_channels*2) {
+				for(int i = 0; i < Buffer.Length; i+=_channels*2) {
 					
-					for (int j = 0; j < _channels*2 && loopFlag; j+=2) {
+					for (int j = 0; j < _channels*2; j+=2) {
 						
 						float tempVal = System.BitConverter.ToInt16(Buffer,i+j);
 						outBuff[outBuffFillCounter] = tempVal/maxVal;
 						outBuffFillCounter++;
-						if(outBuffFillCounter == outBuff.Length) {
-							if (i+(_channels*2) < Buffer.Length) overFlowCounter = i+(_channels*2);
-							
-							loopFlag = false;
-							break;
-						}
 					}
 				}
 	        }
-			
-			// Fill overflow if there is anything to fill
-			if(overFlowCounter > 0) {
-					overFlow = new byte[Buffer.Length - overFlowCounter];
-					System.Array.Copy(Buffer,overFlowCounter,overFlow,0,overFlow.Length);	
-			}
 			return outBuffFillCounter;
 		}
 		

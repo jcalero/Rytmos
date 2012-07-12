@@ -33,6 +33,7 @@ public static class AudioManager
 	private static bool buffer1Played;
 	private static bool buffer2Played;
 	private static int currentBuffer;
+	private static float[] updateBuffer;
 	#endregion
 	
 	/// <summary>
@@ -107,7 +108,11 @@ public static class AudioManager
 			
 			// Now that we have analyzed the song, we need to reset & initialize everything for playback
 			freader.reset ();
-			audioBufferSize = frequency * channels;
+			audioBufferSize = freader.getFrameSize()*10;
+			if(audioBufferSize%freader.getFrameSize() != 0) {
+				Debug.Log("This should not happen!!");
+				return;
+			}
 			buffer1Played = true;
 			buffer2Played = true;
 			lastSamples = false;
@@ -127,7 +132,6 @@ public static class AudioManager
 	/// </summary>
 	private static void initBuffers ()
 	{
-		
 		buffer1Played = true;
 		buffer2Played = true;
 		lastSamples = false;
@@ -147,35 +151,35 @@ public static class AudioManager
 	/// Nothing, really. Just the yield stuff for coroutine funcionality
 	/// </returns>
 	public static IEnumerator updateMusic ()
-	{
-		if (buffer1Clip == null || buffer2Clip == null || lastSamples)
-			yield return 0;
-	
-		float[] buffer = new float[audioBufferSize];
-		
-		if (currentBuffer == 2 && buffer1Played) {
-			// Swap out bottom half
-			if (freader.readSamples (ref buffer, false) < buffer.Length)
-				lastSamples = true;
-			
-			buffer1Clip.SetData (buffer, 0);
-			
-			buffer1Played = false;
-			buffer2Played = true;
-			currentBuffer = 1;
-			
-		} else if (currentBuffer == 1 && buffer2Played) {
-			// Swap out top half
-			if (freader.readSamples (ref buffer, false) < buffer.Length)
-				lastSamples = true;
-
-			buffer2Clip.SetData (buffer, 0);
-
-			buffer2Played = false;
-			buffer1Played = true;
-			currentBuffer = 2;
-		}
-		yield return 0;
+	{		
+			if (buffer1Clip == null || buffer2Clip == null || lastSamples) {
+			} else {
+				updateBuffer = new float[audioBufferSize];
+				
+				if (currentBuffer == 2 && buffer1Played) {
+					// Swap out bottom half
+					if (freader.readSamples (ref updateBuffer, false) < updateBuffer.Length)
+						lastSamples = true;
+									
+					buffer1Clip.SetData (updateBuffer, 0);
+								
+					buffer1Played = false;
+					buffer2Played = true;
+					currentBuffer = 1;
+				
+				} else if (currentBuffer == 1 && buffer2Played) {
+					// Swap out top half
+					if (freader.readSamples (ref updateBuffer, false) < updateBuffer.Length)
+						lastSamples = true;
+					
+					buffer2Clip.SetData (updateBuffer, 0);
+					
+					buffer2Played = false;
+					buffer1Played = true;
+					currentBuffer = 2;
+				}
+			}
+		yield return null;
 	}
 	
 	/// <summary>

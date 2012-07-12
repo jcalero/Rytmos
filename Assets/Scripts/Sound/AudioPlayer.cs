@@ -1,5 +1,7 @@
 using UnityEngine;
 using System.Collections;
+using System.Threading;
+using System;
 
 /// <summary>
 /// Audio player.
@@ -80,14 +82,14 @@ public class AudioPlayer : MonoBehaviour
 			} else if (audioSources [0].clip != null && audioSources [1].clip != null && gameObject != null) {
 				
 				if (audioSources [0].timeSamples > 0 && audioSources [0].isPlaying && bufferSource2 && !audioSources [1].isPlaying) {
-					StartCoroutine (AudioManager.updateMusic ());
 					audioSources [1].Play ((ulong)(audioSources [0].clip.samples - audioSources [0].timeSamples));
+					StartCoroutine (AudioManager.updateMusic ()); //
 					bufferSource2 = false;
 					bufferSource1 = true;
 					currentSource = 0;
 				} else if (audioSources [1].timeSamples > 0 && audioSources [1].isPlaying && bufferSource1 && !audioSources [0].isPlaying) {
-					StartCoroutine (AudioManager.updateMusic ());
 					audioSources [0].Play ((ulong)(audioSources [1].clip.samples - audioSources [1].timeSamples));
+					StartCoroutine (AudioManager.updateMusic ());
 					bufferSource1 = false;
 					bufferSource2 = true;
 					currentSource = 1;
