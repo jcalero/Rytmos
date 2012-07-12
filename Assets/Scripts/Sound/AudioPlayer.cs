@@ -3,15 +3,16 @@ using System.Collections;
 
 public class AudioPlayer : MonoBehaviour {
 	
-	private AudioSource[] audioSources;
-	private int currentSource;
-	private int halfTimeInSamples;
-	private bool testFlag;
-	private bool bufferSource1;
-	private bool bufferSource2;
-	private float timer;
-	private int pauseSample;
-	private bool pauseFlag;
+	private static AudioSource[] audioSources;
+	private static int currentSource;
+	private static int halfTimeInSamples;
+	private static bool testFlag;
+	private static bool bufferSource1;
+	private static bool bufferSource2;
+	private static float timer;
+	private static int pauseSample;
+	private static bool pauseFlag;
+	private static bool playFlag;
 	
 	void Awake() {
 		audioSources = gameObject.GetComponentsInChildren<AudioSource>();
@@ -40,35 +41,17 @@ public class AudioPlayer : MonoBehaviour {
 		timer = 0f;
 		pauseSample = 0;
 		pauseFlag = false;
+		playFlag = false;
 	}
 	// Use this for initialization
 	void Start () {
+		playFlag = true;
 		audioSources[currentSource].Play();
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		
-		if(Game.Paused) {
-			pauseFlag = true;
-			if(audioSources[currentSource].isPlaying) {
-				if(audioSources[currentSource].isPlaying) audioSources[currentSource].Pause();
-				if(audioSources[currentSource == 1? 0:1].isPlaying) audioSources[currentSource == 1? 0:1].Stop();
-				
-				Debug.Log("test12: " + audioSources[currentSource == 1? 0:1].timeSamples);
-				pauseSample = audioSources[currentSource].timeSamples;
-				Debug.Log("pausesample: "+ pauseSample);
-				
-				Debug.Log("current: " + currentSource);
-				Debug.Log("other: " + (currentSource == 1? 0:1));
-			}
-		} else if(!Game.Paused) {
-			if(pauseFlag) {
-				if(!audioSources[currentSource].isPlaying) audioSources[currentSource].Play();
-				if(!audioSources[currentSource == 1? 0:1].isPlaying) audioSources[currentSource == 1? 0:1].Play((ulong)(audioSources[currentSource].clip.samples - pauseSample));
-				pauseSample = 0;
-				pauseFlag = false;
-			}
+		if(playFlag && !Game.Paused) {
 			
 			if(AudioManager.lastSamples) {
 				return;
@@ -97,29 +80,31 @@ public class AudioPlayer : MonoBehaviour {
 		}
 	}
 	
+	public static void play() {
+		playFlag = true;
+		audioSources[currentSource].Play();
+	}
 	
+	public static void pause() {
+		if(audioSources[0] != null && audioSources[1] != null){
+			pauseFlag = true;
+			if(audioSources[currentSource].isPlaying) {
+				if(audioSources[currentSource].isPlaying) audioSources[currentSource].Pause();
+				if(audioSources[currentSource == 1? 0:1].isPlaying) audioSources[currentSource == 1? 0:1].Stop();
+				
+				pauseSample = audioSources[currentSource].timeSamples;
+			}
+		}
+	}
 	
-//	public void pause() {
-//		if(audioSources[0] != null && audioSources[1] != null){
-//			pauseFlag = true;
-//			if(audioSources[currentSource].isPlaying) {
-//				if(audioSources[currentSource].isPlaying) audioSources[currentSource].Pause();
-//				if(audioSources[currentSource == 1? 0:1].isPlaying) audioSources[currentSource == 1? 0:1].Stop();
-//				
-//				pauseSample = audioSources[currentSource].timeSamples;
-//			}
-//		}
-//	}
-//	
-//	public void play() {
-//		if(audioSources[0] != null && audioSources[1] != null){
-//			if(pauseFlag) {
-//				if(!audioSources[currentSource].isPlaying) audioSources[currentSource].Play();
-//				if(!audioSources[currentSource == 1? 0:1].isPlaying) audioSources[currentSource == 1? 0:1].Play((ulong)(audioSources[currentSource].clip.samples - pauseSample));
-//				pauseSample = 0;
-//				pauseFlag = false;
-//			}
-//			
-//		}
-//	}
+	public static void resume() {
+		if(audioSources[0] != null && audioSources[1] != null){
+			if(pauseFlag) {
+				if(!audioSources[currentSource].isPlaying) audioSources[currentSource].Play();
+				if(!audioSources[currentSource == 1? 0:1].isPlaying) audioSources[currentSource == 1? 0:1].Play((ulong)(audioSources[currentSource].clip.samples - pauseSample));
+				pauseSample = 0;
+				pauseFlag = false;
+			}
+		}
+	}
 }
