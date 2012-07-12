@@ -56,7 +56,8 @@ public class FileWriter
 		string fileName = pathToMusicFile.Substring (lastFileSeperator, pathToMusicFile.LastIndexOf ('.') - lastFileSeperator);
 		if (Application.platform == RuntimePlatform.Android) 
 			return (Application.persistentDataPath + "/" + fileName + ".ryt");
-		else if (Application.platform == RuntimePlatform.WindowsPlayer)
+		else if (Application.platform == RuntimePlatform.WindowsPlayer
+			|| 	 Application.platform == RuntimePlatform.WindowsEditor)
 			return (Application.persistentDataPath + "\\" + fileName + ".ryt");
 		else {
 			Debug.Log ("PLATFORM NOT SUPPORTED YET");
