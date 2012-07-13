@@ -1,4 +1,5 @@
 using UnityEngine;
+
 using System.Collections;
 /// <summary>
 /// Player.cs
@@ -17,9 +18,10 @@ public class Player : MonoBehaviour,PeakListener {
     public static int energy;                   // Current energy of the player
     public static int health;                   // Current health of the player
     public static int score;                    // Current score of the player
+	public static bool hasPowerup = false;		// Current status of the player's powerup
+	public static bool takenPowerup = false;	// If the player takes the powerup from the screne
 
     public GameObject pulsePrefab;              // The pulse. Inspector reference. Location: Player
-
     private float energyTimer = 0;              // Timer for energy regeneration
 	private float pwTimer = 0;					// Timer for current invincibility duration
 	private readonly float pwTotalTime = 10f;	// Total time for invincibility to last
@@ -57,7 +59,8 @@ public class Player : MonoBehaviour,PeakListener {
     void Update() {
         if (!Game.Paused) {
             // If the player clicks, and has enough energy, sends out a pulse
-            sendPulse();
+			if (Input.GetMouseButtonDown(0)) 
+            	clickOnScreen();
 			
 			//Used for animating the ring when the player sends a pulse
 			if(sentPulse) sentPulse = animRing(true, true, .1f, .1f, .3f, .3f, 1f);
@@ -71,6 +74,7 @@ public class Player : MonoBehaviour,PeakListener {
 				if(pwTimer > pwTotalTime) {
 					Debug.Log ("Powerup: "+Game.PowerupActive+" deactivated");
 					Game.PowerupActive = Game.Powerups.None;
+					hasPowerup = false;	
 					pwTimer = 0;
 				}
 			} else pwTimer = 0;
@@ -101,15 +105,51 @@ public class Player : MonoBehaviour,PeakListener {
 
     }
 	
-	public void sendPulse() {
-		if (Input.GetMouseButtonDown(0) && energy - pulseCost >= 0) {
-			Ray ray = Camera.main.ScreenPointToRay (Input.mousePosition);
-    		RaycastHit hit = new RaycastHit();
-			if(Physics.Raycast(ray.origin, new Vector3(0,0,1), out hit, 10.0f)) {
-				Debug.Log (hit.distance);
-				if(hit.distance > 7) {
+	public void clickOnScreen() {		
+		Ray ray = Camera.main.ScreenPointToRay (Input.mousePosition);
+   		RaycastHit hit = new RaycastHit();
+		if(Physics.Raycast(new Vector3(ray.origin.x, ray.origin.y, -10), new Vector3(0,0,1), out hit, 10.0f)) {
+				if(hit.collider.name == "PlayerTouchFeedback") {
+					if(hasPowerup) {
+						int choice = Random.Range(0,4);
+						switch(choice) {
+						case 0:
+							Debug.Log ("Massive Pulse Activated!");
+							Game.PowerupActive = Game.Powerups.MassivePulse;
+							hasPowerup = false;
+							break;
+						case 1:
+							Debug.Log ("Invicibility Activated!");
+							pwTimer = 0;
+							Game.PowerupActive = Game.Powerups.Invincible;
+							hasPowerup = false;
+							break;
+						case 2:
+							Debug.Log ("Single Colour Enemies Activated!");
+							pwTimer = 0;
+							Game.PowerupActive = Game.Powerups.ChangeColor;
+							hasPowerup = false;
+							break;
+						case 3:
+							Debug.Log ("Chain Reaction Activated!");
+							pwTimer = 0;
+							Game.PowerupActive = Game.Powerups.ChainReaction;
+							hasPowerup = false;
+							break;
+						default:
+							Debug.Log ("Powerup Failed...");
+							Game.PowerupActive = Game.Powerups.None;
+							hasPowerup = false;
+							break;
+						}
+					}
+				} else if(hit.collider.name == "Powerup(Clone)") {
+					hasPowerup = true;
+					takenPowerup = true;
+					Debug.Log ("Got powerup: "+hasPowerup);
+				} else if(energy - pulseCost >= 0) {
 					// Show the touch sprite at the mouse location.
-                	Level.ShowTouchSprite(new Vector3(ray.origin.x, ray.origin.y, 0));
+	               	Level.ShowTouchSprite(new Vector3(ray.origin.x, ray.origin.y, 0));
 	                // Create a pulse and trigger animation
 	                Instantiate(pulsePrefab, Vector3.zero, pulsePrefab.transform.localRotation);
 					sentPulse = true;
@@ -123,13 +163,13 @@ public class Player : MonoBehaviour,PeakListener {
 						superPulseCount++;
 						if(superPulseCount > superPulseTotal) {
 							Game.PowerupActive = Game.Powerups.None;
+							hasPowerup = false;
 							energy -= pulseCost;
 							superPulseCount = 0;
 						}
-					}
 				}
 			}
-    	}
+		}
 	}
 	
 	/// <summary>

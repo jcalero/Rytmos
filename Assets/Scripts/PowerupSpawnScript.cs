@@ -6,13 +6,9 @@ public class PowerupSpawnScript : MonoBehaviour {
 	
 	//Note: as this currently stands, this might be better off being shared by another class
 	void Start() {
-		SpawnPowerup();
-		
+		SpawnPowerup();		
 	}
-	
-	void Update() {
 
-	}
 	public void SpawnPowerup() {
 		Vector3 spawnPos = randomPos();
 		Instantiate(powerupList[Random.Range(0, powerupList.Length)], spawnPos, Quaternion.identity);

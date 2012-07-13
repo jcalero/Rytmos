@@ -59,7 +59,7 @@ public class DevScript : MonoBehaviour {
             }
 			
 			if (Input.GetKeyDown(KeyCode.P) && !devMode2) {
-				Debug.Log ("Powerup Mode Enabled");
+				Debug.Log ("Powerup Mode Enabled");			
 				devMode2 = true;
 			} else if(Input.GetKeyDown(KeyCode.P) && devMode2) {
 				Debug.Log ("Powerup Mode Disabled");
@@ -68,43 +68,62 @@ public class DevScript : MonoBehaviour {
 			}
 			
 			if(Input.GetKeyDown (KeyCode.A) && devMode2) {
-				if(Game.PowerupActive != Game.Powerups.ChainReaction) 
+				if(Game.PowerupActive != Game.Powerups.ChainReaction) {
 					Game.PowerupActive = Game.Powerups.ChainReaction;
-				else 
+					Player.hasPowerup = true;
+				}
+				else {
 					Game.PowerupActive = Game.Powerups.None;
+					Player.hasPowerup = false;
+				}
 				Debug.Log ("Chain reaction powerup active");
 			} 
 			
 			if(Input.GetKeyDown (KeyCode.S) && devMode2) {
-				if(Game.PowerupActive != Game.Powerups.ChangeColor) 
+				if(Game.PowerupActive != Game.Powerups.ChangeColor) {
 					Game.PowerupActive = Game.Powerups.ChangeColor;
-				else 
+					Player.hasPowerup = true;
+				}
+				else {
 					Game.PowerupActive = Game.Powerups.None;
+					Player.hasPowerup = false;	
+				}
 				Debug.Log ("Change color powerup active");
 			}
 			
 			if(Input.GetKeyDown(KeyCode.D) && devMode2) {
-				if(Game.PowerupActive != Game.Powerups.Invincible) 
+				if(Game.PowerupActive != Game.Powerups.Invincible) {
 					Game.PowerupActive = Game.Powerups.Invincible;
-				else 
+					Player.hasPowerup = true;
+				}
+				else  {
 					Game.PowerupActive = Game.Powerups.None;
+					Player.hasPowerup = false;
+				}
 				Debug.Log ("Invincible powerup active");
 			}
 			
 			if(Input.GetKeyDown(KeyCode.F) && devMode2) {
-				if(Game.PowerupActive != Game.Powerups.MassivePulse) 
+				if(Game.PowerupActive != Game.Powerups.MassivePulse)  {
 					Game.PowerupActive = Game.Powerups.MassivePulse;
-				else 
+					Player.hasPowerup = true;
+				}
+				else {
 					Game.PowerupActive = Game.Powerups.None;
-				
+					Player.hasPowerup = false;
+				}
 				Debug.Log ("Massive pulse powerup active");
 			}
 			
 			if(Input.GetKeyDown (KeyCode.G) && devMode2) {
-				if(Game.PowerupActive != Game.Powerups.TimeSlow) 
+				if(Game.PowerupActive != Game.Powerups.TimeSlow) {
 					Game.PowerupActive = Game.Powerups.TimeSlow;
-				else 
+					Player.hasPowerup = true;
+				}
+				else {
 					Game.PowerupActive = Game.Powerups.None;
+					Player.hasPowerup = false;
+				}
 				Debug.Log ("Time slow powerup active");
 			}
 
