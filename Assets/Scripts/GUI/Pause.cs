@@ -40,7 +40,7 @@ public class Pause : MonoBehaviour
     /// </summary>
     void OnMenuClicked() {
         if (menuCamera.enabled) {
-            Game.Resume();
+//            Game.Resume();
             Application.LoadLevel("MainMenu");
         }
     }

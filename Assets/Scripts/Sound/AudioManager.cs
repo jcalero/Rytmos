@@ -18,22 +18,14 @@ public static class AudioManager
 	public static int channels;					// Number of channels in the music file
 	public static float audioLength;			// Total length in seconds (float) of the music file
 	public static int audioBufferSize;			// How many samples we want to store in each buffer
-	public static bool lastSamples;				// Used to notify AudioPlayer that we have reached the end of the song
 	#endregion
 	
 	#region private vars
 	/*Variables for internal logic*/
 	private static AudioSource ingameMusic;		// Reference which needs to be set if we want to use music which we prvovide ingame!
-	private static AudioClip buffer1Clip;		// AudioClip reference for the buffered music file, part 1
-	private static AudioClip buffer2Clip;		// AudioClip reference for the buffered music file, part 2
+	private static AudioClip audioClip;			// AudioClip reference for the buffered music file, part 1
 	private static bool songLoaded = false;		// Flag if the song has finished loading
 	private static string currentlyLoadedSong;	// Path to the currently loaded song (can be used to check if a new song is loaded)
-	
-	/*Flags used to keep track of the two audiobuffers*/
-	private static bool buffer1Played;
-	private static bool buffer2Played;
-	private static int currentBuffer;
-	private static float[] updateBuffer;
 	#endregion
 	
 	/// <summary>
@@ -64,8 +56,6 @@ public static class AudioManager
 			FileReader.ReadStatus success = freader.read ();
 			while (freader.isReading()) {
 			}
-			
-			Debug.Log ("Time to read: " + (Time.realtimeSinceStartup - start));
 			
 			// Succeeded reading? (Which means it found the file when we're just streaming)
 			if (success != FileReader.ReadStatus.SUCCESS)
@@ -106,24 +96,19 @@ public static class AudioManager
 				FileWriter.writeAnalysisData (pathToMusicFile, peaks, loudPartTimeStamps);
 			}
 			
-			
-			// Now that we have analyzed the song, we need to reset & initialize everything for playback
-			freader.reset ();
-			audioBufferSize = freader.getFrameSize()*10;
-			if(audioBufferSize%freader.getFrameSize() != 0) {
-				Debug.Log("This should not happen!!");
-				return;
+			if(Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WindowsEditor) {
+				Debug.Log("here");
+				// Now that we have analyzed the song, we need to reset & initialize everything for playback
+				freader.reset ();
+				audioBufferSize = channels*(Mathf.CeilToInt((audioLength * (float)frequency) / (float)freader.getFrameSize()))*freader.getFrameSize();
+				
+				audioClip = AudioClip.Create ("main_music1", audioBufferSize, channels, frequency, false, false);
+				
+				// Fill audio buffer with the first few samples
+				initAudioBuffer ();
 			}
-			buffer1Played = true;
-			buffer2Played = true;
-			lastSamples = false;
-			currentBuffer = 1;
-			
-			buffer1Clip = AudioClip.Create ("main_music1", audioBufferSize / channels, channels, frequency, false, false);
-			buffer2Clip = AudioClip.Create ("main_music2", audioBufferSize / channels, channels, frequency, false, false);
-			
-			// Fill audio buffer with the first few samples
-			initBuffers ();
+			closeMusicStream();
+			Debug.Log ("Time to read: " + (Time.realtimeSinceStartup - start));
 			songLoaded = true;
 		}
 	}
@@ -131,62 +116,20 @@ public static class AudioManager
 	/// <summary>
 	/// Initializes the buffers for audio playback.
 	/// </summary>
-	private static void initBuffers ()
-	{
-		buffer1Played = true;
-		buffer2Played = true;
-		lastSamples = false;
-		currentBuffer = 1;
-		
-		float[] buffer = new float[audioBufferSize];
-		
-		freader.readSamples (ref buffer, false);
-		
-		buffer1Clip.SetData (buffer, 0);
-	}
-	
-	/// <summary>
-	/// Updates the music buffers: If we are playing the second buffer, update the first and vice versa.
-	/// </summary>
-	/// <returns>
-	/// Nothing, really. Just the yield stuff for coroutine funcionality
-	/// </returns>
-	public static IEnumerator updateMusic ()
+	private static void initAudioBuffer ()
 	{		
-			if (buffer1Clip == null || buffer2Clip == null || lastSamples) {
-			} else {
-				updateBuffer = new float[audioBufferSize];
-				
-				if (currentBuffer == 2 && buffer1Played) {
-					// Swap out bottom half
-					if (freader.readSamples (ref updateBuffer, false) < updateBuffer.Length)
-						lastSamples = true;
-									
-					buffer1Clip.SetData (updateBuffer, 0);
-								
-					buffer1Played = false;
-					buffer2Played = true;
-					currentBuffer = 1;
-				
-				} else if (currentBuffer == 1 && buffer2Played) {
-					// Swap out top half
-					if (freader.readSamples (ref updateBuffer, false) < updateBuffer.Length)
-						lastSamples = true;
-					
-					buffer2Clip.SetData (updateBuffer, 0);
-					
-					buffer2Played = false;
-					buffer1Played = true;
-					currentBuffer = 2;
-				}
-			}
-		yield return null;
+		float[] buffer = new float[audioBufferSize];
+		freader.readSamples (ref buffer, false);
+		audioClip.SetData (buffer, 0);
+		buffer = null;
+		// Want to actually clear the buffer array! Call garbage collector
+		System.GC.Collect();
 	}
 	
 	/// <summary>
 	/// Closes the music stream.
 	/// </summary>
-	public static void closeMusicStream ()
+	private static void closeMusicStream ()
 	{
 		freader.close ();
 		freader = null;
@@ -237,19 +180,7 @@ public static class AudioManager
 	
 	public static AudioClip getAudioClip ()
 	{
-		if (currentBuffer == 1)
-			return buffer1Clip;
-		return buffer2Clip;
-	}
-	
-	public static AudioClip getAudioClip (int clip)
-	{
-		if (clip == 1)
-			return buffer1Clip;
-		else if (clip == 2)
-			return buffer2Clip;
-		else
-			return null;
+		return audioClip;
 	}
 	
 	public static void setCam (AudioSource reference)
@@ -262,10 +193,9 @@ public static class AudioManager
 		yield return 0;
 	}
 	
-	public static void reset ()
-	{
-		freader.reset ();
-		initBuffers ();
+	public static void clear() {
+		peaks = null;
+		loudPartTimeStamps = null;
+		audioClip = null;
 	}
-	
 }
