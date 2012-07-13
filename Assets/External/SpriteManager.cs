@@ -263,8 +263,8 @@ public class SpriteManager : MonoBehaviour
 
     void Awake()
     {
-        gameObject.AddComponent("MeshFilter");
-        gameObject.AddComponent("MeshRenderer");
+        if (gameObject.GetComponent<MeshFilter>() == null) gameObject.AddComponent("MeshFilter");
+        if (gameObject.GetComponent<MeshRenderer>() == null) gameObject.AddComponent("MeshRenderer");
 
         meshFilter = (MeshFilter)GetComponent(typeof(MeshFilter));
         meshRenderer = (MeshRenderer)GetComponent(typeof(MeshRenderer));

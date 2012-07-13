@@ -7,16 +7,16 @@ using System.Collections;
 /// </summary>
 public class EnemySpawnScript : MonoBehaviour,PeakListener {
 
-    #region Fields
-    public GameObject[] EnemyPrefabs;       // List of enemy types to spawn. Inspector reference. Location: EnemySpawner
-    public float FirstSpawn;                // The delay the spawner will initialise itself with (time for first spawn)
-    public float SpawnRate;                 // The time between spawns
+	#region Fields
+	public GameObject[] EnemyPrefabs;       // List of enemy types to spawn. Inspector reference. Location: EnemySpawner
+	public float FirstSpawn;                // The delay the spawner will initialise itself with (time for first spawn)
+	public float SpawnRate;                 // The time between spawns
 	public int[] spawnPositions;
 	private int currentlySelectedEnemy;
-    
-    private int RandomSeed;                 // The enemy type to spawn
-    //private GameObject cam;					// Camera gameobject to play audio
-    private int[] counters;					// "Pointers" for the triggers of each channel
+	
+	private int RandomSeed;                 // The enemy type to spawn
+	//private GameObject cam;					// Camera gameobject to play audio
+	private int[] counters;					// "Pointers" for the triggers of each channel
 	private float timer;					// Used to sync framerate with music playback-rate
 	private float audioLength;
 	private float[] timers;
@@ -33,16 +33,16 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	private int rotateDirection;
 	private int loudPartCounter;
 	public bool loudFlag;
-    #endregion
+	#endregion
 
-    #region Functions
+	#region Functions
 
-    void Start() {
+	void Start() {
 		resetColor = true;	
-        init ();		
-    }
-    
-    void Update() {
+		init ();		
+	}
+	
+	void Update() {
 		
 		timer += Time.deltaTime;
 		
@@ -82,32 +82,32 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 			timeSlowTimer = 0;
 			timeSlowOldTime = 0;
 		}
-    }
-    
+	}
+	
 	/// <summary>
 	/// Initialise this instance.
 	/// 
 	/// Find the camera and assign it the loaded audio clip
 	/// ...and then initialize a load of other stuff
 	/// </summary>
-    void init() {
+	void init() {
 		
 		PeakTriggerManager.addSelfToListenerList(this);
 		
-        //cam = GameObject.Find("Main Camera");
+		//cam = GameObject.Find("Main Camera");
 		audioLength = AudioManager.audioLength;
 		
 		timer = 0f;
 		timers = new float[AudioManager.peaks.Length];
 		spawnRestrictors = new int[AudioManager.peaks.Length];
 		spawnDivisors = new int[]{2,2,8,2,2,2};
-		spawnPositions = new int[]{0, 33, 66};
+		spawnPositions = new int[]{0};
 	
 		currentlySelectedEnemy = 0;
 		rotateDirection = 1;
 		Level.SetUpParticlesFeedback(spawnPositions.Length, currentlySelectedEnemy);		
 		loudFlag = false;
-    }
+	}
 	
 	public void setLoudFlag(bool flag) {
 		loudFlag = flag;		
@@ -208,29 +208,29 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		yield return 0;
 	}
 
-    /// <summary>
-    /// Spawns an enemy of random type.
-    /// </summary>
-    public void SpawnEnemy ()
-    {	if(Level.fourColors) SpawnEnemy (Random.Range (0, 3));	
+	/// <summary>
+	/// Spawns an enemy of random type.
+	/// </summary>
+	public void SpawnEnemy ()
+	{	if(Level.fourColors) SpawnEnemy (Random.Range (0, 3));	
 		else SpawnEnemy (Random.Range (0, EnemyPrefabs.Length));	
-    }
-    
-    /// <summary>
-    /// Spawns an enemy of a specified type
-    /// </summary>
-    /// <param name='prefab'>
-    /// int index of the enemy prefab
-    /// </param>
-    public void SpawnEnemy (int prefab)
-    {
-        Vector3 position = EnemyPrefabs [prefab].transform.position;
-        Instantiate (EnemyPrefabs [prefab], position, EnemyPrefabs [prefab].transform.localRotation);
-    }
+	}
+	
+	/// <summary>
+	/// Spawns an enemy of a specified type
+	/// </summary>
+	/// <param name='prefab'>
+	/// int index of the enemy prefab
+	/// </param>
+	public void SpawnEnemy (int prefab)
+	{
+		Vector3 position = EnemyPrefabs [prefab].transform.position;
+		Instantiate (EnemyPrefabs [prefab], position, EnemyPrefabs [prefab].transform.localRotation);
+	}
 	
 	public void SpawnEnemy (int prefab, float speed, float xpos, float ypos) {
 		Vector3 position = EnemyPrefabs [prefab].transform.position;
-        GameObject enemy = (GameObject) Instantiate (EnemyPrefabs [prefab], position, EnemyPrefabs [prefab].transform.localRotation);
+		GameObject enemy = (GameObject) Instantiate (EnemyPrefabs [prefab], position, EnemyPrefabs [prefab].transform.localRotation);
 		enemy.GetComponent<EnemyScript>().SetPositionAndSpeed(speed, xpos, ypos);
 	}
 	
@@ -264,19 +264,19 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		return new Vector3(xpos, ypos, 0);	
 	}	
 
-    /// <summary>
-    /// Restarts the Invoke method to allow new spawn rates to be initialised
-    /// </summary>
-    public void RestartSpawner() {
-        StopSpawner();
-        //Start();
-    }
+	/// <summary>
+	/// Restarts the Invoke method to allow new spawn rates to be initialised
+	/// </summary>
+	public void RestartSpawner() {
+		StopSpawner();
+		//Start();
+	}
 
-    /// <summary>
-    /// Stops the spawner/Invoke method.
-    /// </summary>
-    public void StopSpawner() {
-        //CancelInvoke("SpawnEnemy");
-    }
-    #endregion
+	/// <summary>
+	/// Stops the spawner/Invoke method.
+	/// </summary>
+	public void StopSpawner() {
+		//CancelInvoke("SpawnEnemy");
+	}
+	#endregion
 }

@@ -5,50 +5,47 @@ using UnityEngine;
 /// Class for enemy type: Blue Coloured. Inherits from EnemyScript.
 /// </summary>
 public class EnemyBlue : EnemyScript {
-    #region Fields
+	#region Fields
 	public float speed;
 	
-    private LinkedSpriteManager spriteManager;
-    private Sprite enemyCircle;
-    #endregion
+	#endregion
 
-    #region Functions
-    protected override void Awake() {
-        minSpeed = 1f;                                // Sets minimum speed
-        maxSpeed = 5f;                                // Sets maximum speed
-        health = 1;                                     // Sets health
+	#region Functions
+	protected override void Awake() {
+		minSpeed = 1f;                                // Sets minimum speed
+		maxSpeed = 5f;                                // Sets maximum speed
+		health = 1;                                     // Sets health
 		MainColor = Color.blue;
-        base.Awake();
-    }
+		base.Awake();
+	}
 
-    /// <summary>
-    /// Overriding Start() to set unique values for this enemy type
-    /// </summary>
-    protected override void Start() {
+	/// <summary>
+	/// Overriding Start() to set unique values for this enemy type
+	/// </summary>
+	protected override void Start() {
 		speed = currentSpeed;
-        spriteManager = GameObject.Find("EnemySpawner").GetComponent<LinkedSpriteManager>();
-        spriteName = "7-blue";
+		spriteName = "7-blue";
 
-        // Checks that the sprite name exists in the atlas, if not falls back to default sprite
-        if (SpriteAtlas.GetSprite(spriteName) == null) {
-            Debug.LogWarning("Sprite " + "\"" + spriteName + "\" " + "not found in atlas " + "\"" + SpriteAtlas + "\"" + ". Using default sprite, \"circle\".");
-            spriteName = "circle";
+		// Checks that the sprite name exists in the atlas, if not falls back to default sprite
+		if (SpriteAtlas.GetSprite(spriteName) == null) {
+			Debug.LogWarning("Sprite " + "\"" + spriteName + "\" " + "not found in atlas " + "\"" + SpriteAtlas + "\"" + ". Using default sprite, \"circle\".");
+			spriteName = "circle";
 			
-        }
-        // Calculate sprite atlas coordinates
-        base.CalculateSprite(SpriteAtlas, spriteName);
-        // Add sprite to game object
-        enemyCircle = spriteManager.AddSprite(gameObject, UVWidth, UVHeight, left, bottom, width, height, false);
+		}
+		// Calculate sprite atlas coordinates
+		base.CalculateSprite(SpriteAtlas, spriteName);
+		// Add sprite to game object
+		enemyCircle = spriteManager.AddSprite(gameObject, UVWidth, UVHeight, left, bottom, width, height, false);
 
-        if (spriteName == "default" || spriteName == "circle")
-            enemyCircle.SetColor(MainColor);
+		if (spriteName == "default" || spriteName == "circle")
+			enemyCircle.SetColor(MainColor);
 
-        base.Start();                                   // Initialises the enemy by calling the Start() of EnemyScript
-    }
+		base.Start();                                   // Initialises the enemy by calling the Start() of EnemyScript
+	}
 
-    void OnDestroy() {
-        if (enemyCircle != null)
-            spriteManager.RemoveSprite(enemyCircle);
-    }
-    #endregion
+	void OnDestroy() {
+		//if (enemyCircle != null)
+		//    spriteManager.RemoveSprite(enemyCircle);
+	}
+	#endregion
 }
