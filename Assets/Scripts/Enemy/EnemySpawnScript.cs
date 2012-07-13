@@ -12,7 +12,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	public float FirstSpawn;                // The delay the spawner will initialise itself with (time for first spawn)
 	public float SpawnRate;                 // The time between spawns
 	public int[] spawnPositions;
-	private int currentlySelectedEnemy;
+	public static int currentlySelectedEnemy;
 	
 	private int RandomSeed;                 // The enemy type to spawn
 	//private GameObject cam;					// Camera gameobject to play audio
@@ -157,7 +157,8 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 					break;
 				case 3:
 					// Some higher frequencies to change the currently spawned enemy
-					changeEnemy(ref currentlySelectedEnemy);
+					if(Game.PowerupActive != Game.Powerups.ChangeColor)
+						changeEnemy();
 					break;
 				case 4:
 					break;
@@ -178,22 +179,22 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	
 	
 	
-	private static void changeEnemy(ref int currentEnemy) {
+	private static void changeEnemy() {
 		int rnd = Random.Range(0,101);
 		//Check if you are only using four colors, 
 		if(Level.fourColors) {
-			if(rnd < 25) currentEnemy = 0;
-			else if(rnd < 50) currentEnemy = 1;
-			else if(rnd < 75) currentEnemy = 2;
-			else if(rnd < 100) currentEnemy = 3;				
+			if(rnd < 25) currentlySelectedEnemy = 0;
+			else if(rnd < 50) currentlySelectedEnemy = 1;
+			else if(rnd < 75) currentlySelectedEnemy = 2;
+			else if(rnd < 100) currentlySelectedEnemy = 3;				
 		} else {
 			//You are in six color mode, and check if the colorpowerup is not active
-			if(rnd < 30) currentEnemy = 0;
-			else if(rnd < 55) currentEnemy = 1;
-			else if(rnd < 75) currentEnemy = 2;
-			else if(rnd < 85) currentEnemy = 3;
-			else if(rnd < 95) currentEnemy = 4;
-			else if(rnd < 101) currentEnemy = 5;			
+			if(rnd < 30) currentlySelectedEnemy = 0;
+			else if(rnd < 55) currentlySelectedEnemy = 1;
+			else if(rnd < 75) currentlySelectedEnemy = 2;
+			else if(rnd < 85) currentlySelectedEnemy = 3;
+			else if(rnd < 95) currentlySelectedEnemy = 4;
+			else if(rnd < 101) currentlySelectedEnemy = 5;			
 		}
 	}
 	

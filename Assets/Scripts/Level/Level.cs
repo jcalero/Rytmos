@@ -289,9 +289,9 @@ public class Level : MonoBehaviour {
 		case 3:
 			return Color.yellow;
 		case 4:
-			return Level.purple;
-		case 5:
 			return Color.green;
+		case 5:
+			return Level.purple;
 		default: 
 			return Color.black;
 		}

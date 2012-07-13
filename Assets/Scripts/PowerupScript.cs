@@ -40,13 +40,12 @@ public class PowerupScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		//Sets the respawn time to be relative to the player health
 		if(Player.health < 40) respawnTime = 10f;
 		else respawnTime = 20f;
 		
-		
+		//If the player has selected the powerup, move it from visibility, and restart the timer
 		if(Player.takenPowerup == true) {
-			Debug.Log("Taken");
-			//Makes sure that Player.hasPowerup is only set to be true during the main scene
 			moveSprite(new Vector3(20,20, 0));
 			powerUpTimer = 0;
 			totalTimer = respawnTime;
@@ -54,11 +53,15 @@ public class PowerupScript : MonoBehaviour {
 			Player.takenPowerup = false;
 		}
 		
+		//Check the timer		
 		if(powerUpTimer > totalTimer) {
+			//If the powerup is spawned (on the screen), remove it
 			if(spawned) {
 				moveSprite(new Vector3(20,20, 0));
 				spawned = false;
 			}
+			
+			//If the powerup is not on the screen, move it to a random position and set the timer to be the screenTime
 			else {
 				Vector3 spawnPos = randomPos();
 				moveSprite(spawnPos);

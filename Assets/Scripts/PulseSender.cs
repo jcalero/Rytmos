@@ -133,6 +133,8 @@ public class PulseSender : MonoBehaviour {
 	
 	public void SetFinalColor(Color c) {
 		finalColor = c;
+		CurrentColor = c;
+		SecondaryColor = c;
 		CurrentHealth = 1;
 	}
 	

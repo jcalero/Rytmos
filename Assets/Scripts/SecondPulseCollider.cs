@@ -19,8 +19,8 @@ public class SecondPulseCollider : MonoBehaviour {
 					Player.energy = 50;
 				gameObject.transform.parent.GetComponent<EnemyScript>().CreateExplosion();
 				StartCoroutine(gameObject.transform.parent.GetComponent<EnemyScript>().DamageEnemy());
-			} else         //Makes sure it only emits particles when the object is a pulse, not of the same colour
-				 gameObject.transform.parent.GetComponent<ParticleSystem>().Emit(10);	
+			} else {}        //Makes sure it only emits particles when the object is a pulse, not of the same colour
+				 //gameObject.transform.parent.GetComponent<ParticleSystem>().Emit(10);	
 		}  
 	}
 	
