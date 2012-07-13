@@ -119,7 +119,7 @@ function Awake () {
 }
 
 function SetDefaultPath () {
-    if (filePath == null) { filePath = PlayerPrefs.GetString("filePath"); };
+    filePath = PlayerPrefs.GetString("filePath");
     switch (Application.platform) {
         case RuntimePlatform.OSXEditor:
             filePath = filePath.Substring(0, filePath.LastIndexOf(pathChar)) + pathChar;
@@ -502,8 +502,13 @@ private function GetCurrentFileInfo () {
         var dirInfo = info.GetDirectories();
     }
     catch (err) {
-        HandleError(err.Message);
-        return;
+        if (err instanceof System.UnauthorizedAccessException) {
+            HandleAccessError(err.Message);
+            return;
+        } else {
+            HandleError(err.Message);
+            return;
+        }
     }
     
     // Put folder names into a sorted array
@@ -599,6 +604,11 @@ private function GetCurrentFileInfo () {
         fileName = "";
     }
     UpdateDirectoryLabel();
+}
+
+private function HandleAccessError (errorMessage : String) {
+    ShowError(errorMessage);
+	BuildPathList(0);
 }
 
 private function HandleError (errorMessage : String) {
@@ -816,25 +826,4 @@ private function UpdateDirectoryLabel() {
         objectToSendTo = gameObject;
     }
    	objectToSendTo.SendMessage ("UpdateDirLabel", directoryPath);
-    
-//    string directoryPath = separator + directoryStructure[directoryStructure.Length - 1];
-//    int maxPathLength = 28;
-//    int remPathLength = maxPathLength - directoryStructure[directoryStructure.Length - 1].Length;
-//    int numFoldersInPath = 1;
-//
-//    for (int cnt = directoryStructure.Length - 2; cnt > 0; cnt--) {
-//        if (directoryStructure[cnt].Length < remPathLength) {
-//            directoryPath = separator + directoryStructure[cnt] + directoryPath;
-//            remPathLength -= directoryStructure[cnt].Length + 1;
-//            numFoldersInPath++;
-//        } else {
-//            cnt = 0; // Terminate for-loop -> stop adding folders to path
-//        }
-//    }
-//    if (numFoldersInPath < directoryStructure.Length - 1)
-//        directoryPath = "..." + directoryPath;
-//    if (directoryPath.Length > maxPathLength + 6)
-//        directoryPath = directoryPath.Substring(0, maxPathLength) + "...";
-//
-//    instance.PathLabel.text = directoryPath;
 }
