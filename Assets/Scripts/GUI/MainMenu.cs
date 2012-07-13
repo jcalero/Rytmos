@@ -28,6 +28,7 @@ public class MainMenu : MonoBehaviour {
     private Vector3 modeMenu;
     private Vector3 highScoresMenu;
     private Vector3 optionsMenu;
+    private GameObject fb;
 
     private bool highscoresLoaded;
     private bool loadedSurvival;
@@ -49,6 +50,7 @@ public class MainMenu : MonoBehaviour {
         modeMenu = new Vector3(-650f * 2, 0f, 0f);
         highScoresMenu = new Vector3(-650f * 3, 0f, 0f);
         optionsMenu = new Vector3(-650f * 4, 0f, 0f);
+        fb = GameObject.Find("FileBrowser");
 
         Game.GameState = Game.State.Menu;
     }
@@ -122,6 +124,7 @@ public class MainMenu : MonoBehaviour {
     /// Button handler or "Back" button
     /// </summary>
     void OnBackClicked() {
+        fb.SendMessage("CloseFileWindow");
         // Stop any current momentum to allow for Spring to begin.
         panel.currentMomentum = Vector3.zero;
         // Begin spring motion
@@ -145,9 +148,7 @@ public class MainMenu : MonoBehaviour {
         ToggleModeMenu(false);
         ToggleBackModeButton(false);
         ToggleFileBrowserPanel(true);
-        GameObject fb = GameObject.Find("FileBrowser");
-        Debug.Log("Game.Path before sending it: " + Game.Path);
-        if (!string.IsNullOrEmpty(Game.Path)) fb.SendMessage("OpenFileWindow", Game.Path);
+        if (!string.IsNullOrEmpty(Game.Path)) fb.SendMessage("OpenFileWindow", PlayerPrefs.GetString("filePath"));
         else fb.SendMessage("OpenFileWindow", "");
 
         //Application.LoadLevel("Game");

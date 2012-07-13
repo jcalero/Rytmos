@@ -50,12 +50,12 @@ public class Game : MonoBehaviour {
 
     void Update() {
         // Key input condition for pausing the game
-        if (Input.GetKeyDown(KeyCode.Home) || Input.GetKeyDown(KeyCode.Escape) ||
-            Input.GetKeyDown("escape") || Input.GetKeyDown(KeyCode.Space) && GameState == State.Playing) {
-            if (!paused)
-                Pause();
-            else
-                Resume();
+        if ((Input.GetKeyDown(KeyCode.Home) || Input.GetKeyDown(KeyCode.Escape) ||
+            Input.GetKeyDown("escape") || Input.GetKeyDown(KeyCode.Space) ) && GameState == State.Playing) {
+                if (!paused)
+                    Pause();
+                else
+                    Resume();
             return;
         }
         // Key input position for DevMode, only works in the "Game" level

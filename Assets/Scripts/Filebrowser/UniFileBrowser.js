@@ -119,13 +119,14 @@ function Awake () {
 }
 
 function SetDefaultPath () {
-    if (filePath == null) { filePath = Application.dataPath; };
+    if (filePath == null) { filePath = PlayerPrefs.GetString("filePath"); };
     switch (Application.platform) {
         case RuntimePlatform.OSXEditor:
             filePath = filePath.Substring(0, filePath.LastIndexOf(pathChar)) + pathChar;
             cmdKey1 = KeyCode.LeftApple; cmdKey2 = KeyCode.RightApple;
             break;
         case RuntimePlatform.WindowsEditor:
+            if (filePath.Length < 1) { filePath = Application.dataPath; };
             pathChar = "\\"[0];	// A forward slash should work, but one user had some problems and this seemed part of the solution
             filePath = filePath.Replace("/", "\\");
             filePath = filePath.Substring(0, filePath.LastIndexOf(pathChar)) + pathChar;
@@ -146,8 +147,7 @@ function SetDefaultPath () {
             break;
         case RuntimePlatform.IPhonePlayer:
         case RuntimePlatform.Android:
-//            if (filePath == null || filePath == Application.dataPath) { filePath = Application.persistentDataPath + pathChar; };
-            filePath = Directory.GetCurrentDirectory();
+            if (filePath.Length < 1) { Debug.Log("TRUE"); filePath = Directory.GetCurrentDirectory(); }
             break;
         default:
             Debug.LogError("You are not using a supported platform");
@@ -625,14 +625,15 @@ public function SetGameObject (go : GameObject) {
 public function OpenFileWindow ( path : String ) {
     if (fileWindowOpen) return;
     if (path != "") {
-        switch (Application.platform) {
-            case RuntimePlatform.WindowsEditor:
-                filePath = path + "\\";
-                break;
-            case RuntimePlatform.Android:
-                filePath = path + "/";
-                break;
-        }
+//        switch (Application.platform) {
+//            case RuntimePlatform.WindowsEditor:
+//                filePath = path + "\\";
+//                break;
+//            case RuntimePlatform.Android:
+//                filePath = path + "/";
+//                break;
+//        }
+        filePath = path;
     }
 
     showFiles = true;
@@ -666,7 +667,7 @@ private function ShowFileWindow () {
 
 public function CloseFileWindow () {
     if (showMessageWindow) return;	// Don't let window close if error/confirm window is open
-
+    PlayerPrefs.SetString("filePath", filePath);
     fileWindowOpen = false;
     selectedFileNumber = oldSelectedFileNumber = -1;
     fileName = "";
