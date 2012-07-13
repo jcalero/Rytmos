@@ -59,7 +59,7 @@ public class PulseSender : MonoBehaviour {
 	
 	void MainPulse() {
 		//If holding the second finger, increase timer and decrease energy
-        if (Input.GetMouseButton(1) && held) {
+        if (Input.GetMouseButton(1) && held && CurrentColor != Color.white) {
             timer += Time.deltaTime;
             if (timer > pulseBackEnergyRate) {
                 if (Player.energy > 1)

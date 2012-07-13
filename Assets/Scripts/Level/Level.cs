@@ -285,9 +285,9 @@ public class Level : MonoBehaviour {
 		case 1:
 			return Color.cyan;
 		case 2:
-			return Color.yellow;
-		case 3:
 			return Color.red;
+		case 3:
+			return Color.yellow;
 		case 4:
 			return Level.purple;
 		case 5:

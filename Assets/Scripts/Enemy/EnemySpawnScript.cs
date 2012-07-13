@@ -123,7 +123,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 				switch (channel) {
 				case 0:
 					// This is the bass frequency, used for spawning enemies (for now at least)
-					Level.SetUpParticlesFeedback(spawnPositions.Length, currentlySelectedEnemy);
+					
 					//Find magnitude of the furthest away
 					float maxMag = 0;
 					if(Game.SyncMode) {
@@ -142,6 +142,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 						if(Game.PowerupActive==Game.Powerups.ChangeColor) currentlySelectedEnemy = enemySelectedByPowerup;									
 						SpawnEnemy(currentlySelectedEnemy,loudFlag? speed : speed/2,spawnDist);
 					}
+					Level.SetUpParticlesFeedback(spawnPositions.Length, currentlySelectedEnemy);
 					break;
 				case 1:
 					// These are more medium ranged frequencies, used to change the spawn position (for now at least)
@@ -156,7 +157,6 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 					break;
 				case 3:
 					// Some higher frequencies to change the currently spawned enemy
-					Level.SetUpParticlesFeedback(spawnPositions.Length, currentlySelectedEnemy);
 					changeEnemy(ref currentlySelectedEnemy);
 					break;
 				case 4:
