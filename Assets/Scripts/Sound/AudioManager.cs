@@ -101,7 +101,7 @@ public static class AudioManager
 				// Now that we have analyzed the song, we need to reset & initialize everything for playback
 				freader.reset ();
 				
-				audioBufferSize = (int)(channels * audioLength * frequency);
+				audioBufferSize = (int)(channels * Mathf.Ceil (audioLength) * frequency);
 				
 				Debug.Log (audioLength);
 				Debug.Log (frequency);
