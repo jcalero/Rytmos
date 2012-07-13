@@ -106,6 +106,7 @@ public static class AudioManager
 				FileWriter.writeAnalysisData (pathToMusicFile, peaks, loudPartTimeStamps);
 			}
 			
+			
 			// Now that we have analyzed the song, we need to reset & initialize everything for playback
 			freader.reset ();
 			audioBufferSize = freader.getFrameSize()*10;
