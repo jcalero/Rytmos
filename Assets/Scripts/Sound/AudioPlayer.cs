@@ -123,7 +123,7 @@ public class AudioPlayer : MonoBehaviour
 		}
 	}
 	
-	void OnDestroy() {
+	void OnApplicationQuit() {
 		if(Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WindowsEditor) {
 			AudioManager.clear ();
 		}
