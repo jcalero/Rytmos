@@ -32,11 +32,11 @@ public class DeathMatch : Level {
 		Player.maxEnergy = 100;
 		Player.ResetStats();
 		EnemyScript.energyReturn = 5;
+		StartCoroutine(DelayLabel());
 	}
 
 	void Update() {
 		// Shows the "Survive!" label for 5 seconds
-		StartCoroutine(DelayLabel());
 		
 		//If you invincible, display the words (TODO: Temporary fix, make more visual)
 		if(Game.PowerupActive == Game.Powerups.Invincible) {
