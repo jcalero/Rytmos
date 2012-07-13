@@ -43,8 +43,7 @@ public class AudioPlayer : MonoBehaviour
 		while (!AudioManager.isSongLoaded()) {
 		} // idlewait
 		
-#if UNITY_ANDROID 
-		if(Application.platform == RuntimePlatform.Android) {
+#if UNITY_ANDROID
 			AudioManager.closeMusicStream();
 			androidPlayer = new AndroidJavaObject("android.media.MediaPlayer",new object[]{});
 			androidPlayer.Call("setDataSource",new object[]{Game.Song});
