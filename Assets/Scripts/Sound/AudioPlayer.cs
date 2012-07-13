@@ -43,40 +43,41 @@ public class AudioPlayer : MonoBehaviour
 		while (!AudioManager.isSongLoaded()) {
 		} // idlewait
 		
+#if UNITY_ANDROID 
 		if(Application.platform == RuntimePlatform.Android) {
 			AudioManager.closeMusicStream();
 			androidPlayer = new AndroidJavaObject("android.media.MediaPlayer",new object[]{});
 			androidPlayer.Call("setDataSource",new object[]{Game.Song});
 			androidPlayer.Call("prepare",new object[]{});
 			playFlag = false;
-		} else {
-			currentSource = 0;
-			audioSources [0].clip = AudioManager.getAudioClip (1);
-			audioSources [1].clip = AudioManager.getAudioClip (2);
+#elif UNITY_STANDALONE_WIN
+		currentSource = 0;
+		audioSources [0].clip = AudioManager.getAudioClip (1);
+		audioSources [1].clip = AudioManager.getAudioClip (2);
 			
-			audioSources [0].velocityUpdateMode = AudioVelocityUpdateMode.Fixed;
-			audioSources [1].velocityUpdateMode = AudioVelocityUpdateMode.Fixed;
+		audioSources [0].velocityUpdateMode = AudioVelocityUpdateMode.Fixed;
+		audioSources [1].velocityUpdateMode = AudioVelocityUpdateMode.Fixed;
 	
-			bufferSource1 = false;
-			bufferSource2 = true;
+		bufferSource1 = false;
+		bufferSource2 = true;
 			
-			timer = 0f;
-			pauseSample = 0;
-			pauseFlag = false;
-			playFlag = true;
-		}
+		timer = 0f;
+		pauseSample = 0;
+		pauseFlag = false;
+		playFlag = true;
+#endif
+		
 	}
 	
 	// Start playing automatically, may want to get rid of it doing that..
 	void Start ()
 	{
-		if(Application.platform == RuntimePlatform.Android) {
-			androidPlayer.Call("start",new object[]{});
-				
-		} else {
-			playFlag = true;
-			audioSources [currentSource].Play ();
-		}
+#if UNITY_ANDROID
+		androidPlayer.Call ("start", new object[]{});
+#elif UNITY_STANDALONE_WIN
+		playFlag = true;
+		audioSources [currentSource].Play ();
+#endif	
 	}
 	
 	/// <summary>
@@ -115,29 +116,26 @@ public class AudioPlayer : MonoBehaviour
 	
 	public static float Pitch {
 		get {
-			if(audioSources[currentSource] != null) 
-			{
-				Debug.Log("returning: " + audioSources[currentSource].pitch);
-				return audioSources[currentSource].pitch;
-			}
-			else 
+			if (audioSources [currentSource] != null) {
+				Debug.Log ("returning: " + audioSources [currentSource].pitch);
+				return audioSources [currentSource].pitch;
+			} else 
 				return 0f;
 		}
-		set 
-		{ 
-			if (audioSources [currentSource] != null && audioSources[currentSource==1?0:1] != null)
-			{
-				Debug.Log("Setting: "+ value);
-				audioSources[currentSource].pitch = value;
-				audioSources[currentSource==1?0:1].pitch = value;
+		set { 
+			if (audioSources [currentSource] != null && audioSources [currentSource == 1 ? 0 : 1] != null) {
+				Debug.Log ("Setting: " + value);
+				audioSources [currentSource].pitch = value;
+				audioSources [currentSource == 1 ? 0 : 1].pitch = value;
 			}
 		}
 		
 	}
 	
-	public static void setPitch(float pitch) {
-		audioSources[currentSource].pitch = pitch;
-		audioSources[currentSource==1?0:1].pitch = 1f;
+	public static void setPitch (float pitch)
+	{
+		audioSources [currentSource].pitch = pitch;
+		audioSources [currentSource == 1 ? 0 : 1].pitch = 1f;
 	}
 	
 	/// <summary>
@@ -145,9 +143,9 @@ public class AudioPlayer : MonoBehaviour
 	/// </summary>
 	public static void play ()
 	{
-		if(Application.platform == RuntimePlatform.Android) {
-			androidPlayer.Call("start",new object[]{});
-		} else {
+#if UNITY_ANDROID 
+			androidPlayer.Call ("start", new object[]{});
+#elif UNITY_STANDALONE_WIN
 			if (audioSources [0] != null)
 				audioSources [0].Stop ();
 			if (audioSources [1] != null)
@@ -155,7 +153,8 @@ public class AudioPlayer : MonoBehaviour
 			reset ();
 			playFlag = true;
 			audioSources [currentSource].Play ();
-		}
+#endif
+		
 	}
 	
 	/// <summary>
@@ -163,9 +162,9 @@ public class AudioPlayer : MonoBehaviour
 	/// </summary>
 	public static void pause ()
 	{
-		if(Application.platform == RuntimePlatform.Android) {
-			androidPlayer.Call("pause",new object[]{});
-		} else {
+#if UNITY_ANDROID
+			androidPlayer.Call ("pause", new object[]{});
+#elif UNITY_STANDALONE_WIN
 			if (audioSources [0] != null && audioSources [1] != null) {
 				pauseFlag = true;
 				if (audioSources [currentSource].isPlaying) {
@@ -177,7 +176,8 @@ public class AudioPlayer : MonoBehaviour
 					pauseSample = audioSources [currentSource].timeSamples;
 				}
 			}
-		}
+#endif
+		
 	}
 	
 	/// <summary>
@@ -185,9 +185,9 @@ public class AudioPlayer : MonoBehaviour
 	/// </summary>
 	public static void resume ()
 	{
-		if(Application.platform == RuntimePlatform.Android) {
-			androidPlayer.Call("start",new object[]{});
-		} else {
+#if UNITY_ANDROID
+			androidPlayer.Call ("start", new object[]{});
+#elif UNITY_STANDALONE_WIN
 			if (audioSources [0] != null && audioSources [1] != null) {
 				if (pauseFlag) {
 					if (!audioSources [currentSource].isPlaying)
@@ -198,7 +198,7 @@ public class AudioPlayer : MonoBehaviour
 					pauseFlag = false;
 				}
 			}
-		}
+#endif		
 	}
 	
 	/// <summary>
@@ -206,9 +206,9 @@ public class AudioPlayer : MonoBehaviour
 	/// </summary>
 	private static void reset ()
 	{
-		if(Application.platform == RuntimePlatform.Android) {
-			androidPlayer.Call("stop",new object[]{});
-		} else {
+#if UNITY_ANDROID
+			androidPlayer.Call ("stop", new object[]{});
+#elif UNITY_STANDALONE_WIN
 			AudioManager.reset ();
 	
 			currentSource = 0;
@@ -225,12 +225,13 @@ public class AudioPlayer : MonoBehaviour
 			pauseSample = 0;
 			pauseFlag = false;
 			playFlag = false;
-		}
+#endif
 	}
 	
-	void OnDisable() {
-		if(Application.platform == RuntimePlatform.Android) {
-			androidPlayer.Call("stop",new object[]{});
-		}
+	void OnDisable ()
+	{
+#if UNITY_ANDROID
+			androidPlayer.Call ("stop", new object[]{});
+#endif
 	}
 }
