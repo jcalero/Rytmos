@@ -17,7 +17,7 @@ public class FileReader : DecoderInterface {
 	private int readDataPointer;
 	private int frequency;
 	private float audioLength;
-	private float[][] analData;
+	private float[][] rytData;
 	private int[] loudTriggers;
 	private MP3 mp3Reader;
 	private int channels;
@@ -75,7 +75,7 @@ public class FileReader : DecoderInterface {
 			this.mp3FrameSize = mp3Reader.getFrameSize();
 			break;
 		case FileFormat.RYT:
-			readAnalData();
+			readRytData();
 			break;
 		}
 		this.reading = false;
@@ -141,7 +141,7 @@ public class FileReader : DecoderInterface {
 	}
 	
 	public float[][] getPeaks() {
-		return this.analData;	
+		return this.rytData;	
 	}
 	
 	public int[] getLoudnessData() {
@@ -152,7 +152,7 @@ public class FileReader : DecoderInterface {
 		return this.channels;
 	}
 	
-	private void readAnalData() {
+	private void readRytData() {
 		StreamReader reader = new StreamReader(this.path);
 		List<float[]> channelData = new List<float[]>();
 		while(!reader.EndOfStream) {
@@ -190,7 +190,7 @@ public class FileReader : DecoderInterface {
 				this.loudTriggers = tempList.ToArray();
 			}	
 		}
-		this.analData = channelData.ToArray();
+		this.rytData = channelData.ToArray();
 	}
 	
 	private void readWAV() {
