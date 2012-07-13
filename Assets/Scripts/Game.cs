@@ -41,6 +41,9 @@ public class Game : MonoBehaviour {
         screenRight = -screenLeft;
         screenTop = -screenBottom;
         screenMiddle = 0f;
+		if(Application.platform == RuntimePlatform.WindowsEditor && filePath == null) 
+			filePath = ""; //"C:\\Users\\Scott\\Desktop\\test.mp3";
+		
     }
 
     void Start() {

@@ -101,8 +101,12 @@ public class Level : MonoBehaviour {
             particlesFeedback[5].transform.localPosition = new Vector3(Game.screenRight, Game.screenTop, 0); //Purple
         }
         */
-
     }
+	
+	public static void SetUpParticlesFeedback(int particleNum, Vector3 position) {
+		Instance.particlesFeedback[particleNum].transform.localPosition = position;
+		Instance.particlesFeedback[particleNum].GetComponent<ParticleSystem>().startColor = Color.white;
+	}
 
     //private void SetUpBorderLineFeedback() {
     //    /*
