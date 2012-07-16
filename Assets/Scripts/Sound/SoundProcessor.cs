@@ -172,7 +172,7 @@ public class SoundProcessor
 		
 //		float rollingAverage = min + 0.5f*(max-min);
 		float rollingAverage = 0.01f;
-		float alpha = 0.5f;		
+		float alpha = 0.85f;		
 		int sampleCounter = 0;
 		int activePart = -1;
 		float currentMax = 0f;
@@ -189,7 +189,7 @@ public class SoundProcessor
 			rollingAverage = (alpha * avg) + ((1-alpha) * rollingAverage);
 			
 			// Have we found a part which classifies as extremely loud?
-			if(rollingAverage > 0.125f) {
+			if(rollingAverage > 0.2f) {
 				
 				// Are we already in that part?
 				if(activePart != 4) {

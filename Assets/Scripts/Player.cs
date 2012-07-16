@@ -350,6 +350,10 @@ public class Player : MonoBehaviour,PeakListener {
 	}
 	
 	public void setLoudFlag(int flag) {}
+	
+	void OnDisable() {
+		PeakTriggerManager.removeSelfFromListenerList(this);	
+	}
 
     /// <summary>
     /// Reset the player stats to default values

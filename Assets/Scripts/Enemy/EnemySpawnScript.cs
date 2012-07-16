@@ -100,7 +100,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		timer = 0f;
 		timers = new float[AudioManager.peaks.Length];
 		spawnRestrictors = new int[AudioManager.peaks.Length];
-		spawnDivisors = new int[]{2,2,8,2,2,2};
+		spawnDivisors = new int[]{2,1,8,2,2,2};
 		spawnPositions = new int[]{0, 33, 66};
 	
 		currentlySelectedEnemy = 0;
@@ -148,8 +148,9 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 				case 1:
 					// These are more medium ranged frequencies, used to change the spawn position (for now at least)
 					for (int i = 0; i < spawnPositions.Length; i++) {
-						incrementSpawnPosition(ref spawnPositions[i],10,rotateDirection);
-					}								
+						incrementSpawnPosition(ref spawnPositions[i],3,rotateDirection);
+					}
+					Level.SetUpParticlesFeedback(spawnPositions.Length, currentlySelectedEnemy);
 					break;
 				case 2:
 					// These are even more medium ranged frequencies, used to change the direction (for now, again :P )
@@ -265,6 +266,10 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		}
 		return new Vector3(xpos, ypos, 0);	
 	}	
+	
+	void OnDisable () {
+		PeakTriggerManager.removeSelfFromListenerList(this);	
+	}
 
 	/// <summary>
 	/// Restarts the Invoke method to allow new spawn rates to be initialised
