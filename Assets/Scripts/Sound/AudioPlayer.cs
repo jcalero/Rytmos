@@ -15,11 +15,12 @@ public class AudioPlayer : MonoBehaviour
 	private static AudioSource[] audioSources;	// The two audiosources attached to the gameObject this class is attached to
 	private static float timer;					// Timer which is used to check if the song has finished playing!
 	private static AndroidJavaObject androidPlayer;
+	private static IntPtr playerPointer;
 	#endregion
 	
 	void Awake ()
 	{
-		
+		Debug.Log("awake");
 		audioSources = gameObject.GetComponentsInChildren<AudioSource> (); // get references to audiosources
 		
 		// Check whether we want to load in a song (Game.Song is set) or use one which has been provided as an asset
@@ -37,6 +38,7 @@ public class AudioPlayer : MonoBehaviour
 
 		if(Application.platform == RuntimePlatform.Android) {
 			androidPlayer = new AndroidJavaObject("android.media.MediaPlayer",new object[]{});
+			playerPointer = androidPlayer.GetRawObject();
 			androidPlayer.Call("setDataSource",new object[]{Game.Song});
 			androidPlayer.Call("prepare",new object[]{});
 		}else if(Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WindowsEditor) {
@@ -115,10 +117,13 @@ public class AudioPlayer : MonoBehaviour
 	
 	void OnDisable ()
 	{
+		Debug.Log("ondisable");
 		if(Application.platform == RuntimePlatform.Android) {
 			androidPlayer.Call ("stop", new object[]{});
+			androidPlayer.Call ("reset", new object[]{});
 			androidPlayer.Call ("release", new object[]{});
 			androidPlayer.Dispose();
+			playerPointer = null;
 			androidPlayer = null;
 		}
 	}
