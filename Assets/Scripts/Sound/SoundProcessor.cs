@@ -157,24 +157,29 @@ public class SoundProcessor
 		decoder.reset();
 		
 		List<int> volumeLevels = new List<int>();
-		float[] samples = new float[AudioManager.frequency/2];
-		float max = -1;
-		float min = 2; // amplitudes are between 0 and 1
-		
-		while(decoder.readSamples(ref samples) > 0) {
-			foreach(float sample in samples) {
-				if(Mathf.Abs(sample) > max) max = sample;
-				if(Mathf.Abs(sample) < min) min = sample;
-			}
-		}
+		float[] samples = new float[AudioManager.frameSize*AudioManager.channels*2];
+//		float max = -1;
+//		float min = 2; // amplitudes are between 0 and 1
+//		
+//		while(decoder.readSamples(ref samples) > 0) {
+//			foreach(float sample in samples) {
+//				if(Mathf.Abs(sample) > max) max = sample;
+//				if(Mathf.Abs(sample) < min) min = sample;
+//			}
+//		}
 		
 		decoder.reset();
 		
-		float rollingAverage = min + 0.5f*(max-min);
+//		float rollingAverage = min + 0.5f*(max-min);
+		float rollingAverage = 0.01f;
 		float alpha = 0.5f;		
 		int sampleCounter = 0;
 		int activePart = -1;
+		float currentMax = 0f;
 		while(decoder.readSamples(ref samples) > 0) {
+			currentMax = -1f;
+//			foreach(float sample in samples) if(Mathf.Abs(sample) > currentMax) currentMax = sample;
+			
 			float avg = 0;
 			foreach(float sample in samples) {
 				avg+=Mathf.Abs(sample);
@@ -184,7 +189,7 @@ public class SoundProcessor
 			rollingAverage = (alpha * avg) + ((1-alpha) * rollingAverage);
 			
 			// Have we found a part which classifies as extremely loud?
-			if(rollingAverage > min + 0.90f*(max - min)) {
+			if(rollingAverage > 0.125f) {
 				
 				// Are we already in that part?
 				if(activePart != 4) {
@@ -194,7 +199,7 @@ public class SoundProcessor
 				}
 			
 			// Have we found a part which classifies as pretty loud?
-			} else if (rollingAverage > min + 0.70f*(max - min)) {
+			} else if (rollingAverage > 0.06f) {
 				
 				// Are we already in that part?
 				if(activePart != 3) {
@@ -204,7 +209,7 @@ public class SoundProcessor
 				}
 			
 			// Have we found a part which classifies as pretty normal?
-			} else if (rollingAverage > min + 0.25f*(max - min)) {
+			} else if (rollingAverage > 0.0158f) {
 				
 				// Are we already in that part?
 				if(activePart != 2) {
@@ -214,7 +219,7 @@ public class SoundProcessor
 				}
 			
 			// Have we found a part which classifies as pretty quiet?
-			} else if (rollingAverage > min + 0.1f*(max - min)) {
+			} else if (rollingAverage > 0.0015f) {
 				
 				// Are we already in that part?
 				if(activePart != 1) {
@@ -224,16 +229,17 @@ public class SoundProcessor
 				}
 			
 			// Have we found a part which classifies as very quiet?
+			// Below 40db (== below 0.06f amplitude)
 			} else {
 
 				// Are we already in that part?
 				if(activePart != 0) {
+					Debug.Log(20*Mathf.Log10(rollingAverage));
 					activePart = 0; // Set flag that we are now in that part
 					volumeLevels.Add(sampleCounter*samples.Length);
 					volumeLevels.Add(activePart);
 				}
 			}
-			
 			sampleCounter++;
 			
 		}

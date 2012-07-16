@@ -18,6 +18,7 @@ public static class AudioManager
 	public static int channels;					// Number of channels in the music file
 	public static float audioLength;			// Total length in seconds (float) of the music file
 	public static int audioBufferSize;			// How many samples we want to store in each buffer
+	public static int frameSize;
 	#endregion
 	
 	#region private vars
@@ -52,6 +53,10 @@ public static class AudioManager
 		} else {			
 			// Read Audio Data/Initialize everything to read on the fly
 			float start = Time.realtimeSinceStartup;
+			if(freader!=null) {
+				freader.close();
+				freader = null;
+			}
 			freader = new FileReader (pathToMusicFile);
 			FileReader.ReadStatus success = freader.read ();
 			while (freader.isReading()) {
@@ -66,6 +71,7 @@ public static class AudioManager
 			channels = freader.getChannels ();
 			audioLength = freader.getAudioLengthInSecs ();
 			currentlyLoadedSong = pathToMusicFile;
+			frameSize = freader.getFrameSize();
 			
 			start = Time.realtimeSinceStartup;
 			

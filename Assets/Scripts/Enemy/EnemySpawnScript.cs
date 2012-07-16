@@ -110,7 +110,8 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	}
 	
 	public void setLoudFlag(int flag) {
-		loudFlag = flag;		
+		loudFlag = flag;
+		Debug.Log("loudnesslevel: " + flag);
 	}
 	
 	public void onPeakTrigger(int channel) {
