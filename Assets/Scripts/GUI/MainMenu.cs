@@ -84,7 +84,7 @@ public class MainMenu : MonoBehaviour {
 	private IEnumerator fetchScores(string artist, string song, Game.Mode gameMode) {
 		yield return StartCoroutine(HSController.GetScoresNew(artist, song, gameMode));
 		foreach (string[] row in HSController.ScoresList) {
-			Debug.Log(row[0] + " :: " + row[1]);
+			//Debug.Log(row[0] + " :: " + row[1]);
 		}
 	}
 
@@ -97,7 +97,7 @@ public class MainMenu : MonoBehaviour {
 		panel.currentMomentum = Vector3.zero;
 		// Begin spring motion
 		SpringPanel.Begin(panel.gameObject, modeMenu, 13f);
-		StartCoroutine(fetchScores("artista", "song", Game.Mode.DeathMatch));
+		//StartCoroutine(fetchScores("artista", "song", Game.Mode.DeathMatch));
 	}
 
 	/// <summary>
@@ -119,7 +119,7 @@ public class MainMenu : MonoBehaviour {
 		// Begin spring motion
 		SpringPanel.Begin(panel.gameObject, optionsMenu, 13f);
 
-		StartCoroutine(HSController.PostScoresNew("Masddasda", 2222, "artista", "song", Game.Mode.DeathMatch));
+		//StartCoroutine(HSController.PostScoresNew("Masddasda", 2222, "artista", "song", Game.Mode.DeathMatch));
 	}
 
 	/// <summary>
