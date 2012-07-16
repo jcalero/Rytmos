@@ -73,8 +73,8 @@ public class EnemyScript : MonoBehaviour {
 			if (otherObject.gameObject.GetComponent<PulseSender>().CurrentColor == MainColor ||
 				otherObject.gameObject.GetComponent<PulseSender>().SecondaryColor == MainColor ||
 				otherObject.gameObject.GetComponent<PulseSender>().CurrentColor == Color.white) {
-				if(otherObject.gameObject.GetComponent<PulseSender>().CurrentColor != Color.white)
-					Player.score += 10;
+				//if(otherObject.gameObject.GetComponent<PulseSender>().CurrentColor != Color.white)
+				Player.score += 10;
 				//CreateExplosion();
 				StartCoroutine(DamageEnemy());
 				

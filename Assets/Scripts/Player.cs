@@ -22,6 +22,8 @@ public class Player : MonoBehaviour,PeakListener {
 	public static bool takenPowerup = false;	// If the player takes the powerup from the screne
 
     public GameObject pulsePrefab;              // The pulse. Inspector reference. Location: Player
+	public GameObject powerupPrefab; 			// The powerup. Inspector refernce. Location: PLayer
+	
     private float energyTimer = 0;              // Timer for energy regeneration
 	private float pwTimer = 0;					// Timer for current invincibility duration
 	private readonly float pwTotalTime = 10f;	// Total time for invincibility to last
@@ -34,7 +36,8 @@ public class Player : MonoBehaviour,PeakListener {
 	
     private int pulseCost = 10;                 // Cost of a pulse
     private float energyRegenRate = 0.5f;       // The rate at which the energy regenerates. Lower is faster.
-	private int superPulseCount = 4;			// Counter for the amount of invincible pulses
+	private readonly int totalSuperpulses = 1;
+	private int superPulseCount;	// Counter for the amount of invincible pulses
 		
 	
 	public GameObject[] players = new GameObject[3];
@@ -44,15 +47,14 @@ public class Player : MonoBehaviour,PeakListener {
 
     #region Functions
     void Start() {
+		superPulseCount = totalSuperpulses;
         // Resets player stats at the start of a level
 		for(int i=0; i<players.Length; i++) {
 			meshRenders[i] = players[i].GetComponent<MeshRenderer>();
 		}
 		//TODO: Make this relative to how many rings in the player we have
 		playerColor = new Color[]{new Color(1,1,1,0), new Color(1,1,1,0), new Color(1,1,1,0)};
-		
 		PeakTriggerManager.addSelfToListenerList(this);
-		
         ResetStats();
     }
 
@@ -61,7 +63,6 @@ public class Player : MonoBehaviour,PeakListener {
             // If the player clicks, and has enough energy, sends out a pulse
 			if (Input.GetMouseButtonDown(0)) 
             	clickOnScreen();
-			
 
 			
 			//If you have the invincibility, singleColor or chainPulse powerups, increment its personal timer
@@ -86,34 +87,34 @@ public class Player : MonoBehaviour,PeakListener {
 			
 			if(Game.PowerupActive == Game.Powerups.ChainReaction) {
 				meshRenders[0].material.SetColor("_Color", Color.white);
-				meshRenders[1].material.SetColor("_Color", new Color(1,1,1,0f));
+				meshRenders[1].material.SetColor("_Color", new Color(1,1,1,.3f));
 				meshRenders[2].material.SetColor ("_Color", Color.white);
-			} else if (Game.PowerupActive == Game.Powerups.MassivePulse && superPulseCount > 1) {
-				meshRenders[0].material.SetColor("_Color", Color.white);
-				meshRenders[1].material.SetColor("_Color", new Color(1,1,1,0.3f));
-				if(superPulseCount > 2) {
+			} else if (Game.PowerupActive == Game.Powerups.MassivePulse) {
+				if(superPulseCount == 0) {
+					//Used for animating the ring when the player sends a pulse	
+					if(sentPulse) sentPulse = animRing(true, true, .1f, .1f, .3f, .3f, 1f);
+					else if(sentPulseTwo) sentPulseTwo = animRing (false, false, .1f, .1f, .3f, 1f, .3f);
+					if(!sentPulse && !sentPulseTwo) {
+						if(glowAnimOut) glowAnimOut = animRing(true, false, .1f, .1f, .3f, .3f, 1f);
+						else if(glowAnimIn) glowAnimIn = animRing(false, false, .1f, .1f, .3f, 1f, .3f);
+					}
+				} else {
+					meshRenders[0].material.SetColor("_Color", new Color(1,1,1,.3f));
 					meshRenders[1].material.SetColor("_Color", Color.white);
-					meshRenders[2].material.SetColor("_Color", new Color(1,1,1,0.3f));
+					meshRenders[2].material.SetColor("_Color", new Color(1,1,1,.3f));
 				}
-				if(superPulseCount > 3) meshRenders[2].material.SetColor("_Color", Color.white);
-			} 
-			
-			else if(Game.PowerupActive == Game.Powerups.ChangeColor) {
+			} else if(Game.PowerupActive == Game.Powerups.ChangeColor) {
 				Color selected = Level.singleColourSelect(EnemySpawnScript.currentlySelectedEnemy);
 				if(sentPulse) sentPulse = animRing(true, true, .1f, .1f, .3f, .3f, .3f, .3f, 1f, selected);
 				else if(sentPulseTwo) sentPulseTwo = animRing (false, false, .1f, .1f, .3f, .3f, .3f, 1f, .3f, selected);
-				
-				//TODO: Show what happens when you don't set glowAnimIn to true
 				if(!sentPulse && !sentPulseTwo) {
 					if(glowAnimOut) glowAnimOut = animRing(true, false, .1f, .1f, .3f, .3f, .3f, .3f, 1f, selected);
 					else if(glowAnimIn) glowAnimIn = animRing(false, false, .1f, .1f, .3f, .3f, .3f, 1f, .3f, selected);
 				}
-			}	//Used for animating the ring when the player sends a pulse		
-			else {
+			} else {
+				//Used for animating the ring when the player sends a pulse	
 				if(sentPulse) sentPulse = animRing(true, true, .1f, .1f, .3f, .3f, 1f);
 				else if(sentPulseTwo) sentPulseTwo = animRing (false, false, .1f, .1f, .3f, 1f, .3f);
-				
-				//TODO: Show what happens when you don't set glowAnimIn to true
 				if(!sentPulse && !sentPulseTwo) {
 					if(glowAnimOut) glowAnimOut = animRing(true, false, .1f, .1f, .3f, .3f, 1f);
 					else if(glowAnimIn) glowAnimIn = animRing(false, false, .1f, .1f, .3f, 1f, .3f);
@@ -137,65 +138,61 @@ public class Player : MonoBehaviour,PeakListener {
 		Ray ray = Camera.main.ScreenPointToRay (Input.mousePosition);
    		RaycastHit hit = new RaycastHit();
 		if(Physics.Raycast(new Vector3(ray.origin.x, ray.origin.y, -10), new Vector3(0,0,1), out hit, 10.0f)) {
-				if(hit.collider.name == "PlayerTouchFeedback") {
-					if(hasPowerup) {
-						int choice = Random.Range(0,4);
-						switch(choice) {
-						case 0:
-							Debug.Log ("Massive Pulse Activated!");
-							Game.PowerupActive = Game.Powerups.MassivePulse;
-							hasPowerup = false;
-							break;
-						case 1:
-							Debug.Log ("Invicibility Activated!");
-							pwTimer = 0;
-							Game.PowerupActive = Game.Powerups.Invincible;
-							hasPowerup = false;
-							break;
-						case 2:
-							Debug.Log ("Single Colour Enemies Activated!");
-							pwTimer = 0;
-							Game.PowerupActive = Game.Powerups.ChangeColor;
-							hasPowerup = false;
-							break;
-						case 3:
-							Debug.Log ("Chain Reaction Activated!");
-							pwTimer = 0;
-							Game.PowerupActive = Game.Powerups.ChainReaction;
-							hasPowerup = false;
-							break;
-						default:
-							Debug.Log ("Powerup Failed...");
-							Game.PowerupActive = Game.Powerups.None;
-							hasPowerup = false;
-							break;
-						}
-					}
-				} else if(hit.collider.name == "Powerup(Clone)") {
-					hasPowerup = true;
-					takenPowerup = true;
-				} else if(energy - pulseCost >= 0) {
-					// Show the touch sprite at the mouse location.
-	               	Level.ShowTouchSprite(new Vector3(ray.origin.x, ray.origin.y, 0));
-	                // Create a pulse and trigger animation
-	                Instantiate(pulsePrefab, Vector3.zero, pulsePrefab.transform.localRotation);
-					sentPulse = true;
-					resetGlowTimers();
-	                // Reduce the player energy if not a superpulse
-					if(Game.PowerupActive != Game.Powerups.MassivePulse) {
-						energy -= pulseCost;
-						superPulseCount = 4;
+			if(hit.collider.name == "PlayerTouchFeedback") {
+				if(hasPowerup) {
+					Game.Powerups pwup = powerupPrefab.GetComponent<PowerupScript>().Powerup();
+					if(pwup == Game.Powerups.MassivePulse) {
+						Debug.Log ("Massive Pulse Activated!");
+						Game.PowerupActive = Game.Powerups.MassivePulse;
+						Instantiate(pulsePrefab, Vector3.zero, pulsePrefab.transform.localRotation);
+						superPulseCount = 0;
+						hasPowerup = false;
+					} else if (pwup == Game.Powerups.ChainReaction) {
+						Debug.Log ("Chain Reaction Activated!");
+						pwTimer = 0;
+						Game.PowerupActive = Game.Powerups.ChainReaction;
+						hasPowerup = false;
+					} else if (pwup == Game.Powerups.ChangeColor) {
+						Debug.Log ("Single Colour Enemies Activated!");
+						pwTimer = 0;
+						Game.PowerupActive = Game.Powerups.ChangeColor;
+						hasPowerup = false;
+					} else if (pwup == Game.Powerups.Invincible) {
+						Debug.Log ("Invicibility Activated!");
+						pwTimer = 0;
+						Game.PowerupActive = Game.Powerups.Invincible;
+						hasPowerup = false;
 					} else {
-						//Only allow 3 superpulses
-						superPulseCount--;
-						if(superPulseCount == 0) {
-							Game.PowerupActive = Game.Powerups.None;
-							hasPowerup = false;
-							energy -= pulseCost;
-							superPulseCount = 4;
-						}
+						Debug.Log ("Powerup failed");
+						Game.PowerupActive = Game.Powerups.None;
+						hasPowerup = false;
+					}
 				}
-			}
+			} else if(hit.collider.name == "Powerup") {
+				hasPowerup = true;
+				takenPowerup = true;
+			} else if(energy - pulseCost >= 0) {
+				// Show the touch sprite at the mouse location.
+	          	Level.ShowTouchSprite(new Vector3(ray.origin.x, ray.origin.y, 0));
+	            // Create a pulse and trigger animation
+	            Instantiate(pulsePrefab, Vector3.zero, pulsePrefab.transform.localRotation);
+				sentPulse = true;
+				resetGlowTimers();
+	            // Reduce the player energy if not a superpulse
+				if(Game.PowerupActive != Game.Powerups.MassivePulse) {
+					energy -= pulseCost;
+					superPulseCount = totalSuperpulses;
+				} else {
+					//Only allow 1 superpulses
+					if(superPulseCount == 0) {
+						Game.PowerupActive = Game.Powerups.None;
+						hasPowerup = false;
+						energy -= pulseCost;
+						superPulseCount = totalSuperpulses;
+					}
+					superPulseCount--;
+				}
+			}	
 		}
 	}
 	

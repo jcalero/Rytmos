@@ -3,7 +3,9 @@ using System.Collections;
 
 public class PowerupScript : MonoBehaviour {
     public UIAtlas SpriteAtlas;
-
+	public GameObject powerupManager;
+	private Game.Powerups pw;
+	
 	
 	private string spriteName = "default";
     private int left;
@@ -22,7 +24,8 @@ public class PowerupScript : MonoBehaviour {
 	private bool spawned;
 	// Use this for initialization
 	void Awake () {
-		spriteManager = GameObject.Find("PowerupManager").GetComponent<LinkedSpriteManager>();
+		pw = Game.Powerups.None;
+		spriteManager = powerupManager.GetComponent<LinkedSpriteManager>();
         spriteName = "Powerup";
 		spawned = true;
         // Checks that the sprite name exists in the atlas, if not falls back to default sprite
@@ -35,6 +38,11 @@ public class PowerupScript : MonoBehaviour {
         CalculateSprite(SpriteAtlas, spriteName);
         // Add sprite to game object
         powerup = spriteManager.AddSprite(gameObject, UVWidth, UVHeight, left, bottom, width, height, false);
+		
+		//Move object 
+		Vector3 spawnPos = randomPos();
+		Level.SetUpParticlesFeedback(4, spawnPos);
+		gameObject.transform.localPosition = spawnPos;
 		
 	}
 	
@@ -64,7 +72,37 @@ public class PowerupScript : MonoBehaviour {
 			//If the powerup is not on the screen, move it to a random position and set the timer to be the screenTime
 			else {
 				Vector3 spawnPos = randomPos();
-				moveSprite(spawnPos);
+				//Here, we assign the powerup - this will be moved below once we have graphics
+				int choice = Random.Range(0,4);
+				Color c;
+				switch(choice) {
+				case 0:
+					Debug.Log ("Massive Pulse Spawned!");
+					pw = Game.Powerups.MassivePulse;
+					c = Color.white;
+					break;
+				case 1:
+					Debug.Log ("Invicibility Spawned!");
+					pw = Game.Powerups.Invincible;
+					c = Color.magenta;
+					break;
+				case 2:
+					Debug.Log ("Single Colour Enemies Spawned!");
+					pw = Game.Powerups.ChangeColor;
+					c = Color.grey;
+					break;
+				case 3:
+					Debug.Log ("Chain Reaction Spawned!");
+					pw = Game.Powerups.ChainReaction;
+					c = Color.black;
+					break;
+				default:
+					Debug.Log ("Powerup Failed...");
+					c = Color.white;
+					pw = Game.Powerups.None;
+					break;
+				}
+				moveSprite(spawnPos,c);
 				spawned = true;
 				totalTimer = screenTime;
 			}
@@ -102,6 +140,11 @@ public class PowerupScript : MonoBehaviour {
 		Level.SetUpParticlesFeedback(4, movePos);
 	}
 	
+	private void moveSprite(Vector3 movePos, Color c) {
+		gameObject.transform.localPosition = movePos;
+		Level.SetUpParticlesFeedback(4, movePos, c);
+	}
+	
 	private Vector3 randomPos() {
 		float x = Random.Range (1, Game.screenRight-1);
 		float y = Random.Range (1, Game.screenTop-1);
@@ -110,6 +153,10 @@ public class PowerupScript : MonoBehaviour {
 		neg = Random.Range (0, 2);
 		if(neg==0) y = -y;
 		return new Vector3(x,y,0);
+	}
+	
+	public Game.Powerups Powerup() {
+		return pw;
 	}
     
 }

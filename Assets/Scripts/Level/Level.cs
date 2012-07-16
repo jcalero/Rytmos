@@ -39,6 +39,7 @@ public class Level : MonoBehaviour {
 		Instance = this;
 		spriteManagerScript = spriteManager.GetComponent<LinkedSpriteManager>();
 		bgSpriteManagerScript = bgSpriteManager.GetComponent<SpriteManager>();
+		Game.PowerupActive = Game.Powerups.None;
 	}
 
 	protected virtual void Start() {
@@ -106,6 +107,11 @@ public class Level : MonoBehaviour {
 	public static void SetUpParticlesFeedback(int particleNum, Vector3 position) {
 		Instance.particlesFeedback[particleNum].transform.localPosition = position;
 		Instance.particlesFeedback[particleNum].GetComponent<ParticleSystem>().startColor = Color.white;
+	}
+	
+	public static void SetUpParticlesFeedback(int particleNum, Vector3 position, Color c) {
+		Instance.particlesFeedback[particleNum].transform.localPosition = position;
+		Instance.particlesFeedback[particleNum].GetComponent<ParticleSystem>().startColor = c;
 	}
 
 	//private void SetUpBorderLineFeedback() {
