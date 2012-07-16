@@ -10,7 +10,7 @@ public class PeakTriggerManager : MonoBehaviour
 	private int loudPartCounter;											// Iterator for the loud parts
 	private float timer;													// Keep track of time
 	private int[] peakCounters;												// Iterator for the array of peaks
-	private bool loudFlag;													// Flag to check if we are in a loud part
+	private int loudFlag;													// Flag to check how loud the song currently is
 	#endregion
 	
 	// Init
@@ -19,7 +19,7 @@ public class PeakTriggerManager : MonoBehaviour
 		peakCounters = new int[AudioManager.peaks.Length];
 		timer = 0f;		
 		loudPartCounter = 0;
-		loudFlag = false;
+		loudFlag = -1;
 	}
 	
 	/// <summary>
@@ -32,10 +32,10 @@ public class PeakTriggerManager : MonoBehaviour
 		
 		/* Update the flags for loud parts of a song */
 		if (loudPartCounter < AudioManager.loudPartTimeStamps.Length && AudioManager.loudPartTimeStamps [loudPartCounter] / (float)AudioManager.frequency < timer + 0.5f) {
-			loudFlag = !loudFlag;
+			loudFlag = AudioManager.loudPartTimeStamps[loudPartCounter+1];
 			foreach (PeakListener l in listeners)
 				l.setLoudFlag (loudFlag);
-			loudPartCounter++;			
+			loudPartCounter+=2;			
 		}
 		
 		// Iterate over every channel

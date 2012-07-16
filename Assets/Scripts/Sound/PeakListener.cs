@@ -11,5 +11,5 @@ public interface PeakListener
 	
 	void onPeakTrigger (int channel);
 
-	void setLoudFlag (bool flag);
+	void setLoudFlag (int flag);
 }

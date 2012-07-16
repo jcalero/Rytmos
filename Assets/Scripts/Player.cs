@@ -352,7 +352,7 @@ public class Player : MonoBehaviour,PeakListener {
 		if(!glowAnimOut && !glowAnimIn) glowAnimOut = true;
 	}
 	
-	public void setLoudFlag(bool flag) {}
+	public void setLoudFlag(int flag) {}
 
     /// <summary>
     /// Reset the player stats to default values

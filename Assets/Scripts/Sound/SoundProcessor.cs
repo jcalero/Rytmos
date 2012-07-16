@@ -172,8 +172,8 @@ public class SoundProcessor
 		
 		float rollingAverage = min + 0.5f*(max-min);
 		float alpha = 0.5f;		
-		bool alreadyInMax = false;
 		int sampleCounter = 0;
+		int activePart = -1;
 		while(decoder.readSamples(ref samples) > 0) {
 			float avg = 0;
 			foreach(float sample in samples) {
@@ -183,19 +183,55 @@ public class SoundProcessor
 			
 			rollingAverage = (alpha * avg) + ((1-alpha) * rollingAverage);
 			
-			// Have we found a part which classifies as "loud"?
-			if(rollingAverage > min + 0.1f*(max - min)) {
+			// Have we found a part which classifies as extremely loud?
+			if(rollingAverage > min + 0.90f*(max - min)) {
 				
-				// Are we already in a loud part?
-				if(!alreadyInMax) {
-					volumeLevels.Add(sampleCounter*samples.Length); // Add timestamp of hitting fast part
-					alreadyInMax = !alreadyInMax; // Set flag that we are now in a loud part
+				// Are we already in that part?
+				if(activePart != 4) {
+					activePart = 4; // Set flag that we are now in that part
+					volumeLevels.Add(sampleCounter*samples.Length);
+					volumeLevels.Add(activePart);
 				}
+			
+			// Have we found a part which classifies as pretty loud?
+			} else if (rollingAverage > min + 0.70f*(max - min)) {
 				
-			} else if(alreadyInMax) {
-				// We now left the loud part, add ending timestamp
-				volumeLevels.Add(sampleCounter*samples.Length);
-				alreadyInMax = !alreadyInMax; // Set flag
+				// Are we already in that part?
+				if(activePart != 3) {
+					activePart = 3; // Set flag that we are now in that part
+					volumeLevels.Add(sampleCounter*samples.Length);
+					volumeLevels.Add(activePart);
+				}
+			
+			// Have we found a part which classifies as pretty normal?
+			} else if (rollingAverage > min + 0.25f*(max - min)) {
+				
+				// Are we already in that part?
+				if(activePart != 2) {
+					activePart = 2; // Set flag that we are now in that part
+					volumeLevels.Add(sampleCounter*samples.Length);
+					volumeLevels.Add(activePart);
+				}
+			
+			// Have we found a part which classifies as pretty quiet?
+			} else if (rollingAverage > min + 0.1f*(max - min)) {
+				
+				// Are we already in that part?
+				if(activePart != 1) {
+					activePart = 1; // Set flag that we are now in that part
+					volumeLevels.Add(sampleCounter*samples.Length);
+					volumeLevels.Add(activePart);
+				}
+			
+			// Have we found a part which classifies as very quiet?
+			} else {
+
+				// Are we already in that part?
+				if(activePart != 0) {
+					activePart = 0; // Set flag that we are now in that part
+					volumeLevels.Add(sampleCounter*samples.Length);
+					volumeLevels.Add(activePart);
+				}
 			}
 			
 			sampleCounter++;

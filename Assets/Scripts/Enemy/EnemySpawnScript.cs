@@ -32,7 +32,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 
 	private int rotateDirection;
 	private int loudPartCounter;
-	public bool loudFlag;
+	public int loudFlag;
 	#endregion
 
 	#region Functions
@@ -106,10 +106,10 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		currentlySelectedEnemy = 0;
 		rotateDirection = 1;
 		Level.SetUpParticlesFeedback(spawnPositions.Length, currentlySelectedEnemy);		
-		loudFlag = false;
+		loudFlag = 0;
 	}
 	
-	public void setLoudFlag(bool flag) {
+	public void setLoudFlag(int flag) {
 		loudFlag = flag;		
 	}
 	
@@ -140,7 +140,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 						float speed = 3f;
 						if(Game.SyncMode) speed *= (spawnDist.magnitude)/maxMag;									
 						if(Game.PowerupActive==Game.Powerups.ChangeColor) currentlySelectedEnemy = enemySelectedByPowerup;									
-						SpawnEnemy(currentlySelectedEnemy,loudFlag? speed : speed/2,spawnDist);
+						SpawnEnemy(currentlySelectedEnemy,speed,spawnDist);
 					}
 					Level.SetUpParticlesFeedback(spawnPositions.Length, currentlySelectedEnemy);
 					break;
