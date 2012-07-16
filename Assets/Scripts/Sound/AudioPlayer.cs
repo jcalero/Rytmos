@@ -123,7 +123,7 @@ public class AudioPlayer : MonoBehaviour
 			androidPlayer.Call ("reset", new object[]{});
 			androidPlayer.Call ("release", new object[]{});
 			androidPlayer.Dispose();
-			playerPointer = null;
+			playerPointer = IntPtr.Zero;
 			androidPlayer = null;
 		}
 	}
