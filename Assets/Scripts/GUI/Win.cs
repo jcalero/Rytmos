@@ -1,6 +1,9 @@
 using UnityEngine;
 using System.Collections;
 using System.Text.RegularExpressions;
+using System.IO;
+using System.Collections.Generic;
+using System;
 /// <summary>
 /// Win.cs
 /// 2012-06-27
@@ -35,6 +38,8 @@ public class Win : MonoBehaviour {
 			errorLabel.transform.localPosition = new Vector3(errorLabel.transform.localPosition.x, errorLabel.transform.localPosition.y + 30, errorLabel.transform.localPosition.z);
 			errorLabel.text = "[FF2222]You cheater!";
 		}
+		if (PlayerPrefs.GetString("playername") != null)
+			nameInput.text = PlayerPrefs.GetString("playername");
 	}
 	/// <summary>
 	/// Returns the final calculated score after the end of the game.
@@ -83,11 +88,45 @@ public class Win : MonoBehaviour {
 			errorLabel.text = "[F87431]Invalid. Only letters & numbers allowed.";
 			return;
 		}
+		// Store the new player name
+		PlayerPrefs.SetString("playername", playerName);
+		// Store the song high score
+		string entryMD5 = MD5Utils.MD5FromString(Game.Artist + Game.SongName + Game.GameMode);
+		if (PlayerPrefs.GetInt(entryMD5) < CalculatedScore) PlayerPrefs.SetInt(entryMD5, CalculatedScore);
+		// Store the song in song list
+		string songRow = Game.Artist + "|" + Game.SongName + "|" + Game.GameMode.ToString();
+		string path = "";
+		bool songExists = false;
+		if (Application.platform == RuntimePlatform.Android)
+			path = (Application.persistentDataPath + "/songlist.r");
+		else if (Application.platform == RuntimePlatform.WindowsPlayer
+			|| Application.platform == RuntimePlatform.WindowsEditor)
+			path = (Application.persistentDataPath + "\\songlist.r");
+		else {
+			Debug.Log("PLATFORM NOT SUPPORTED YET");
+			path = "";
+		}
+		string line;
+		try {
+			using (StreamReader sr = new StreamReader(path)) {
+				while ((line = sr.ReadLine()) != null) {
+					if (line == songRow)
+						songExists = true;
+				}
+				sr.Close();
+			}
+		} catch (Exception) {
+		}
+		if (!songExists) {
+			StreamWriter sw = new StreamWriter(path, true);
+			sw.WriteLine(songRow);
+			sw.Close();
+		}
+
 		HideSubmitBox();                                        // Hide the submit box and button
-		if (Game.GameMode.Equals(Game.Mode.DeathMatch))
-			StartCoroutine(HSController.PostScores(playerName, CalculatedScore, "rytmos_hs_dm"));       // Submit the highscore to the DeathMatch DB
-		if (Game.GameMode.Equals(Game.Mode.TimeAttack))
-			StartCoroutine(HSController.PostScores(playerName, CalculatedScore, "rytmos_hs_30sec"));       // Submit the highscore to the TimeAttack DB
+
+		// Submit the highscore
+		StartCoroutine(HSController.PostScores(playerName, CalculatedScore, Game.Artist, Game.SongName, Game.GameMode));
 	}
 
 	void HideSubmitBox() {
