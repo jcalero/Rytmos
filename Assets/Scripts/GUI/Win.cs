@@ -91,15 +91,12 @@ public class Win : MonoBehaviour {
 		// Store the new player name
 		PlayerPrefs.SetString("playername", playerName);
 		// Store the song high score
-		//string md5Artist = HSController.RemoveSpecialCharacters(AudioManager.artist).ToLower();
-		//string md5Song = HSController.RemoveSpecialCharacters(AudioManager.title).ToLower();
-		//string entryMD5 = MD5Utils.MD5FromString(md5Artist + md5Song + Game.GameMode);
 		string localMD5 = HSController.CalculateTableName(AudioManager.artist, AudioManager.title, Game.GameMode);
 		if (PlayerPrefs.GetInt(localMD5) < CalculatedScore) PlayerPrefs.SetInt(localMD5, CalculatedScore);
 		// Fix song name and artist
 
 		// Store the song in song list
-		string songRow = RemovePipeChar(AudioManager.artist) + "|" + RemovePipeChar(AudioManager.title) + "|" + Game.GameMode.ToString();
+		string songRow = RemovePipeChar(AudioManager.artist).Trim() + "|" + RemovePipeChar(AudioManager.title).Trim() + "|" + Game.GameMode.ToString();
 		string path = "";
 		bool songExists = false;
 		if (Application.platform == RuntimePlatform.Android)
