@@ -51,13 +51,13 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		}
 		
 		//Only spawn enemies of a single color for a bit. 
-		if(Game.PowerupActive == Game.Powerups.ChangeColor) {
+		/*if(Game.PowerupActive == Game.Powerups.ChangeColor) {
 			if(resetColor) {
 				resetColor = false;
 				if(Level.fourColors) enemySelectedByPowerup = Random.Range(0,4);
 				else enemySelectedByPowerup = Random.Range(0,6);
 			}
-		} else resetColor = true;
+		} else resetColor = true;*/
 		
 //		if(Game.PowerupActive == Game.Powerups.TimeSlow) {
 //			if(Time.timeScale <= 1f) {
@@ -143,7 +143,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 						Vector3 spawnDist = findSpawnPositionVector(spawnPosition);
 						float speed = 3f;
 						if(Game.SyncMode) speed *= (spawnDist.magnitude)/maxMag;									
-						if(Game.PowerupActive==Game.Powerups.ChangeColor) currentlySelectedEnemy = enemySelectedByPowerup;									
+						//if(Game.PowerupActive==Game.Powerups.ChangeColor) currentlySelectedEnemy = enemySelectedByPowerup;									
 						SpawnEnemy(currentlySelectedEnemy,speed,spawnDist);
 					}
 					Level.SetUpParticlesFeedback(spawnPositions.Length, currentlySelectedEnemy);

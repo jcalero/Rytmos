@@ -38,7 +38,7 @@ public class Player : MonoBehaviour,PeakListener {
     private float energyRegenRate = 0.5f;       // The rate at which the energy regenerates. Lower is faster.
 	private readonly int totalSuperpulses = 1;
 	private int superPulseCount;	// Counter for the amount of invincible pulses
-		
+	private Game.Powerups playerpowerup;	
 	
 	public GameObject[] players = new GameObject[3];
 	private MeshRenderer[] meshRenders = new MeshRenderer[3];
@@ -140,24 +140,23 @@ public class Player : MonoBehaviour,PeakListener {
 		if(Physics.Raycast(new Vector3(ray.origin.x, ray.origin.y, -10), new Vector3(0,0,1), out hit, 10.0f)) {
 			if(hit.collider.name == "PlayerTouchFeedback") {
 				if(hasPowerup) {
-					Game.Powerups pwup = powerupPrefab.GetComponent<PowerupScript>().Powerup();
-					if(pwup == Game.Powerups.MassivePulse) {
+					if(playerpowerup == Game.Powerups.MassivePulse) {
 						Debug.Log ("Massive Pulse Activated!");
 						Game.PowerupActive = Game.Powerups.MassivePulse;
 						Instantiate(pulsePrefab, Vector3.zero, pulsePrefab.transform.localRotation);
 						superPulseCount = 0;
 						hasPowerup = false;
-					} else if (pwup == Game.Powerups.ChainReaction) {
+					} else if (playerpowerup == Game.Powerups.ChainReaction) {
 						Debug.Log ("Chain Reaction Activated!");
 						pwTimer = 0;
 						Game.PowerupActive = Game.Powerups.ChainReaction;
 						hasPowerup = false;
-					} else if (pwup == Game.Powerups.ChangeColor) {
+					} else if (playerpowerup == Game.Powerups.ChangeColor) {
 						Debug.Log ("Single Colour Enemies Activated!");
 						pwTimer = 0;
 						Game.PowerupActive = Game.Powerups.ChangeColor;
 						hasPowerup = false;
-					} else if (pwup == Game.Powerups.Invincible) {
+					} else if (playerpowerup == Game.Powerups.Invincible) {
 						Debug.Log ("Invicibility Activated!");
 						pwTimer = 0;
 						Game.PowerupActive = Game.Powerups.Invincible;
@@ -171,6 +170,7 @@ public class Player : MonoBehaviour,PeakListener {
 			} else if(hit.collider.name == "Powerup") {
 				hasPowerup = true;
 				takenPowerup = true;
+				playerpowerup = powerupPrefab.GetComponent<PowerupScript>().Powerup();
 			} else if(energy - pulseCost >= 0) {
 				// Show the touch sprite at the mouse location.
 	          	Level.ShowTouchSprite(new Vector3(ray.origin.x, ray.origin.y, 0));
