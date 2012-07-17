@@ -307,6 +307,11 @@ namespace SoundTouch
 		{
 			Buffer.Clear ();
 		}
+			
+		public int getWindowLen()
+		{
+			return WindowLen;
+		}
 
         /// <summary>
         /// Analyzes the results and returns the BPM rate. Use this function to
