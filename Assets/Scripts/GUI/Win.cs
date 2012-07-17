@@ -91,10 +91,15 @@ public class Win : MonoBehaviour {
 		// Store the new player name
 		PlayerPrefs.SetString("playername", playerName);
 		// Store the song high score
-		string entryMD5 = MD5Utils.MD5FromString(Game.Artist + Game.SongName + Game.GameMode);
-		if (PlayerPrefs.GetInt(entryMD5) < CalculatedScore) PlayerPrefs.SetInt(entryMD5, CalculatedScore);
+		//string md5Artist = HSController.RemoveSpecialCharacters(AudioManager.artist).ToLower();
+		//string md5Song = HSController.RemoveSpecialCharacters(AudioManager.title).ToLower();
+		//string entryMD5 = MD5Utils.MD5FromString(md5Artist + md5Song + Game.GameMode);
+		string localMD5 = HSController.CalculateTableName(AudioManager.artist, AudioManager.title, Game.GameMode);
+		if (PlayerPrefs.GetInt(localMD5) < CalculatedScore) PlayerPrefs.SetInt(localMD5, CalculatedScore);
+		// Fix song name and artist
+
 		// Store the song in song list
-		string songRow = Game.Artist + "|" + Game.SongName + "|" + Game.GameMode.ToString();
+		string songRow = RemovePipeChar(AudioManager.artist) + "|" + RemovePipeChar(AudioManager.title) + "|" + Game.GameMode.ToString();
 		string path = "";
 		bool songExists = false;
 		if (Application.platform == RuntimePlatform.Android)
@@ -110,7 +115,9 @@ public class Win : MonoBehaviour {
 		try {
 			using (StreamReader sr = new StreamReader(path)) {
 				while ((line = sr.ReadLine()) != null) {
-					if (line == songRow)
+					string lineClean = HSController.RemoveSpecialCharacters(line).ToLower();
+					string songRowClean = HSController.RemoveSpecialCharacters(songRow).ToLower();
+					if (lineClean == songRowClean)
 						songExists = true;
 				}
 				sr.Close();
@@ -126,7 +133,12 @@ public class Win : MonoBehaviour {
 		HideSubmitBox();                                        // Hide the submit box and button
 
 		// Submit the highscore
-		StartCoroutine(HSController.PostScores(playerName, CalculatedScore, Game.Artist, Game.SongName, Game.GameMode));
+		StartCoroutine(HSController.PostScores(playerName, CalculatedScore, AudioManager.artist, AudioManager.title, Game.GameMode));
+	}
+
+
+	public static string RemovePipeChar(string str) {
+		return str.Replace("|", "/");
 	}
 
 	void HideSubmitBox() {

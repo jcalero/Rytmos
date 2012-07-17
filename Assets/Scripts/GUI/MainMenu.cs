@@ -92,15 +92,20 @@ public class MainMenu : MonoBehaviour {
 		EnableReloadButton();
 	}
 	private IEnumerator fetchScores(string artist, string song, Game.Mode gameMode) {
-		string artistTemp = artist;
-		string songTemp = song;
-		string entryMD5 = MD5Utils.MD5FromString(artist + song + gameMode);
-		int topScore = PlayerPrefs.GetInt(entryMD5);
+		string artistDisplay = artist;
+		string songDisplay = song;
+		//string md5Artist = HSController.RemoveSpecialCharacters(artist).ToLower();
+		//string md5Song = HSController.RemoveSpecialCharacters(song).ToLower();
+		//string entryMD5 = MD5Utils.MD5FromString(md5Artist + md5Song + gameMode);
+		string localMD5 = HSController.CalculateTableName(artist, song, gameMode);
+		int topScore = PlayerPrefs.GetInt(localMD5);
 
-		if (artist.Length > 1) artistTemp = char.ToUpper(artist[0]) + artist.Substring(1);
-		if (song.Length > 1) songTemp = char.ToUpper(song[0]) + song.Substring(1);
+		//Debug.Log("This is what the data looks like before calculating fetch-MD5: " + md5Artist + " - " + md5Song + " - " + gameMode.ToString());
 
-		highscoresTypeLabel.text = artistTemp + " - " + songTemp + " (" + gameMode + ") ";
+		if (artist.Length > 1) artistDisplay = char.ToUpper(artist[0]) + artist.Substring(1);
+		if (song.Length > 1) songDisplay = char.ToUpper(song[0]) + song.Substring(1);
+
+		highscoresTypeLabel.text = artistDisplay + " - " + songDisplay + " (" + gameMode + ") ";
 		top5names[0].text = "Loading Top Scores...";
 		close5names[0].text = "Loading Close Scores...";
 		top5scores[0].text = "";
@@ -167,7 +172,6 @@ public class MainMenu : MonoBehaviour {
 		try {
 			using (StreamReader sr = new StreamReader(path)) {
 				while ((line = sr.ReadLine()) != null) {
-					//Debug.Log(line);
 					songList.Add(line);
 				}
 				sr.Close();

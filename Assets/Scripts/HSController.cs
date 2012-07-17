@@ -4,6 +4,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System;
+using System.Text.RegularExpressions;
 
 public class HSController : MonoBehaviour {
 	private string secretKey = "goldenck";   // Edit this value and make sure it's the same as the one stored on the server
@@ -52,11 +53,11 @@ public class HSController : MonoBehaviour {
 	// remember to use StartCoroutine when calling this function!
 	public static IEnumerator PostScores(string name, int score, string artist, string song, Game.Mode gameMode) {
 		//This connects to a server side php script that will add the name and score to a MySQL DB.
-		// Supply it with a string representing the players name and the players score.
-		string hash = MD5Utils.MD5FromString(name + score + instance.secretKey);
+
+		string cheatHash = MD5Utils.MD5FromString(name + score + instance.secretKey);
 		string table = CalculateTableName(artist, song, gameMode);
 
-		string post_url = instance.addScoreURL + "name=" + WWW.EscapeURL(name) + "&score=" + score + "&table=" + table + "&hash=" + hash;
+		string post_url = instance.addScoreURL + "name=" + WWW.EscapeURL(name) + "&score=" + score + "&table=" + table + "&hash=" + cheatHash;
 
 		instance.submittedLabel.text = "Submitting...";
 		// Post the URL to the site and create a download object to get the result.
@@ -73,8 +74,14 @@ public class HSController : MonoBehaviour {
 		}
 	}
 
+	public static string RemoveSpecialCharacters(string str) {
+		return Regex.Replace(str, "[^a-zA-Z0-9]+", "");
+	}
+
 	public static string CalculateTableName(string artist, string song, Game.Mode gameMode) {
-		return "hs_" + MD5Utils.MD5FromString(artist + song + gameMode.ToString());
+		string tmpArtist = HSController.RemoveSpecialCharacters(artist).ToLower();
+		string tmpSong = HSController.RemoveSpecialCharacters(song).ToLower();
+		return "hs_" + MD5Utils.MD5FromString(tmpArtist + tmpSong + gameMode.ToString());
 	}
 
 	public static IEnumerator GetTop5Scores(string artist, string song, Game.Mode gameMode) {

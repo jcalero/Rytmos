@@ -374,7 +374,7 @@ public class FileReader : DecoderInterface {
 				
 				txtArtist = new string (MP3Data.artist);
 				txtTitle = new string (MP3Data.title);
-				Debug.Log("v1: " + txtArtist);
+				Debug.Log("ID3v1 Data Found: " + txtArtist + " - " + txtTitle);
 				
 			} catch (ArgumentNullException e) {
 				Debug.Log ("No ID3v1 data: "+e.ToString());
@@ -391,6 +391,8 @@ public class FileReader : DecoderInterface {
 					
 					txtArtist = ptrArtist.p;
 					txtTitle = ptrTitle.p;
+
+					Debug.Log("ID3v2 Data Found: " + txtArtist + " - " + txtTitle);
 					
 				} catch (ArgumentNullException e) {
 					Debug.Log ("No ID3v2 data: "+e.ToString());
