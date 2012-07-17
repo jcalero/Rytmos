@@ -194,7 +194,7 @@ public class Level : MonoBehaviour {
 					}
 				}
 			} else {
-				if (angle > -35) {
+				if (angle > -45) {
 					//Blue - Bottom right
 					return Color.blue;
 				} else {
@@ -224,11 +224,11 @@ public class Level : MonoBehaviour {
 			return Color.red;
 		} else if (currAngle >= 60 && currAngle < 70) {
 			return Level.purple;
-		} else if ((currAngle > -35 && currAngle <= -25) || (currAngle > -155 && currAngle <= -135)) {
+		} else if ((currAngle > -45 && currAngle <= -35) || (currAngle > -155 && currAngle <= -145)) {
 			return Color.cyan;
 		} else if (currAngle > -145 && currAngle <= -135) {
 			return Color.green;
-		} else if (currAngle > -45 && currAngle <= -35) {
+		} else if (currAngle > -55 && currAngle <= -45) {
 			return Color.blue;
 		} else {
 			return Color.clear;
@@ -266,7 +266,7 @@ public class Level : MonoBehaviour {
 		int bandsize = 20;				//Size of the band where the transition happens (in degrees)
 		int totalsize = 180; 			//Size of half the circle - should not change
 		int cyanAdjust = 25;			//Size that cyan has been increased to match the visuals
-		
+		Color[] c = new Color[3];
 		/*
 		 * (cyan should be 120-60, but with cyanAdjust = 25, its 145-35 (transition occurs within those bounds)
 		 * Color reference chart:
@@ -301,12 +301,10 @@ public class Level : MonoBehaviour {
 			} else if (angle <= -(bandsize/2) && angle > -((totalsize/3) - (bandsize/2) - cyanAdjust)) {
 				return Color.blue;
 			} else if(angle <= -((totalsize/3) - (bandsize/2) - cyanAdjust) && angle > -(((totalsize/3) + (bandsize/2)) - cyanAdjust)) {
-				Debug.Log (angle);
 				return new Color(0, 1 - ((	((totalsize/3) + (bandsize/2) - cyanAdjust)+angle)/bandsize), 1, 1);
 			} else if(angle <= -(((totalsize/3) + (bandsize/2)) - cyanAdjust) && angle > -(((2*totalsize/3) - (bandsize/2)) + cyanAdjust)) {
 				return Color.cyan;
 			} else if(angle <= -(((2*totalsize/3) - (bandsize/2)) + cyanAdjust) && angle > -((2*totalsize/3) + (bandsize/2) + cyanAdjust)) {
-				Debug.Log (angle);
 				return new Color(0, 1,((((2*totalsize/3) + (bandsize/2) + cyanAdjust)+angle)/(bandsize)) ,1);				
 			} else if(angle <= -((2*totalsize/3) + (bandsize/2) + cyanAdjust) && angle > -(totalsize - (bandsize/2))) {
 				return Color.green;
@@ -315,6 +313,8 @@ public class Level : MonoBehaviour {
 			}
 		}
 	}
+	
+
 	
 	public static float mouseAngle(Vector2 xy) {
 		float normalizedX = xy.x - (Screen.width / 2);

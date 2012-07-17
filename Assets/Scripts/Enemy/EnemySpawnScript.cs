@@ -38,7 +38,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	#region Functions
 
 	void Start() {
-		resetColor = true;	
+		currentlySelectedEnemy = Random.Range(0,6);
 		init ();		
 	}
 	
@@ -49,15 +49,6 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		if (timer >= audioLength){
 			Application.LoadLevel("Win");			
 		}
-		
-		//Only spawn enemies of a single color for a bit. 
-		/*if(Game.PowerupActive == Game.Powerups.ChangeColor) {
-			if(resetColor) {
-				resetColor = false;
-				if(Level.fourColors) enemySelectedByPowerup = Random.Range(0,4);
-				else enemySelectedByPowerup = Random.Range(0,6);
-			}
-		} else resetColor = true;*/
 		
 //		if(Game.PowerupActive == Game.Powerups.TimeSlow) {
 //			if(Time.timeScale <= 1f) {
@@ -103,7 +94,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		spawnDivisors = new int[]{2,1,8,2,2,2};
 		spawnPositions = new int[]{0, 33, 66};
 	
-		currentlySelectedEnemy = 0;
+		
 		rotateDirection = 1;
 		Level.SetUpParticlesFeedback(spawnPositions.Length, currentlySelectedEnemy);		
 		loudFlag = 0;
@@ -143,10 +134,8 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 						Vector3 spawnDist = findSpawnPositionVector(spawnPosition);
 						float speed = 3f;
 						if(Game.SyncMode) speed *= (spawnDist.magnitude)/maxMag;									
-						//if(Game.PowerupActive==Game.Powerups.ChangeColor) currentlySelectedEnemy = enemySelectedByPowerup;									
 						SpawnEnemy(currentlySelectedEnemy,speed,spawnDist);
-					}
-					Level.SetUpParticlesFeedback(spawnPositions.Length, currentlySelectedEnemy);
+					}					
 					break;
 				case 1:
 					// These are more medium ranged frequencies, used to change the spawn position (for now at least)
@@ -162,8 +151,10 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 					break;
 				case 3:
 					// Some higher frequencies to change the currently spawned enemy
-					if(Game.PowerupActive != Game.Powerups.ChangeColor)
+					if(Game.PowerupActive != Game.Powerups.ChangeColor) {
 						changeEnemy();
+						Level.SetUpParticlesFeedback(spawnPositions.Length, currentlySelectedEnemy);
+					}
 					break;
 				case 4:
 					break;
