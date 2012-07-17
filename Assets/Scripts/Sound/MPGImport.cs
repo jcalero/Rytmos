@@ -260,7 +260,7 @@ namespace MPG123Wrapper
 		[StructLayout(LayoutKind.Sequential)]
 		public struct mpg123_string
 		{
-			string p; /**< pointer to the string data */
+			public string p; /**< pointer to the string data */
 			int size; /**< raw number of bytes allocated */
 			int fill; /**< number of used bytes (including closing zero byte) */
 		}
@@ -278,19 +278,19 @@ namespace MPG123Wrapper
 
 		public struct mpg123_id3v2
 		{
-			byte version;           /**< 3 or 4 for ID3v2.3 or ID3v2.4. */
-			IntPtr title;           /**< Title string (pointer into text_list). */
-			IntPtr artist;          /**< Artist string (pointer into text_list). */
-			IntPtr album;           /**< Album string (pointer into text_list). */
-			IntPtr year;            /**< The year as a string (pointer into text_list). */
-			IntPtr genre;           /**< Genre String (pointer into text_list). The genre string(s) may very well need postprocessing, esp. for ID3v2.3. */
-			IntPtr comment;         /**< Pointer to last encountered comment text with empty description. */
-			IntPtr comment_list;    /**< Array of comments. */
-			int comments;           /**< Number of comments. */
-			IntPtr text;            /**< Array of ID3v2 text fields (including USLT) */
-			int texts;              /**< Numer of text fields. */
-			IntPtr extra;           /**< The array of extra (TXXX) fields. */
-			int extras;             /**< Number of extra text (TXXX) fields. */
+			public byte version;           /**< 3 or 4 for ID3v2.3 or ID3v2.4. */
+			public IntPtr title;           /**< Title string (pointer into text_list). */
+			public IntPtr artist;          /**< Artist string (pointer into text_list). */
+			public IntPtr album;           /**< Album string (pointer into text_list). */
+			public IntPtr year;            /**< The year as a string (pointer into text_list). */
+			public IntPtr genre;           /**< Genre String (pointer into text_list). The genre string(s) may very well need postprocessing, esp. for ID3v2.3. */
+			public IntPtr comment;         /**< Pointer to last encountered comment text with empty description. */
+			public IntPtr comment_list;    /**< Array of comments. */
+			public int comments;           /**< Number of comments. */
+			public IntPtr text;            /**< Array of ID3v2 text fields (including USLT) */
+			public int texts;              /**< Numer of text fields. */
+			public IntPtr extra;           /**< The array of extra (TXXX) fields. */
+			public int extras;             /**< Number of extra text (TXXX) fields. */
 		} 
 
 		public struct mpg123_id3v1

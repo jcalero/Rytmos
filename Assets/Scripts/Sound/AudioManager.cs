@@ -19,6 +19,8 @@ public static class AudioManager
 	public static float audioLength;			// Total length in seconds (float) of the music file
 	public static int audioBufferSize;			// How many samples we want to store in each buffer
 	public static int frameSize;
+	public static string artist;
+	public static string title;
 	#endregion
 	
 	#region private vars
@@ -72,6 +74,8 @@ public static class AudioManager
 			audioLength = freader.getAudioLengthInSecs ();
 			currentlyLoadedSong = pathToMusicFile;
 			frameSize = freader.getFrameSize();
+			artist = freader.getArtist();
+			title = freader.getTitle();
 			
 			start = Time.realtimeSinceStartup;
 			

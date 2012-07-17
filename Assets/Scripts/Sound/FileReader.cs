@@ -144,6 +144,20 @@ public class FileReader : DecoderInterface {
 		return this.rytData;	
 	}
 	
+	public string getArtist() {
+		if(this.format == FileFormat.MPEG) {
+			return mp3Reader.getArtist();
+		}
+		else return "N/A";
+	}
+	
+	public string getTitle() {
+		if(this.format == FileFormat.MPEG) {
+			return mp3Reader.getTitle();
+		}
+		else return "N/A";
+	}
+	
 	public int[] getLoudnessData() {
 		return this.loudTriggers;	
 	}
@@ -213,176 +227,6 @@ public class FileReader : DecoderInterface {
 		this.clip = fileLoader.GetAudioClip(true,false,AudioType.WAV);
 		this.frequency = 44100;
 		this.audioLength = this.data.Length/(float)this.frequency;
-		
-	}
-	
-//	private void readMP3() {
-//		
-//		// Init
-//		Decoder dec = new Decoder();
-//		Header header;
-//		int frequency;
-//		int channels;
-//		
-//		// Open File Streams
-//		System.IO.FileStream file = new System.IO.FileStream(this.path,System.IO.FileMode.Open);
-//		Bitstream bS = new Bitstream(file);
-//		
-//		// Read mp3 header and extract freq/chan info
-//		header = bS.readFrame();
-//		frequency = header.frequency();
-//		channels = (header.mode() == Header.SINGLE_CHANNEL) ? 1 : 2;
-//		
-//		// Start reading rest of the mp3
-//		short[] bufferData;
-//		SampleBuffer buffer;
-//		float maxVal = (float)short.MaxValue;
-//		ArrayList monoData = new ArrayList();
-//		ArrayList channelData = new ArrayList();
-//		
-//		do {
-//			// Get header, check if any more data available
-//			header = bS.readFrame();
-//            if (header == null)
-//                break;
-//			
-//			// Decode frame
-//			buffer = (SampleBuffer)dec.decodeFrame(header,bS);
-//			bS.closeFrame();
-//			
-//			// Read PCM data
-//			bufferData = buffer.getBuffer();
-//			for(int i = 0; i < bufferData.Length; i+=2) {
-//				channelData.Add(bufferData[i]/maxVal);
-//				channelData.Add(bufferData[i+1]/maxVal);
-//				monoData.Add(((bufferData[i] + bufferData[i+1])/2f)/maxVal);
-//			}
-//		} while(bufferData.Length > 0);
-//		
-//		// Convert arraylists to useable data
-//		this.data = (float[])monoData.ToArray(typeof(float));
-//		this.clip = AudioClip.Create("gameAudio",channelData.Count,channels,frequency,true,false);
-//		this.clip.SetData((float[])channelData.ToArray(typeof(float)),0);
-//		
-//		monoData.Clear();
-//		monoData = null;
-//		channelData.Clear();
-//		channelData = null;
-//		
-//		// Close streams
-//		bS.close();
-//		file.Close();
-//	}
-	
-	private void readMp3() {
-		
-		IntPtr handle_mpg = new IntPtr();
-		IntPtr errPtr = new IntPtr ();
-		IntPtr frequency = new IntPtr();
-		IntPtr channels = new IntPtr();
-		IntPtr encoding = new IntPtr();
-		IntPtr id3v1 = new IntPtr();
-		IntPtr id3v2 = new IntPtr();
-		IntPtr done = new IntPtr();
-	
-		String txtRate;	
-		String txtChannels;
-		String txtEnc;
-		String txtArtist = "";
-		String txtTitle = "";
-		
-		
-		MPGImport.mpg123_init ();
-		
-		handle_mpg = MPGImport.mpg123_new (null, errPtr);
-		
-		int errorCheck = MPGImport.mpg123_open (handle_mpg, this.path);
-		
-		MPGImport.mpg123_getformat (handle_mpg, out frequency, out channels, out encoding);
-		
-		int _frequency = frequency.ToInt32 ();
-		int _channels = channels.ToInt32();
-		int _encoding = encoding.ToInt32 ();
-		
-		this.frequency = _frequency;
-		
-		txtRate = _frequency.ToString ();
-		txtChannels = _channels.ToString ();
-		txtEnc = _encoding.ToString ();
-		
-		Debug.Log ("This gets rid of warnings: "+txtRate+" "+txtChannels+" "+txtEnc+" "+errorCheck+" "+txtTitle+" "+txtArtist);
-		MPGImport.mpg123_id3 (handle_mpg, out id3v1, out id3v2);
-		MPGImport.mpg123_id3v1 MP3Data = new MPGImport.mpg123_id3v1 ();
-		
-		try {
-			MP3Data = (MPGImport.mpg123_id3v1)Marshal.PtrToStructure (id3v1, (Type)typeof(MPGImport.mpg123_id3v1));
-			
-			txtArtist = new string (MP3Data.artist);
-			txtTitle = new string (MP3Data.title);
-			
-		} catch (ArgumentNullException e) {
-			Debug.Log ("No ID3v1 data: "+e.ToString());
-			txtArtist = "N/A";
-			txtTitle = "N/A";
-		}
-		
-		MPGImport.mpg123_format_none (handle_mpg);
-		MPGImport.mpg123_format (handle_mpg, _frequency, _channels, _encoding);
-		
-		int FrameSize = MPGImport.mpg123_outblock(handle_mpg);
-		
-		int len = MPGImport.mpg123_length(handle_mpg);
-		this.data = new float[len];
-		float[] clipData = new float[len*_channels];
-		
-		Debug.Log("len*_channels: " + (len*_channels));
-		Debug.Log("len: " + len);
-		
-		int dataCounter = 0;
-		int clipDataCounter = 0;
-		float maxVal = (float)short.MaxValue;
-		float fChan = (float)_channels;
-		
-		byte[] Buffer = new byte[FrameSize];
-        while (0 == MPGImport.mpg123_read(handle_mpg, Buffer, FrameSize, out done))
-        {
-			for(int i = 0; i < Buffer.Length; i+=_channels*2) {
-				
-				for (int j = 0; j < _channels*2; j+=2) {
-					float tempVal = System.BitConverter.ToInt16(Buffer,i+j);
-					if(dataCounter < this.data.Length)
-						this.data[dataCounter] += tempVal;
-					if(clipDataCounter < clipData.Length)
-						clipData[clipDataCounter] = tempVal/maxVal;
-					clipDataCounter++;
-				}
-				if(dataCounter < this.data.Length) {
-					this.data[dataCounter] /= fChan;
-					this.data[dataCounter] /= maxVal;
-				}
-				dataCounter++;	
-			}			
-        }
-		
-		Debug.Log("data.length: " + data.Length);
-		Debug.Log("dataCounter: " + dataCounter);
-		Debug.Log("clipDataCounter: "+ clipDataCounter);
-		Debug.Log("channels: " + _channels);
-		
-        //if(dataCounter < this.data.Length) Array.Resize<float>(ref this.data,dataCounter);
-        //if(clipDataCounter < clipData.Length) Array.Resize<float>(ref clipData,clipDataCounter);		
-		
-		this.clip = AudioClip.Create("gameAudio",clipData.Length/_channels,_channels,_frequency,true,false);
-		this.clip.SetData(clipData,0);
-		
-		clipData = null;
-		
-		this.audioLength = (clipDataCounter/(float)_channels)/(float)_frequency;
-		
-		MPGImport.mpg123_close(handle_mpg);
-		MPGImport.mpg123_delete(handle_mpg);
-		MPGImport.mpg123_exit();
-		
 		
 	}
 	
@@ -523,17 +367,36 @@ public class FileReader : DecoderInterface {
 			
 			MPGImport.mpg123_id3 (handle_mpg, out id3v1, out id3v2);
 			MPGImport.mpg123_id3v1 MP3Data = new MPGImport.mpg123_id3v1 ();
+			MPGImport.mpg123_id3v2 MP3v2Data = new MPGImport.mpg123_id3v2 ();
 			
 			try {
 				MP3Data = (MPGImport.mpg123_id3v1)Marshal.PtrToStructure (id3v1, (Type)typeof(MPGImport.mpg123_id3v1));
 				
 				txtArtist = new string (MP3Data.artist);
 				txtTitle = new string (MP3Data.title);
+				Debug.Log("v1: " + txtArtist);
 				
 			} catch (ArgumentNullException e) {
 				Debug.Log ("No ID3v1 data: "+e.ToString());
 				txtArtist = "N/A";
 				txtTitle = "N/A";
+			}
+			
+			if(txtArtist == "N/A" && txtTitle == "N/A") {
+				try {
+					MP3v2Data = (MPGImport.mpg123_id3v2)Marshal.PtrToStructure (id3v2, (Type)typeof(MPGImport.mpg123_id3v2));
+					
+					MPGImport.mpg123_string ptrArtist = (MPGImport.mpg123_string)Marshal.PtrToStructure(MP3v2Data.artist,(Type)typeof(MPGImport.mpg123_string));
+					MPGImport.mpg123_string ptrTitle = (MPGImport.mpg123_string)Marshal.PtrToStructure(MP3v2Data.title,(Type)typeof(MPGImport.mpg123_string));
+					
+					txtArtist = ptrArtist.p;
+					txtTitle = ptrTitle.p;
+					
+				} catch (ArgumentNullException e) {
+					Debug.Log ("No ID3v2 data: "+e.ToString());
+					txtArtist = "N/A";
+					txtTitle = "N/A";
+				}
 			}
 			
 			MPGImport.mpg123_format_none (handle_mpg);
@@ -556,6 +419,14 @@ public class FileReader : DecoderInterface {
 		
 		public int getFrequency() {
 			return _frequency;	
+		}
+		
+		public string getTitle() {
+			return txtTitle;
+		}
+		
+		public string getArtist() {
+			return txtArtist;
 		}
 		
 		public int getChannels() {
