@@ -66,7 +66,7 @@ public class PulseSender : MonoBehaviour {
                     Player.energy--;
                 else {
                     held = false;
-                    finalColor = Level.continuousColourSelect(Input.mousePosition);
+                    finalColor = Level.chunkyColorSelect(Input.mousePosition);
                 }
                 timer = 0;
             }
@@ -77,7 +77,7 @@ public class PulseSender : MonoBehaviour {
         //If you have released the button, and the pulse is the current one, set it to be not held and set the Colour
         if (Input.GetMouseButtonUp(0) && held) {
             held = false;
-            finalColor = Level.continuousColourSelect(Input.mousePosition);
+            finalColor = Level.chunkyColorSelect(Input.mousePosition);
 			CurrentColor = Level.singleColourSelect(Input.mousePosition);
 			if(Game.PowerupActive==Game.Powerups.MassivePulse) {
 				finalColor = Color.white;
@@ -89,7 +89,7 @@ public class PulseSender : MonoBehaviour {
         //What the colour should be - this is where the transition has to take place. 
         Color chosen;
         if (held) {
-            chosen = Level.continuousColourSelect(Input.mousePosition);
+            chosen = Level.chunkyColorSelect(Input.mousePosition);
 			CurrentColor = Level.singleColourSelect(Input.mousePosition);
 			if(Game.PowerupActive==Game.Powerups.MassivePulse) {
 				chosen = Color.white;
