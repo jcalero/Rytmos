@@ -65,6 +65,10 @@ public class SpectrumProvider
 		decoder.readSamples( ref nextSamples );
 	}
 	
+	public float[] getCurrentSamples() {
+		return samples;	
+	}
+	
 	/**
 	 * Returns the next spectrum or null if there's no more data.
 	 * @return The next spectrum or null.

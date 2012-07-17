@@ -5,25 +5,8 @@ using System.Collections.Generic;
 public class SoundProcessor
 {
 	
-//	/// <summary>
-//	/// All the data needed for processing and storing results
-//	/// </summary>
-//	private float[] audioData;
-//	private int fftWindow;
-//	private float progress;
-//	private float[] vars;
-//	private float[] means;
-//	private float[] stDevs;
-//	private int[][] triggers;
-//	private int frequencyRange;
-//	private int hzPerBin;
-//	private float[] onlineMeans;
-//	private float[] onlineM2;
-//	private float[] onlineStDevs;
-//	private float[] onlineLowMidHighMeans;
-//	private float[] onlineLowMidHighStDevs;
-//	private float[] onlineLowMidHighM2;
-//	private int onlineCounter;
+	private static int[] volumeLevels;
+	private static int[][] peaks;
 	
 	// Disable the empty constructor
 	private SoundProcessor ()
@@ -36,8 +19,15 @@ public class SoundProcessor
 	public static readonly float[] bands = { 0, 1000, 1000, 4000, 4000, 8000, 8000, 22000};
 	// { 0, 500, 500, 2000, 2000, 4000, 4000, 8000, 8000, 16000, 16000, 22000 };
 	
-	public static float[][] getPeaks(DecoderInterface decoder)
+	public static void analyse(DecoderInterface decoder)
 	{	
+		
+		// For finding the volume levels
+		List<int> volumeLevelList = new List<int>();
+		float rollingAverage = 0.01f;
+		float alpha = 0.85f;		
+		int activePart = -1;
+		int sampleCounter = 0;
 		
 		// Get spectral flux
 		SpectrumProvider spectrumProvider = new SpectrumProvider( decoder, 1024, HOP_SIZE, true );			
@@ -46,9 +36,10 @@ public class SoundProcessor
 		List<List<float>> spectralFlux = new List<List<float>>();
 		for( int i = 0; i < bands.Length / 2; i++ )
 			spectralFlux.Add( new List<float>() );
-				
+			
 		do
-		{						
+		{			
+			// SPECTRAL ANALYSIS
 			for( int i = 0; i < bands.Length; i+=2 )
 			{				
 				int startFreq = spectrumProvider.getFFT().freqToIndex( bands[i] );
@@ -64,8 +55,77 @@ public class SoundProcessor
 			}
 					
 			System.Array.Copy( spectrum, 0, lastSpectrum, 0, spectrum.Length );
+			// SPECTRAL ANALYSIS END
+			
+			// VOLUME ANALYSIS
+			float avg = 0;
+			foreach(float sample in spectrumProvider.getCurrentSamples()) {
+				avg+=Mathf.Abs(sample);
+			}
+			avg /= (float)spectrumProvider.getCurrentSamples().Length;
+			
+			rollingAverage = (alpha * avg) + ((1-alpha) * rollingAverage);
+			
+			// Have we found a part which classifies as extremely loud?
+			if(rollingAverage > 0.2f) {
+				
+				// Are we already in that part?
+				if(activePart != 4) {
+					activePart = 4; // Set flag that we are now in that part
+					volumeLevelList.Add(sampleCounter*spectrumProvider.getCurrentSamples().Length);
+					volumeLevelList.Add(activePart);
+				}
+			
+			// Have we found a part which classifies as pretty loud?
+			} else if (rollingAverage > 0.06f) {
+				
+				// Are we already in that part?
+				if(activePart != 3) {
+					activePart = 3; // Set flag that we are now in that part
+					volumeLevelList.Add(sampleCounter*spectrumProvider.getCurrentSamples().Length);
+					volumeLevelList.Add(activePart);
+				}
+			
+			// Have we found a part which classifies as pretty normal?
+			} else if (rollingAverage > 0.0158f) {
+				
+				// Are we already in that part?
+				if(activePart != 2) {
+					activePart = 2; // Set flag that we are now in that part
+					volumeLevelList.Add(sampleCounter*spectrumProvider.getCurrentSamples().Length);
+					volumeLevelList.Add(activePart);
+				}
+			
+			// Have we found a part which classifies as pretty quiet?
+			} else if (rollingAverage > 0.0015f) {
+				
+				// Are we already in that part?
+				if(activePart != 1) {
+					activePart = 1; // Set flag that we are now in that part
+					volumeLevelList.Add(sampleCounter*spectrumProvider.getCurrentSamples().Length);
+					volumeLevelList.Add(activePart);
+				}
+			
+			// Have we found a part which classifies as very quiet?
+			// Below 40db (== below 0.06f amplitude)
+			} else {
+
+				// Are we already in that part?
+				if(activePart != 0) {
+					Debug.Log(20*Mathf.Log10(rollingAverage));
+					activePart = 0; // Set flag that we are now in that part
+					volumeLevelList.Add(sampleCounter*spectrumProvider.getCurrentSamples().Length);
+					volumeLevelList.Add(activePart);
+				}
+			}
+			sampleCounter++;
+			// VOLUME ANALYSIS END
+			
 		}
 		while( (spectrum = spectrumProvider.nextSpectrum() ) != null );
+		
+		// Store volumelevels
+		volumeLevels = volumeLevelList.ToArray();
 		
 		// Convert spectral flux arraylist to array
 		float[][] spectralFluxArray = new float[spectralFlux.Count][];
@@ -94,11 +154,11 @@ public class SoundProcessor
 		}
 		
 		// Get Peaks
-		List<float[]> peaks = new List<float[]>();
-		float alpha = 2f/21f;
+		List<int[]> peaksList = new List<int[]>();
+		alpha = 2f/21f;
 		for(int i = 0; i < prunnedSpectralFlux.Length; i++) {
 			
-			List<float> tempPeaks = new List<float>();
+			List<int> tempPeaks = new List<int>();
 			float movingMean = 0;
 			
 			for(int j = 0; j < prunnedSpectralFlux[i].Length -1; j++){
@@ -108,48 +168,18 @@ public class SoundProcessor
 					movingMean = (alpha * prunnedSpectralFlux[i][j]) + ((1-alpha) * movingMean);
 				}
 			}
-			peaks.Add(tempPeaks.ToArray());
+			peaksList.Add(tempPeaks.ToArray());
 		}
 		
-//		float songBPM = 0;
-//		int closestChannel = 0;
-//		float closestMean = float.MaxValue;
-//		
-//		// Get the song bpm from the onset analysis over the entire spectrum
-//		for(int i = 0; i < peaks[peaks.Count-1].Length-1; i++) {
-//				float diff = peaks[peaks.Count-1][i+1] - peaks[peaks.Count-1][i];
-//				songBPM += diff;
-//		}
-//		songBPM /= peaks[peaks.Count-1].Length-1;
-//		
-//		// Check which channel fits most
-//		for(int j = 0; j < peaks.Count-1; j++) {
-//			float mean = 0;
-//			for(int i = 0; i < peaks[j].Length-1; i++) {
-//				float diff = peaks[j][i+1] - peaks[j][i];
-//				mean += diff;
-//			}
-//			mean /= peaks[j].Length-1;
-//			
-//			if(Math.Abs(songBPM - mean) < closestMean) {
-//				closestMean = Math.Abs(songBPM - mean);
-//				closestChannel = j;
-//			}
-//		}
-//		
-//		Debug.Log("closest Channel: " + closestChannel);
-//		peaks.RemoveAt(peaks.Count-1);
-//		float[] closetChan = peaks[closestChannel];
-//		peaks.RemoveAt(closestChannel);
-//		
-//		List<float[]> newPeaks = new List<float[]>();
-//		newPeaks.Add(closetChan);
-//		for(int i = 0; i < peaks.Count; i++) {
-//			newPeaks.Add(peaks[i]);
-//		}
-//		peaks = newPeaks;
-		
-		return peaks.ToArray();
+		peaks = peaksList.ToArray();
+	}
+	
+	public static int[][] getPeaks() {
+		return peaks;	
+	}
+	
+	public static int[] getVolumeLevels() {
+		return volumeLevels;	
 	}
 	
 	public static int[] findVolumeLevels(DecoderInterface decoder) {
@@ -158,19 +188,7 @@ public class SoundProcessor
 		
 		List<int> volumeLevels = new List<int>();
 		float[] samples = new float[AudioManager.frameSize*AudioManager.channels*2];
-//		float max = -1;
-//		float min = 2; // amplitudes are between 0 and 1
-//		
-//		while(decoder.readSamples(ref samples) > 0) {
-//			foreach(float sample in samples) {
-//				if(Mathf.Abs(sample) > max) max = sample;
-//				if(Mathf.Abs(sample) < min) min = sample;
-//			}
-//		}
-		
-		decoder.reset();
-		
-//		float rollingAverage = min + 0.5f*(max-min);
+
 		float rollingAverage = 0.01f;
 		float alpha = 0.85f;		
 		int sampleCounter = 0;
@@ -178,8 +196,7 @@ public class SoundProcessor
 		float currentMax = 0f;
 		while(decoder.readSamples(ref samples) > 0) {
 			currentMax = -1f;
-//			foreach(float sample in samples) if(Mathf.Abs(sample) > currentMax) currentMax = sample;
-			
+	
 			float avg = 0;
 			foreach(float sample in samples) {
 				avg+=Mathf.Abs(sample);

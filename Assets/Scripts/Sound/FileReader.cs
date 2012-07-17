@@ -17,7 +17,7 @@ public class FileReader : DecoderInterface {
 	private int readDataPointer;
 	private int frequency;
 	private float audioLength;
-	private float[][] rytData;
+	private int[][] rytData;
 	private int[] loudTriggers;
 	private MP3 mp3Reader;
 	private int channels;
@@ -140,7 +140,7 @@ public class FileReader : DecoderInterface {
 		return this.data;
 	}
 	
-	public float[][] getPeaks() {
+	public int[][] getPeaks() {
 		return this.rytData;	
 	}
 	
@@ -168,7 +168,7 @@ public class FileReader : DecoderInterface {
 	
 	private void readRytData() {
 		StreamReader reader = new StreamReader(this.path);
-		List<float[]> channelData = new List<float[]>();
+		List<int[]> channelData = new List<int[]>();
 		while(!reader.EndOfStream) {
 			
 			// Read line, check if channel data or loudness data
@@ -179,10 +179,10 @@ public class FileReader : DecoderInterface {
 			
 			// Read line into floats for channel data
 			if(channel) {
-				List<float> tempList = new List<float>();
+				List<int> tempList = new List<int>();
 				foreach(string s in input.Split(';')) {
-					float result = -1;
-					float.TryParse(s,out result);
+					int result = -1;
+					int.TryParse(s,out result);
 					if(result > -1)
 						tempList.Add(result);
 				}

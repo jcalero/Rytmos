@@ -20,7 +20,7 @@ public class FileWriter
 	/// <param name='loudParts'>
 	/// Array of Loud parts.
 	/// </param>
-	public static void writeAnalysisData (string pathToMusicFile, float[][] peaks, int[] loudParts)
+	public static void writeAnalysisData (string pathToMusicFile, int[][] peaks, int[] loudParts)
 	{
 			
 		StreamWriter sw = new StreamWriter (convertToCacheFileName (pathToMusicFile));

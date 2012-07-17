@@ -12,7 +12,7 @@ public static class AudioManager
 	#region public vars
 	/*Variables provided for other classes*/
 	public static FileReader freader;			// File Reader reference which does all the I/O
-	public static float[][] peaks;				// Holds the triggers for the currently loaded audio file
+	public static int[][] peaks;				// Holds the triggers for the currently loaded audio file
 	public static int[] loudPartTimeStamps;		// Holds the triggers for loud/quiet parts of the audio file
 	public static int frequency;				// Sampling Frequency of the music file, needed for time syncing
 	public static int channels;					// Number of channels in the music file
@@ -48,7 +48,9 @@ public static class AudioManager
 		if (ingameMusic != null) {
 			float[] data = new float[ingameMusic.audio.clip.samples];
 			ingameMusic.audio.clip.GetData (data, 0);
-			peaks = SoundProcessor.getPeaks (new MockDecoder (data));
+			SoundProcessor.analyse(new MockDecoder (data));
+			peaks = SoundProcessor.getPeaks ();
+			loudPartTimeStamps = SoundProcessor.getVolumeLevels();
 			songLoaded = true;
 			currentlyLoadedSong = "xXBACKgroundMUSICXx";
 			// If the AudioSource object is not set, analyze the music file which has been passed
@@ -99,8 +101,9 @@ public static class AudioManager
 				
 			} else {
 				// We have no cache file, so do the actual analysis!
-				peaks = SoundProcessor.getPeaks (freader);
-				loudPartTimeStamps = SoundProcessor.findVolumeLevels (freader);
+				SoundProcessor.analyse(freader);
+				peaks = SoundProcessor.getPeaks ();
+				loudPartTimeStamps = SoundProcessor.getVolumeLevels ();
 				Debug.Log ("Time to analyze: " + (Time.realtimeSinceStartup - start));			
 				//Application.persistentDataPath;
 				FileWriter.writeAnalysisData (pathToMusicFile, peaks, loudPartTimeStamps);
