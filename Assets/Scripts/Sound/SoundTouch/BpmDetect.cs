@@ -302,7 +302,11 @@ namespace SoundTouch
                 Buffer.ReceiveSamples(processLength);
             }
         }
-
+			
+		public void clearBuffer()
+		{
+			Buffer.Clear ();
+		}
 
         /// <summary>
         /// Analyzes the results and returns the BPM rate. Use this function to
@@ -501,5 +505,7 @@ namespace SoundTouch
         {
             return (float) value;
         }
+		
+		
     }
 }
