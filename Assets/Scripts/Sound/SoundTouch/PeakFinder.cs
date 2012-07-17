@@ -190,6 +190,7 @@ namespace SoundTouch
 
             _minPos = minPos;
             _maxPos = maxPos;
+			if(_maxPos >= data.Length) _maxPos = data.Length-1;
 
             // find absolute peak
             int peakpos = minPos;

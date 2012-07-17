@@ -12,4 +12,6 @@ public interface PeakListener
 	void onPeakTrigger (int channel);
 
 	void setLoudFlag (int flag);
+	
+	void setBPM (int bpm);
 }

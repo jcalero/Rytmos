@@ -10,6 +10,7 @@ public class PeakTriggerManager : MonoBehaviour
 	private int loudPartCounter;											// Iterator for the loud parts
 	private float timer;													// Keep track of time
 	private int[] peakCounters;												// Iterator for the array of peaks
+	private int bpmCounter;
 	private int loudFlag;													// Flag to check how loud the song currently is
 	#endregion
 	
@@ -19,6 +20,7 @@ public class PeakTriggerManager : MonoBehaviour
 		peakCounters = new int[AudioManager.peaks.Length];
 		timer = 0f;		
 		loudPartCounter = 0;
+		bpmCounter = 0;
 		loudFlag = -1;
 	}
 	
@@ -48,6 +50,12 @@ public class PeakTriggerManager : MonoBehaviour
 				peakCounters [t]++;
 			}
 		}
+		
+		if(bpmCounter < AudioManager.bpm.Length && (AudioManager.bpm[bpmCounter] / (float)AudioManager.frequency) < timer + 0.1f) {
+			foreach (PeakListener l in listeners) l.setBPM(AudioManager.bpm[bpmCounter+1]);
+			bpmCounter += 2;
+		}
+		
 				
 	}
 	

@@ -1,12 +1,12 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using TSampleType = System.Single;
+using TLongSampleType = System.Double;
+using SoundTouch;
 
 public class SoundProcessor
 {
-	
-	private static int[] volumeLevels;
-	private static int[][] peaks;
 	
 	// Disable the empty constructor
 	private SoundProcessor ()
@@ -14,13 +14,28 @@ public class SoundProcessor
 	}
 	
 	public static readonly int HOP_SIZE = 1024;
+	public static readonly int BUFFER_SIZE = 1024;
 	public static readonly int HISTORY_SIZE = 50;
 	public static readonly float[] multipliers = { 2f, 2f, 2f, 2f, 2f, 2f };
 	public static readonly float[] bands = { 0, 1000, 1000, 4000, 4000, 8000, 8000, 22000};
+	private static int[] volumeLevels;
+	private static int[][] peaks;
+	private static int[] bpmLevels;
 	// { 0, 500, 500, 2000, 2000, 4000, 4000, 8000, 8000, 16000, 16000, 22000 };
 	
 	public static void analyse(DecoderInterface decoder)
 	{	
+		// For finding the bpm
+		BpmDetect<TSampleType,TLongSampleType> bpmDetector = BpmDetect<TSampleType, TLongSampleType>.NewInstance(1, ((FileReader)decoder).getFrequency());
+		int currentBPM = 0;
+		int lastBPM = 0;
+		bool firstBPM = true;
+		int bpmSamples = Mathf.CeilToInt(((FileReader)decoder).getFrequency()/(float)BUFFER_SIZE)*8;
+		Debug.Log("windowLength: " + bpmDetector.getWindowLen());
+		int bpmSampleCounter = 0;
+		float bpmRollingAvg = 0;
+		float bpmStdDev = 0;
+		List<int> bpmLevelList = new List<int>();		
 		
 		// For finding the volume levels
 		List<int> volumeLevelList = new List<int>();
@@ -30,7 +45,7 @@ public class SoundProcessor
 		int sampleCounter = 0;
 		
 		// Get spectral flux
-		SpectrumProvider spectrumProvider = new SpectrumProvider( decoder, 1024, HOP_SIZE, true );			
+		SpectrumProvider spectrumProvider = new SpectrumProvider( decoder, BUFFER_SIZE, HOP_SIZE, true );			
 		float[] spectrum = spectrumProvider.nextSpectrum();
 		float[] lastSpectrum = new float[spectrum.Length];
 		List<List<float>> spectralFlux = new List<List<float>>();
@@ -39,7 +54,7 @@ public class SoundProcessor
 			
 		do
 		{			
-			// SPECTRAL ANALYSIS
+			#region SPECTRAL ANALYSIS
 			for( int i = 0; i < bands.Length; i+=2 )
 			{				
 				int startFreq = spectrumProvider.getFFT().freqToIndex( bands[i] );
@@ -55,9 +70,41 @@ public class SoundProcessor
 			}
 					
 			System.Array.Copy( spectrum, 0, lastSpectrum, 0, spectrum.Length );
-			// SPECTRAL ANALYSIS END
+			#endregion
 			
-			// VOLUME ANALYSIS
+			#region BEAT ANALYSIS
+			float[] inputSamples = new float[BUFFER_SIZE];
+			spectrumProvider.getCurrentSamples(ref inputSamples);
+			bpmDetector.InputSamples(inputSamples,inputSamples.Length);
+			currentBPM = Mathf.RoundToInt(bpmDetector.GetBpm());
+			bpmSampleCounter++;
+//			bpmSampleCounter >= bpmSamples
+			if(currentBPM!=0) {
+				bpmSamples = bpmSampleCounter*3;
+				Debug.Log("currentBPM: " + currentBPM);
+				if(!firstBPM) {
+					if(Mathf.Abs(bpmRollingAvg - currentBPM) > bpmStdDev) {
+						bpmLevelList.Add((sampleCounter-bpmSampleCounter)*spectrumProvider.getCurrentSamples().Length);
+						bpmLevelList.Add(currentBPM);
+						Debug.Log("currentBPM: " + currentBPM);
+					}
+					
+					bpmStdDev = (alpha * Mathf.Abs(currentBPM - bpmStdDev)) + ((1 - alpha) * bpmStdDev);
+					bpmRollingAvg = (alpha * currentBPM) + ((1-alpha) * bpmRollingAvg);
+				}
+				else {
+					firstBPM = false;
+					bpmRollingAvg = currentBPM;
+					lastBPM = currentBPM;
+					bpmLevelList.Add(0);
+					bpmLevelList.Add(currentBPM);
+				}
+				bpmDetector.clearBuffer();
+				bpmSampleCounter = 0;
+			}
+			#endregion
+			
+			#region VOLUME ANALYSIS
 			float avg = 0;
 			foreach(float sample in spectrumProvider.getCurrentSamples()) {
 				avg+=Mathf.Abs(sample);
@@ -119,13 +166,16 @@ public class SoundProcessor
 				}
 			}
 			sampleCounter++;
-			// VOLUME ANALYSIS END
+			#endregion
 			
 		}
 		while( (spectrum = spectrumProvider.nextSpectrum() ) != null );
 		
 		// Store volumelevels
 		volumeLevels = volumeLevelList.ToArray();
+		
+		// Store bpm levels
+		bpmLevels = bpmLevelList.ToArray();
 		
 		// Convert spectral flux arraylist to array
 		float[][] spectralFluxArray = new float[spectralFlux.Count][];
@@ -180,5 +230,9 @@ public class SoundProcessor
 	
 	public static int[] getVolumeLevels() {
 		return volumeLevels;	
+	}
+	
+	public static int[] getBPMs() {
+		return bpmLevels;	
 	}
 }

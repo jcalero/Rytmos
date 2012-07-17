@@ -69,6 +69,10 @@ public class SpectrumProvider
 		return samples;	
 	}
 	
+	public void getCurrentSamples(ref float[] inArray) {
+		inArray = samples;
+	}
+	
 	/**
 	 * Returns the next spectrum or null if there's no more data.
 	 * @return The next spectrum or null.

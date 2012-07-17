@@ -349,6 +349,8 @@ public class Player : MonoBehaviour,PeakListener {
 		if(!glowAnimOut && !glowAnimIn) glowAnimOut = true;
 	}
 	
+	public void setBPM(int bpm) {}
+	
 	public void setLoudFlag(int flag) {}
 	
 	void OnDisable() {
