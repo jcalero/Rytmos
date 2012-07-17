@@ -44,6 +44,7 @@ public class AudioPlayer : MonoBehaviour
 		}else if(Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WindowsEditor) {
 			audioSources [0].clip = AudioManager.getAudioClip ();
 		}
+		timer = 0;
 		
 	}
 	
@@ -62,14 +63,17 @@ public class AudioPlayer : MonoBehaviour
 	/// </summary>
 	void Update ()
 	{
+		timer += Time.deltaTime;
 		if (!Game.Paused) {
 			if (timer >= AudioManager.audioLength) {
 				if(Application.platform == RuntimePlatform.Android) {
 					androidPlayer.Call ("stop", new object[]{});
+					Debug.Log("timer made audio stop");
 				} else if(Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WindowsEditor) {
 					audioSources [0].Stop ();
+					Debug.Log("timer made audio stop");
 				}
-			} else timer += Time.deltaTime;
+			}
 		}
 	}
 	
