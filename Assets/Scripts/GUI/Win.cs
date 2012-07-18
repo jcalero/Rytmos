@@ -135,7 +135,8 @@ public class Win : MonoBehaviour {
 
 
 	public static string RemovePipeChar(string str) {
-		return str.Replace("|", "/");
+		string tmpStr = str.Replace("|", "/");
+		return tmpStr.TrimEnd("\0".ToCharArray());
 	}
 
 	void HideSubmitBox() {
