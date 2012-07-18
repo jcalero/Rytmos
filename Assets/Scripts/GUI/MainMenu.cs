@@ -138,7 +138,8 @@ public class MainMenu : MonoBehaviour {
 			Sort<string>(HSController.Close5List, 2);
 			for (int cnt = 0; cnt < HSController.Close5List.Length; cnt++) {
 				if (cnt < 5) {
-					close5names[cnt].text = HSController.Close5List[cnt][2] + ". " + HSController.Close5List[cnt][0];
+					string nr = HSController.Close5List[cnt][2];
+					close5names[cnt].text = nr + ". " + HSController.Close5List[cnt][0];
 					close5scores[cnt].text = HSController.Close5List[cnt][1];
 					if (HSController.Close5List[cnt][1] == topScore.ToString() &&
 						HSController.Close5List[cnt][0] == Game.PlayerName &&
@@ -194,8 +195,8 @@ public class MainMenu : MonoBehaviour {
 		}
 	}
 	private static void Sort<T>(T[][] data, int col) {
-		Comparer<T> comparer = Comparer<T>.Default;
-		Array.Sort<T[]>(data, (x, y) => comparer.Compare(x[col], y[col]));
+		StringAsIntComparer comparer = new StringAsIntComparer();
+		Array.Sort(data, (x, y) => comparer.Compare(x[col], y[col]));
 	}
 
 	#region Main Menu buttons
@@ -364,4 +365,11 @@ public class MainMenu : MonoBehaviour {
 	#endregion
 
 	#endregion
+}
+public class StringAsIntComparer : IComparer {
+	public int Compare(object l, object r) {
+		int left = Int32.Parse((string)l);
+		int right = Int32.Parse((string)r);
+		return left.CompareTo(right);
+	}
 }
