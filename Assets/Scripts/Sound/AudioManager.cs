@@ -19,8 +19,8 @@ public static class AudioManager
 	public static float audioLength;			// Total length in seconds (float) of the music file
 	public static int audioBufferSize;			// How many samples we want to store in each buffer
 	public static int frameSize;
-	public static string artist = "N/A";
-	public static string title = "N/A";
+	public static string artist = "Unknown";
+	public static string title = "Unknown";
 	#endregion
 	
 	#region private vars
