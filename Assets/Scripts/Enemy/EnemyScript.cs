@@ -14,6 +14,7 @@ public class EnemyScript : MonoBehaviour {
 	public ParticleSystem TrailParticles;
 	public UIAtlas SpriteAtlas;         // Inspector reference. Location: Enemy[Type]Prefab.
 	public GameObject PulsePrefab;		// Inspector reference. Location: Enemy[Type]Prefab.
+	public GameObject SecondPulseColl;		// Inspector reference. Location: Enemy[Type]Prefab.
 
 	// Protected values with access from its descendants
 	protected LinkedSpriteManager spriteManager;
@@ -33,18 +34,21 @@ public class EnemyScript : MonoBehaviour {
 	protected int height;
 	protected float UVHeight = 1f;
 	protected float UVWidth = 1f;
-
+	
+	private bool givenScore;			// Has the enemy given its score upon death?
 	private Color mainColor;            // The color of the enemy
 	protected float currentSpeed = 10;         // The speed of the enemy
 	private float x, y, z;              // Position coordinates of the enemy
 	private int fixPos;                 // Random value for moving the enemy off the screen
 
 	public static int energyReturn = 2;			// The amount of energy to return to the player when an enemy dies.
+	
 	#endregion
 
 	#region Functions
 	
 	protected virtual void Awake() {
+		givenScore = false;
 		spriteManager = GameObject.Find("EnemySpawner").GetComponent<LinkedSpriteManager>();
 		SetPositionAndSpeed();
 		if (Level.fourColors) colors = new Color[] { Color.red, Color.cyan, Color.blue, Color.yellow };
@@ -65,7 +69,6 @@ public class EnemyScript : MonoBehaviour {
 		if (otherObject.tag == "Player") {
 			if(Game.PowerupActive != Game.Powerups.Invincible) 
 				Player.health -= 10 * health;       // Reduces the player health by 10 * the remaining enemy health
-			//CreateExplosion();
 			StartCoroutine(DamageEnemy());
 		}
 		// If the enemy collides with a pulse of the right color, reduce enemy health, increase score
@@ -73,9 +76,6 @@ public class EnemyScript : MonoBehaviour {
 			if (otherObject.gameObject.GetComponent<PulseSender>().CurrentColor == MainColor ||
 				otherObject.gameObject.GetComponent<PulseSender>().SecondaryColor == MainColor ||
 				otherObject.gameObject.GetComponent<PulseSender>().CurrentColor == Color.white) {
-				//if(otherObject.gameObject.GetComponent<PulseSender>().CurrentColor != Color.white)
-				Player.score += 10;
-				//CreateExplosion();
 				StartCoroutine(DamageEnemy());
 				
 				if(Game.PowerupActive == Game.Powerups.ChainReaction) {
@@ -182,9 +182,14 @@ public class EnemyScript : MonoBehaviour {
 				if (Player.energy > Player.maxEnergy)     // Make sure energy is never more than maxEnergy
 					Player.energy = Player.maxEnergy;
 			}
+			if(!givenScore) {
+				Player.score += 10;
+				givenScore = true;
+			}
 			CreateExplosion();
 			iTween.Stop(gameObject);
 			collider.enabled = false;
+			SecondPulseColl.collider.enabled = false;
 			TrailParticles.Stop();
 			spriteManager.HideSprite(enemyCircle);
 			yield return new WaitForSeconds(1f);

@@ -90,48 +90,28 @@ public class Player : MonoBehaviour,PeakListener {
 				meshRenders[1].material.SetColor("_Color", new Color(1,1,1,.3f));
 				meshRenders[2].material.SetColor ("_Color", Color.white);
 			} else if (Game.PowerupActive == Game.Powerups.MassivePulse) {
-				if(superPulseCount == 0) {
-					//Used for animating the ring when the player sends a pulse	
-					if(sentPulse) sentPulse = animRing(true, true, .1f, .1f, .3f, .3f, 1f);
-					else if(sentPulseTwo) sentPulseTwo = animRing (false, false, .1f, .1f, .3f, 1f, .3f);
-					if(!sentPulse && !sentPulseTwo) {
-						if(glowAnimOut) glowAnimOut = animRing(true, false, .1f, .1f, .3f, .3f, 1f);
-						else if(glowAnimIn) glowAnimIn = animRing(false, false, .1f, .1f, .3f, 1f, .3f);
-					}
-				} else {
+				if(superPulseCount == 0) showAnimRing (Color.white);
+				else {
 					meshRenders[0].material.SetColor("_Color", new Color(1,1,1,.3f));
 					meshRenders[1].material.SetColor("_Color", Color.white);
 					meshRenders[2].material.SetColor("_Color", new Color(1,1,1,.3f));
 				}
 			} else if(Game.PowerupActive == Game.Powerups.ChangeColor) {
 				Color selected = Level.singleColourSelect(EnemySpawnScript.currentlySelectedEnemy);
-				if(sentPulse) sentPulse = animRing(true, true, .1f, .1f, .3f, .3f, .3f, .3f, 1f, selected);
-				else if(sentPulseTwo) sentPulseTwo = animRing (false, false, .1f, .1f, .3f, .3f, .3f, 1f, .3f, selected);
-				if(!sentPulse && !sentPulseTwo) {
-					if(glowAnimOut) glowAnimOut = animRing(true, false, .1f, .1f, .3f, .3f, .3f, .3f, 1f, selected);
-					else if(glowAnimIn) glowAnimIn = animRing(false, false, .1f, .1f, .3f, .3f, .3f, 1f, .3f, selected);
+				showAnimRing(selected);
 				}
-			} else {
-				//Used for animating the ring when the player sends a pulse	
-				if(sentPulse) sentPulse = animRing(true, true, .1f, .1f, .3f, .3f, 1f);
-				else if(sentPulseTwo) sentPulseTwo = animRing (false, false, .1f, .1f, .3f, 1f, .3f);
-				if(!sentPulse && !sentPulseTwo) {
-					if(glowAnimOut) glowAnimOut = animRing(true, false, .1f, .1f, .3f, .3f, 1f);
-					else if(glowAnimIn) glowAnimIn = animRing(false, false, .1f, .1f, .3f, 1f, .3f);
-				}
-			}
-        }
+			else 	
+				showAnimRing(Color.white);
+		}
 
         // If the player health is lower than 0, load the "Lose" level
         if (Player.health <= 0) {
             Player.health = 0;
-            if (Game.GameMode.Equals(Game.Mode.DeathMatch)) {
+            if (Game.GameMode.Equals(Game.Mode.DeathMatch)) 
                 Application.LoadLevel("Win");
-            } else {
-                Application.LoadLevel("Lose");
-            }
+            else 
+                Application.LoadLevel("Lose");         
         }
-
     }
 	
 	public void clickOnScreen() {		
@@ -140,32 +120,15 @@ public class Player : MonoBehaviour,PeakListener {
 		if(Physics.Raycast(new Vector3(ray.origin.x, ray.origin.y, -10), new Vector3(0,0,1), out hit, 10.0f)) {
 			if(hit.collider.name == "PlayerTouchFeedback") {
 				if(hasPowerup) {
+					Game.PowerupActive = playerpowerup;
 					if(playerpowerup == Game.Powerups.MassivePulse) {
-						Debug.Log ("Massive Pulse Activated!");
-						Game.PowerupActive = Game.Powerups.MassivePulse;
 						Instantiate(pulsePrefab, Vector3.zero, pulsePrefab.transform.localRotation);
 						superPulseCount = 0;
-						hasPowerup = false;
-					} else if (playerpowerup == Game.Powerups.ChainReaction) {
-						Debug.Log ("Chain Reaction Activated!");
-						pwTimer = 0;
-						Game.PowerupActive = Game.Powerups.ChainReaction;
-						hasPowerup = false;
-					} else if (playerpowerup == Game.Powerups.ChangeColor) {
-						Debug.Log ("Single Colour Enemies Activated!");
-						pwTimer = 0;
-						Game.PowerupActive = Game.Powerups.ChangeColor;
-						hasPowerup = false;
-					} else if (playerpowerup == Game.Powerups.Invincible) {
-						Debug.Log ("Invicibility Activated!");
-						pwTimer = 0;
-						Game.PowerupActive = Game.Powerups.Invincible;
-						hasPowerup = false;
-					} else {
-						Debug.Log ("Powerup failed");
-						Game.PowerupActive = Game.Powerups.None;
-						hasPowerup = false;
 					}
+					playerpowerup = Game.Powerups.None;
+					Debug.Log (Game.PowerupActive + "Activated!");
+					hasPowerup = false;
+					pwTimer = 0;
 				}
 			} else if(hit.collider.name == "Powerup") {
 				hasPowerup = true;
@@ -204,32 +167,6 @@ public class Player : MonoBehaviour,PeakListener {
 	/// <param name="startBrightness">The start brightness level of the ring</param>
 	/// <param name="endBrightness">The final brightness level of the ring</param>
 	/// </summary>
-	private void lightRing(int ring, float timer, float totalTimer, float startBrightness, float finalBrightness) {	
-		if(finalBrightness > 1 || finalBrightness < 0) finalBrightness = 1;
-		if(startBrightness > 1 || startBrightness < 0) startBrightness = 0;
-		float brightness = ((timer/totalTimer)*(finalBrightness-startBrightness)) + startBrightness;
-		if(brightness > finalBrightness) playerColor[ring].a = finalBrightness;	
-		else playerColor[ring].a = brightness;
-		meshRenders[ring].material.SetColor("_Color", playerColor[ring]);
-	}
-	
-	/// <summary>
-	/// Controls the darkening of the ring. Only allows brightness values between 0 and 1
-	/// <param name="ring">The index of which ring you want to darken (0-2)</param>
-	/// <param name="timer">Where the ring is currently along its darkening phase</param>
-	/// <param name="totalTimer">The total time that the ring requires to achieve end Darkness</param>
-	/// <param name="startDarkness">The start brightness level of the ring</param>
-	/// <param name="endDarkness">The final brightness level of the ring</param>
-	/// </summary>
-	private void darkenRing(int ring, float timer, float totalTimer, float startDarkness, float finalDarkness) {
-		if(finalDarkness > 1 || finalDarkness < 0) finalDarkness = 0;
-		if(startDarkness > 1 || startDarkness < 0) startDarkness = 1;
-		float brightness = startDarkness - ((startDarkness-finalDarkness) * (timer/totalTimer));
-		if(brightness < finalDarkness) playerColor[ring].a = finalDarkness;	
-		else playerColor[ring].a = brightness;
-		meshRenders[ring].material.SetColor("_Color", playerColor[ring]);
-	}
-	
 	private void lightRing(int ring, float timer, float totalTimer, float startBrightness, float finalBrightness, Color c) {	
 		if(finalBrightness > 1 || finalBrightness < 0) finalBrightness = 1;
 		if(startBrightness > 1 || startBrightness < 0) startBrightness = 0;
@@ -238,7 +175,15 @@ public class Player : MonoBehaviour,PeakListener {
 		else c.a = brightness;
 		meshRenders[ring].material.SetColor("_Color", c);
 	}
-	
+
+	/// <summary>
+	/// Controls the darkening of the ring. Only allows brightness values between 0 and 1
+	/// <param name="ring">The index of which ring you want to darken (0-2)</param>
+	/// <param name="timer">Where the ring is currently along its darkening phase</param>
+	/// <param name="totalTimer">The total time that the ring requires to achieve end Darkness</param>
+	/// <param name="startDarkness">The start brightness level of the ring</param>
+	/// <param name="endDarkness">The final brightness level of the ring</param>
+	/// </summary>
 	private void darkenRing(int ring, float timer, float totalTimer, float startDarkness, float finalDarkness, Color c) {
 		if(finalDarkness > 1 || finalDarkness < 0) finalDarkness = 0;
 		if(startDarkness > 1 || startDarkness < 0) startDarkness = 1;
@@ -259,42 +204,10 @@ public class Player : MonoBehaviour,PeakListener {
 	/// <param name="outerDuration">The length of time you want the outer ring to achieve full brightness</param>
 	/// <param name="startBrightness">The start brightness level of the ring</param>
 	/// <param name="endBrightness">The final brightness level of the ring</param>
+	/// <param name="c">The color of the ring to be displayed (usually white)</param>
 	/// <returns>A boolean that returns true if you still need to animate, or false if done</returns>
 	/// </summary>
-	public bool animRing(bool firstHalf, bool pulse, float middleStartTime, float outerStartTime, float innerDuration, float middleDuration, float outerDuration, float startBrightness, float endBrightness) {
-		//Total time for animation sequence. Either sum of start times with final ring duration, or largest duration
-		float totalRingTime = middleStartTime+outerStartTime+outerDuration;
-		totalRingTime = Mathf.Max (Mathf.Max(innerDuration, middleDuration), totalRingTime);
-			
-		//Inner ring - starts initially
-		if(firstHalf) lightRing(0, glowTimers[0], innerDuration, startBrightness, endBrightness);
-		else darkenRing(0,glowTimers[0], innerDuration, startBrightness, endBrightness);
-		incrementGlowTimers(0);
-			
-		//Middle ring - only starts after the inner timer has passed the middle start time
-		if(glowTimers[0] > middleStartTime) {
-			if(firstHalf) lightRing (1, glowTimers[1], middleDuration, startBrightness, endBrightness);
-			else darkenRing (1, glowTimers[1], middleDuration, startBrightness, endBrightness);
-			incrementGlowTimers(1);
-		}
-		
-		//Outer ring - only starts after the middle timer has passed the outer start time
-		if(glowTimers[1] > outerStartTime) {
-			if(firstHalf) lightRing (2, glowTimers[2], outerDuration, startBrightness, endBrightness);
-			else darkenRing(2, glowTimers[2], outerDuration, startBrightness, endBrightness);
-			incrementGlowTimers(2);
-		}
-		
-		//Once we've exceeded the total time to illuminate/dim the lights, reset times
-		if(glowTimers[0] > totalRingTime) {
-			resetGlowTimers();
-			if(!pulse && firstHalf) glowAnimIn = true;
-			if(pulse) sentPulseTwo = true;
-			return false;
-		}
-		return true;
-	}
-	
+
 	public bool animRing(bool firstHalf, bool pulse, float middleStartTime, float outerStartTime, float innerDuration, float middleDuration, float outerDuration, float startBrightness, float endBrightness, Color c) {
 		//Total time for animation sequence. Either sum of start times with final ring duration, or largest duration
 		float totalRingTime = middleStartTime+outerStartTime+outerDuration;
@@ -329,8 +242,17 @@ public class Player : MonoBehaviour,PeakListener {
 		return true;
 	}
 	
-	public bool animRing(bool firstHalf, bool pulse, float middleStartTime, float outerStartTime, float duration, float startBrightness, float endBrightness) {
-		return animRing (firstHalf, pulse, middleStartTime, outerStartTime, duration, duration, duration, startBrightness, endBrightness);
+	public bool animRing(bool firstHalf, bool pulse, float middleStartTime, float outerStartTime, float duration, float startBrightness, float endBrightness, Color c) {
+		return animRing (firstHalf, pulse, middleStartTime, outerStartTime, duration, duration, duration, startBrightness, endBrightness, c);
+	}
+	
+	public void showAnimRing(Color c) {
+		if(sentPulse) sentPulse = animRing(true, true, .1f, .1f, .3f, .3f, 1f, c);
+		else if(sentPulseTwo) sentPulseTwo = animRing (false, false, .1f, .1f, .3f, 1f, .3f,c);
+		if(!sentPulse && !sentPulseTwo) {
+			if(glowAnimOut) glowAnimOut = animRing(true, false, .1f, .1f, .3f, .3f, 1f,c);
+			else if(glowAnimIn) glowAnimIn = animRing(false, false, .1f, .1f, .3f, 1f, .3f,c);
+		}
 	}
 				
 	private void incrementGlowTimers(int timer) {

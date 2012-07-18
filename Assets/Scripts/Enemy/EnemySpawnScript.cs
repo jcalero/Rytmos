@@ -13,6 +13,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	public float SpawnRate;                 // The time between spawns
 	public int[] spawnPositions;
 	public static int currentlySelectedEnemy;
+	public int spawnCount;
 	
 	private int RandomSeed;                 // The enemy type to spawn
 	//private GameObject cam;					// Camera gameobject to play audio
@@ -38,7 +39,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	#region Functions
 
 	void Start() {
-		currentlySelectedEnemy = Random.Range(0,6);
+		
 		init ();		
 	}
 	
@@ -47,6 +48,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		timer += Time.deltaTime;
 		
 		if (timer >= audioLength){
+			Debug.Log (spawnCount);
 			Application.LoadLevel("Win");			
 		}
 		
@@ -93,7 +95,8 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		spawnRestrictors = new int[AudioManager.peaks.Length];
 		spawnDivisors = new int[]{2,1,8,2,2,2};
 		spawnPositions = new int[]{0, 33, 66};
-	
+		currentlySelectedEnemy = Random.Range(0,6);
+		spawnCount = 0;
 		
 		rotateDirection = 1;
 		Level.SetUpParticlesFeedback(spawnPositions.Length, currentlySelectedEnemy);		
@@ -135,6 +138,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 						float speed = 3f;
 						if(Game.SyncMode) speed *= (spawnDist.magnitude)/maxMag;									
 						SpawnEnemy(currentlySelectedEnemy,speed,spawnDist);
+						spawnCount++;
 					}					
 					break;
 				case 1:
