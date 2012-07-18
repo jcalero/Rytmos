@@ -58,15 +58,27 @@ public class SoundProcessor
 			
 			#region VOLUME ANALYSIS
 			float avg = 0;
+			float max = -1;
 			foreach(float sample in spectrumProvider.getCurrentSamples()) {
 				avg+=Mathf.Abs(sample);
+				if(sample > max) max = sample;
 			}
 			avg /= (float)spectrumProvider.getCurrentSamples().Length;
 			
-			rollingAverage = (alpha * avg) + ((1-alpha) * rollingAverage);
+			rollingAverage = (alpha * (0.8f*max + 0.2f*avg)) + ((1-alpha) * rollingAverage);
 			
 			// Have we found a part which classifies as extremely loud?
-			if(rollingAverage > 0.5f) {
+			if(rollingAverage > 0.7f) {
+				
+				// Are we already in that part?
+				if(activePart != 5) {
+					activePart = 5; // Set flag that we are now in that part
+					volumeLevelList.Add(sampleCounter*spectrumProvider.getCurrentSamples().Length);
+					volumeLevelList.Add(activePart);
+				}
+			
+			// Have we found a part which classifies as damn loud?
+			} else if(rollingAverage > 0.5f) {
 				
 				// Are we already in that part?
 				if(activePart != 4) {
