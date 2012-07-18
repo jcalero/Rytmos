@@ -166,28 +166,35 @@ public class SoundProcessor
 		
 		// Get Peaks
 		List<int[]> peaksList = new List<int[]>();
-		alpha = 2f/21f;
+		float[] peakAvgs = new float[prunnedSpectralFlux.Length];
+		float[] minPeaks = new float[prunnedSpectralFlux.Length];
 		for(int i = 0; i < prunnedSpectralFlux.Length; i++) {
 			
 			List<int> tempPeaks = new List<int>();
-			float movingMean = 0;
-			float x = 20;
-			for(int j = 0; j < prunnedSpectralFlux[i].Length && x<0; j++) {
-				movingMean += prunnedSpectralFlux[i][j];
-				if(prunnedSpectralFlux[i][j] == 0) x--;
-			}
-			movingMean /= 20f;
+			minPeaks[i] = float.MaxValue;
 			
 			for(int j = 0; j < prunnedSpectralFlux[i].Length -1; j++){
 				if(prunnedSpectralFlux[i][j] > prunnedSpectralFlux[i][j+1] ) {
-					if(prunnedSpectralFlux[i][j] >= movingMean) tempPeaks.Add(j);
-
-					movingMean = (alpha * prunnedSpectralFlux[i][j]) + ((1-alpha) * movingMean);
+					tempPeaks.Add(j);
+					peakAvgs[i] += prunnedSpectralFlux[i][j];
+					if(prunnedSpectralFlux[i][j] != 0 && prunnedSpectralFlux[i][j] < minPeaks[i]) minPeaks[i] = prunnedSpectralFlux[i][j];
 				}
 			}
 			peaksList.Add(tempPeaks.ToArray());
+			peakAvgs[i] /= tempPeaks.Count;
 		}
 		
+		peaks = peaksList.ToArray();
+		
+		peaksList.Clear();
+		
+		for(int i = 0; i < peaks.Length; i++) {
+			List<int> tempPeaks = new List<int>();
+			for(int j = 0; j < peaks[i].Length; j++) {
+				if(prunnedSpectralFlux[i][peaks[i][j]] > minPeaks[i] + 0.7f*(peakAvgs[i] - minPeaks[i])) tempPeaks.Add(peaks[i][j]);
+			}
+			peaksList.Add(tempPeaks.ToArray());
+		}
 		peaks = peaksList.ToArray();
 	}
 	

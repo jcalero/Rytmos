@@ -16,7 +16,6 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	public int spawnCount;
 	
 	private int RandomSeed;                 // The enemy type to spawn
-	//private GameObject cam;					// Camera gameobject to play audio
 	private int[] counters;					// "Pointers" for the triggers of each channel
 	private float timer;					// Used to sync framerate with music playback-rate
 	private float audioLength;
