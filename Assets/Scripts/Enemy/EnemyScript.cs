@@ -69,14 +69,14 @@ public class EnemyScript : MonoBehaviour {
 		if (otherObject.tag == "Player") {
 			if(Game.PowerupActive != Game.Powerups.Invincible) 
 				Player.health -= 10 * health;       // Reduces the player health by 10 * the remaining enemy health
-			StartCoroutine(DamageEnemy());
+			StartCoroutine(DamageEnemy(true));
 		}
 		// If the enemy collides with a pulse of the right color, reduce enemy health, increase score
 		if (otherObject.name == "Pulse(Clone)") {
 			if (otherObject.gameObject.GetComponent<PulseSender>().CurrentColor == MainColor ||
 				otherObject.gameObject.GetComponent<PulseSender>().SecondaryColor == MainColor ||
 				otherObject.gameObject.GetComponent<PulseSender>().CurrentColor == Color.white) {
-				StartCoroutine(DamageEnemy());
+				StartCoroutine(DamageEnemy(false));
 				
 				if(Game.PowerupActive == Game.Powerups.ChainReaction) {
 					GameObject pulse = (GameObject) Instantiate(PulsePrefab, gameObject.transform.position, Quaternion.identity);
@@ -174,7 +174,7 @@ public class EnemyScript : MonoBehaviour {
 	/// <summary>
 	/// Reduces the health of the enemy, destroys it if low on health and gives energy to the player
 	/// </summary>
-	public IEnumerator DamageEnemy() {
+	public IEnumerator DamageEnemy(bool isPlayer) {
 		health--;
 		if (health < 1) {
 			if(Game.PowerupActive != Game.Powerups.MassivePulse) {
@@ -182,7 +182,7 @@ public class EnemyScript : MonoBehaviour {
 				if (Player.energy > Player.maxEnergy)     // Make sure energy is never more than maxEnergy
 					Player.energy = Player.maxEnergy;
 			}
-			if(!givenScore) {
+			if(!givenScore && !isPlayer) {
 				Player.score += 10;
 				givenScore = true;
 			}

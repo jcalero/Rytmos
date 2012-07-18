@@ -247,7 +247,7 @@ public class Player : MonoBehaviour,PeakListener {
 	}
 	
 	public void showAnimRing(Color c) {
-		if(sentPulse) sentPulse = animRing(true, true, .1f, .1f, .3f, .3f, 1f, c);
+		if(sentPulse) sentPulse = animRing(true, true, .05f, .05f, .1f, .3f, 1f, c);
 		else if(sentPulseTwo) sentPulseTwo = animRing (false, false, .1f, .1f, .3f, 1f, .3f,c);
 		if(!sentPulse && !sentPulseTwo) {
 			if(glowAnimOut) glowAnimOut = animRing(true, false, .1f, .1f, .3f, .3f, 1f,c);
