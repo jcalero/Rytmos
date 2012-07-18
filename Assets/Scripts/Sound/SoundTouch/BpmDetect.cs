@@ -75,7 +75,7 @@ namespace SoundTouch
         protected const float Avgnorm = (1 - AVGDECAY);
 
         /// FIFO-buffer for decimated processing samples.
-        protected readonly FifoSampleBuffer<TSampleType> Buffer;
+        public readonly FifoSampleBuffer<TSampleType> Buffer;
 
         /// Number of channels (1 = mono, 2 = stereo)
         protected readonly int Channels;
