@@ -33,6 +33,7 @@ public class PeakTriggerManager : MonoBehaviour
 		/* Update the flags for loud parts of a song */
 		if (loudPartCounter < AudioManager.loudPartTimeStamps.Length && AudioManager.loudPartTimeStamps [loudPartCounter] / (float)AudioManager.frequency < timer + 0.1f) {
 			loudFlag = AudioManager.loudPartTimeStamps[loudPartCounter+1];
+			Debug.Log(loudFlag);
 			foreach (PeakListener l in listeners)
 				l.setLoudFlag (loudFlag);
 			loudPartCounter+=2;			

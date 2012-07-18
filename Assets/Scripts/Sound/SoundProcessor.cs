@@ -24,7 +24,7 @@ public class SoundProcessor
 		// For finding the volume levels
 		List<int> volumeLevelList = new List<int>();
 		float rollingAverage = 0.01f;
-		float alpha = 0.5f;		
+		float alpha = 0.15f;		
 		int activePart = -1;
 		int sampleCounter = 0;
 		
@@ -76,7 +76,7 @@ public class SoundProcessor
 				}
 			
 			// Have we found a part which classifies as pretty loud?
-			} else if (rollingAverage > 0.06f) {
+			} else if (rollingAverage > 0.126f) {
 				
 				// Are we already in that part?
 				if(activePart != 3) {
