@@ -28,9 +28,7 @@ public class SoundProcessor
 		int activePart = -1;
 		int sampleCounter = 0;
 		float totalMax = -1;
-		
-		float start = Time.realtimeSinceStartup;
-		
+	
 		// Get spectral flux
 		SpectrumProvider spectrumProvider = new SpectrumProvider( decoder, BUFFER_SIZE, HOP_SIZE, true );			
 		float[] spectrum = spectrumProvider.nextSpectrum();
@@ -77,10 +75,7 @@ public class SoundProcessor
 		dec.reset ();
 		
 		float [] samples = new float[spectrumProvider.getWinSize ()];
-		
-
-		start = Time.realtimeSinceStartup;
-		
+				
 		while(dec.readSamples(ref samples) !=0)
 		{	
 			float avg = 0;
