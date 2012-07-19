@@ -153,7 +153,6 @@ public class Player : MonoBehaviour,PeakListener {
 				} else {
 					//Only allow 1 superpulses
 					if(superPulseCount == 0) {
-						hasPowerup = false;
 						Game.PowerupActive = Game.Powerups.None;
 						energy -= pulseCost;
 					}

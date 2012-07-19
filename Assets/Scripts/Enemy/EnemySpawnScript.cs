@@ -27,19 +27,22 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	private int rotateDirection;
 	private int loudPartCounter;
 	public int loudFlag;
+	
+
+	private int spawnerNumber;
 	#endregion
 
 	#region Functions
 
 	void Start() {
-		
+		spawnerNumber = 0;
 		init ();		
 	}
 	
 	void Update() {
 		
 		timer += Time.deltaTime;
-		
+
 		
 		if (timer >= audioLength){
 			Debug.Log (spawnCount);
@@ -105,14 +108,16 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 							}
 						}
 					}
-
-					foreach(int spawnPosition in spawnPositions) {
-						Vector3 spawnDist = findSpawnPositionVector(spawnPosition);
+					//foreach(int spawnPosition in spawnPositions) {
+						Vector3 spawnDist = findSpawnPositionVector(spawnPositions[spawnerNumber]-5);
 						float speed = 3f;
 						if(Game.SyncMode) speed *= (spawnDist.magnitude)/maxMag;									
 						SpawnEnemy(currentlySelectedEnemy,speed,spawnDist);
 						spawnCount++;
-					}					
+						spawnDist = findSpawnPositionVector(spawnPositions[spawnerNumber]+5);
+						if(Game.SyncMode) speed *= (spawnDist.magnitude)/maxMag;									
+						SpawnEnemy(currentlySelectedEnemy,speed,spawnDist);
+						spawnCount++;
 					break;
 				case 1:
 					// These are more medium ranged frequencies, used to change the spawn position (for now at least)
@@ -120,6 +125,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 						incrementSpawnPosition(ref spawnPositions[i],3,rotateDirection);
 					}
 					Level.SetUpParticlesFeedback(spawnPositions.Length, currentlySelectedEnemy);
+					spawnerNumber = Random.Range (0,3);
 					break;
 				case 2:
 					// These are even more medium ranged frequencies, used to change the direction (for now, again :P )
