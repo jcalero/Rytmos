@@ -23,6 +23,7 @@ public class Player : MonoBehaviour,PeakListener {
 
     public GameObject pulsePrefab;              // The pulse. Inspector reference. Location: Player
 	public GameObject powerupPrefab; 			// The powerup. Inspector refernce. Location: PLayer
+	public GameObject powerupDisplay;			// The sprite to display in the center. Inspector reference. Location: Player
 	
     private float energyTimer = 0;              // Timer for energy regeneration
 	private float pwTimer = 0;					// Timer for current invincibility duration
@@ -73,7 +74,9 @@ public class Player : MonoBehaviour,PeakListener {
 				if(pwTimer > pwTotalTime) {
 					Debug.Log ("Powerup: "+Game.PowerupActive+" deactivated");
 					Game.PowerupActive = Game.Powerups.None;
-					hasPowerup = false;	
+					if(playerpowerup == Game.Powerups.None) {
+						hasPowerup = false;	
+					}
 					pwTimer = 0;
 				}
 			} else pwTimer = 0;
@@ -121,19 +124,22 @@ public class Player : MonoBehaviour,PeakListener {
 			if(hit.collider.name == "PlayerTouchFeedback") {
 				if(hasPowerup) {
 					Game.PowerupActive = playerpowerup;
+					powerupDisplay.GetComponent<CenterPowerupDisplay>().hideSprite();
+					hasPowerup = false;
 					if(playerpowerup == Game.Powerups.MassivePulse) {
 						Instantiate(pulsePrefab, Vector3.zero, pulsePrefab.transform.localRotation);
 						superPulseCount = 0;
+						playerpowerup = Game.Powerups.None;
 					}
-					playerpowerup = Game.Powerups.None;
 					Debug.Log (Game.PowerupActive + "Activated!");
-					hasPowerup = false;
 					pwTimer = 0;
 				}
 			} else if(hit.collider.name == "Powerup") {
+				if(hasPowerup) powerupDisplay.GetComponent<CenterPowerupDisplay>().hideSprite();
 				hasPowerup = true;
 				takenPowerup = true;
 				playerpowerup = powerupPrefab.GetComponent<PowerupScript>().Powerup();
+				powerupDisplay.GetComponent<CenterPowerupDisplay>().changeSprite(playerpowerup);
 			} else if(energy - pulseCost >= 0) {
 				// Show the touch sprite at the mouse location.
 	          	Level.ShowTouchSprite(new Vector3(ray.origin.x, ray.origin.y, 0));

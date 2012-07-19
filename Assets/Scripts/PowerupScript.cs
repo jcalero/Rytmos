@@ -31,8 +31,7 @@ public class PowerupScript : MonoBehaviour {
         // Checks that the sprite name exists in the atlas, if not falls back to default sprite
         if (SpriteAtlas.GetSprite(spriteName) == null) {
             Debug.LogWarning("Sprite " + "\"" + spriteName + "\" " + "not found in atlas " + "\"" + SpriteAtlas + "\"" + ". Using default sprite, \"circle\".");
-            spriteName = "circle";
-			
+            spriteName = "circle";		
         }
         // Calculate sprite atlas coordinates
         CalculateSprite(SpriteAtlas, spriteName);
