@@ -276,9 +276,7 @@ public class Player : MonoBehaviour,PeakListener {
 	public void onPeakTrigger(int channel) {
 		if(!glowAnimOut && !glowAnimIn) glowAnimOut = true;
 	}
-	
-	public void setBPM(int bpm) {}
-	
+		
 	public void setLoudFlag(int flag) {}
 	
 	void OnDisable() {
