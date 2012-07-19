@@ -46,34 +46,11 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		
 		timer += Time.deltaTime;
 		
+		
 		if (timer >= audioLength){
 			Debug.Log (spawnCount);
 			Application.LoadLevel("Win");			
 		}
-		
-//		if(Game.PowerupActive == Game.Powerups.TimeSlow) {
-//			if(Time.timeScale <= 1f) {
-//				float timeDiff = timeSlowTimer - timeSlowOldTime;
-//				if(timeDiff > 0.05f) timeSlowOldTime = timeSlowTimer;
-//				timeSlowTimer += Time.deltaTime;
-//				if(timeSlowTimer < timeSlowTimerTotal/2f && Time.timeScale > 0.5f && timeDiff > 0.05f) {
-//					Time.timeScale -= .05f;
-//					AudioPlayer.Pitch -= .05f;
-//				} else if (timeSlowTimer > timeSlowTimerTotal/2f && timeSlowTimer < timeSlowTimerTotal && Time.timeScale < 1f && timeDiff > 0.05f) {
-//					AudioPlayer.Pitch += .05f;
-//					Time.timeScale += .05f;
-//				} else if(timeSlowTimer > timeSlowTimerTotal) {
-//					timeSlowTimer = 0;
-//					timeSlowOldTime = 0;
-//					Game.PowerupActive = Game.Powerups.None;
-//				}
-//			}
-//
-//		} 
-//		if(Game.PowerupActive != Game.Powerups.TimeSlow) {
-//			timeSlowTimer = 0;
-//			timeSlowOldTime = 0;
-//		}
 	}
 	
 	/// <summary>
@@ -84,19 +61,18 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	/// </summary>
 	void init() {
 		
+		// "Register" with the PeakTriggerManager to be alerted when peaks arise, loudness changes, etc..
 		PeakTriggerManager.addSelfToListenerList(this);
 		
-		//cam = GameObject.Find("Main Camera");
+		// Initialize other variables
 		audioLength = AudioManager.audioLength;
-		
 		timer = 0f;
 		timers = new float[AudioManager.peaks.Length];
 		spawnRestrictors = new int[AudioManager.peaks.Length];
-		spawnDivisors = new int[]{2,1,8,2,2,2};
+		spawnDivisors = new int[]{1,1,8,2,2,2};
 		spawnPositions = new int[]{0, 33, 66};
 		currentlySelectedEnemy = Random.Range(0,6);
 		spawnCount = 0;
-		
 		rotateDirection = 1;
 		Level.SetUpParticlesFeedback(spawnPositions.Length, currentlySelectedEnemy);		
 		loudFlag = 0;
@@ -106,13 +82,17 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		loudFlag = flag;
 	}
 	
-	public void setBPM(int bpm) {
-		Debug.Log(bpm);
-	}
-	
+	/// <summary>
+	/// This function is called by PeakTriggerManager, every time a peak is detected at the current song time.
+	/// </summary>
+	/// <param name='channel'>
+	/// Channel.
+	/// </param>
 	public void onPeakTrigger(int channel) {
 		
-		if(timer - timers[channel] > timeThresh) {			
+		// Filter out spawns which are too close together
+		if(timer - timers[channel] > PeakTriggerManager.timeThreshs[channel]) {			
+			
 			// Filter out every 2nd, or 3rd, or what ever specified trigger		
 			if(spawnRestrictors[channel] == 0) {
 								
