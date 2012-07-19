@@ -11,192 +11,111 @@ using System.Collections.Generic;
 public class MainMenu : MonoBehaviour {
 
 	#region Fields
-	public UIDraggablePanel panel; // Inspector instance. Location: MainMenuManager.
-	public UIButton reloadButton;
-	public UIButton nextButton;
-	public UIButton prevButton;
+	// Menu panels (Inspector instances, location: MainMenuManager)
+	public UIPanel MainMenuBasePanel;
+	public UIPanel MainMenuPlayPanel;
+	public UIPanel MainMenuQuitPanel;
+	public UIPanel MainMenuModePanel;
+	public UIPanel MainMenuOptionsPanel;
+	public UIPanel MainMenuScoresPanel;
+	public UIPanel MainMenuFileBrowserPanel;
+
+	// File browser
+	public GameObject FileBrowser;
+
+	// Current state of the menu.
+	public MenuLevel CurrentMenuLevel;
+
+	// Mode menu level buttons
 	public UIButton ArcadeButton;
-	public UIButton SurvivalButton;
+	public UIButton CasualButton;
+	public UIButton ChallengeButton;
 	public UIButton StoryButton;
-	public UIButton BackModeButton;
-	public UIPanel FileBrowserPanel;
-	public UILabel highscoresTypeLabel;
-	public UILabel selectModeLabel;
 
-	public UILabel[] top5names;
-	public UILabel[] top5scores;
-	public UILabel[] close5names;
-	public UILabel[] close5scores;
+	// Mode menu level particles;
+	public ParticleSystem ArcadeParticles;
+	public ParticleSystem CasualParticles;
+	public ParticleSystem ChallengeParticles;
+	public ParticleSystem StoryParticles;
 
-	// Values for menu slider locations.
-	private Vector3 quitMenu;
-	private Vector3 mainMenu;
-	private Vector3 modeMenu;
-	private Vector3 highScoresMenu;
-	private Vector3 optionsMenu;
-	private GameObject fb;
+	// Mode menu button states
+	private bool arcadeButtonActive;
+	private bool casualButtonActive;
+	private bool challengeButtonActive;
+	private bool storyButtonActive;
 
-	private bool highscoresLoaded;
-	private bool loadedSurvival;
-	//private bool loadedTimeAttack = true;
-	//private string survival = "rytmos_hs_dm";
-	//private string timeAttack = "rytmos_hs_30sec";
-	private List<string> songList = new List<string>();
-	private string[][] separatedSongList;
-	private int currentlyShowingHS = 0;
+	// Options menu settable objects
+	public UISlider EffectsVolumeSlider;
+	public UISlider MusicVolumeSlider;
+	public UILabel ColorblindSettingLabel;
+	public UILabel LowGraphicsSettingLabel;
 
-	private static MainMenu instance;
-
-	public static string ScoresString;
-	public static string FetchError;
+	// REMOVE THIS ONCE HIGHSCORES HAVE BEEN CODED ON THE NEW MAIN MENU
+	public static string FetchError = "";
 	#endregion
 
 	#region Functions
 
 	void Awake() {
-		instance = this;
-		quitMenu = new Vector3(0f, 0f, 0f);
-		mainMenu = new Vector3(-650f, 0f, 0f);
-		modeMenu = new Vector3(-650f * 2, 0f, 0f);
-		highScoresMenu = new Vector3(-650f * 3, 0f, 0f);
-		optionsMenu = new Vector3(-650f * 4, 0f, 0f);
-		fb = GameObject.Find("FileBrowser");
-
 		Game.GameState = Game.State.Menu;
+		CurrentMenuLevel = MenuLevel.Base;
 	}
 
 	void Start() {
-		if (!LoadSongList()) {
-			top5names[0].text = "Top 5 Scores...";
-			close5names[0].text = "Scores close to you...";
-			highscoresTypeLabel.text = "No songs have been played yet! Play some first.";
-		} else {
-			string artist = separatedSongList[0][0];
-			string song = separatedSongList[0][1];
-			Game.Mode gameMode = (Game.Mode)Enum.Parse(typeof(Game.Mode), separatedSongList[0][2]);
-
-			StartCoroutine(fetchScores(artist, song, gameMode));
-		}
 	}
 
 	void Update() {
-		// When the player presses "Escape" or "Back" on Android, returns to main menu screen.
-		if (Input.GetKey(KeyCode.Escape))
-			OnBackClicked();
-	}
-	private IEnumerator fetchScores(int songListID) {
-		string artist = separatedSongList[songListID][0];
-		string song = separatedSongList[songListID][1];
-		Game.Mode gameMode = (Game.Mode)Enum.Parse(typeof(Game.Mode), separatedSongList[songListID][2]);
-		yield return StartCoroutine(fetchScores(artist, song, gameMode));
-		EnableReloadButton();
-	}
-	private IEnumerator fetchScores(string artist, string song, Game.Mode gameMode) {
-		string artistDisplay = artist;
-		string songDisplay = song;
-		//string md5Artist = HSController.RemoveSpecialCharacters(artist).ToLower();
-		//string md5Song = HSController.RemoveSpecialCharacters(song).ToLower();
-		//string entryMD5 = MD5Utils.MD5FromString(md5Artist + md5Song + gameMode);
-		string localMD5 = HSController.CalculateTableName(artist, song, gameMode);
-		int topScore = PlayerPrefs.GetInt(localMD5);
-
-		//Debug.Log("This is what the data looks like before calculating fetch-MD5: " + md5Artist + " - " + md5Song + " - " + gameMode.ToString());
-
-		if (artist.Length > 1) artistDisplay = char.ToUpper(artist[0]) + artist.Substring(1);
-		if (song.Length > 1) songDisplay = char.ToUpper(song[0]) + song.Substring(1);
-
-		highscoresTypeLabel.text = artistDisplay + " - " + songDisplay + " (" + gameMode + ") ";
-		top5names[0].text = "Loading Top Scores...";
-		close5names[0].text = "Loading Close Scores...";
-		top5scores[0].text = "";
-		close5scores[0].text = "";
-		int labelcnt = 1;
-		while (labelcnt < 5) {
-			top5names[labelcnt].text = "";
-			close5names[labelcnt].text = "";
-			top5scores[labelcnt].text = "";
-			close5scores[labelcnt].text = "";
-			labelcnt++;
-		}
-
-		yield return StartCoroutine(HSController.GetTop5Scores(artist, song, gameMode));
-		if (FetchError == null) {
-			for (int cnt = 0; cnt < HSController.Top5List.Length; cnt++) {
-				if (cnt < 5) {
-					top5names[cnt].text = (cnt + 1) + ". " + HSController.Top5List[cnt][0];
-					top5scores[cnt].text = HSController.Top5List[cnt][1];
-				}
-				//Debug.Log(HSController.ScoresList[cnt][0] + " :: " + HSController.ScoresList[cnt][1]);
-			}
-		} else {
-			top5names[0].text = FetchError;
-		}
-
-		yield return StartCoroutine(HSController.GetClose5Scores(artist, song, gameMode, topScore));
-		if (FetchError == null) {
-			bool formattedOwnRow = false;
-			Sort<string>(HSController.Close5List, 2);
-			for (int cnt = 0; cnt < HSController.Close5List.Length; cnt++) {
-				if (cnt < 5) {
-					string nr = HSController.Close5List[cnt][2];
-					close5names[cnt].text = nr + ". " + HSController.Close5List[cnt][0];
-					close5scores[cnt].text = HSController.Close5List[cnt][1];
-					if (HSController.Close5List[cnt][1] == topScore.ToString() &&
-						HSController.Close5List[cnt][0] == Game.PlayerName &&
-						!formattedOwnRow) {
-						close5names[cnt].text = "[FDD017]" + close5names[cnt].text;
-						close5scores[cnt].text = "[FDD017]" + close5scores[cnt].text;
-						formattedOwnRow = true;
-					}
-				}
-				//Debug.Log(HSController.ScoresList[cnt][0] + " :: " + HSController.ScoresList[cnt][1]);
-			}
-		} else {
-			close5names[0].text = FetchError;
+		// When the player presses "Escape" or "Back" on Android, returns to main menu screen
+		// or goes to the quit menu if on the main menu already.
+		if (Input.GetKeyDown(KeyCode.Escape)) {
+			if (CurrentMenuLevel == MenuLevel.Base) ChangeMenu(MenuLevel.Quit);
+			else ChangeMenu(MenuLevel.Base);
 		}
 	}
 
-	private bool LoadSongList() {
-		// Load song list
-		string path = "";
-		if (Application.platform == RuntimePlatform.Android)
-			path = (Application.persistentDataPath + "/songlist.r");
-		else if (Application.platform == RuntimePlatform.WindowsPlayer
-			|| Application.platform == RuntimePlatform.WindowsEditor)
-			path = (Application.persistentDataPath + "\\songlist.r");
-		else {
-			Debug.Log("PLATFORM NOT SUPPORTED YET");
-			path = "";
-		}
-		string line;
-		int counter = 0;
-		try {
-			using (StreamReader sr = new StreamReader(path)) {
-				while ((line = sr.ReadLine()) != null) {
-					songList.Add(line);
-				}
-				sr.Close();
-				separatedSongList = new string[songList.Count][];
-
-				while (counter < songList.Count) {
-					string[] tempString = songList[counter].Split('|');
-					separatedSongList[counter] = new string[3];
-					separatedSongList[counter][0] = tempString[0];
-					separatedSongList[counter][1] = tempString[1];
-					separatedSongList[counter][2] = tempString[2];
-					counter++;
-				}
-				if (songList.Count < 1) return false;
-				else return true;
-			}
-		} catch (Exception e) {
-			Debug.LogError(e.Message);
-			return false;
-		}
+	/// <summary>
+	/// Change the menu now to watever the CurrentMenuLevel is set to.
+	/// </summary>
+	private void ChangeMenu() {
+		ChangeMenu(CurrentMenuLevel);
 	}
-	private static void Sort<T>(T[][] data, int col) {
-		StringAsIntComparer comparer = new StringAsIntComparer();
-		Array.Sort(data, (x, y) => comparer.Compare(x[col], y[col]));
+
+	/// <summary>
+	/// Change the menu to the given menu level. Also set CurrentMenuLevel appropriately.
+	/// </summary>
+	/// <param name="menu">The MenuLevel enum to change the menu level to.</param>
+	public void ChangeMenu(MenuLevel menu) {
+		CurrentMenuLevel = menu;
+		switch (CurrentMenuLevel) {
+			case MenuLevel.Base:
+				if (MainMenuQuitPanel.enabled) UITools.SetActiveState(MainMenuQuitPanel, false);
+				if (MainMenuModePanel.enabled) UITools.SetActiveState(MainMenuModePanel, false);
+				if (MainMenuOptionsPanel.enabled) UITools.SetActiveState(MainMenuOptionsPanel, false);
+				UITools.SetActiveState(MainMenuBasePanel, true);
+				UITools.SetActiveState(MainMenuPlayPanel, true);
+				break;
+			case MenuLevel.Mode:
+				if (MainMenuFileBrowserPanel.enabled) UITools.SetActiveState(MainMenuFileBrowserPanel, false);
+				if (MainMenuPlayPanel.enabled) UITools.SetActiveState(MainMenuPlayPanel, false);
+				UITools.SetActiveState(MainMenuBasePanel, true);
+				UITools.SetActiveState(MainMenuModePanel, true);
+				break;
+			case MenuLevel.Options:
+				UITools.SetActiveState(MainMenuPlayPanel, false);
+				UITools.SetActiveState(MainMenuOptionsPanel, true);
+				break;
+			case MenuLevel.Quit:
+				UITools.SetActiveState(MainMenuPlayPanel, false);
+				UITools.SetActiveState(MainMenuQuitPanel, true);
+				break;
+			case MenuLevel.Scores:
+				break;
+			case MenuLevel.FileBrowser:
+				UITools.SetActiveState(MainMenuModePanel, false);
+				UITools.SetActiveState(MainMenuBasePanel, false);
+				UITools.SetActiveState(MainMenuFileBrowserPanel, true);
+				break;
+		}
 	}
 
 	#region Main Menu buttons
@@ -204,67 +123,46 @@ public class MainMenu : MonoBehaviour {
 	/// Button handler for "Play" button
 	/// </summary>
 	void OnPlayClicked() {
-		// Stop any current momentum to allow for Spring to begin.
-		panel.currentMomentum = Vector3.zero;
-		// Begin spring motion
-		SpringPanel.Begin(panel.gameObject, modeMenu, 13f);
-		// Store the new player name
-		//Game.PlayerName = "Jakob";
-		// Store the song high score
-		//string entryMD5 = MD5Utils.MD5FromString(Game.Artist + Game.SongName + Game.Mode.DeathMatch);
-		//if (PlayerPrefs.GetInt(entryMD5) < 10500) PlayerPrefs.SetInt(entryMD5, 10500);
-		//StartCoroutine(HSController.PostScoresNew(Game.PlayerName, 10500, Game.Artist, Game.SongName, Game.Mode.DeathMatch));
+		ChangeMenu(MenuLevel.Mode);
 	}
 
 	/// <summary>
 	/// Button handler for "Highscores" button
 	/// </summary>
 	void OnHighScoresClicked() {
-		// Stop any current momentum to allow for Spring to begin.
-		panel.currentMomentum = Vector3.zero;
-		// Begin spring motion
-		SpringPanel.Begin(panel.gameObject, highScoresMenu, 13f);
-		//Debug.Log(Game.Artist + Game.SongName + Game.Mode.DeathMatch);
 	}
 
 	/// <summary>
 	/// Button handler for "Options" button
 	/// </summary>
 	void OnOptionsClicked() {
-		// Stop any current momentum to allow for Spring to begin.
-		panel.currentMomentum = Vector3.zero;
-		// Begin spring motion
-		SpringPanel.Begin(panel.gameObject, optionsMenu, 13f);
-	}
-
-	/// <summary>
-	/// Button handler for "Quit Game" button
-	/// </summary>
-	void OnQuitClicked() {
-		// Stop any current momentum to allow for Spring to begin.
-		panel.currentMomentum = new Vector3(0f, 0f, 0f);
-		// Begin spring motion
-		SpringPanel.Begin(panel.gameObject, quitMenu, 13f);
+		ChangeMenu(MenuLevel.Options);
+		LoadOptions();
 	}
 	#endregion
 
-	#region Other menu buttons (Back, Quit-confirm)
+	#region Other Buttons (Back)
 	/// <summary>
 	/// Button handler or "Back" button
 	/// </summary>
 	void OnBackClicked() {
-		fb.SendMessage("CloseFileWindow");
-		// Stop any current momentum to allow for Spring to begin.
-		panel.currentMomentum = Vector3.zero;
-		// Begin spring motion
-		SpringPanel.Begin(panel.gameObject, mainMenu, 13f);
+		ChangeMenu(MenuLevel.Base);
 	}
+	#endregion
 
+	#region Quit menu buttons
 	/// <summary>
 	/// Button handler for "Yes, Quit Game" button
 	/// </summary>
 	void OnQuitConfirmedClicked() {
 		Application.Quit();
+	}
+
+	/// <summary>
+	/// Button handler for "No, Don't Quit Game" button
+	/// </summary>
+	private void OnQuitCancelClicked() {
+		ChangeMenu(MenuLevel.Base);
 	}
 	#endregion
 
@@ -272,104 +170,108 @@ public class MainMenu : MonoBehaviour {
 	/// <summary>
 	/// Button handler for "Arcade" button
 	/// </summary>
-	void OnArcadeModeClicked() {
-		Game.GameMode = Game.Mode.DeathMatch;
-		ToggleModeMenu(false);
-		ToggleBackModeButton(false);
-		ToggleFileBrowserPanel(true);
-		if (!string.IsNullOrEmpty(Game.Path)) fb.SendMessage("OpenFileWindow", PlayerPrefs.GetString("filePath"));
-		else fb.SendMessage("OpenFileWindow", "");
-
-		//Application.LoadLevel("Game");
+	private void OnArcadeButtonClicked() {
+		arcadeButtonActive = true;
+		if (arcadeButtonActive) {
+			FadeOutMenu();
+			ChangeMenu(MenuLevel.FileBrowser);
+			if (!string.IsNullOrEmpty(Game.Path)) FileBrowser.SendMessage("OpenFileWindow", PlayerPrefs.GetString("filePath"));
+			else FileBrowser.SendMessage("OpenFileWindow", "");
+			//StartCoroutine(LoadLevelDelayed("Game", 1f));
+		} else {
+			//Vector3 buttonScale = ArcadeButton.GetComponentInChildren<UISlicedSprite>().transform.localScale;
+			//buttonScale =
+			//    new Vector3(buttonScale.x*1.1f, buttonScale.y*1.1f, buttonScale.z);
+			arcadeButtonActive = true;
+		}
 	}
 
 	/// <summary>
-	/// Button handler for "Survival" button
+	/// Button handler for "Casual" button
 	/// </summary>
-	void OnChallengeModeClicked() {
-		//FileBrowser.LoadFileBrowser("DeathMatch");
-		//Application.LoadLevel("DeathMatch");
+	private void OnCasualButtonClicked() {
+		OnArcadeButtonClicked();
+	}
+
+	/// <summary>
+	/// Button handler for "Challenge" button
+	/// </summary>
+	private void OnChallengeButtonClicked() {
+		OnArcadeButtonClicked();
+	}
+	/// <summary>
+	/// Button handler for "Story" button
+	/// </summary>
+	private void OnStoryButtonClicked() {
+		OnArcadeButtonClicked();
+	}
+	#endregion
+
+	#region Option menu functions
+	private void OnEffectsSliderChange() {
+		Game.EffectsVolume = EffectsVolumeSlider.sliderValue;
+	}
+
+	private void OnMusicSliderChange() {
+		Game.MusicVolume = MusicVolumeSlider.sliderValue;
+	}
+
+	private void OnColorBlindModeButtonClicked() {
+		bool tempValue = Game.ColorBlindMode;
+		Game.ColorBlindMode = !tempValue;
+		ColorblindSettingLabel.text = !tempValue ? "[44ff44]On" : "[FF4444]Off";
+	}
+
+	private void OnLowGraphicsButtonClicked() {
+		bool tempValue = Game.LowGraphicsMode;
+		Game.LowGraphicsMode = !tempValue;
+		LowGraphicsSettingLabel.text = !tempValue ? "[44ff44]On" : "[FF4444]Off";
 	}
 	#endregion
 
 	#region Highscore buttons
 	void OnNextHighscoreClicked() {
-		DisableReloadButton();
-		currentlyShowingHS = (currentlyShowingHS + 1) % separatedSongList.Length;
-		StartCoroutine(fetchScores(currentlyShowingHS));
 	}
 
 	void OnPrevHighscoreClicked() {
-		DisableReloadButton();
-		currentlyShowingHS = ((currentlyShowingHS - 1) % separatedSongList.Length + separatedSongList.Length) % separatedSongList.Length;
-		StartCoroutine(fetchScores(currentlyShowingHS));
 	}
 
 	void OnReloadClicked() {
-		DisableReloadButton();
-		StartCoroutine(fetchScores(currentlyShowingHS));
 	}
 	#endregion
 
-	#region Enable/Disable regions of the UI
-	public static void ToggleModeMenu(bool state) {
-		string labelText = "Choose Game Mode";
-		Vector3 labelPosition = new Vector3(0f, 134f, 0f);
-		Vector3 labelScale = new Vector3(40, 40, 1);
-		instance.ArcadeButton.isEnabled = state;
-		instance.ArcadeButton.transform.GetChild(0).gameObject.active = state;   // Show/Hide Background
-		instance.ArcadeButton.transform.GetChild(1).gameObject.active = state;   // Show/Hide Label
-		instance.SurvivalButton.isEnabled = state;
-		instance.SurvivalButton.transform.GetChild(0).gameObject.active = state;   // Show/Hide Background
-		instance.SurvivalButton.transform.GetChild(1).gameObject.active = state;   // Show/Hide Label
-		instance.StoryButton.isEnabled = state;
-		instance.StoryButton.transform.GetChild(0).gameObject.active = state;   // Show/Hide Background
-		instance.StoryButton.transform.GetChild(1).gameObject.active = state;   // Show/Hide Label
-
-		if (!state) {
-			labelText = "Select Song";
-			labelPosition = new Vector3(0f, 159f, 0f);
-			labelScale = new Vector3(30, 30, 1);
-		}
-
-		instance.selectModeLabel.text = labelText;
-		instance.selectModeLabel.transform.localPosition = labelPosition;
-		instance.selectModeLabel.transform.localScale = labelScale;
+	#region Utilities
+	/// <summary>
+	/// Loads the specified level after a certain amount of time
+	/// </summary>
+	/// <param name="level">The level string to load</param>
+	/// <param name="time">The amount of seconds to wait before loading</param>
+	/// <returns></returns>
+	private IEnumerator LoadLevelDelayed(string level, float time) {
+		yield return new WaitForSeconds(time);
+		Application.LoadLevel(level);
 	}
 
-	public static void ToggleFileBrowserPanel(bool state) {
-		Game.SetActiveState(instance.FileBrowserPanel, state);
+	private void FadeOutMenu() {
+
 	}
 
-	public static void ToggleBackModeButton(bool state) {
-		instance.BackModeButton.isEnabled = state;
-		instance.BackModeButton.transform.GetChild(0).gameObject.active = state;   // Show/Hide Background
-		instance.BackModeButton.transform.GetChild(1).gameObject.active = state;   // Show/Hide Label
-	}
-
-	public static void DisableReloadButton() {
-		instance.reloadButton.isEnabled = false;
-		instance.reloadButton.transform.GetChild(0).gameObject.active = false;
-		instance.reloadButton.transform.GetChild(1).gameObject.active = false;
-		instance.nextButton.isEnabled = false;
-		instance.prevButton.isEnabled = false;
-	}
-
-	public static void EnableReloadButton() {
-		instance.reloadButton.isEnabled = true;
-		instance.reloadButton.transform.GetChild(0).gameObject.active = true;
-		instance.reloadButton.transform.GetChild(1).gameObject.active = true;
-		instance.nextButton.isEnabled = true;
-		instance.prevButton.isEnabled = true;
+	private void LoadOptions() {
+		EffectsVolumeSlider.sliderValue = Game.EffectsVolume;
+		MusicVolumeSlider.sliderValue = Game.MusicVolume;
+		ColorblindSettingLabel.text = Game.ColorBlindMode ? "[44ff44]On" : "[FF4444]Off";
+		LowGraphicsSettingLabel.text = Game.LowGraphicsMode ? "[44ff44]On" : "[FF4444]Off";
 	}
 	#endregion
 
 	#endregion
 }
-public class StringAsIntComparer : IComparer {
-	public int Compare(object l, object r) {
-		int left = Int32.Parse((string)l);
-		int right = Int32.Parse((string)r);
-		return left.CompareTo(right);
-	}
+
+public enum MenuLevel {
+	Base,
+	Mode,
+	Quit,
+	Scores,
+	Options,
+	FileBrowser
 }

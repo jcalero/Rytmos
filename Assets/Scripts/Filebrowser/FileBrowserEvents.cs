@@ -6,6 +6,7 @@ public class FileBrowserEvents : MonoBehaviour {
 
     #region Fields
     public UILabel PathLabel;
+	public MainMenu MainMenu;
     #endregion
 
     #region Functions
@@ -16,9 +17,7 @@ public class FileBrowserEvents : MonoBehaviour {
     }
 
     private void FileWindowClosed() {
-        MainMenu.ToggleFileBrowserPanel(false);
-        MainMenu.ToggleModeMenu(true);
-        MainMenu.ToggleBackModeButton(true);
+		MainMenu.ChangeMenu(MenuLevel.Mode);
     }
 
     private void UpdateDirLabel(string path) {

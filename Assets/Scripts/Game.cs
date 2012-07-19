@@ -29,7 +29,15 @@ public class Game : MonoBehaviour {
 	private static string artistName = "Artist";
 	private static NumOfColors colors;			//Defines the amount of colors used in the game
 	private static Powerups powerups;			//Defines the currently active powerup
-
+	// Settings
+	private static float effectsVolume;
+	private static float effectsVolumeDefault = 0.75f;
+	private static float musicVolume;
+	private static float musicVolumeDefault = 1f;
+	private static bool colorBlindMode;
+	private static bool colorBlindModeDefault = false;
+	private static bool lowGraphicsMode;
+	private static bool lowGraphicsModeDefault = false;
 	#endregion
 
 	#region Functions
@@ -82,7 +90,8 @@ public class Game : MonoBehaviour {
 	}
 
 	void OnApplicationPause() {
-		Pause();
+		if (GameState == State.Playing)
+			Pause();
 	}
 
 	// Global method for pausing the game.
@@ -123,39 +132,6 @@ public class Game : MonoBehaviour {
 		}
 		DevMode = false;
 		Debug.Log(">> Current game mode: " + GameMode);
-	}
-
-	/// <summary>
-	/// Activate or deactivate the children of the specified transform recursively.
-	/// Used for showing/hiding the filebrowser
-	/// </summary>
-	public static void SetActiveState(Transform t, bool state) {
-		for (int i = 0; i < t.childCount; ++i) {
-			Transform child = t.GetChild(i);
-			//if (child.GetComponent<UIPanel>() != null) continue;
-
-			if (state) {
-				child.gameObject.active = true;
-				SetActiveState(child, true);
-			} else {
-				SetActiveState(child, false);
-				child.gameObject.active = false;
-			}
-		}
-	}
-
-	/// <summary>
-	/// Activate or deactivate the specified panel and all of its children.
-	/// Used for showing/hiding the filebrowser
-	/// </summary>
-	public static void SetActiveState(UIPanel panel, bool state) {
-		if (state) {
-			panel.gameObject.active = true;
-			SetActiveState(panel.transform, true);
-		} else {
-			SetActiveState(panel.transform, false);
-			panel.gameObject.active = false;
-		}
 	}
 
 	/// <summary>
@@ -237,6 +213,78 @@ public class Game : MonoBehaviour {
 	public static string PlayerName {
 		get { return PlayerPrefs.GetString("playername"); }
 		set { PlayerPrefs.SetString("playername", value); }
+	}
+
+	public static float EffectsVolume {
+		get {
+			if (PlayerPrefs.HasKey("effectsVolume")) {
+				float tempVolume = PlayerPrefs.GetFloat("effectsVolume");
+				effectsVolume = Mathf.Clamp(tempVolume, 0f, 1f);
+				return effectsVolume;
+			} else {
+				PlayerPrefs.SetFloat("effectsVolume", effectsVolumeDefault);
+				return effectsVolumeDefault;
+			}
+		}
+		set {
+			float tempVolume = Mathf.Clamp(value, 0f, 1f);
+			effectsVolume = Mathf.Clamp(tempVolume, 0f, 1f);
+			PlayerPrefs.SetFloat("effectsVolume", tempVolume);
+		}
+	}
+
+	public static float MusicVolume {
+		get {
+			if (PlayerPrefs.HasKey("musicVolume")) {
+				float tempVolume = PlayerPrefs.GetFloat("musicVolume");
+				musicVolume = Mathf.Clamp(tempVolume, 0f, 1f);
+				return musicVolume;
+			} else {
+				PlayerPrefs.SetFloat("musicVolume", musicVolumeDefault);
+				return musicVolumeDefault;
+			}
+		}
+		set {
+			float tempVolume = Mathf.Clamp(value, 0f, 1f);
+			musicVolume = Mathf.Clamp(tempVolume, 0f, 1f);
+			PlayerPrefs.SetFloat("musicVolume", tempVolume);
+		}
+	}
+
+	public static bool ColorBlindMode {
+		get {
+			if (PlayerPrefs.HasKey("colorBlindMode")) {
+				bool tempValue = PlayerPrefs.GetInt("colorBlindMode") > 0 ? true : colorBlindModeDefault;
+				colorBlindMode = tempValue;
+				return colorBlindMode;
+			} else {
+				PlayerPrefs.SetInt("colorBlindMode", colorBlindModeDefault ? 1 : 0);
+				return colorBlindModeDefault;
+			}
+		}
+		set {
+			colorBlindMode = value;
+			int tempValue = colorBlindMode ? 1 : 0;
+			PlayerPrefs.SetInt("colorBlindMode", tempValue);
+		}
+	}
+
+	public static bool LowGraphicsMode {
+		get {
+			if (PlayerPrefs.HasKey("lowGraphicsMode")) {
+				bool tempValue = PlayerPrefs.GetInt("lowGraphicsMode") > 0 ? true : lowGraphicsModeDefault;
+				lowGraphicsMode = tempValue;
+				return lowGraphicsMode;
+			} else {
+				PlayerPrefs.SetInt("lowGraphicsMode", lowGraphicsModeDefault ? 1 : 0);
+				return lowGraphicsModeDefault;
+			}
+		}
+		set {
+			lowGraphicsMode = value;
+			int tempValue = lowGraphicsMode ? 1 : 0;
+			PlayerPrefs.SetInt("lowGraphicsMode", tempValue);
+		}
 	}
 
 	/// <summary>
