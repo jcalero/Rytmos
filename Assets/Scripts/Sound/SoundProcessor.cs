@@ -60,19 +60,13 @@ public class SoundProcessor
 			#endregion
 			
 			#region GET MAX SAMPLE
-			float max = -1;
 			foreach(float sample in spectrumProvider.getCurrentSamples()) {
 				if(sample > totalMax) totalMax = sample;
-				
 			}			
 			#endregion
 			
 		}
 		while( (spectrum = spectrumProvider.nextSpectrum() ) != null );
-		
-		Debug.Log ("Time for first analysis (spectral analysis + getting max sample " + (Time.realtimeSinceStartup - start));
-
-		
 		
 		#region VOLUME CLASSIFICATION
 		
@@ -110,7 +104,6 @@ public class SoundProcessor
 					activePart = 5; // Set flag that we are now in that part
 					volumeLevelList.Add(sampleCounter*spectrumProvider.getCurrentSamples().Length);
 					volumeLevelList.Add(activePart);
-					Debug.Log (5);
 				}
 			
 			// Have we found a part which classifies as damn loud?
@@ -121,7 +114,6 @@ public class SoundProcessor
 					activePart = 4; // Set flag that we are now in that part
 					volumeLevelList.Add(sampleCounter*spectrumProvider.getCurrentSamples().Length);
 					volumeLevelList.Add(activePart);
-					Debug.Log (4);
 				}
 			
 			// Have we found a part which classifies as pretty loud?
@@ -132,7 +124,6 @@ public class SoundProcessor
 					activePart = 3; // Set flag that we are now in that part
 					volumeLevelList.Add(sampleCounter*spectrumProvider.getCurrentSamples().Length);
 					volumeLevelList.Add(activePart);
-					Debug.Log (3);
 				}
 			
 			// Have we found a part which classifies as pretty normal?
@@ -142,9 +133,7 @@ public class SoundProcessor
 				if(activePart != 2) {
 					activePart = 2; // Set flag that we are now in that part
 					volumeLevelList.Add(sampleCounter*spectrumProvider.getCurrentSamples().Length);
-					volumeLevelList.Add(activePart);
-					Debug.Log (2);
-					
+					volumeLevelList.Add(activePart);					
 				}
 			
 			// Have we found a part which classifies as pretty quiet?
@@ -155,7 +144,6 @@ public class SoundProcessor
 					activePart = 1; // Set flag that we are now in that part
 					volumeLevelList.Add(sampleCounter*spectrumProvider.getCurrentSamples().Length);
 					volumeLevelList.Add(activePart);
-					Debug.Log (1);
 				}
 			
 			// Have we found a part which classifies as very quiet?
@@ -167,15 +155,10 @@ public class SoundProcessor
 					activePart = 0; // Set flag that we are now in that part
 					volumeLevelList.Add(sampleCounter*spectrumProvider.getCurrentSamples().Length);
 					volumeLevelList.Add(activePart);
-					Debug.Log (0);
 				}
 			}
 			sampleCounter++;
 		}
-		
-		Debug.Log ("Time for second analysis (normalization + loudness classification) " + (Time.realtimeSinceStartup - start));
-		
-		
 		#endregion
 		
 		

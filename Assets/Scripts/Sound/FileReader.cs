@@ -361,6 +361,7 @@ public class FileReader : DecoderInterface {
 			txtRate = _frequency.ToString();
 			txtChannels = _channels.ToString();
 			txtEnc = _encoding.ToString();
+			
 			Debug.Log("This gets rid of warnings: " + txtRate + " " + txtChannels + " " + txtEnc + " " + errorCheck + " " + id3v2 + " " + len + " " + done + " " + txtArtist + " " + txtTitle);
 
 			MPGImport.mpg123_id3(handle_mpg, out id3v1, out id3v2);

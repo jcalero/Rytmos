@@ -20,7 +20,6 @@ public class ColorModeListener : MonoBehaviour {
 		//Check for syncronization
 		else if(gameObject.name == "SyncListener") {
 			Game.SyncMode = isChecked;
-			Debug.Log ("Sync is:" + isChecked);
 		}
 		 
 	}
