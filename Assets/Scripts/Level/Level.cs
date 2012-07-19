@@ -266,7 +266,6 @@ public class Level : MonoBehaviour {
 		int bandsize = 20;				//Size of the band where the transition happens (in degrees)
 		int totalsize = 180; 			//Size of half the circle - should not change
 		int cyanAdjust = 25;			//Size that cyan has been increased to match the visuals
-		Color[] c = new Color[3];
 		/*
 		 * (cyan should be 120-60, but with cyanAdjust = 25, its 145-35 (transition occurs within those bounds)
 		 * Color reference chart:

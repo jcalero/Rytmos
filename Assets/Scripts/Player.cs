@@ -43,7 +43,6 @@ public class Player : MonoBehaviour,PeakListener {
 	
 	public GameObject[] players = new GameObject[3];
 	private MeshRenderer[] meshRenders = new MeshRenderer[3];
-	private Color[] playerColor;
     #endregion
 
     #region Functions
@@ -54,7 +53,6 @@ public class Player : MonoBehaviour,PeakListener {
 			meshRenders[i] = players[i].GetComponent<MeshRenderer>();
 		}
 		//TODO: Make this relative to how many rings in the player we have
-		playerColor = new Color[]{new Color(1,1,1,0), new Color(1,1,1,0), new Color(1,1,1,0)};
 		PeakTriggerManager.addSelfToListenerList(this);
         ResetStats();
     }

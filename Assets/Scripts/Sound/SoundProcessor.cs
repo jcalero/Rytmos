@@ -164,7 +164,6 @@ public class SoundProcessor
 
 				// Are we already in that part?
 				if(activePart != 0) {
-					Debug.Log(20*Mathf.Log10(rollingAverage));
 					activePart = 0; // Set flag that we are now in that part
 					volumeLevelList.Add(sampleCounter*spectrumProvider.getCurrentSamples().Length);
 					volumeLevelList.Add(activePart);

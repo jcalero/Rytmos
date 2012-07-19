@@ -104,31 +104,22 @@ public static class AudioManager
 				SoundProcessor.analyse(freader);
 				peaks = SoundProcessor.getPeaks ();
 				loudPartTimeStamps = SoundProcessor.getVolumeLevels ();
-				Debug.Log ("Time to analyze: " + (Time.realtimeSinceStartup - start));			
 				//Application.persistentDataPath;
 				FileWriter.writeAnalysisData (pathToMusicFile, peaks, loudPartTimeStamps);
 			}
 			
 			if(Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WindowsEditor) {
-				Debug.Log("here");
 				// Now that we have analyzed the song, we need to reset & initialize everything for playback
 				freader.reset ();
 				
 				audioBufferSize = (int)(channels * Mathf.Ceil (audioLength) * frequency);
-				
-				Debug.Log (audioLength);
-				Debug.Log (frequency);
-				Debug.Log (channels);
-				Debug.Log (freader.getFrameSize());
-				Debug.Log (audioBufferSize);
-				
 				audioClip = AudioClip.Create ("main_music1", audioBufferSize, channels, frequency, false, false);
 				
 				// Fill audio buffer with the first few samples
 				initAudioBuffer ();
 			}
 			closeMusicStream();
-			Debug.Log ("Time to read: " + (Time.realtimeSinceStartup - start));
+			Debug.Log ("Song loaded in: " + (Time.realtimeSinceStartup - start) + " seconds");
 			songLoaded = true;
 		}
 	}

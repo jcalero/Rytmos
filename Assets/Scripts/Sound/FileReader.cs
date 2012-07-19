@@ -377,7 +377,6 @@ public class FileReader : DecoderInterface {
 			try {
 				MPGImport.mpg123_string ptrArtist = (MPGImport.mpg123_string)Marshal.PtrToStructure(MP3v2Data.artist, (Type)typeof(MPGImport.mpg123_string));
 				txtArtist = ptrArtist.p;
-				Debug.Log("ID3v2 Artist Found: " + txtArtist);
 			} catch (ArgumentNullException e) {
 				Debug.Log("No ID3v2 artist found: " + e.ToString());
 			}
@@ -385,7 +384,6 @@ public class FileReader : DecoderInterface {
 			try {
 				MPGImport.mpg123_string ptrTitle = (MPGImport.mpg123_string)Marshal.PtrToStructure(MP3v2Data.title, (Type)typeof(MPGImport.mpg123_string));
 				txtTitle = ptrTitle.p;
-				Debug.Log("ID3v2 Title Found: " + txtTitle);
 			} catch (ArgumentNullException e) {
 				Debug.Log("No ID3v2 title found: " + e.ToString());
 			}

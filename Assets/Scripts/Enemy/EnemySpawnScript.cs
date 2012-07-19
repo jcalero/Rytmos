@@ -20,16 +20,10 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	private float timer;					// Used to sync framerate with music playback-rate
 	private float audioLength;
 	private float[] timers;
-	private readonly float timeThresh = 0.25f;
 	private int[] spawnRestrictors;
 	private int[] spawnDivisors;
 	
 	private bool resetColor;
-	private static int enemySelectedByPowerup = 0;
-	//private float timeSlowTimer = 0;
-	//private float timeSlowOldTime = 0;
-	//private readonly float timeSlowTimerTotal = 5f;
-
 	private int rotateDirection;
 	private int loudPartCounter;
 	public int loudFlag;
