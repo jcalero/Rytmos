@@ -137,7 +137,9 @@ public class Player : MonoBehaviour,PeakListener {
 				hasPowerup = true;
 				takenPowerup = true;
 				playerpowerup = powerupPrefab.GetComponent<PowerupScript>().Powerup();
-				powerupDisplay.GetComponent<CenterPowerupDisplay>().changeSprite(playerpowerup);
+				if(hasPowerup && playerpowerup != Game.Powerups.None) {
+					powerupDisplay.GetComponent<CenterPowerupDisplay>().changeSprite(playerpowerup);
+				}
 			} else if(energy - pulseCost >= 0) {
 				// Show the touch sprite at the mouse location.
 	          	Level.ShowTouchSprite(new Vector3(ray.origin.x, ray.origin.y, 0));
@@ -148,16 +150,13 @@ public class Player : MonoBehaviour,PeakListener {
 	            // Reduce the player energy if not a superpulse
 				if(Game.PowerupActive != Game.Powerups.MassivePulse) {
 					energy -= pulseCost;
-					superPulseCount = totalSuperpulses;
 				} else {
 					//Only allow 1 superpulses
 					if(superPulseCount == 0) {
-						Game.PowerupActive = Game.Powerups.None;
 						hasPowerup = false;
+						Game.PowerupActive = Game.Powerups.None;
 						energy -= pulseCost;
-						superPulseCount = totalSuperpulses;
 					}
-					superPulseCount--;
 				}
 			}	
 		}
