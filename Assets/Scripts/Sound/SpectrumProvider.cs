@@ -26,6 +26,8 @@ public class SpectrumProvider
 	/** the fft **/
     private readonly FFT fft;	
 	
+	private int sampleWindowSize;
+	
 	/**
 	 * Constructor, sets the {@link Decoder}, the sample window size and the
 	 * hop size for the spectra returned. Say the sample window size is 1024
@@ -50,8 +52,11 @@ public class SpectrumProvider
 		
 		if( sampleWindowSize < hopSize )
 			throw new ArgumentException( "Hop size must be <= sampleSize" );
-
-
+		
+		
+		
+		this.sampleWindowSize = sampleWindowSize;
+		
         this.decoder = decoder;		
 		this.samples = new float[sampleWindowSize];
 		this.nextSamples = new float[sampleWindowSize];
@@ -72,6 +77,17 @@ public class SpectrumProvider
 	public void getCurrentSamples(ref float[] inArray) {
 		inArray = samples;
 	}
+	
+	public DecoderInterface getDecoder()
+	{
+		return decoder;
+	}
+	
+	public int getWinSize()
+	{
+		return sampleWindowSize;
+	}
+	
 	
 	/**
 	 * Returns the next spectrum or null if there's no more data.
