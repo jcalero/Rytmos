@@ -16,7 +16,6 @@ public class Win : MonoBehaviour {
 	// These public game objects are set in the Editor/Inspector. 
 	// Location: UI Root (Win Menu)
 	public UILabel scoreValueLabel;
-	public UILabel healthValueLabel;
 	public UILabel totalScoreLabel;
 	public UIInput nameInput;
 	public UIButton submitButton;
@@ -31,9 +30,8 @@ public class Win : MonoBehaviour {
 	void Start() {
 		instance = this;
 		scoreValueLabel.text = Player.score.ToString();
-		healthValueLabel.text = Player.health.ToString();
 		totalScoreLabel.text = "[AADDAA]" + CalculatedScore;
-		if (Game.Cheated || Player.maxHealth > 100) {
+		if (Game.Cheated) {
 			HideSubmitBox();
 			errorLabel.transform.localPosition = new Vector3(errorLabel.transform.localPosition.x, errorLabel.transform.localPosition.y + 30, errorLabel.transform.localPosition.z);
 			errorLabel.text = "[FF2222]You cheater!";
@@ -47,14 +45,7 @@ public class Win : MonoBehaviour {
 	/// <value>Calculated score (Health * Score * 0.1)</value>
 	int CalculatedScore {
 		get {
-			if (Game.GameMode.Equals(Game.Mode.DeathMatch)) {
 				return (int)(Player.score * 10);
-			} else {
-				if (Player.health < 1)
-					return Player.score;
-				else
-					return (int)(Player.health * 0.1 * Player.score);
-			}
 		}
 	}
 

@@ -9,15 +9,14 @@ using System.Collections;
 public class Player : MonoBehaviour,PeakListener {
     #region Fields
     public static int startScore = 0;           // Start score
-    public static int startHealth = 100;        // Starting health of the player
-    public static int maxHealth = 100;          // Maximum health of the player
     public static int startEnergy = 50;         // Starting energy of the player
     public static int maxEnergy = 50;           // Maximum energy of the player
     public static bool GodMode = false;         // God mode
 
     public static int energy;                   // Current energy of the player
-    public static int health;                   // Current health of the player
     public static int score;                    // Current score of the player
+	public static int multiplier = 1;			// Current multiplier of the player
+	public static int pulseHitCounter = 0;		// Counts how many enemies the pulse has destroyed (reset when the player is hit)
 	public static bool hasPowerup = false;		// Current status of the player's powerup
 	public static bool takenPowerup = false;	// If the player takes the powerup from the screne
 
@@ -63,6 +62,8 @@ public class Player : MonoBehaviour,PeakListener {
 			if (Input.GetMouseButtonDown(0)) 
             	clickOnScreen();
 
+			// Update the multiplier according to how many enemies the player has SLAYN!
+			multiplier = (pulseHitCounter%9)+1;
 			
 			//If you have the invincibility, singleColor or chainPulse powerups, increment its personal timer
 			if(Game.PowerupActive == Game.Powerups.Invincible ||
@@ -104,15 +105,6 @@ public class Player : MonoBehaviour,PeakListener {
 			else 	
 				showAnimRing(Color.white);
 		}
-
-        // If the player health is lower than 0, load the "Lose" level
-        if (Player.health <= 0) {
-            Player.health = 0;
-            if (Game.GameMode.Equals(Game.Mode.DeathMatch)) 
-                Application.LoadLevel("Win");
-            else 
-                Application.LoadLevel("Lose");         
-        }
     }
 	
 	public void clickOnScreen() {		
@@ -284,7 +276,6 @@ public class Player : MonoBehaviour,PeakListener {
     /// </summary>
     public static void ResetStats() {
         score = startScore;
-        health = startHealth = maxHealth;
         energy = startEnergy = maxEnergy;
     }
     #endregion

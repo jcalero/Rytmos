@@ -101,28 +101,28 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 					//Find magnitude of the furthest away
 					float maxMag = 0;
 					if(Game.SyncMode) {
-//						foreach(int spawnPosition in spawnPositions) {
-//							float currMaxMag = findSpawnPositionVector(spawnPosition).magnitude;
-//							if(currMaxMag > maxMag) {
-//								maxMag = currMaxMag;	
-//							}
-//						}
-						float currMaxMag = findSpawnPositionVector(spawnPositions[spawnerNumber]-5).magnitude;
-						if(currMaxMag > maxMag) maxMag = currMaxMag;
-						currMaxMag = findSpawnPositionVector(spawnPositions[spawnerNumber]+5).magnitude;
-						if(currMaxMag > maxMag) maxMag = currMaxMag;
+						foreach(int spawnPosition in spawnPositions) {
+							float currMaxMag = findSpawnPositionVector(spawnPosition).magnitude;
+							if(currMaxMag > maxMag) {
+								maxMag = currMaxMag;	
+							}
+						}
+//						float currMaxMag = findSpawnPositionVector(spawnPositions[spawnerNumber]-5).magnitude;
+//						if(currMaxMag > maxMag) maxMag = currMaxMag;
+//						currMaxMag = findSpawnPositionVector(spawnPositions[spawnerNumber]+5).magnitude;
+//						if(currMaxMag > maxMag) maxMag = currMaxMag;
 					}
-//					foreach(int spawnPosition in spawnPositions) {
-						Vector3 spawnDist = findSpawnPositionVector(spawnPositions[spawnerNumber]-5);
+					foreach(int spawnPosition in spawnPositions) {
+						Vector3 spawnDist = findSpawnPositionVector(spawnPosition);
 						float speed = calcSpeed();
 						if(Game.SyncMode) speed *= (spawnDist.magnitude)/maxMag;									
 						SpawnEnemy(currentlySelectedEnemy,speed,spawnDist);
 						spawnCount++;
-						spawnDist = findSpawnPositionVector(spawnPositions[spawnerNumber]+5);
-						if(Game.SyncMode) speed *= (spawnDist.magnitude)/maxMag;									
-						SpawnEnemy(currentlySelectedEnemy,speed,spawnDist);
-						spawnCount++;
-//					}
+//						spawnDist = findSpawnPositionVector(spawnPositions[spawnerNumber]+5);
+//						if(Game.SyncMode) speed *= (spawnDist.magnitude)/maxMag;									
+//						SpawnEnemy(currentlySelectedEnemy,speed,spawnDist);
+//						spawnCount++;
+					}
 					for (int i = 0; i < spawnPositions.Length; i++) {
 						incrementSpawnPosition(ref spawnPositions[i],1,rotateDirection);
 					}

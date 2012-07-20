@@ -75,8 +75,10 @@ public class EnemyScript : MonoBehaviour {
 	void OnTriggerEnter(Collider otherObject) {
 		// If the enemy collides with the player, reduce health of player, destroy the enemy.
 		if (otherObject.tag == "Player") {
-			if(Game.PowerupActive != Game.Powerups.Invincible) 
-				Player.health -= 10 * health;       // Reduces the player health by 10 * the remaining enemy health
+			if(Game.PowerupActive != Game.Powerups.Invincible) {
+//				Player.health -= 10 * health;       // Reduces the player health by 10 * the remaining enemy health
+				Player.pulseHitCounter = 0;
+			}
 			StartCoroutine(DamageEnemy(true));
 		}
 		// If the enemy collides with a pulse of the right color, reduce enemy health, increase score
@@ -94,6 +96,7 @@ public class EnemyScript : MonoBehaviour {
 			} else {
 				CollisionParticles.GetComponent<ParticleSystem>().Emit(10);
 			}
+			Player.pulseHitCounter++;
 		}
 	}
 
@@ -191,7 +194,7 @@ public class EnemyScript : MonoBehaviour {
 					Player.energy = Player.maxEnergy;
 			}
 			if(!givenScore && !isPlayer) {
-				Player.score += 10;
+				Player.score += 10*Player.multiplier;
 				givenScore = true;
 			}
 			CreateExplosion();

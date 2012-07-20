@@ -12,14 +12,12 @@ public class Lose : MonoBehaviour {
     // These public game objects are set in the Editor/Inspector. 
     // Location: UI Root (Lose Menu)
     public UILabel scoreValueLabel;
-    public UILabel healthValueLabel;
     public UILabel totalScoreLabel;
     #endregion
 
     #region Functions
     void Start() {
         scoreValueLabel.text = Player.score.ToString();
-        healthValueLabel.text = Player.health.ToString();
         totalScoreLabel.text = "[AADDAA]" + CalculatedScore;
     }
 
@@ -29,15 +27,7 @@ public class Lose : MonoBehaviour {
     /// <value>Calculated score (Health * Score * 0.1)</value>
     int CalculatedScore {
         get {
-            if (Game.GameMode.Equals(Game.Mode.DeathMatch)) {
-                Debug.Log(Player.score + "* 10 = " + Player.score * 10);
-                return (int)(Player.score * 10);
-            } else {
-                if (Player.health < 1)
-                    return Player.score;
-                else
-                    return (int)(Player.health * 0.1 * Player.score);
-            }
+                return (int)(Player.score);
         }
     }
 

@@ -52,7 +52,6 @@ public class GameHUD : MonoBehaviour {
 
     void Update() {
         ScoreValueLabel.text = "[FDD017]" + Player.score;
-        HealthValueLabel.text = "[E55B3C]" + Player.health;
         EnergyValueLabel.text = "[736AFF]" + Player.energy;
         if (Game.DevMode) {
             DevmodeLabel.gameObject.active = true;
