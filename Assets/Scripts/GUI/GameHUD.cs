@@ -43,10 +43,8 @@ public class GameHUD : MonoBehaviour {
     void Start() {
         // Position the HUD relative to the screen
         ScoreLabel.transform.position = new Vector3(screenLeft + labelLeft, screenTop - labelTop, ScoreValueLabel.transform.position.z);
-        HealthLabel.transform.position = new Vector3(screenLeft + labelLeft, screenTop - labelTop - labelSpacing, ScoreValueLabel.transform.position.z);
         EnergyLabel.transform.position = new Vector3(screenLeft + labelLeft, screenTop - labelTop - labelSpacing*2, ScoreValueLabel.transform.position.z);
         ScoreValueLabel.transform.position = new Vector3(screenLeft + labelLeft + valueLeft, screenTop - labelTop, ScoreValueLabel.transform.position.z);
-        HealthValueLabel.transform.position = new Vector3(screenLeft + labelLeft + valueLeft, screenTop - labelTop - labelSpacing, ScoreValueLabel.transform.position.z);
         EnergyValueLabel.transform.position = new Vector3(screenLeft + labelLeft + valueLeft, screenTop - labelTop - labelSpacing * 2, ScoreValueLabel.transform.position.z);
     }
 
