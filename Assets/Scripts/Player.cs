@@ -63,7 +63,8 @@ public class Player : MonoBehaviour,PeakListener {
             	clickOnScreen();
 
 			// Update the multiplier according to how many enemies the player has SLAYN!
-			multiplier = (pulseHitCounter%9)+1;
+			multiplier = (pulseHitCounter%9)+1 > 20? 20 : (pulseHitCounter%9)+1;
+			
 			
 			//If you have the invincibility, singleColor or chainPulse powerups, increment its personal timer
 			if(Game.PowerupActive == Game.Powerups.Invincible ||
