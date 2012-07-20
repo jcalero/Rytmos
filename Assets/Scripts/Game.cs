@@ -121,10 +121,6 @@ public class Game : MonoBehaviour {
 	void OnLevelWasLoaded(int level) {
 		Debug.Log(">> Level: \"" + Application.loadedLevelName + "\" was loaded");
 		if (level == (int)LevelNames.Game) {
-			GameMode = Mode.TimeAttack;
-			GameState = State.Playing;
-		} else if (level == (int)LevelNames.DeathMatch) {
-			GameMode = Mode.DeathMatch;
 			GameState = State.Playing;
 		} else {
 			GameState = State.Menu;
@@ -296,9 +292,7 @@ public class Game : MonoBehaviour {
 		SplashScreen,
 		MainMenu,
 		Game,
-		Win,
-		Lose,
-		DeathMatch
+		Win
 	}
 
 	/// <summary>
@@ -311,8 +305,10 @@ public class Game : MonoBehaviour {
 	}
 
 	public enum Mode {
-		TimeAttack,
-		DeathMatch
+		Arcade,
+		Casual,
+		Story,
+		Challenge
 	}
 
 	public enum NumOfColors {

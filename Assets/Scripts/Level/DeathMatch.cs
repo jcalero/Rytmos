@@ -25,7 +25,7 @@ public class DeathMatch : Level {
 	}
 
 	protected override void Start() {
-		Game.GameMode = Game.Mode.DeathMatch;
+		Game.GameMode = Game.Mode.Arcade;
 		Game.GameState = Game.State.Playing;
 		base.Start();
 		SurviveLabel.text = "[FFAA22]Survive!";

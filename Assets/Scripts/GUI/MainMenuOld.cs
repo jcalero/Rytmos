@@ -273,7 +273,7 @@ public class MainMenuOld : MonoBehaviour {
 	/// Button handler for "Arcade" button
 	/// </summary>
 	void OnArcadeModeClicked() {
-		Game.GameMode = Game.Mode.DeathMatch;
+		Game.GameMode = Game.Mode.Arcade;
 		ToggleModeMenu(false);
 		ToggleBackModeButton(false);
 		ToggleFileBrowserPanel(true);
@@ -366,10 +366,10 @@ public class MainMenuOld : MonoBehaviour {
 
 	#endregion
 }
-public class StringAsIntComparer : IComparer {
-	public int Compare(object l, object r) {
-		int left = Int32.Parse((string)l);
-		int right = Int32.Parse((string)r);
-		return left.CompareTo(right);
-	}
-}
+//public class StringAsIntComparer : IComparer {
+//    public int Compare(object l, object r) {
+//        int left = Int32.Parse((string)l);
+//        int right = Int32.Parse((string)r);
+//        return left.CompareTo(right);
+//    }
+//}

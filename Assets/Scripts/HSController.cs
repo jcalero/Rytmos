@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System;
 using System.Text.RegularExpressions;
+using System.Collections.Generic;
 
 public class HSController : MonoBehaviour {
 	private string secretKey = "goldenck";   // Edit this value and make sure it's the same as the one stored on the server
@@ -14,10 +15,10 @@ public class HSController : MonoBehaviour {
 	//private string highscoreURL = "http://rytmos-game.com/displaynew.php?";
 	private string top5URL = "http://rytmos-game.com/displaytop5.php?";
 	private string close5URL = "http://rytmos-game.com/displayclose5.php?";
-	public UILabel[] highscores;
-	public UILabel[] names;
-	public UILabel submittedLabel;
-	public UILabel errorLabel;
+	//public UILabel[] highscores;
+	//public UILabel[] names;
+	//public UILabel submittedLabel;
+	//public UILabel errorLabel;
 
 	public string[][] hsTimeAttack = new string[10][];
 	public string[][] hsSurvival = new string[10][];
@@ -25,14 +26,23 @@ public class HSController : MonoBehaviour {
 	private string[][] top5List;
 	private string[][] close5List;
 
+	private List<string> songList = new List<string>();
+	private string[][] separatedSongList;
+	private static int currentlyShowingHS = 0;
+
+	public UILabel[] top5names;
+	public UILabel[] top5scores;
+	public UILabel[] close5names;
+	public UILabel[] close5scores;
+	public UILabel ScoresModeLabel;
+	public UILabel ScoresSongLabel;
+
+	public static string FetchError;
+
 	private static HSController instance;
 
 	void Awake() {
 		instance = this;
-
-		//float time2 = Time.realtimeSinceStartup;
-		//Debug.Log(GetMD5HashFromFile("D:\\looongmp3.mp3"));
-		//Debug.Log("Time to generate MD5 using BitConverter: " + (Time.realtimeSinceStartup - time2));
 
 		for (int i = 0; i < hsTimeAttack.Length; i++)
 			hsTimeAttack[i] = new string[2];
@@ -59,18 +69,22 @@ public class HSController : MonoBehaviour {
 
 		string post_url = instance.addScoreURL + "name=" + WWW.EscapeURL(name) + "&score=" + score + "&table=" + table + "&hash=" + cheatHash;
 
-		instance.submittedLabel.text = "Submitting...";
+		Win.SetSubmitText("Submitting...");
+		//instance.submittedLabel.text = "Submitting...";
 		// Post the URL to the site and create a download object to get the result.
 		WWW hs_post = new WWW(post_url);
 		yield return hs_post; // Wait until the download is done
 
 		if (hs_post.error != null) {
 			Debug.LogWarning("There was an error posting the high score: " + hs_post.error);
-			instance.submittedLabel.text = "";
-			instance.errorLabel.text = "[FF2222]Error submitting, please try again.";
+			//instance.submittedLabel.text = "";
+			Win.SetSubmitText("");
+			//instance.errorLabel.text = "[FF2222]Error submitting, please try again.";
+			Win.SetErrorText("[FF2222]Error submitting, please try again.");
 			Win.ShowSubmitBox();
 		} else {
-			instance.submittedLabel.text = "Highscore submitted";
+			//instance.submittedLabel.text = "Highscore submitted";
+			Win.SetSubmitText("Highscore submitted");
 		}
 	}
 
@@ -79,9 +93,9 @@ public class HSController : MonoBehaviour {
 	}
 
 	public static string CalculateTableName(string artist, string song, Game.Mode gameMode) {
-		string tmpArtist = HSController.RemoveSpecialCharacters(artist).ToLower();
-		string tmpSong = HSController.RemoveSpecialCharacters(song).ToLower();
-		return "hs_" + MD5Utils.MD5FromString(tmpArtist + tmpSong + gameMode.ToString());
+		string tmpArtist = RemoveSpecialCharacters(artist).ToLower();
+		string tmpSong = RemoveSpecialCharacters(song).ToLower();
+		return "hs_" + MD5Utils.MD5FromString(tmpArtist + tmpSong + gameMode.GetHashCode());
 	}
 
 	public static IEnumerator GetTop5Scores(string artist, string song, Game.Mode gameMode) {
@@ -96,6 +110,10 @@ public class HSController : MonoBehaviour {
 		} else if (hs_get.text.ToLower().StartsWith("query failed")) {
 			Debug.LogWarning("There was an error getting the high score: " + hs_get.text);
 			MainMenu.FetchError = hs_get.text;
+			string errorText = "Error fetching the scores!";
+			Top5List = new string[1][];
+			Top5List[0] = new string[errorText.Length];
+			Top5List[0][0] = errorText;
 		} else {
 			Top5List = parseScores(hs_get.text);
 		}
@@ -115,6 +133,10 @@ public class HSController : MonoBehaviour {
 		} else if (hs_get.text.ToLower().StartsWith("query failed")) {
 			Debug.LogWarning("There was an error getting the high score: " + hs_get.text);
 			MainMenu.FetchError = hs_get.text;
+			string errorText = "Error fetching the scores!";
+			Close5List = new string[1][];
+			Close5List[0] = new string[errorText.Length];
+			Close5List[0][0] = errorText;
 		} else {
 			Close5List = parseScores(hs_get.text);
 		}
@@ -131,17 +153,159 @@ public class HSController : MonoBehaviour {
 		return tempResult;
 	}
 
-	//public static void ShowScores(string table) {
-	//    for (int cnt = 0; cnt < instance.names.Length; cnt++) {
-	//        if (table.Equals("rytmos_hs_dm")) {
-	//            instance.names[cnt].text = instance.hsSurvival[cnt][0];
-	//            instance.highscores[cnt].text = instance.hsSurvival[cnt][1];
-	//        }
-	//        if (table.Equals("rytmos_hs_30sec")) {
-	//            instance.names[cnt].text = instance.hsTimeAttack[cnt][0];
-	//            instance.highscores[cnt].text = instance.hsTimeAttack[cnt][1];
-	//        }
-	//    }
-	//}
+	public static void InitHSDisplay() {
+		if (!instance.LoadSongList()) {
+			instance.top5names[0].text = "Top 5 Scores...";
+			instance.close5names[0].text = "Scores close to you...";
+			instance.ScoresSongLabel.text = "No songs have been played yet! Play some first.";
+		} else {
+			string artist = instance.separatedSongList[0][0];
+			string song =   instance.separatedSongList[0][1];
+			Game.Mode gameMode = (Game.Mode)Enum.Parse(typeof(Game.Mode), instance.separatedSongList[0][2]);
 
+			instance.StartCoroutine(instance.fetchScores(artist, song, gameMode));
+		}
+	}
+
+	private IEnumerator fetchScores(int songListID) {
+		string artist = separatedSongList[songListID][0];
+		string song = separatedSongList[songListID][1];
+		Game.Mode gameMode = (Game.Mode)Enum.Parse(typeof(Game.Mode), separatedSongList[songListID][2]);
+		yield return StartCoroutine(fetchScores(artist, song, gameMode));
+		MainMenu.EnableReloadButton();
+	}
+	private IEnumerator fetchScores(string artist, string song, Game.Mode gameMode) {
+		string artistDisplay = artist;
+		string songDisplay = song;
+		//string md5Artist = HSController.RemoveSpecialCharacters(artist).ToLower();
+		//string md5Song = HSController.RemoveSpecialCharacters(song).ToLower();
+		//string entryMD5 = MD5Utils.MD5FromString(md5Artist + md5Song + gameMode);
+		string localMD5 = CalculateTableName(artist, song, gameMode);
+		int topScore = PlayerPrefs.GetInt(localMD5);
+
+		//Debug.Log("This is what the data looks like before calculating fetch-MD5: " + md5Artist + " - " + md5Song + " - " + gameMode.ToString());
+
+		if (artist.Length > 1) artistDisplay = char.ToUpper(artist[0]) + artist.Substring(1);
+		if (song.Length > 1) songDisplay = char.ToUpper(song[0]) + song.Substring(1);
+
+		ScoresSongLabel.text = artistDisplay + " - " + songDisplay;
+		ScoresModeLabel.text = gameMode.ToString();
+		top5names[0].text = "Loading Top Scores...";
+		close5names[0].text = "Loading Close Scores...";
+		top5scores[0].text = "";
+		close5scores[0].text = "";
+		int labelcnt = 1;
+		while (labelcnt < 5) {
+			top5names[labelcnt].text = "";
+			close5names[labelcnt].text = "";
+			top5scores[labelcnt].text = "";
+			close5scores[labelcnt].text = "";
+			labelcnt++;
+		}
+
+		yield return StartCoroutine(GetTop5Scores(artist, song, gameMode));
+		if (FetchError == null) {
+			for (int cnt = 0; cnt < Top5List.Length; cnt++) {
+				if (cnt < 5) {
+					top5names[cnt].text = (cnt + 1) + ". " + Top5List[cnt][0];
+					top5scores[cnt].text = Top5List[cnt][1];
+				}
+				//Debug.Log(HSController.ScoresList[cnt][0] + " :: " + HSController.ScoresList[cnt][1]);
+			}
+		} else {
+			top5names[0].text = FetchError;
+		}
+
+		yield return StartCoroutine(GetClose5Scores(artist, song, gameMode, topScore));
+		if (FetchError == null) {
+			bool formattedOwnRow = false;
+			Sort<string>(Close5List, 2);
+			for (int cnt = 0; cnt < Close5List.Length; cnt++) {
+				if (cnt < 5) {
+					string nr = Close5List[cnt][2];
+					close5names[cnt].text = nr + ". " + Close5List[cnt][0];
+					close5scores[cnt].text = Close5List[cnt][1];
+					if (Close5List[cnt][1] == topScore.ToString() &&
+						Close5List[cnt][0] == Game.PlayerName &&
+						!formattedOwnRow) {
+						close5names[cnt].text = "[FDD017]" + close5names[cnt].text;
+						close5scores[cnt].text = "[FDD017]" + close5scores[cnt].text;
+						formattedOwnRow = true;
+					}
+				}
+				//Debug.Log(HSController.ScoresList[cnt][0] + " :: " + HSController.ScoresList[cnt][1]);
+			}
+		} else {
+			close5names[0].text = FetchError;
+		}
+	}
+
+	private bool LoadSongList() {
+		// Load song list
+		string path = "";
+		if (Application.platform == RuntimePlatform.Android)
+			path = (Application.persistentDataPath + "/songlist.r");
+		else if (Application.platform == RuntimePlatform.WindowsPlayer
+			|| Application.platform == RuntimePlatform.WindowsEditor)
+			path = (Application.persistentDataPath + "\\songlist.r");
+		else {
+			Debug.Log("PLATFORM NOT SUPPORTED YET");
+			path = "";
+		}
+		string line;
+		int counter = 0;
+		try {
+			using (StreamReader sr = new StreamReader(path)) {
+				while ((line = sr.ReadLine()) != null) {
+					songList.Add(line);
+				}
+				sr.Close();
+				separatedSongList = new string[songList.Count][];
+
+				while (counter < songList.Count) {
+					string[] tempString = songList[counter].Split('|');
+					separatedSongList[counter] = new string[3];
+					separatedSongList[counter][0] = tempString[0];
+					separatedSongList[counter][1] = tempString[1];
+					separatedSongList[counter][2] = tempString[2];
+					counter++;
+				}
+				if (songList.Count < 1) return false;
+				else return true;
+			}
+		} catch (Exception e) {
+			Debug.LogError(e.Message);
+			return false;
+		}
+	}
+
+	public static void LoadNextSong() {
+		currentlyShowingHS = (currentlyShowingHS + 1) % instance.separatedSongList.Length;
+		instance.StartCoroutine(instance.fetchScores(currentlyShowingHS));
+	}
+
+	public static void LoadPrevSong() {
+		currentlyShowingHS = ((currentlyShowingHS - 1) % instance.separatedSongList.Length + instance.separatedSongList.Length) % instance.separatedSongList.Length;
+		instance.StartCoroutine(instance.fetchScores(currentlyShowingHS));
+	}
+
+	public static void LoadNextMode() {
+
+	}
+
+	public static void LoadPrevMode() {
+
+	}
+
+	private static void Sort<T>(T[][] data, int col) {
+		StringAsIntComparer comparer = new StringAsIntComparer();
+		Array.Sort(data, (x, y) => comparer.Compare(x[col], y[col]));
+	}
+}
+public class StringAsIntComparer : IComparer {
+	public int Compare(object l, object r) {
+		int left = Int32.Parse((string)l);
+		int right = Int32.Parse((string)r);
+		return left.CompareTo(right);
+	}
 }

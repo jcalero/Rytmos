@@ -61,9 +61,6 @@ public class MainMenu : MonoBehaviour {
 		CurrentMenuLevel = MenuLevel.Base;
 	}
 
-	void Start() {
-	}
-
 	void Update() {
 		// When the player presses "Escape" or "Back" on Android, returns to main menu screen
 		// or goes to the quit menu if on the main menu already.
@@ -91,6 +88,7 @@ public class MainMenu : MonoBehaviour {
 				if (MainMenuQuitPanel.enabled) UITools.SetActiveState(MainMenuQuitPanel, false);
 				if (MainMenuModePanel.enabled) UITools.SetActiveState(MainMenuModePanel, false);
 				if (MainMenuOptionsPanel.enabled) UITools.SetActiveState(MainMenuOptionsPanel, false);
+				if (MainMenuScoresPanel.enabled) UITools.SetActiveState(MainMenuScoresPanel, false);
 				UITools.SetActiveState(MainMenuBasePanel, true);
 				UITools.SetActiveState(MainMenuPlayPanel, true);
 				break;
@@ -109,6 +107,10 @@ public class MainMenu : MonoBehaviour {
 				UITools.SetActiveState(MainMenuQuitPanel, true);
 				break;
 			case MenuLevel.Scores:
+				UITools.SetActiveState(MainMenuPlayPanel, false);
+				UITools.SetActiveState(MainMenuBasePanel, false);
+				UITools.SetActiveState(MainMenuScoresPanel, true);
+				HSController.InitHSDisplay();
 				break;
 			case MenuLevel.FileBrowser:
 				UITools.SetActiveState(MainMenuModePanel, false);
@@ -129,7 +131,8 @@ public class MainMenu : MonoBehaviour {
 	/// <summary>
 	/// Button handler for "Highscores" button
 	/// </summary>
-	void OnHighScoresClicked() {
+	void OnScoresClicked() {
+		ChangeMenu(MenuLevel.Scores);
 	}
 
 	/// <summary>
@@ -230,13 +233,20 @@ public class MainMenu : MonoBehaviour {
 	#endregion
 
 	#region Highscore buttons
-	void OnNextHighscoreClicked() {
+	void OnNextSongClicked() {
+		HSController.LoadNextSong();
 	}
 
-	void OnPrevHighscoreClicked() {
+	void OnPrevSongClicked() {
+		HSController.LoadPrevSong();
 	}
 
-	void OnReloadClicked() {
+	void OnPrevModeClicked() {
+		HSController.LoadPrevMode();
+	}
+
+	void OnNextModeClicked() {
+		HSController.LoadNextMode();
 	}
 	#endregion
 
@@ -261,6 +271,10 @@ public class MainMenu : MonoBehaviour {
 		MusicVolumeSlider.sliderValue = Game.MusicVolume;
 		ColorblindSettingLabel.text = Game.ColorBlindMode ? "[44ff44]On" : "[FF4444]Off";
 		LowGraphicsSettingLabel.text = Game.LowGraphicsMode ? "[44ff44]On" : "[FF4444]Off";
+	}
+
+	public static void EnableReloadButton() {
+
 	}
 	#endregion
 

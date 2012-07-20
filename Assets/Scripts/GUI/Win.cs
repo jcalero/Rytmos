@@ -45,7 +45,7 @@ public class Win : MonoBehaviour {
 	/// <value>Calculated score (Health * Score * 0.1)</value>
 	int CalculatedScore {
 		get {
-				return (int)(Player.score * 10);
+				return Player.score;
 		}
 	}
 
@@ -61,6 +61,24 @@ public class Win : MonoBehaviour {
 	/// </summary>
 	void OnMainMenuClicked() {
 		Application.LoadLevel("MainMenu");
+	}
+
+	/// <summary>
+	/// Sets the text of the information box while submitting to a specified
+	/// string.
+	/// </summary>
+	/// <param name="text">The string to set the text to</param>
+	public static void SetSubmitText(string text) {
+		instance.submittedLabel.text = text;
+	}
+
+	/// <summary>
+	/// Sets the text of the error box while submitting to a specified
+	/// string.
+	/// </summary>
+	/// <param name="text">The string to set the text to</param>
+	public static void SetErrorText(string text) {
+		instance.errorLabel.text = text;
 	}
 
 	/// <summary>
@@ -87,7 +105,7 @@ public class Win : MonoBehaviour {
 		// Fix song name and artist
 
 		// Store the song in song list
-		string songRow = RemovePipeChar(AudioManager.artist).Trim() + "|" + RemovePipeChar(AudioManager.title).Trim() + "|" + Game.GameMode.ToString();
+		string songRow = RemovePipeChar(AudioManager.artist).Trim() + "|" + RemovePipeChar(AudioManager.title).Trim() + "|" + Game.GameMode.GetHashCode();
 		string path = "";
 		bool songExists = false;
 		if (Application.platform == RuntimePlatform.Android)
