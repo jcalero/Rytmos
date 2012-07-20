@@ -20,23 +20,33 @@ public class FileWriter
 	/// <param name='loudParts'>
 	/// Array of Loud parts.
 	/// </param>
-	public static void writeAnalysisData (string pathToMusicFile, int[][] peaks, int[] loudParts)
+	public static void writeAnalysisData (string pathToMusicFile, int[][] peaks, int[] loudParts, float variationFactor)
 	{
-			
+		
+		// Open
 		StreamWriter sw = new StreamWriter (convertToCacheFileName (pathToMusicFile));
+		
+		// Write peaks to file
 		for (int i = 0; i < peaks.Length; i++) {
 			sw.Write ("c" + i + ":");
 			for (int j = 0; j < peaks[i].Length; j++) {
-				if (peaks [i] [j] > 0) {
 					sw.Write (peaks [i] [j]);
 					sw.Write (';');
-				}
 			}
 			sw.WriteLine ();
 		}
+		
+		// Write loudness levels to file
 		sw.Write ("lp:");
 		foreach (int lP in loudParts)
 			sw.Write (lP + ";");
+		sw.WriteLine();
+		
+		// Write variation factor to file
+		sw.Write("vf:");
+		sw.Write(variationFactor);
+		
+		// Close
 		sw.Flush ();
 		sw.Close ();
 	}

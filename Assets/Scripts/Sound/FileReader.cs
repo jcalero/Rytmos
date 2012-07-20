@@ -22,6 +22,7 @@ public class FileReader : DecoderInterface {
 	private MP3 mp3Reader;
 	private int channels;
 	private int mp3FrameSize;
+	private float variationFactor;
 
 	// Supported Audio Formats.. not all of them are in yet!!
 	public enum FileFormat { WAV, OGG, MPEG, RYT, ERROR };
@@ -163,6 +164,10 @@ public class FileReader : DecoderInterface {
 	public int getChannels() {
 		return this.channels;
 	}
+	
+	public float getVariationFactor() {
+		return this.variationFactor;	
+	}
 
 	private void readRytData() {
 		StreamReader reader = new StreamReader(this.path);
@@ -171,12 +176,10 @@ public class FileReader : DecoderInterface {
 
 			// Read line, check if channel data or loudness data
 			String input = reader.ReadLine();
-			bool channel = false;
-			if (input.StartsWith("c")) channel = true;
-			input = input.Substring(input.IndexOf(':') + 1); // Remove the channel/loudness data "flag" at the beginning
 
 			// Read line into floats for channel data
-			if (channel) {
+			if (input.StartsWith("c")) {
+				input = input.Substring(input.IndexOf(':') + 1); // Remove the channel/loudness data "flag" at the beginning
 				List<int> tempList = new List<int>();
 				foreach (string s in input.Split(';')) {
 					int result = -1;
@@ -189,7 +192,8 @@ public class FileReader : DecoderInterface {
 				channelData.Add(tempList.ToArray());
 			}
 				// Read line into ints for loudness data
-			else {
+			else if(input.StartsWith("l")) {
+				input = input.Substring(input.IndexOf(':') + 1); // Remove the channel/loudness data "flag" at the beginning
 				List<int> tempList = new List<int>();
 				foreach (string s in input.Split(';')) {
 					int result = -1;
@@ -200,6 +204,17 @@ public class FileReader : DecoderInterface {
 				if (tempList.Count > 0 && tempList[tempList.Count - 1] == 0)
 					tempList.RemoveAt(tempList.Count - 1);
 				this.loudTriggers = tempList.ToArray();
+			}
+			else if(input.StartsWith("v")) {
+				input = input.Substring(input.IndexOf(':') + 1); // Remove the channel/loudness data "flag" at the beginning
+				float result = -1;
+				float.TryParse(input, out result);
+				if (result > -1)
+					this.variationFactor = result;
+				else{
+					Debug.Log("could not read variationFactor!");
+					this.variationFactor = 0;
+				}
 			}
 		}
 		this.rytData = channelData.ToArray();

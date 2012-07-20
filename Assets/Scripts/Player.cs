@@ -269,7 +269,7 @@ public class Player : MonoBehaviour,PeakListener {
 		glowTimers[timer] = 0;
 	}
 	
-	public void onPeakTrigger(int channel) {
+	public void onPeakTrigger(int channel, int intensity) {
 		if(!glowAnimOut && !glowAnimIn) glowAnimOut = true;
 	}
 		

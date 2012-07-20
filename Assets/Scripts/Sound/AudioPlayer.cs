@@ -49,8 +49,10 @@ public class AudioPlayer : MonoBehaviour
 	void Start ()
 	{
 		if(Application.platform == RuntimePlatform.Android) {
+			androidPlayer.Call ("setVolume", new object[]{Game.MusicVolume,Game.MusicVolume});
 			androidPlayer.Call ("start", new object[]{});
 		} else if(Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WindowsEditor) {
+			audioSources [0].volume = Game.MusicVolume;
 			audioSources [0].Play ();
 		}
 	}

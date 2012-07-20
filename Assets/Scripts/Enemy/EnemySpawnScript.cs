@@ -26,9 +26,8 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	private bool resetColor;
 	private int rotateDirection;
 	private int loudPartCounter;
-	public int loudFlag;
+	public float loudFlag;
 	
-
 	private int spawnerNumber;
 	#endregion
 
@@ -36,6 +35,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 
 	void Start() {
 		spawnerNumber = 0;
+		Game.SyncMode = true;
 		init ();		
 	}
 	
@@ -67,7 +67,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		timers = new float[AudioManager.peaks.Length];
 		spawnRestrictors = new int[AudioManager.peaks.Length];
 		spawnDivisors = new int[]{1,1,8,2,2,2};
-		spawnPositions = new int[]{0, 33, 66};
+		spawnPositions = new int[]{0,33,66};
 		currentlySelectedEnemy = Random.Range(0,6);
 		spawnCount = 0;
 		rotateDirection = 1;
@@ -76,7 +76,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	}
 	
 	public void setLoudFlag(int flag) {
-		loudFlag = flag;
+		loudFlag = 0.5f*loudFlag + 0.5f*flag;
 	}
 	
 	/// <summary>
@@ -85,7 +85,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	/// <param name='channel'>
 	/// Channel.
 	/// </param>
-	public void onPeakTrigger(int channel) {
+	public void onPeakTrigger(int channel, int intensity) {
 		
 		// Filter out spawns which are too close together
 		if(timer - timers[channel] > PeakTriggerManager.timeThreshs[channel]) {			
@@ -101,16 +101,20 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 					//Find magnitude of the furthest away
 					float maxMag = 0;
 					if(Game.SyncMode) {
-						foreach(int spawnPosition in spawnPositions) {
-							float currMaxMag = findSpawnPositionVector(spawnPosition).magnitude;
-							if(currMaxMag > maxMag) {
-								maxMag = currMaxMag;	
-							}
-						}
+//						foreach(int spawnPosition in spawnPositions) {
+//							float currMaxMag = findSpawnPositionVector(spawnPosition).magnitude;
+//							if(currMaxMag > maxMag) {
+//								maxMag = currMaxMag;	
+//							}
+//						}
+						float currMaxMag = findSpawnPositionVector(spawnPositions[spawnerNumber]-5).magnitude;
+						if(currMaxMag > maxMag) maxMag = currMaxMag;
+						currMaxMag = findSpawnPositionVector(spawnPositions[spawnerNumber]+5).magnitude;
+						if(currMaxMag > maxMag) maxMag = currMaxMag;
 					}
-					//foreach(int spawnPosition in spawnPositions) {
+//					foreach(int spawnPosition in spawnPositions) {
 						Vector3 spawnDist = findSpawnPositionVector(spawnPositions[spawnerNumber]-5);
-						float speed = 3f;
+						float speed = calcSpeed();
 						if(Game.SyncMode) speed *= (spawnDist.magnitude)/maxMag;									
 						SpawnEnemy(currentlySelectedEnemy,speed,spawnDist);
 						spawnCount++;
@@ -118,6 +122,10 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 						if(Game.SyncMode) speed *= (spawnDist.magnitude)/maxMag;									
 						SpawnEnemy(currentlySelectedEnemy,speed,spawnDist);
 						spawnCount++;
+//					}
+					for (int i = 0; i < spawnPositions.Length; i++) {
+						incrementSpawnPosition(ref spawnPositions[i],1,rotateDirection);
+					}
 					break;
 				case 1:
 					// These are more medium ranged frequencies, used to change the spawn position (for now at least)
@@ -125,12 +133,14 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 						incrementSpawnPosition(ref spawnPositions[i],3,rotateDirection);
 					}
 					Level.SetUpParticlesFeedback(spawnPositions.Length, currentlySelectedEnemy);
-					spawnerNumber = Random.Range (0,3);
 					break;
 				case 2:
 					// These are even more medium ranged frequencies, used to change the direction (for now, again :P )
-					if(rotateDirection == 1) rotateDirection-=2;
-					else rotateDirection+=2;
+					if(rotateDirection == 1) rotateDirection=-1;
+					else rotateDirection=1;
+					int rand = Random.Range (0,spawnPositions.Length);
+					if(rand == spawnerNumber) rand = (rand +1)%spawnPositions.Length;
+					spawnerNumber = rand;
 					break;
 				case 3:
 					// Some higher frequencies to change the currently spawned enemy
@@ -156,6 +166,45 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		}
 	}
 	
+	private float calcSpeed() {
+		
+//		float baseSpeed = 3f;
+//		
+//		float x = 2.5f - loudFlag*AudioManager.variationFactor;
+
+		// Loudflag between 0 and 5, median is 2.5
+		// variationFactor between 0.2 & 1
+		float speed = 2.5f + (loudFlag - 2.5f)*AudioManager.variationFactor;
+		if(speed < 1) speed = 1f;
+		else if(speed > 4.5) speed = 4.5f;
+	
+		return speed;
+		
+		
+//		switch (loudFlag) {
+//		case 0:
+//			baseSpeed = baseSpeed - (1.5f*AudioManager.variationFactor);
+//			break;
+//		case 1:
+//			baseSpeed = baseSpeed - (1f*AudioManager.variationFactor);
+//			break;
+//		case 2:
+//			baseSpeed = baseSpeed - (0.5f*AudioManager.variationFactor);
+//			break;
+//		case 3:
+//			break;
+//		case 4:
+//			baseSpeed = baseSpeed + (1f*AudioManager.variationFactor);
+//			break;
+//		case 5:
+//			baseSpeed = baseSpeed + (1.5f*AudioManager.variationFactor);
+//			break;
+//		default:
+//			break;
+//		}
+//		
+//		return baseSpeed;
+	}
 	
 	
 	private static void changeEnemy() {

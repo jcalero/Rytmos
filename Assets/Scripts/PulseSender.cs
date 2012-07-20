@@ -37,6 +37,7 @@ public class PulseSender : MonoBehaviour {
 
         //Find distance for the maximum radius
         pulseMax = new Vector2(Game.screenLeft, Game.screenTop).magnitude;
+		gameObject.audio.volume = Game.EffectsVolume;
 
     }
 

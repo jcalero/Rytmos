@@ -14,6 +14,7 @@ public static class AudioManager
 	public static FileReader freader;			// File Reader reference which does all the I/O
 	public static int[][] peaks;				// Holds the triggers for the currently loaded audio file
 	public static int[] loudPartTimeStamps;		// Holds the triggers for loud/quiet parts of the audio file
+	public static float variationFactor;
 	public static int frequency;				// Sampling Frequency of the music file, needed for time syncing
 	public static int channels;					// Number of channels in the music file
 	public static float audioLength;			// Total length in seconds (float) of the music file
@@ -96,6 +97,7 @@ public static class AudioManager
 				
 				peaks = rytFile.getPeaks ();
 				loudPartTimeStamps = rytFile.getLoudnessData ();
+				variationFactor = rytFile.getVariationFactor();
 				rytFile.close ();
 				rytFile = null;
 				
@@ -104,8 +106,8 @@ public static class AudioManager
 				SoundProcessor.analyse(freader);
 				peaks = SoundProcessor.getPeaks ();
 				loudPartTimeStamps = SoundProcessor.getVolumeLevels ();
-				//Application.persistentDataPath;
-				FileWriter.writeAnalysisData (pathToMusicFile, peaks, loudPartTimeStamps);
+				variationFactor = SoundProcessor.getVariationFactor();
+				FileWriter.writeAnalysisData (pathToMusicFile, peaks, loudPartTimeStamps, variationFactor);
 			}
 			
 			if(Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WindowsEditor) {

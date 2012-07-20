@@ -24,10 +24,10 @@ public class PeakTriggerManager : MonoBehaviour
 		loudFlag = -1;
 		timeThreshs = new float[AudioManager.peaks.Length];
 		peakReductionFactors = new float[AudioManager.peaks.Length];
-		peakReductionFactors[0] = 0;
+		peakReductionFactors[0] = 1f;
 		peakReductionFactors[1] = 0;
 		peakReductionFactors[2] = 0;
-		peakReductionFactors[3] = 0;
+		peakReductionFactors[3] = 1f;
 	}
 	
 	/// <summary>
@@ -48,12 +48,12 @@ public class PeakTriggerManager : MonoBehaviour
 		// Iterate over every channel
 		for (int t = 0; t < AudioManager.peaks.Length; t++) {
 
-			
+			if(t == 0) timer += 0.2f;
 			// Sync peaks (can call them triggers) to the music
 			while (peakCounters[t] < AudioManager.peaks[t].Length && AudioManager.peaks[t][peakCounters[t]] * (1024f/(float)AudioManager.frequency) < timer) {
 				
 				// Call the trigger methods in the classes which have "registered" with peakTriggerManager
-				foreach (PeakListener l in listeners) l.onPeakTrigger (t);
+				foreach (PeakListener l in listeners) l.onPeakTrigger (t,AudioManager.peaks[t][peakCounters[t]+1]);
 				
 				// Recalculate the time thresholds
 				int start = peakCounters[t] - 10;
@@ -74,9 +74,12 @@ public class PeakTriggerManager : MonoBehaviour
 				timeThreshs[t] = Mathf.Floor(peakReductionFactors[t]/average)*0.95f*average;
 				if(timeThreshs[t] < 0.1) timeThreshs[t] = 0.1f;
 				
+				if(t == 0) Background.changeSpeed(AudioManager.peaks[t][peakCounters[t]+1]);
+				
 				// Update the "pointer"
 				peakCounters [t]+=2;
 			}
+			if(t == 0) timer -= 0.2f;
 		}
 
 	}

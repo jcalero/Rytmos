@@ -90,7 +90,7 @@ public class Game : MonoBehaviour {
 	}
 
 	void OnApplicationPause() {
-		if (GameState == State.Playing)
+		if (GameState == State.Playing && !Game.Paused)
 			Pause();
 	}
 

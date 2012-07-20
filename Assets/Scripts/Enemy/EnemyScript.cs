@@ -62,6 +62,14 @@ public class EnemyScript : MonoBehaviour {
 											  "speed", currentSpeed,
 											  "easetype", "linear"));
 	}
+	
+	public void ChangeColor(Color c) {
+		enemyCircle.SetColor(c);
+	}
+	
+	public Color GetColor() {
+		return enemyCircle.color;	
+	}
 
 	// Triggered when the enemy collides with something
 	void OnTriggerEnter(Collider otherObject) {

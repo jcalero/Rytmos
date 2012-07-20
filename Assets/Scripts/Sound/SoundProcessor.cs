@@ -17,6 +17,7 @@ public class SoundProcessor
 	public static readonly float[] bands = { 0, 1000, 1000, 4000, 4000, 8000, 8000, 22000};
 	private static int[] volumeLevels;
 	private static int[][] peaks;
+	private static float variationFactor;
 	// { 0, 500, 500, 2000, 2000, 4000, 4000, 8000, 8000, 16000, 16000, 22000 };
 	
 	public static void analyse (DecoderInterface decoder)
@@ -94,7 +95,7 @@ public class SoundProcessor
 			
 			
 			if(avg != 0)
-				decibelLevels.Add(Mathf.Abs(20*Mathf.Log10(avg)));
+				decibelLevels.Add(Mathf.Abs(20*Mathf.Log10(max)));
 			
 			rollingAverage = (alpha * (0.8f * max + 0.2f * avg)) + ((1 - alpha) * rollingAverage);
 			
@@ -221,14 +222,29 @@ public class SoundProcessor
 		for (int i = 0; i < peaks.Length; i++) {
 			List<int> tempPeaks = new List<int> ();
 			for (int j = 0; j < peaks[i].Length; j++) {
-				if (prunnedSpectralFlux [i] [peaks [i] [j]] > minPeaks [i] + 0.7f * (peakAvgs [i] - minPeaks [i]))
+				if (prunnedSpectralFlux [i] [peaks [i] [j]] > minPeaks [i] + 0.7f * (peakAvgs [i] - minPeaks [i])) {
 					tempPeaks.Add (peaks [i] [j]);
+					tempPeaks.Add (Mathf.RoundToInt(prunnedSpectralFlux[i][peaks[i][j]]));
+				}
 			}
 			peaksList.Add (tempPeaks.ToArray ());
 		}
 		peaks = peaksList.ToArray ();
 		
-		#region XXX (virus.porn.exe)
+		#region NORMALIZE PEAK INTENSITIES
+		for(int i = 0; i < peaks.Length; i++) {
+			float max = -1;
+			for(int j = 1;j < peaks[i].Length; j+=2) {
+				if(peaks[i][j] > max) max = peaks[i][j];
+			}
+			for(int j = 1;j < peaks[i].Length; j+=2) {
+				peaks[i][j] = Mathf.RoundToInt(100f*(peaks[i][j]/max));
+			}
+		}
+		#endregion
+		
+		
+		#region VARIAION FACTOR
 		float average = 0;
 		float[] dbLvls = decibelLevels.ToArray();
 		decibelLevels.Clear();
@@ -238,7 +254,7 @@ public class SoundProcessor
 		}
 		
 		
-		average /= dbLvls.Length;
+		average /= (float)dbLvls.Length;
 		
 	
 		
@@ -248,7 +264,14 @@ public class SoundProcessor
 			stDev += (dbLvls[i] - average) * (dbLvls[i] - average);
 		}
 		
-		stDev = Mathf.Sqrt (stDev / dbLvls.Length);
+		stDev = Mathf.Sqrt (stDev / (float)dbLvls.Length);
+		
+		Debug.Log("before conversion: " + stDev);
+		if(stDev > 25f) stDev = 25f;
+		else if (stDev < 5f) stDev = 5f;
+		
+		stDev /= 25f;
+		variationFactor = stDev;
 		
 		Debug.Log ("stdDev for song is: " + stDev);
 		#endregion
@@ -262,5 +285,9 @@ public class SoundProcessor
 	public static int[] getVolumeLevels ()
 	{
 		return volumeLevels;	
+	}
+	
+	public static float getVariationFactor() {
+		return variationFactor;	
 	}
 }

@@ -9,7 +9,7 @@ using System.Collections;
 public interface PeakListener
 {
 	
-	void onPeakTrigger (int channel);
+	void onPeakTrigger (int channel, int intensity);
 
 	void setLoudFlag (int flag);
 }
