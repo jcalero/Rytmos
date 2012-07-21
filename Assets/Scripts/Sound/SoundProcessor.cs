@@ -18,10 +18,13 @@ public class SoundProcessor
 	private static int[] volumeLevels;
 	private static int[][] peaks;
 	private static float variationFactor;
+	public static bool isAnalyzing = true;
+	public static int loadingProgress;
 	// { 0, 500, 500, 2000, 2000, 4000, 4000, 8000, 8000, 16000, 16000, 22000 };
 	
 	public static void analyse (DecoderInterface decoder)
 	{			
+		loadingProgress = 0;
 		// For finding the volume levels
 		List<int> volumeLevelList = new List<int> ();
 		float rollingAverage = 0.01f;
@@ -30,7 +33,7 @@ public class SoundProcessor
 		int sampleCounter = 0;
 		float totalMax = -1;
 		
-		float start = Time.realtimeSinceStartup;
+//		float start = Time.realtimeSinceStartup;
 		
 		// Get spectral flux
 		SpectrumProvider spectrumProvider = new SpectrumProvider (decoder, BUFFER_SIZE, HOP_SIZE, true);			
@@ -39,6 +42,8 @@ public class SoundProcessor
 		List<List<float>> spectralFlux = new List<List<float>> ();
 		for (int i = 0; i < bands.Length / 2; i++)
 			spectralFlux.Add (new List<float> ());
+		
+		int bufferCounter = 0;
 			
 		do {			
 			#region SPECTRAL ANALYSIS
@@ -64,6 +69,9 @@ public class SoundProcessor
 			}			
 			#endregion
 			
+			bufferCounter++;
+			loadingProgress = Mathf.RoundToInt(75f*(((bufferCounter*BUFFER_SIZE)/(float)AudioManager.frequency)/AudioManager.audioLength));
+			
 		} while( (spectrum = spectrumProvider.nextSpectrum() ) != null );
 		
 		#region VOLUME CLASSIFICATION
@@ -77,9 +85,9 @@ public class SoundProcessor
 		float [] samples = new float[spectrumProvider.getWinSize ()];
 		
 
-		start = Time.realtimeSinceStartup;
+//		start = Time.realtimeSinceStartup;
 		List<float> decibelLevels = new List<float>();
-		
+		int oldProgress = loadingProgress;
 		while (dec.readSamples(ref samples) !=0) {	
 			float avg = 0;
 			float max = -1;
@@ -161,6 +169,7 @@ public class SoundProcessor
 				}
 			}
 			sampleCounter++;
+			loadingProgress = oldProgress + Mathf.RoundToInt( 25f*(((sampleCounter*BUFFER_SIZE)/(float)AudioManager.frequency)/AudioManager.audioLength));
 		}
 		#endregion
 		
@@ -275,6 +284,8 @@ public class SoundProcessor
 		
 		Debug.Log ("stdDev for song is: " + stDev);
 		#endregion
+		
+		isAnalyzing = false;
 	}
 	
 	public static int[][] getPeaks ()
@@ -289,5 +300,9 @@ public class SoundProcessor
 	
 	public static float getVariationFactor() {
 		return variationFactor;	
+	}
+	
+	public static void reset () {
+		isAnalyzing = true;
 	}
 }

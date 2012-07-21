@@ -22,17 +22,18 @@ public class AudioPlayer : MonoBehaviour
 		audioSources = gameObject.GetComponentsInChildren<AudioSource> (); // get references to audiosources
 		
 		// Check whether we want to load in a song (Game.Song is set) or use one which has been provided as an asset
-		if (Game.Song != null && Game.Song != "") {
-			if (Game.Song != AudioManager.getCurrentSong ())
-				AudioManager.initMusic (Game.Song);
-		} else if (audioSources [0].clip != null) {
-			if (!AudioManager.isSongLoaded ()) {
-				AudioManager.setCam (audioSources [0]);
-				AudioManager.initMusic ("");
-			}
-		}
-		while (!AudioManager.isSongLoaded()) {
-		} // idlewait
+//		if (Game.Song != null && Game.Song != "") {
+//			if (Game.Song != AudioManager.getCurrentSong ())
+//				AudioManager.initMusic (Game.Song);
+//		} else if (audioSources [0].clip != null) {
+//			if (!AudioManager.isSongLoaded ()) {
+//				AudioManager.setCam (audioSources [0]);
+//				AudioManager.initMusic ("");
+//			}
+//		}
+//		while (!AudioManager.isSongLoaded()) {
+//			Debug.Log("waiting");
+//		} // idlewait
 
 		if(Application.platform == RuntimePlatform.Android) {
 			androidPlayer = new AndroidJavaObject("android.media.MediaPlayer",new object[]{});

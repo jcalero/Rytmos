@@ -13,7 +13,7 @@ public class FileBrowserEvents : MonoBehaviour {
     
     private void OpenFile(string pathToFile) {
         Game.Song = pathToFile;
-        Application.LoadLevel("Game");
+        Application.LoadLevel("LoadScreen");
     }
 
     private void FileWindowClosed() {

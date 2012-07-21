@@ -22,6 +22,7 @@ public static class AudioManager
 	public static int frameSize;
 	public static string artist = "Unknown";
 	public static string title = "Unknown";
+	public static int loadingProgress;
 	#endregion
 	
 	#region private vars
@@ -41,9 +42,10 @@ public static class AudioManager
 	/// <param name='pathToMusicFile'>
 	/// Path to music file.
 	/// </param>
-	public static void initMusic (string pathToMusicFile)
+	public static IEnumerator initMusic (string pathToMusicFile)
 	{
-		
+		songLoaded = false;
+		loadingProgress = 0;
 		// If the cam object has been set, analyze the music file which is loaded as the background music in unity
 		// May be useful for the story mode
 		if (ingameMusic != null) {
@@ -65,11 +67,12 @@ public static class AudioManager
 			freader = new FileReader (pathToMusicFile);
 			FileReader.ReadStatus success = freader.read ();
 			while (freader.isReading()) {
+				yield return 0;
 			}
 			
 			// Succeeded reading? (Which means it found the file when we're just streaming)
 			if (success != FileReader.ReadStatus.SUCCESS)
-				return;
+				return false;
 			
 			// Set useful information, like AudioClip,length,etc..	
 			frequency = freader.getFrequency ();
@@ -91,9 +94,10 @@ public static class AudioManager
 				FileReader rytFile = new FileReader (cacheFile);
 				success = rytFile.read ();
 				while (rytFile.isReading()) {
+					yield return 0;
 				}				
 				if (success != FileReader.ReadStatus.SUCCESS)
-					return;
+					return false;
 				
 				peaks = rytFile.getPeaks ();
 				loudPartTimeStamps = rytFile.getLoudnessData ();
@@ -103,7 +107,18 @@ public static class AudioManager
 				
 			} else {
 				// We have no cache file, so do the actual analysis!
-				SoundProcessor.analyse(freader);
+				System.Threading.Thread t = new System.Threading.Thread(() => SoundProcessor.analyse(freader));
+//				t.IsBackground = true;
+				t.Start();
+				while(SoundProcessor.isAnalyzing) {
+					loadingProgress = SoundProcessor.loadingProgress;
+					yield return 0;
+				}
+				SoundProcessor.reset();
+				t.Join();
+				t.Abort();
+				t = null;
+//				SoundProcessor.analyse(freader);
 				peaks = SoundProcessor.getPeaks ();
 				loudPartTimeStamps = SoundProcessor.getVolumeLevels ();
 				variationFactor = SoundProcessor.getVariationFactor();
