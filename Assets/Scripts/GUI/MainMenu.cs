@@ -26,17 +26,17 @@ public class MainMenu : MonoBehaviour {
 	// Current state of the menu.
 	public MenuLevel CurrentMenuLevel;
 
-	// Mode menu level buttons
-	public UIButton ArcadeButton;
-	public UIButton CasualButton;
-	public UIButton ChallengeButton;
-	public UIButton StoryButton;
+	//// Mode menu level buttons
+	//public UIButton ArcadeButton;
+	//public UIButton CasualButton;
+	//public UIButton ChallengeButton;
+	//public UIButton StoryButton;
 
-	// Mode menu level particles;
-	public ParticleSystem ArcadeParticles;
-	public ParticleSystem CasualParticles;
-	public ParticleSystem ChallengeParticles;
-	public ParticleSystem StoryParticles;
+	//// Mode menu level particles;
+	//public ParticleSystem ArcadeParticles;
+	//public ParticleSystem CasualParticles;
+	//public ParticleSystem ChallengeParticles;
+	//public ParticleSystem StoryParticles;
 
 	// Mode menu button states
 	private bool arcadeButtonActive;
@@ -49,9 +49,6 @@ public class MainMenu : MonoBehaviour {
 	public UISlider MusicVolumeSlider;
 	public UILabel ColorblindSettingLabel;
 	public UILabel LowGraphicsSettingLabel;
-
-	// REMOVE THIS ONCE HIGHSCORES HAVE BEEN CODED ON THE NEW MAIN MENU
-	public static string FetchError = "";
 	#endregion
 
 	#region Functions
@@ -149,7 +146,8 @@ public class MainMenu : MonoBehaviour {
 	/// Button handler or "Back" button
 	/// </summary>
 	void OnBackClicked() {
-		ChangeMenu(MenuLevel.Base);
+		if (CurrentMenuLevel == MenuLevel.FileBrowser) FileBrowser.SendMessage("CloseFileWindow");
+		else ChangeMenu(MenuLevel.Base);
 	}
 	#endregion
 

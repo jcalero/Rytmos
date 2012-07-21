@@ -107,10 +107,10 @@ public class HSController : MonoBehaviour {
 		yield return hs_get;
 		if (hs_get.error != null) {
 			Debug.LogWarning("There was an error getting the high score: " + hs_get.error);
-			MainMenu.FetchError = hs_get.error;
+			FetchError = hs_get.error;
 		} else if (hs_get.text.ToLower().StartsWith("query failed")) {
 			Debug.LogWarning("There was an error getting the high score: " + hs_get.text);
-			MainMenu.FetchError = hs_get.text;
+			FetchError = hs_get.text;
 			string errorText = "Error fetching the scores!";
 			Top5List = new string[1][];
 			Top5List[0] = new string[errorText.Length];
@@ -130,10 +130,10 @@ public class HSController : MonoBehaviour {
 		yield return hs_get;
 		if (hs_get.error != null) {
 			Debug.LogWarning("There was an error getting the high score: " + hs_get.error);
-			MainMenu.FetchError = hs_get.error;
+			FetchError = hs_get.error;
 		} else if (hs_get.text.ToLower().StartsWith("query failed")) {
 			Debug.LogWarning("There was an error getting the high score: " + hs_get.text);
-			MainMenu.FetchError = hs_get.text;
+			FetchError = hs_get.text;
 			string errorText = "Error fetching the scores!";
 			Close5List = new string[1][];
 			Close5List[0] = new string[errorText.Length];
@@ -163,10 +163,14 @@ public class HSController : MonoBehaviour {
 			instance.ScoresSongLabel.maxLineCount = 2;
 			instance.ScoresSongLabel.text = "No songs have been played yet! Play some first.";
 			instance.ScoresModeLabel.text = "";
-			foreach (UILabel label in instance.top5names) label.text = "";
-			foreach (UILabel label in instance.top5scores) label.text = "";
-			foreach (UILabel label in instance.close5names) label.text = "";
-			foreach (UILabel label in instance.close5scores) label.text = "";
+			int labelcnt = 0;
+			while (labelcnt < 5) {
+				instance.top5names[labelcnt].text = "";
+				instance.close5names[labelcnt].text = "";
+				instance.top5scores[labelcnt].text = "";
+				instance.close5scores[labelcnt].text = "";
+				labelcnt++;
+			}
 
 		} else {
 			instance.ScoresSongLabel.maxLineCount = 1;
@@ -219,7 +223,7 @@ public class HSController : MonoBehaviour {
 			for (int cnt = 0; cnt < Top5List.Length; cnt++) {
 				if (cnt < 5) {
 					top5names[cnt].text = (cnt + 1) + ". " + Top5List[cnt][0];
-					top5scores[cnt].text = Top5List[cnt][1];
+					top5scores[cnt].text = FormatNumber(Top5List[cnt][1]);
 				}
 				//Debug.Log(HSController.ScoresList[cnt][0] + " :: " + HSController.ScoresList[cnt][1]);
 			}
@@ -235,12 +239,17 @@ public class HSController : MonoBehaviour {
 				if (cnt < 5) {
 					string nr = Close5List[cnt][2];
 					close5names[cnt].text = nr + ". " + Close5List[cnt][0];
-					close5scores[cnt].text = Close5List[cnt][1];
+					close5scores[cnt].text = FormatNumber(Close5List[cnt][1]);
+					close5names[cnt].transform.localScale = new Vector3(26, 26, 1);
+					close5scores[cnt].GetComponent<TweenScale>().enabled = false;
 					if (Close5List[cnt][1] == topScore.ToString() &&
 						Close5List[cnt][0] == Game.PlayerName &&
 						!formattedOwnRow) {
 						close5names[cnt].text = "[FDD017]" + close5names[cnt].text;
 						close5scores[cnt].text = "[FDD017]" + close5scores[cnt].text;
+						//close5names[cnt].GetComponent<TweenScale>().enabled = true;
+						close5names[cnt].transform.localScale = new Vector3(28, 28, 1);
+						close5scores[cnt].GetComponent<TweenScale>().enabled = true;
 						formattedOwnRow = true;
 					}
 				}
@@ -249,6 +258,21 @@ public class HSController : MonoBehaviour {
 		} else {
 			close5names[0].text = FetchError;
 		}
+	}
+
+	private string FormatNumber(string numberString) {
+		return FormatNumber(numberString, '\'');
+	}
+
+	private string FormatNumber(string numberString, char thousandSeparator) {
+		string tempNumber = "";
+		if (numberString.Length < 4) return numberString;
+		int nrOfSeparators = (int)Mathf.Ceil((numberString.Length / 3.0f) - 1);
+		for (int cnt = 1; cnt <= nrOfSeparators; cnt++) {
+			tempNumber = tempNumber + thousandSeparator + numberString.Substring(numberString.Length - (3 * cnt), 3);
+		}
+		tempNumber = numberString.Substring(0, numberString.Length - tempNumber.Length + nrOfSeparators) + tempNumber;
+		return tempNumber;
 	}
 
 	private bool LoadSongList() {
