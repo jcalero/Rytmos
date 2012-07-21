@@ -12,13 +12,9 @@ public class HSController : MonoBehaviour {
 	//private bool highscoresLoaded = false;   // Sets to true if the highscores were loaded once.
 
 	private string addScoreURL = "http://rytmos-game.com/addscorenew.php?"; //be sure to add a ? to your url
-	//private string highscoreURL = "http://rytmos-game.com/displaynew.php?";
 	private string top5URL = "http://rytmos-game.com/displaytop5.php?";
 	private string close5URL = "http://rytmos-game.com/displayclose5.php?";
-	//public UILabel[] highscores;
-	//public UILabel[] names;
-	//public UILabel submittedLabel;
-	//public UILabel errorLabel;
+
 
 	public string[][] hsTimeAttack = new string[10][];
 	public string[][] hsSurvival = new string[10][];
@@ -29,6 +25,7 @@ public class HSController : MonoBehaviour {
 	private List<string> songList = new List<string>();
 	private string[][] separatedSongList;
 	private static int currentlyShowingHS = 0;
+	private static bool noSongsLoaded;
 
 	public UILabel[] top5names;
 	public UILabel[] top5scores;
@@ -36,6 +33,10 @@ public class HSController : MonoBehaviour {
 	public UILabel[] close5scores;
 	public UILabel ScoresModeLabel;
 	public UILabel ScoresSongLabel;
+	public UIButton NextSongButton;
+	public UIButton PrevSongButton;
+	public UIButton NextModeButton;
+	public UIButton PrevModeButton;
 
 	public static string FetchError;
 
@@ -155,10 +156,20 @@ public class HSController : MonoBehaviour {
 
 	public static void InitHSDisplay() {
 		if (!instance.LoadSongList()) {
-			instance.top5names[0].text = "Top 5 Scores...";
-			instance.close5names[0].text = "Scores close to you...";
+			UITools.SetActiveState(instance.NextSongButton, false);
+			UITools.SetActiveState(instance.PrevSongButton, false);
+			UITools.SetActiveState(instance.NextModeButton, false);
+			UITools.SetActiveState(instance.PrevModeButton, false);
+			instance.ScoresSongLabel.maxLineCount = 2;
 			instance.ScoresSongLabel.text = "No songs have been played yet! Play some first.";
+			instance.ScoresModeLabel.text = "";
+			foreach (UILabel label in instance.top5names) label.text = "";
+			foreach (UILabel label in instance.top5scores) label.text = "";
+			foreach (UILabel label in instance.close5names) label.text = "";
+			foreach (UILabel label in instance.close5scores) label.text = "";
+
 		} else {
+			instance.ScoresSongLabel.maxLineCount = 1;
 			string artist = instance.separatedSongList[0][0];
 			string song =   instance.separatedSongList[0][1];
 			Game.Mode gameMode = (Game.Mode)Enum.Parse(typeof(Game.Mode), instance.separatedSongList[0][2]);
@@ -274,7 +285,7 @@ public class HSController : MonoBehaviour {
 				else return true;
 			}
 		} catch (Exception e) {
-			Debug.LogError(e.Message);
+			Debug.LogWarning(e.Message);
 			return false;
 		}
 	}

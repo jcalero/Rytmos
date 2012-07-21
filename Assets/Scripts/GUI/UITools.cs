@@ -38,5 +38,25 @@ public class UITools : MonoBehaviour {
 		}
 	}
 
+	public static void SetActiveState<T>(T widget, bool state) where T : UIWidget {
+		if (state) {
+			widget.gameObject.active = true;
+			SetActiveState(widget.transform, true);
+		} else {
+			SetActiveState(widget.transform, false);
+			widget.gameObject.active = false;
+		}
+	}
+
+	public static void SetActiveState(UIButton button, bool state) {
+		if (state) {
+			button.gameObject.active = true;
+			SetActiveState(button.transform, true);
+		} else {
+			SetActiveState(button.transform, false);
+			button.gameObject.active = false;
+		}
+	}
+
 	#endregion
 }

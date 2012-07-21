@@ -555,7 +555,7 @@ private function GetCurrentFileInfo () {
                 // Go through all extensions for this file type
                 var dontAddFile = true;
                 for (var j = 0; j < filterFileExtensions.Length; j++) {
-                    if (fileInfo[i].Name.EndsWith(filterFileExtensions[j])) {
+                    if (fileInfo[i].Name.ToLower().EndsWith(filterFileExtensions[j])) {
                         dontAddFile = false;
                         break;
                     }

@@ -58,7 +58,7 @@ public class MainMenu : MonoBehaviour {
 
 	void Awake() {
 		Game.GameState = Game.State.Menu;
-		CurrentMenuLevel = MenuLevel.Base;
+		ChangeMenu(MenuLevel.Base);
 	}
 
 	void Update() {
