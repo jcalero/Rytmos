@@ -69,7 +69,7 @@ public class HSController : MonoBehaviour {
 		string table = CalculateTableName(artist, song, gameMode);
 
 		string post_url = instance.addScoreURL + "name=" + WWW.EscapeURL(name) + "&score=" + score + "&table=" + table + "&hash=" + cheatHash
-			+ "&artist=" + RemoveSpecialCharacters(artist) + "&song=" + RemoveSpecialCharacters(song) + "&mode=" + gameMode.GetHashCode();
+			+ "&artist=" + RemoveSpecialCharacters(artist).ToLower() + "&song=" + RemoveSpecialCharacters(song).ToLower() + "&mode=" + gameMode.GetHashCode();
 
 		Win.SetSubmitText("Submitting...");
 		//instance.submittedLabel.text = "Submitting...";
