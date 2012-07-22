@@ -98,8 +98,10 @@ public class Game : MonoBehaviour {
 	public static void Pause() {
 		//        AudioSource audio = Camera.main.GetComponent<AudioSource>();
 		//        if (audio != null)	// Pause the music if it exists
-		if (GameState == State.Playing)
+		if (GameState == State.Playing) {
 			AudioPlayer.pause();
+			PauseMenu.Show();
+		}
 		Time.timeScale = 0f;                        // Stop game time
 		paused = true;
 		Debug.Log(">> Game paused.");
@@ -108,8 +110,10 @@ public class Game : MonoBehaviour {
 	public static void Resume() {
 		//        AudioSource audio = Camera.main.GetComponent<AudioSource>();
 		//        if (audio != null)
-		if (GameState == State.Playing)
+		if (GameState == State.Playing) {
 			AudioPlayer.resume();                           // Resume the music if it exists
+			PauseMenu.Hide();
+		}
 		Time.timeScale = 1f;                        // Restores game time
 		paused = false;
 		Debug.Log(">> Game resumed.");

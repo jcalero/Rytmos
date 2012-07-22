@@ -11,8 +11,7 @@ public class HUD : MonoBehaviour {
 	// These public objects are set in the Editor/Inspector. Object: "HUDManager".
 	public UILabel ScoreValueLabel;
 	public UILabel MultiplierLabel;
-	public UILabel EnergyLabel;
-	public UILabel EnergyValueLabel;
+	public UILabel FPSLabel;
 	public UIPanel DevModePanel;
 	public Camera HUDCamera;
 
@@ -21,11 +20,12 @@ public class HUD : MonoBehaviour {
 	private float screenTop;
 	private float screenCentre;
 	private float screenRight;
-	//private float screenBottom;
+	private float screenBottom;
 
 	// Label offset values
 	private float topMargin = -30f;
 	private float rightMargin = -60f;
+	private float bottomMargin = 20f;
 
 	// Static self instance
 	private static HUD instance;
@@ -41,7 +41,7 @@ public class HUD : MonoBehaviour {
 		screenTop = HUDCamera.pixelHeight / 2;
 		screenCentre = 0;
 		screenRight = -screenLeft;
-		//screenBottom = -screenTop;
+		screenBottom = -screenTop;
 	}
 
 	void Start() {
@@ -50,6 +50,9 @@ public class HUD : MonoBehaviour {
 		ScoreValueLabel.MakePixelPerfect();
 		MultiplierLabel.transform.localPosition = new Vector2(screenRight + rightMargin, screenTop + topMargin);
 		MultiplierLabel.MakePixelPerfect();
+		FPSLabel.transform.localPosition = new Vector2(screenRight + (rightMargin / 5), screenBottom + bottomMargin);
+		FPSLabel.MakePixelPerfect();
+		FPSLabel.transform.localScale = new Vector2(20, 20);
 
 		// Initialise display values
 		UpdateScore();
@@ -90,6 +93,11 @@ public class HUD : MonoBehaviour {
 			else
 				tempText = "x" + Player.multiplier;
 			return tempText;
+		}
+	}
+	public static Camera Camera {
+		get {
+			return instance.HUDCamera;
 		}
 	}
 	#endregion

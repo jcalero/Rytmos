@@ -78,6 +78,12 @@ public class EnemyScript : MonoBehaviour {
 			if (Game.PowerupActive != Game.Powerups.Invincible) {
 				//				Player.health -= 10 * health;       // Reduces the player health by 10 * the remaining enemy health
 				Player.ResetMultiplier();
+				//Debug.Log(Level.cameraShakeTimer);
+				//if (Level.cameraShakeTimer == 0) {
+				Camera.mainCamera.animation.Play("CameraShake");
+				//    StartCoroutine(Level.InitiateCameraShakeTimer());
+				//}
+
 			}
 			StartCoroutine(DamageEnemy(true));
 		}
@@ -194,10 +200,17 @@ public class EnemyScript : MonoBehaviour {
 			}
 			if (!givenScore && !isPlayer) {
 				//Player.score += 10 * Player.multiplier;
-				Player.IncrementScore();
+				Vector2 floatScorePos = Camera.mainCamera.WorldToViewportPoint(transform.position);
+				UILabel floatLabel = FloatingScorePool.Spawn(HUD.Camera.ViewportToWorldPoint(floatScorePos));
+				floatLabel.text = "[4499DD]+" + Player.IncrementScore();
+				floatLabel.animation.Play();
+
+				//FloatingScorePool.FloatScoreLabels[0].transform.position = HUD.Camera.ViewportToWorldPoint(floatScorePos);
+				//Player.IncrementScore();
 				givenScore = true;
 			}
 			CreateExplosion();
+
 			iTween.Stop(gameObject);
 			collider.enabled = false;
 			SecondPulseColl.collider.enabled = false;

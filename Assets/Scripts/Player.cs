@@ -65,7 +65,7 @@ public class Player : MonoBehaviour, PeakListener {
 				clickOnScreen();
 
 			int newMultiplier = (KillStreakCounter / multiplierKillDivisor) + 1;
-			Debug.Log(KillStreakCounter + " : " + newMultiplier);
+			//Debug.Log(KillStreakCounter + " : " + newMultiplier);
 			// Update the multiplier if it should increase and it's not larger than max multiplier
 			if (newMultiplier > multiplier && newMultiplier <= maxMultiplier)
 				IncrementMultiplier();
@@ -285,13 +285,15 @@ public class Player : MonoBehaviour, PeakListener {
 		energy = startEnergy = maxEnergy;
 	}
 
-	public static void IncrementScore() {
-		IncrementScore(10);
+	public static int IncrementScore() {
+		return IncrementScore(10);
 	}
 
-	public static void IncrementScore(int value) {
-		score += value * multiplier;
+	public static int IncrementScore(int value) {
+		int scoreIncrement = value * multiplier;
+		score += scoreIncrement;
 		HUD.UpdateScore();
+		return scoreIncrement;
 	}
 
 	public static void IncrementMultiplier() {

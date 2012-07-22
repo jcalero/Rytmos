@@ -16,10 +16,10 @@ public class Level : MonoBehaviour {
 	protected LinkedSpriteManager spriteManagerScript;
 	protected SpriteManager bgSpriteManagerScript;
 	protected Sprite touchSprite;                                     // The SpriteManager created sprite
-	
+
 	public static Color purple = new Color(.5f, 0, .5f, 1f);
 	public static bool fourColors = false;							// Used for dealing with multiple colors - currently 4 or 6
-	
+
 	public GameObject[] particlesFeedback = new GameObject[6];      // The six feedback particles. Inspector reference. Location: LevelManager
 	public GameObject spriteManager;                                // Reference to the SpriteManager. Inspector reference. Location: LevelManager
 	public GameObject bgSpriteManager;                              // Reference to the SpriteManager. Inspector reference. Location: LevelManager
@@ -31,7 +31,7 @@ public class Level : MonoBehaviour {
 	#region Functions
 	protected virtual void Awake() {
 		// Local static reference to this class.
-		if(Game.ColorMode == Game.NumOfColors.Four) fourColors = true;
+		if (Game.ColorMode == Game.NumOfColors.Four) fourColors = true;
 		else fourColors = false;
 		Instance = this;
 		spriteManagerScript = spriteManager.GetComponent<LinkedSpriteManager>();
@@ -52,8 +52,8 @@ public class Level : MonoBehaviour {
 		//SetUpBorderLineFeedback();
 		//SetUpParticlesFeedback();
 	}
-	
-	
+
+
 	/// <summary>
 	/// Shows the touch sprite at the "pos" location with the respective colour
 	/// on that position
@@ -79,7 +79,7 @@ public class Level : MonoBehaviour {
 	/// </summary>
 	public static void SetUpParticlesFeedback(int numOfSpawns, int enemy) {
 		EnemySpawnScript ess = Instance.enemySpawner.GetComponent<EnemySpawnScript>();
-		for(int i=0; i<numOfSpawns; i++) {
+		for (int i = 0; i < numOfSpawns; i++) {
 			int percentage = ess.spawnPositions[i];
 			Instance.particlesFeedback[i].transform.localPosition = ess.findSpawnPositionVector(percentage);
 			Instance.particlesFeedback[i].GetComponent<ParticleSystem>().startColor = singleColourSelect(enemy);
@@ -100,12 +100,12 @@ public class Level : MonoBehaviour {
 		}
 		*/
 	}
-	
+
 	public static void SetUpParticlesFeedback(int particleNum, Vector3 position) {
 		Instance.particlesFeedback[particleNum].transform.localPosition = position;
 		Instance.particlesFeedback[particleNum].GetComponent<ParticleSystem>().startColor = Color.white;
 	}
-	
+
 	public static void SetUpParticlesFeedback(int particleNum, Vector3 position, Color c) {
 		Instance.particlesFeedback[particleNum].transform.localPosition = position;
 		Instance.particlesFeedback[particleNum].GetComponent<ParticleSystem>().startColor = c;
@@ -208,19 +208,19 @@ public class Level : MonoBehaviour {
 				}
 			}
 		}
-	} 
-	
+	}
+
 	public static Color secondaryColourSelect(Vector2 xy) {
 		float currAngle = mouseAngle(xy);
-		if(Mathf.Abs(currAngle) >= 170) {
-			if(currAngle > 0) return Color.green;
+		if (Mathf.Abs(currAngle) >= 170) {
+			if (currAngle > 0) return Color.green;
 			else return Color.yellow;
-		} else if(Mathf.Abs (currAngle) <= 10) {
-			if(currAngle > 0) return Color.blue;
+		} else if (Mathf.Abs(currAngle) <= 10) {
+			if (currAngle > 0) return Color.blue;
 			else return Level.purple;
-		} else if(currAngle > 110 && currAngle <= 120) {
+		} else if (currAngle > 110 && currAngle <= 120) {
 			return Color.yellow;
-		} else if((currAngle > 120 && currAngle <= 130) || (currAngle > 50 && currAngle <= 60)) {
+		} else if ((currAngle > 120 && currAngle <= 130) || (currAngle > 50 && currAngle <= 60)) {
 			return Color.red;
 		} else if (currAngle >= 60 && currAngle < 70) {
 			return Level.purple;
@@ -234,33 +234,33 @@ public class Level : MonoBehaviour {
 			return Color.clear;
 		}
 	}
-	
+
 	public static Color continuousColourSelect(Vector2 xy) {
 		float angle = mouseAngle(xy);
-	
-		if(angle > 0) {
-			if(angle < 45) {
-				return new Color((((angle/45)*64)+64)/255, 0, (191 - (angle/45)*63)/255, 1);
-			} else if(angle < 90) {
-				return new Color(((((angle-45)/45)*128) + 127)/255, 0, (128 - ((angle - 45)/45)*128)/255, 1);
-			} else if(angle < 135) {
-				return new Color(1, (angle-90)/45, 0, 1);
+
+		if (angle > 0) {
+			if (angle < 45) {
+				return new Color((((angle / 45) * 64) + 64) / 255, 0, (191 - (angle / 45) * 63) / 255, 1);
+			} else if (angle < 90) {
+				return new Color(((((angle - 45) / 45) * 128) + 127) / 255, 0, (128 - ((angle - 45) / 45) * 128) / 255, 1);
+			} else if (angle < 135) {
+				return new Color(1, (angle - 90) / 45, 0, 1);
 			} else {
-				return new Color( (255-((angle-135)/45)*128)/255, 1, 0, 1);
+				return new Color((255 - ((angle - 135) / 45) * 128) / 255, 1, 0, 1);
 			}
 		} else {
-			if(angle > -45) {
-				return new Color(((64-((angle/45)*-64)))/255, 0, (((angle/-45)*63)+191)/255, 1);
-			} else if(angle > -90) {
-				return new Color(0, 1-((angle+90)/45), 1, 1);
-			} else if(angle > -135) {
-				return new Color(0, 1, (angle+135)/45, 1);
+			if (angle > -45) {
+				return new Color(((64 - ((angle / 45) * -64))) / 255, 0, (((angle / -45) * 63) + 191) / 255, 1);
+			} else if (angle > -90) {
+				return new Color(0, 1 - ((angle + 90) / 45), 1, 1);
+			} else if (angle > -135) {
+				return new Color(0, 1, (angle + 135) / 45, 1);
 			} else {
-				return new Color((128-((angle+180)/45)*128)/255, 1, 0, 1);
+				return new Color((128 - ((angle + 180) / 45) * 128) / 255, 1, 0, 1);
 			}
 		}
 	}
-	
+
 	public static Color chunkyColorSelect(Vector2 xy) {
 		float angle = mouseAngle(xy);	//Angle of the mouse
 		int bandsize = 20;				//Size of the band where the transition happens (in degrees)
@@ -277,66 +277,64 @@ public class Level : MonoBehaviour {
 		 * Green : Color.green - 0, 1, 0, 1
 		 * Fractions below transition between these values
 		 */
-		if(angle > 0) {
-			if(angle<(bandsize/2)) {
-				return new Color(.5f - (.25f * (((bandsize/2) - angle)/(bandsize/2))), 0, .5f + (.25f * (((bandsize/2) - angle)/(bandsize/2))), 1);
-			} else if(angle>=(bandsize/2) && angle < (totalsize/3) - (bandsize/2)) {
+		if (angle > 0) {
+			if (angle < (bandsize / 2)) {
+				return new Color(.5f - (.25f * (((bandsize / 2) - angle) / (bandsize / 2))), 0, .5f + (.25f * (((bandsize / 2) - angle) / (bandsize / 2))), 1);
+			} else if (angle >= (bandsize / 2) && angle < (totalsize / 3) - (bandsize / 2)) {
 				return purple;
-			} else if(angle>=(totalsize/3) - (bandsize/2) && angle<(totalsize/3) + (bandsize/2)) {
-				return new Color(1- (.5f * ((((totalsize/3) + (bandsize/2)) - angle)/bandsize)), 0, .5f * ((((totalsize/3) + (bandsize/2)) - angle)/bandsize), 1);
-			} else if (angle>=(totalsize/3) + (bandsize/2) && angle< (2*totalsize/3) - (bandsize/2)) {
-				return Color.red;	
-			} else if (angle>=(2*totalsize/3) - (bandsize/2) && angle<(2*totalsize/3) + (bandsize/2)) { 
-				return new Color(1, 1- ((((2*totalsize/3) + (bandsize/2))-angle)/bandsize), 0, 1);
-			} else if (angle>=(2*totalsize/3) + (bandsize/2) && angle< totalsize - (bandsize/2)) {
+			} else if (angle >= (totalsize / 3) - (bandsize / 2) && angle < (totalsize / 3) + (bandsize / 2)) {
+				return new Color(1 - (.5f * ((((totalsize / 3) + (bandsize / 2)) - angle) / bandsize)), 0, .5f * ((((totalsize / 3) + (bandsize / 2)) - angle) / bandsize), 1);
+			} else if (angle >= (totalsize / 3) + (bandsize / 2) && angle < (2 * totalsize / 3) - (bandsize / 2)) {
+				return Color.red;
+			} else if (angle >= (2 * totalsize / 3) - (bandsize / 2) && angle < (2 * totalsize / 3) + (bandsize / 2)) {
+				return new Color(1, 1 - ((((2 * totalsize / 3) + (bandsize / 2)) - angle) / bandsize), 0, 1);
+			} else if (angle >= (2 * totalsize / 3) + (bandsize / 2) && angle < totalsize - (bandsize / 2)) {
 				return Color.yellow;
 			} else {
-				return new Color(.5f+ (.5f * ((totalsize - angle) / (bandsize/2))), 1, 0, 1);
+				return new Color(.5f + (.5f * ((totalsize - angle) / (bandsize / 2))), 1, 0, 1);
 			}
 		} else {
-			
-			if(angle>-(bandsize/2)) {
-				return new Color(.25f * (((bandsize/2) + angle) /(bandsize/2)), 0, 1-(.25f * (((bandsize/2) + angle) /(bandsize/2))), 1);
-			} else if (angle <= -(bandsize/2) && angle > -((totalsize/3) - (bandsize/2) - cyanAdjust)) {
+
+			if (angle > -(bandsize / 2)) {
+				return new Color(.25f * (((bandsize / 2) + angle) / (bandsize / 2)), 0, 1 - (.25f * (((bandsize / 2) + angle) / (bandsize / 2))), 1);
+			} else if (angle <= -(bandsize / 2) && angle > -((totalsize / 3) - (bandsize / 2) - cyanAdjust)) {
 				return Color.blue;
-			} else if(angle <= -((totalsize/3) - (bandsize/2) - cyanAdjust) && angle > -(((totalsize/3) + (bandsize/2)) - cyanAdjust)) {
-				return new Color(0, 1 - ((	((totalsize/3) + (bandsize/2) - cyanAdjust)+angle)/bandsize), 1, 1);
-			} else if(angle <= -(((totalsize/3) + (bandsize/2)) - cyanAdjust) && angle > -(((2*totalsize/3) - (bandsize/2)) + cyanAdjust)) {
+			} else if (angle <= -((totalsize / 3) - (bandsize / 2) - cyanAdjust) && angle > -(((totalsize / 3) + (bandsize / 2)) - cyanAdjust)) {
+				return new Color(0, 1 - ((((totalsize / 3) + (bandsize / 2) - cyanAdjust) + angle) / bandsize), 1, 1);
+			} else if (angle <= -(((totalsize / 3) + (bandsize / 2)) - cyanAdjust) && angle > -(((2 * totalsize / 3) - (bandsize / 2)) + cyanAdjust)) {
 				return Color.cyan;
-			} else if(angle <= -(((2*totalsize/3) - (bandsize/2)) + cyanAdjust) && angle > -((2*totalsize/3) + (bandsize/2) + cyanAdjust)) {
-				return new Color(0, 1,((((2*totalsize/3) + (bandsize/2) + cyanAdjust)+angle)/(bandsize)) ,1);				
-			} else if(angle <= -((2*totalsize/3) + (bandsize/2) + cyanAdjust) && angle > -(totalsize - (bandsize/2))) {
+			} else if (angle <= -(((2 * totalsize / 3) - (bandsize / 2)) + cyanAdjust) && angle > -((2 * totalsize / 3) + (bandsize / 2) + cyanAdjust)) {
+				return new Color(0, 1, ((((2 * totalsize / 3) + (bandsize / 2) + cyanAdjust) + angle) / (bandsize)), 1);
+			} else if (angle <= -((2 * totalsize / 3) + (bandsize / 2) + cyanAdjust) && angle > -(totalsize - (bandsize / 2))) {
 				return Color.green;
 			} else {
-				return new Color(.5f - (.5f * ((totalsize + angle) / (bandsize/2))), 1, 0, 1);
+				return new Color(.5f - (.5f * ((totalsize + angle) / (bandsize / 2))), 1, 0, 1);
 			}
 		}
 	}
-	
 
-	
 	public static float mouseAngle(Vector2 xy) {
 		float normalizedX = xy.x - (Screen.width / 2);
 		float normalizedY = xy.y - (Screen.height / 2);
 		return (Mathf.Rad2Deg * Mathf.Atan2(normalizedY, normalizedX));
 	}
-	
+
 	public static Color singleColourSelect(int numColors) {
 		switch (numColors) {
-		case 0:
-			return Color.blue;
-		case 1:
-			return Color.cyan;
-		case 2:
-			return Color.red;
-		case 3:
-			return Color.yellow;
-		case 4:
-			return Color.green;
-		case 5:
-			return Level.purple;
-		default: 
-			return Color.black;
+			case 0:
+				return Color.blue;
+			case 1:
+				return Color.cyan;
+			case 2:
+				return Color.red;
+			case 3:
+				return Color.yellow;
+			case 4:
+				return Color.green;
+			case 5:
+				return Level.purple;
+			default:
+				return Color.black;
 		}
 	}
 	#endregion
