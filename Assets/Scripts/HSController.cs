@@ -224,7 +224,7 @@ public class HSController : MonoBehaviour {
 			for (int cnt = 0; cnt < Top5List.Length; cnt++) {
 				if (cnt < 5) {
 					top5names[cnt].text = (cnt + 1) + ". " + Top5List[cnt][0];
-					top5scores[cnt].text = FormatNumber(Top5List[cnt][1]);
+					top5scores[cnt].text = UITools.FormatNumber(Top5List[cnt][1]);
 				}
 				//Debug.Log(HSController.ScoresList[cnt][0] + " :: " + HSController.ScoresList[cnt][1]);
 			}
@@ -240,7 +240,7 @@ public class HSController : MonoBehaviour {
 				if (cnt < 5) {
 					string nr = Close5List[cnt][2];
 					close5names[cnt].text = nr + ". " + Close5List[cnt][0];
-					close5scores[cnt].text = FormatNumber(Close5List[cnt][1]);
+					close5scores[cnt].text = UITools.FormatNumber(Close5List[cnt][1]);
 					close5names[cnt].transform.localScale = new Vector3(26, 26, 1);
 					close5scores[cnt].GetComponent<TweenScale>().enabled = false;
 					if (Close5List[cnt][1] == topScore.ToString() &&
@@ -259,21 +259,6 @@ public class HSController : MonoBehaviour {
 		} else {
 			close5names[0].text = FetchError;
 		}
-	}
-
-	private string FormatNumber(string numberString) {
-		return FormatNumber(numberString, '\'');
-	}
-
-	private string FormatNumber(string numberString, char thousandSeparator) {
-		string tempNumber = "";
-		if (numberString.Length < 4) return numberString;
-		int nrOfSeparators = (int)Mathf.Ceil((numberString.Length / 3.0f) - 1);
-		for (int cnt = 1; cnt <= nrOfSeparators; cnt++) {
-			tempNumber = tempNumber + thousandSeparator + numberString.Substring(numberString.Length - (3 * cnt), 3);
-		}
-		tempNumber = numberString.Substring(0, numberString.Length - tempNumber.Length + nrOfSeparators) + tempNumber;
-		return tempNumber;
 	}
 
 	private bool LoadSongList() {

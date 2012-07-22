@@ -6,7 +6,7 @@ using System.Collections;
 /// 
 /// Handles the heads up display (text and scores) during gameplay.
 /// </summary>
-public class GameHUD : MonoBehaviour {
+public class GameHUDOld : MonoBehaviour {
     #region Fields
     // These public objects are set in the Editor/Inspector. Object: "UI Root (HUD)".
     public UILabel ScoreLabel;

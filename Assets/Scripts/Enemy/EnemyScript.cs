@@ -34,7 +34,7 @@ public class EnemyScript : MonoBehaviour {
 	protected int height;
 	protected float UVHeight = 1f;
 	protected float UVWidth = 1f;
-	
+
 	private bool givenScore;			// Has the enemy given its score upon death?
 	private Color mainColor;            // The color of the enemy
 	protected float currentSpeed = 10;         // The speed of the enemy
@@ -42,17 +42,17 @@ public class EnemyScript : MonoBehaviour {
 	private int fixPos;                 // Random value for moving the enemy off the screen
 
 	public static int energyReturn = 2;			// The amount of energy to return to the player when an enemy dies.
-	
+
 	#endregion
 
 	#region Functions
-	
+
 	protected virtual void Awake() {
 		givenScore = false;
 		spriteManager = GameObject.Find("EnemySpawner").GetComponent<LinkedSpriteManager>();
 		SetPositionAndSpeed();
 		if (Level.fourColors) colors = new Color[] { Color.red, Color.cyan, Color.blue, Color.yellow };
-   
+
 	}
 
 	protected virtual void Start() {
@@ -62,22 +62,22 @@ public class EnemyScript : MonoBehaviour {
 											  "speed", currentSpeed,
 											  "easetype", "linear"));
 	}
-	
+
 	public void ChangeColor(Color c) {
 		enemyCircle.SetColor(c);
 	}
-	
+
 	public Color GetColor() {
-		return enemyCircle.color;	
+		return enemyCircle.color;
 	}
 
 	// Triggered when the enemy collides with something
 	void OnTriggerEnter(Collider otherObject) {
 		// If the enemy collides with the player, reduce health of player, destroy the enemy.
 		if (otherObject.tag == "Player") {
-			if(Game.PowerupActive != Game.Powerups.Invincible) {
-//				Player.health -= 10 * health;       // Reduces the player health by 10 * the remaining enemy health
-				Player.pulseHitCounter = 0;
+			if (Game.PowerupActive != Game.Powerups.Invincible) {
+				//				Player.health -= 10 * health;       // Reduces the player health by 10 * the remaining enemy health
+				Player.KillStreakCounter = 0;
 			}
 			StartCoroutine(DamageEnemy(true));
 		}
@@ -87,16 +87,15 @@ public class EnemyScript : MonoBehaviour {
 				otherObject.gameObject.GetComponent<PulseSender>().SecondaryColor == MainColor ||
 				otherObject.gameObject.GetComponent<PulseSender>().CurrentColor == Color.white) {
 				StartCoroutine(DamageEnemy(false));
-				
-				if(Game.PowerupActive == Game.Powerups.ChainReaction) {
-					GameObject pulse = (GameObject) Instantiate(PulsePrefab, gameObject.transform.position, Quaternion.identity);
+
+				if (Game.PowerupActive == Game.Powerups.ChainReaction) {
+					GameObject pulse = (GameObject)Instantiate(PulsePrefab, gameObject.transform.position, Quaternion.identity);
 					pulse.GetComponent<PulseSender>().SetFinalColor(mainColor);
 				}
-				
+
 			} else {
 				CollisionParticles.GetComponent<ParticleSystem>().Emit(10);
 			}
-			Player.pulseHitCounter++;
 		}
 	}
 
@@ -126,18 +125,18 @@ public class EnemyScript : MonoBehaviour {
 		// Position the enemy on it's final position.
 		transform.position = new Vector3(x, y, z);
 		Rotation();
-		
+
 	}
-	
+
 	public void SetPositionAndSpeed(float speed, float xpos, float ypos) {
 		currentSpeed = speed;
 		x = xpos;
 		y = ypos;
 		z = transform.localRotation.z;
-		transform.position = new Vector3(x,y,z);
+		transform.position = new Vector3(x, y, z);
 		Rotation();
 	}
-	
+
 	private void Rotation() {
 		float angle = Mathf.Atan2(gameObject.transform.position.y, gameObject.transform.position.x);
 		gameObject.GetComponentInChildren<Transform>().localEulerAngles = new Vector3(0f, 0f, Mathf.Rad2Deg * angle + 90);
@@ -150,7 +149,7 @@ public class EnemyScript : MonoBehaviour {
 	public Color MainColor {
 		set { mainColor = value; }
 		get { return mainColor; }
-	}	
+	}
 
 	/// <summary>
 	/// Sets the color of the material of the enemy to MainColor.
@@ -188,13 +187,13 @@ public class EnemyScript : MonoBehaviour {
 	public IEnumerator DamageEnemy(bool isPlayer) {
 		health--;
 		if (health < 1) {
-			if(Game.PowerupActive != Game.Powerups.MassivePulse) {
+			if (Game.PowerupActive != Game.Powerups.MassivePulse) {
 				Player.energy += energyReturn;            // Return a bit of energy when the enemy is killed
 				if (Player.energy > Player.maxEnergy)     // Make sure energy is never more than maxEnergy
 					Player.energy = Player.maxEnergy;
 			}
-			if(!givenScore && !isPlayer) {
-				Player.score += 10*Player.multiplier;
+			if (!givenScore && !isPlayer) {
+				Player.score += 10 * Player.multiplier;
 				givenScore = true;
 			}
 			CreateExplosion();
@@ -203,6 +202,7 @@ public class EnemyScript : MonoBehaviour {
 			SecondPulseColl.collider.enabled = false;
 			TrailParticles.Stop();
 			spriteManager.HideSprite(enemyCircle);
+			Player.KillStreakCounter++;
 			yield return new WaitForSeconds(1f);
 			Destroy(gameObject);
 		}

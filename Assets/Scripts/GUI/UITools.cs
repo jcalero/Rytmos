@@ -58,5 +58,20 @@ public class UITools : MonoBehaviour {
 		}
 	}
 
+	public static string FormatNumber(string numberString) {
+		return FormatNumber(numberString, '\'');
+	}
+
+	public static string FormatNumber(string numberString, char thousandSeparator) {
+		string tempNumber = "";
+		if (numberString.Length < 4) return numberString;
+		int nrOfSeparators = (int)Mathf.Ceil((numberString.Length / 3.0f) - 1);
+		for (int cnt = 1; cnt <= nrOfSeparators; cnt++) {
+			tempNumber = tempNumber + thousandSeparator + numberString.Substring(numberString.Length - (3 * cnt), 3);
+		}
+		tempNumber = numberString.Substring(0, numberString.Length - tempNumber.Length + nrOfSeparators) + tempNumber;
+		return tempNumber;
+	}
+
 	#endregion
 }
