@@ -21,22 +21,27 @@ public class HUD : MonoBehaviour {
 	private float screenTop;
 	private float screenCentre;
 	private float screenRight;
-	private float screenBottom;
+	//private float screenBottom;
 
 	// Label offset values
 	private float topMargin = -30f;
-	private float rightMargin = -30f;
+	private float rightMargin = -60f;
+
+	// Static self instance
+	private static HUD instance;
 	#endregion
 
-	#region Functions
+	#region Mono Functions
 
 	void Awake() {
+		instance = this;
+
 		// Assign HUD camera coordinates
 		screenLeft = -HUDCamera.pixelWidth / 2;
 		screenTop = HUDCamera.pixelHeight / 2;
 		screenCentre = 0;
 		screenRight = -screenLeft;
-		screenBottom = -screenTop;
+		//screenBottom = -screenTop;
 	}
 
 	void Start() {
@@ -45,6 +50,10 @@ public class HUD : MonoBehaviour {
 		ScoreValueLabel.MakePixelPerfect();
 		MultiplierLabel.transform.localPosition = new Vector2(screenRight + rightMargin, screenTop + topMargin);
 		MultiplierLabel.MakePixelPerfect();
+
+		// Initialise display values
+		UpdateScore();
+		UpdateMultiplier();
 
 		//Debug.Log(">>>>>>>>>>>>>> HUD TESTING VALUES <<<<<<<<<<<<<<<<<<");
 		//Debug.Log("HUD Camera aspect: " + HUDCamera.aspect);
@@ -56,11 +65,6 @@ public class HUD : MonoBehaviour {
 	}
 
 	void Update() {
-		// Update game values
-		ScoreValueLabel.text = "[55BBEE]" + UITools.FormatNumber(Player.score.ToString());
-		MultiplierLabel.text = MultiplierText;
-		//EnergyValueLabel.text = "[736AFF]" + Player.energy;
-
 		// Enable the dev mode panel if dev mode is enabled
 		//if (Game.DevMode) {
 		//    if (!DevModePanel.enabled) UITools.SetActiveState(DevModePanel, true);
@@ -68,7 +72,9 @@ public class HUD : MonoBehaviour {
 		//    if (DevModePanel.enabled) UITools.SetActiveState(DevModePanel, false);
 		//}
 	}
-
+	#endregion
+	
+	#region Properties
 	private string MultiplierText {
 		get {
 			int multiplier = Player.multiplier;
@@ -86,6 +92,32 @@ public class HUD : MonoBehaviour {
 			return tempText;
 		}
 	}
+	#endregion
 
+	#region Functions
+	public static void UpdateScore() {
+		instance.ScoreValueLabel.text = "[55BBEE]" + UITools.FormatNumber(Player.score.ToString());
+		instance.ScoreValueLabel.animation.Play("Thump");
+	}
+	public static void UpdateMultiplier() {
+		instance.MultiplierLabel.text = instance.MultiplierText;
+		if (Player.multiplier == 1) {
+			instance.MultiplierLabel.transform.localScale = new Vector2(32, 32);
+			instance.MultiplierLabel.animation.wrapMode = WrapMode.Default;
+			return;
+		} else if (Player.multiplier > 1 && Player.multiplier <= 4) {
+			instance.MultiplierLabel.animation.Play("Thump");
+		} else if (Player.multiplier > 4 && Player.multiplier <= 9) {
+			instance.MultiplierLabel.animation.Play("Thump2");
+		} else if (Player.multiplier > 9 && Player.multiplier <= 14) {
+			instance.MultiplierLabel.animation.Play("Thump3");
+		} else if (Player.multiplier > 14 && Player.multiplier <= 19) {
+			instance.MultiplierLabel.animation.Play("Thump4");
+			instance.MultiplierLabel.animation.Play("Thump4-loop");
+		} else if (Player.multiplier == 20) {
+			instance.MultiplierLabel.animation.Play("Thump5");
+			instance.MultiplierLabel.animation.wrapMode = WrapMode.Loop;
+		}
+	}
 	#endregion
 }

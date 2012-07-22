@@ -16,7 +16,8 @@ public class Player : MonoBehaviour, PeakListener {
 	public static int energy;                   // Current energy of the player
 	public static int score;                    // Current score of the player
 	public static int multiplier = 1;			// Current multiplier of the player
-	private static int multiplierKillCount = 6; // Amount of enemies needed to kill before multiplier increases.
+	private readonly static int multiplierKillDivisor = 6;	// Amount of enemies needed to kill before multiplier increases.
+	private readonly static int maxMultiplier = 20;			// Maximum multiplier reachable
 	public static int KillStreakCounter = 0;	// Counts how many enemies the pulse has destroyed (reset when the player is hit)
 	public static bool hasPowerup = false;		// Current status of the player's powerup
 	public static bool takenPowerup = false;	// If the player takes the powerup from the screne
@@ -62,9 +63,12 @@ public class Player : MonoBehaviour, PeakListener {
 			// If the player clicks, and has enough energy, sends out a pulse
 			if (Input.GetMouseButtonDown(0))
 				clickOnScreen();
-			//Debug.Log(KillStreakCounter + " : " + ((KillStreakCounter / multiplierKillCount)+1));
-			// Update the multiplier according to how many enemies the player has SLAYN!
-			if (multiplierKillCount != 0) multiplier = (KillStreakCounter / multiplierKillCount)+1 > 20 ? 20 : (KillStreakCounter / multiplierKillCount)+1;
+
+			int newMultiplier = (KillStreakCounter / multiplierKillDivisor) + 1;
+			Debug.Log(KillStreakCounter + " : " + newMultiplier);
+			// Update the multiplier if it should increase and it's not larger than max multiplier
+			if (newMultiplier > multiplier && newMultiplier <= maxMultiplier)
+				IncrementMultiplier();
 
 
 			//If you have the invincibility, singleColor or chainPulse powerups, increment its personal timer
@@ -277,7 +281,29 @@ public class Player : MonoBehaviour, PeakListener {
 	/// </summary>
 	public static void ResetStats() {
 		score = startScore;
+		ResetMultiplier();
 		energy = startEnergy = maxEnergy;
+	}
+
+	public static void IncrementScore() {
+		IncrementScore(10);
+	}
+
+	public static void IncrementScore(int value) {
+		score += value * multiplier;
+		HUD.UpdateScore();
+	}
+
+	public static void IncrementMultiplier() {
+		multiplier = (KillStreakCounter / multiplierKillDivisor) + 1;
+		//multiplier = Mathf.Clamp(multiplier, 1, 20);
+		HUD.UpdateMultiplier();
+	}
+
+	public static void ResetMultiplier() {
+		KillStreakCounter = 0;
+		multiplier = 1;
+		HUD.UpdateMultiplier();
 	}
 	#endregion
 }

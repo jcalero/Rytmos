@@ -77,7 +77,7 @@ public class EnemyScript : MonoBehaviour {
 		if (otherObject.tag == "Player") {
 			if (Game.PowerupActive != Game.Powerups.Invincible) {
 				//				Player.health -= 10 * health;       // Reduces the player health by 10 * the remaining enemy health
-				Player.KillStreakCounter = 0;
+				Player.ResetMultiplier();
 			}
 			StartCoroutine(DamageEnemy(true));
 		}
@@ -193,7 +193,8 @@ public class EnemyScript : MonoBehaviour {
 					Player.energy = Player.maxEnergy;
 			}
 			if (!givenScore && !isPlayer) {
-				Player.score += 10 * Player.multiplier;
+				//Player.score += 10 * Player.multiplier;
+				Player.IncrementScore();
 				givenScore = true;
 			}
 			CreateExplosion();
