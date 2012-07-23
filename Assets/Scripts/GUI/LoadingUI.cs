@@ -7,8 +7,9 @@ public class LoadingUI : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		
-        LoadingLabel.text = "[FDD017]" + "0";
+
+		LoadingLabel.text = "";
+		//LoadingLabel.text = "[FDD017]" + "0";
 		// Check whether we want to load in a song (Game.Song is set) or use one which has been provided as an asset
 		if (Game.Song != null && Game.Song != "") {
 			if (Game.Song != AudioManager.getCurrentSong ())

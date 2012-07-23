@@ -51,6 +51,10 @@ public class PauseMenu : MonoBehaviour {
 		Application.LoadLevel("MainMenu");
 	}
 
+	void OnRestartSongClicked() {
+		Application.LoadLevel("LoadScreen");
+	}
+
 	/// <summary>
 	/// Button handler for "Quit Game" button
 	/// </summary>
