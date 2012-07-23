@@ -161,8 +161,15 @@ public class Game : MonoBehaviour {
 	}
 
 	public static string Song {
-		get { return filePath; }
-		set { filePath = value; }
+		get {
+			if (filePath == "" || filePath == null)
+				filePath = PlayerPrefs.GetString("lastSongPlayed");
+			return filePath; 
+		}
+		set {
+			filePath = value; 
+			PlayerPrefs.SetString("lastSongPlayed", filePath);
+		}
 	}
 
 	public static string SongName {

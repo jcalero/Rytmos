@@ -46,7 +46,8 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		
 		if (timer >= audioLength){
 			Debug.Log (spawnCount);
-			Application.LoadLevel("Win");			
+			if (!AudioManager.songLoaded) Application.LoadLevel("LoadScreen");
+			else Application.LoadLevel("Win");
 		}
 	}
 	
@@ -64,6 +65,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		// Initialize other variables
 		audioLength = AudioManager.audioLength;
 		timer = 0f;
+		Debug.Log(Game.Song);
 		timers = new float[AudioManager.peaks.Length];
 		spawnRestrictors = new int[AudioManager.peaks.Length];
 		spawnDivisors = new int[]{1,1,8,2,2,2};

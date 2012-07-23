@@ -29,7 +29,7 @@ public static class AudioManager
 	/*Variables for internal logic*/
 	private static AudioSource ingameMusic;		// Reference which needs to be set if we want to use music which we prvovide ingame!
 	private static AudioClip audioClip;			// AudioClip reference for the buffered music file, part 1
-	private static bool songLoaded = false;		// Flag if the song has finished loading
+	public static bool songLoaded = false;		// Flag if the song has finished loading
 	private static string currentlyLoadedSong;	// Path to the currently loaded song (can be used to check if a new song is loaded)
 	#endregion
 	

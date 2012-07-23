@@ -26,7 +26,7 @@ public class LoadingUI : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if(!AudioManager.isSongLoaded()) {
-        	LoadingLabel.text = "[FDD017]" + AudioManager.loadingProgress;	
+			LoadingLabel.text = "[FDD017]" + AudioManager.loadingProgress;	
 		}
 		else Application.LoadLevel("Game");
 	}

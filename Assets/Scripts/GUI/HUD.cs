@@ -83,13 +83,15 @@ public class HUD : MonoBehaviour {
 			int multiplier = Player.multiplier;
 			string tempText = "";
 			if (multiplier >= 20)
-				tempText = "[DD9922]x" + Player.multiplier;
+				tempText = "[FF4400]x" + Player.multiplier;
 			else if (multiplier >= 15)
 				tempText = "[CCAA22]x" + Player.multiplier;
 			else if (multiplier >= 10)
 				tempText = "[AADD55]x" + Player.multiplier;
 			else if (multiplier >= 5)
 				tempText = "[77DDFF]x" + Player.multiplier;
+			else if (multiplier == 1)
+				tempText = "";
 			else
 				tempText = "x" + Player.multiplier;
 			return tempText;
