@@ -37,6 +37,7 @@ public class FileReader : DecoderInterface {
 		reading = false;
 		clip = null;
 		this.path = path;
+		path = path.ToLower();
 		if (path.EndsWith(".wav")) this.format = FileFormat.WAV;
 		else if (path.EndsWith(".mp3")) this.format = FileFormat.MPEG;
 		else if (path.EndsWith(".ogg")) this.format = FileFormat.OGG;

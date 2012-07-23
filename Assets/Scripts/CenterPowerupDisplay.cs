@@ -40,13 +40,13 @@ public class CenterPowerupDisplay : MonoBehaviour {
 	
 	public void changeSprite(Game.Powerups pw) {
 		if(pw == Game.Powerups.MassivePulse) {
-			updateSprite ("1-cyan");
+			updateSprite ("Atom");
 		} else if (pw == Game.Powerups.ChangeColor) {
-			updateSprite ("8-green");
+			updateSprite ("Atom");
 		} else if (pw == Game.Powerups.ChainReaction) {
-			updateSprite ("2-blue");
+			updateSprite ("Circles");
 		} else if (pw == Game.Powerups.Invincible) {
-			updateSprite ("5-yellow");
+			updateSprite ("shield");
 		}		
 	}
 	
