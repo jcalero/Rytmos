@@ -72,7 +72,9 @@ public static class AudioManager
 			
 			// Succeeded reading? (Which means it found the file when we're just streaming)
 			if (success != FileReader.ReadStatus.SUCCESS)
-				return false;
+			{
+				yield break;
+			}
 			
 			// Set useful information, like AudioClip,length,etc..	
 			frequency = freader.getFrequency ();
@@ -97,7 +99,9 @@ public static class AudioManager
 					yield return 0;
 				}				
 				if (success != FileReader.ReadStatus.SUCCESS)
-					return false;
+				{
+					yield break;
+				}
 				
 				peaks = rytFile.getPeaks ();
 				loudPartTimeStamps = rytFile.getLoudnessData ();
