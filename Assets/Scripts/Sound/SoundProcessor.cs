@@ -33,8 +33,6 @@ public class SoundProcessor
 		int sampleCounter = 0;
 		float totalMax = -1;
 		
-//		float start = Time.realtimeSinceStartup;
-		
 		// Get spectral flux
 		SpectrumProvider spectrumProvider = new SpectrumProvider (decoder, BUFFER_SIZE, HOP_SIZE, true);			
 		float[] spectrum = spectrumProvider.nextSpectrum ();
@@ -74,38 +72,31 @@ public class SoundProcessor
 			
 		} while( (spectrum = spectrumProvider.nextSpectrum() ) != null );
 		
-		#region VOLUME CLASSIFICATION
-		
-		float factor = 1f / totalMax;
-		
+		#region VOLUME CLASSIFICATION		
 		DecoderInterface dec = spectrumProvider.getDecoder ();
-		
 		dec.reset ();
 		
 		float [] samples = new float[spectrumProvider.getWinSize ()];
-		
-
-//		start = Time.realtimeSinceStartup;
+		float factor = 1f / totalMax;
 		List<float> decibelLevels = new List<float>();
+		float avgDecibels = 0;
+		
 		int oldProgress = loadingProgress;
+		
 		while (dec.readSamples(ref samples) !=0) {	
-			float avg = 0;
 			float max = -1;
 			
 			for (int i =0; i < samples.Length; i++) {
 				samples [i] = Mathf.Abs (samples[i] * factor);
 				if (samples [i] > max)
 					max = samples [i];
-				avg += samples[i];
 			}
 			
-			avg /= (float)samples.Length;
+			float db = Mathf.Abs(20*Mathf.Log10(max));
+			if(max != 0) decibelLevels.Add(db);
+			avgDecibels += db;
 			
-			
-			if(avg != 0)
-				decibelLevels.Add(Mathf.Abs(20*Mathf.Log10(max)));
-			
-			rollingAverage = (alpha * (0.8f * max + 0.2f * avg)) + ((1 - alpha) * rollingAverage);
+			rollingAverage = (alpha * max) + ((1 - alpha) * rollingAverage);
 			
 			// Have we found a part which classifies as extremely loud?
 			if (rollingAverage > 0.7f) {
@@ -173,11 +164,12 @@ public class SoundProcessor
 		}
 		#endregion
 		
-		
-		
 		// Store volumelevels
 		volumeLevels = volumeLevelList.ToArray ();
+		volumeLevelList.Clear();
+		volumeLevelList = null;
 		
+		#region SPECTRAL FLUX ANALYSIS		
 		// Convert spectral flux arraylist to array
 		float[][] spectralFluxArray = new float[spectralFlux.Count][];
 		for (int i = 0; i < spectralFluxArray.Length; i++) {
@@ -202,6 +194,7 @@ public class SoundProcessor
 			}
 			prunnedSpectralFlux [i] = tempPSF;
 		}
+		thresholds = null;
 		
 		// Get Peaks
 		List<int[]> peaksList = new List<int[]> ();
@@ -224,10 +217,11 @@ public class SoundProcessor
 			peakAvgs [i] /= tempPeaks.Count;
 		}
 		
+		// Save current peaks & reset list
 		peaks = peaksList.ToArray ();
-		
 		peaksList.Clear ();
 		
+		// Lowpass filter the peaks
 		for (int i = 0; i < peaks.Length; i++) {
 			List<int> tempPeaks = new List<int> ();
 			for (int j = 0; j < peaks[i].Length; j++) {
@@ -239,6 +233,7 @@ public class SoundProcessor
 			peaksList.Add (tempPeaks.ToArray ());
 		}
 		peaks = peaksList.ToArray ();
+		#endregion
 		
 		#region NORMALIZE PEAK INTENSITIES
 		for(int i = 0; i < peaks.Length; i++) {
@@ -254,23 +249,15 @@ public class SoundProcessor
 		
 		
 		#region VARIAION FACTOR
-		float average = 0;
 		float[] dbLvls = decibelLevels.ToArray();
 		decibelLevels.Clear();
+		decibelLevels = null;
 		
-		for (int i=0; i< dbLvls.Length; i++) {
-			average += dbLvls [i];
-		}
-		
-		
-		average /= (float)dbLvls.Length;
-		
-	
-		
+		avgDecibels /= (float)dbLvls.Length;
 		
 		float stDev = 0;
 		for (int i = 0; i < dbLvls.Length; i++) {
-			stDev += (dbLvls[i] - average) * (dbLvls[i] - average);
+			stDev += (dbLvls[i] - avgDecibels) * (dbLvls[i] - avgDecibels);
 		}
 		
 		stDev = Mathf.Sqrt (stDev / (float)dbLvls.Length);
