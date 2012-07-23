@@ -204,6 +204,8 @@ public class EnemyScript : MonoBehaviour {
 				UILabel floatLabel = FloatingScorePool.Spawn(HUD.Camera.ViewportToWorldPoint(floatScorePos));
 				floatLabel.text = "[4499DD]+" + Player.IncrementScore();
 				floatLabel.animation.Play();
+				Player.KillStreakCounter++;
+				Player.TotalKills++;
 
 				//FloatingScorePool.FloatScoreLabels[0].transform.position = HUD.Camera.ViewportToWorldPoint(floatScorePos);
 				//Player.IncrementScore();
@@ -216,7 +218,6 @@ public class EnemyScript : MonoBehaviour {
 			SecondPulseColl.collider.enabled = false;
 			TrailParticles.Stop();
 			spriteManager.HideSprite(enemyCircle);
-			Player.KillStreakCounter++;
 			yield return new WaitForSeconds(1f);
 			Destroy(gameObject);
 		}

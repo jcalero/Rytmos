@@ -25,10 +25,11 @@ public class Game : MonoBehaviour {
 	private static Mode mode;                    // Defines current/last game mode.
 	private static State state;                   // Defines the current game state.
 	private static string filePath;             // File path to the selected song to be loaded.
-	private static string songName = "Song";
-	private static string artistName = "Artist";
+	private static string songName = "Unknown";
+	private static string artistName = "Unknown";
 	private static NumOfColors colors;			//Defines the amount of colors used in the game
 	private static Powerups powerups;			//Defines the currently active powerup
+	public static bool IsLoggedIn = false;
 	// Settings
 	private static float effectsVolume;
 	private static float effectsVolumeDefault = 0.75f;

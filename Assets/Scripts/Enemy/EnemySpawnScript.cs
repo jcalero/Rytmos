@@ -13,7 +13,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	public float SpawnRate;                 // The time between spawns
 	public int[] spawnPositions;
 	public static int currentlySelectedEnemy;
-	public int spawnCount;
+	public static int spawnCount;
 	
 	private int RandomSeed;                 // The enemy type to spawn
 	private int[] counters;					// "Pointers" for the triggers of each channel

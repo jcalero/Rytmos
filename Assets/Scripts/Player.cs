@@ -19,6 +19,7 @@ public class Player : MonoBehaviour, PeakListener {
 	private readonly static int multiplierKillDivisor = 6;	// Amount of enemies needed to kill before multiplier increases.
 	private readonly static int maxMultiplier = 20;			// Maximum multiplier reachable
 	public static int KillStreakCounter = 0;	// Counts how many enemies the pulse has destroyed (reset when the player is hit)
+	public static int TotalKills = 0;			// Kill count
 	public static bool hasPowerup = false;		// Current status of the player's powerup
 	public static bool takenPowerup = false;	// If the player takes the powerup from the screne
 
@@ -282,6 +283,7 @@ public class Player : MonoBehaviour, PeakListener {
 	public static void ResetStats() {
 		score = startScore;
 		ResetMultiplier();
+		TotalKills = 0;
 		energy = startEnergy = maxEnergy;
 	}
 
