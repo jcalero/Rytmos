@@ -19,7 +19,10 @@ public class PeakTriggerManager : MonoBehaviour
 	void Start ()
 	{
 		peakCounters = new int[AudioManager.peaks.Length];
-		timer = 0f;		
+//		if(Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.WindowsPlayer) {
+//			timer = -0.15f;		
+//		} else timer = -0.25f;
+		timer = 0f;
 		loudPartCounter = 0;
 		loudFlag = -1;
 		timeThreshs = new float[AudioManager.peaks.Length];
@@ -35,7 +38,7 @@ public class PeakTriggerManager : MonoBehaviour
 	/// </summary>
 	void Update ()
 	{
-		
+		if(AudioPlayer.isPlaying) {
 		timer += Time.deltaTime;
 		
 		/* Update the flags for loud parts of a song */
@@ -44,17 +47,20 @@ public class PeakTriggerManager : MonoBehaviour
 			foreach (PeakListener l in listeners) l.setLoudFlag (loudFlag);
 			loudPartCounter+=2;			
 		}
-		
+
 		// Iterate over every channel
 		for (int t = 0; t < AudioManager.peaks.Length; t++) {
 
-			if(t == 0) timer += 0.2f;
+//			if(t == 0) timer += 0.2f;
 			// Sync peaks (can call them triggers) to the music
 			while (peakCounters[t] < AudioManager.peaks[t].Length && AudioManager.peaks[t][peakCounters[t]] * (1024f/(float)AudioManager.frequency) < timer) {
 				
+				#region TRIGGER PEAKS
 				// Call the trigger methods in the classes which have "registered" with peakTriggerManager
 				foreach (PeakListener l in listeners) l.onPeakTrigger (t,AudioManager.peaks[t][peakCounters[t]+1]);
+				#endregion
 				
+				#region TIME THRESHOLDING
 				// Recalculate the time thresholds
 				int start = peakCounters[t] - 10;
 				if(start < 0) start = 0;
@@ -63,25 +69,24 @@ public class PeakTriggerManager : MonoBehaviour
 				if(end > AudioManager.peaks[t].Length) end = AudioManager.peaks[t].Length;
 				
 				// Find average time between peaks using the sourrounding 10 peaks
-				float average = 0f;
+				float timeAverage = 0f;
 				for(int i = start+2; i < end; i+=2) {
-					average += AudioManager.peaks[t][i] - AudioManager.peaks[t][i-2];
+					timeAverage += AudioManager.peaks[t][i] - AudioManager.peaks[t][i-2];
 				}
-				average /= (((end-start)/2)-1);
-				average *= 1024f/(float)AudioManager.frequency;
-				
+				timeAverage /= ((end-start)/2)-1;
+				timeAverage *= 1024f/(float)AudioManager.frequency;
+								
 				// Update the time thresholds according to the reduction factors
-				timeThreshs[t] = Mathf.Floor(peakReductionFactors[t]/average)*0.95f*average;
+				timeThreshs[t] = Mathf.Floor(peakReductionFactors[t]/timeAverage)*0.95f*timeAverage;
 				if(timeThreshs[t] < 0.1) timeThreshs[t] = 0.1f;
-				
-				if(t == 0) Background.changeSpeed(AudioManager.peaks[t][peakCounters[t]+1]);
-				
+				#endregion
+							
 				// Update the "pointer"
 				peakCounters [t]+=2;
 			}
-			if(t == 0) timer -= 0.2f;
+//			if(t == 0) timer -=0.2f;
 		}
-
+		}
 	}
 	
 	/// <summary>

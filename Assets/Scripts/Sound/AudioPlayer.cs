@@ -15,6 +15,8 @@ public class AudioPlayer : MonoBehaviour
 	private static AudioSource[] audioSources;	// The two audiosources attached to the gameObject this class is attached to
 	private static float timer;					// Timer which is used to check if the song has finished playing!
 	private static AndroidJavaObject androidPlayer;
+	public static bool isPlaying;
+	private int test;
 	#endregion
 	
 	void Awake ()
@@ -42,8 +44,7 @@ public class AudioPlayer : MonoBehaviour
 		}else if(Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WindowsEditor) {
 			audioSources [0].clip = AudioManager.getAudioClip ();
 		}
-		timer = 0;
-		
+		isPlaying = false;
 	}
 	
 	// Start playing automatically, may want to get rid of it doing that..
@@ -63,6 +64,18 @@ public class AudioPlayer : MonoBehaviour
 	/// </summary>
 	void Update ()
 	{
+		
+		if(!isPlaying
+			&& (Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WindowsEditor)
+			&& audioSources[0].timeSamples > 0)
+			isPlaying = true;
+		else if(!isPlaying
+			&& Application.platform == RuntimePlatform.Android
+			&& (test = androidPlayer.Call<int> ("getCurrentPosition")) > 171) {
+			Debug.Log("test: " + test);
+			isPlaying = true;
+		}
+		
 		timer += Time.deltaTime;
 		if (!Game.Paused) {
 			if (timer >= AudioManager.audioLength) {
