@@ -17,6 +17,7 @@ public class Game : MonoBehaviour {
 	public static float screenMiddle;
 
 	public bool isTemp;                         // Debug value for when the game manager is a temporary instance.
+	public static bool sendSuper;				// Lame variable to indicate to everything about if you want to send a superpulse
 
 	private static bool devMode = false;        // True when devMode/debug Mode is enabled. Gets checked by DevScript.
 	private static bool paused = false;         // True when the game is paused
@@ -54,6 +55,7 @@ public class Game : MonoBehaviour {
 		screenMiddle = 0f;
 		//if(Application.platform == RuntimePlatform.WindowsEditor && filePath == null) 
 		//    filePath = ""; //"C:\\Users\\Scott\\Desktop\\test.mp3";
+		sendSuper = false;
 
 	}
 

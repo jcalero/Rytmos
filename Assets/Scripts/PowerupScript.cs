@@ -72,35 +72,7 @@ public class PowerupScript : MonoBehaviour {
 				Vector3 spawnPos = randomPos();
 				//Here, we assign the powerup - this will be moved below once we have graphics
 				int choice = Random.Range(0,4);
-				Color c;
-				switch(choice) {
-				case 0:
-					Debug.Log ("Massive Pulse Spawned!");
-					pw = Game.Powerups.MassivePulse;
-					c = Color.white;
-					break;
-				case 1:
-					Debug.Log ("Invicibility Spawned!");
-					pw = Game.Powerups.Invincible;
-					c = Color.magenta;
-					break;
-				case 2:
-					Debug.Log ("Single Colour Enemies Spawned!");
-					pw = Game.Powerups.ChangeColor;
-					c = Color.grey;
-					break;
-				case 3:
-					Debug.Log ("Chain Reaction Spawned!");
-					pw = Game.Powerups.ChainReaction;
-					c = Color.black;
-					break;
-				default:
-					Debug.Log ("Powerup Failed...");
-					c = Color.white;
-					pw = Game.Powerups.None;
-					break;
-				}
-				moveSprite(spawnPos,c);
+				moveSprite(spawnPos,setPowerup(choice));
 				spawned = true;
 				totalTimer = screenTime;
 			}
@@ -141,6 +113,57 @@ public class PowerupScript : MonoBehaviour {
 	private void moveSprite(Vector3 movePos, Color c) {
 		gameObject.transform.localPosition = movePos;
 		Level.SetUpParticlesFeedback(4, movePos, c);
+	}
+	
+	public bool spawnSprite() {
+		int choice = Random.Range(0,4);
+		return spawnSprite(choice);
+	}
+	
+	public bool spawnSprite(int i) {
+		Vector3 movePos = randomPos();
+		moveSprite(movePos, setPowerup(i));
+		spawned = true;
+		totalTimer = screenTime;
+		return spawned;
+	}
+	
+	public bool removeSprite() {
+		moveSprite(new Vector3(20,20, 0));
+		spawned = false;
+		return spawned;
+	}
+	
+	private Color setPowerup(int choice) {
+		Color c;
+		switch(choice) {
+			case 0:
+				Debug.Log ("Massive Pulse Spawned!");
+				pw = Game.Powerups.MassivePulse;
+				c = Color.white;
+				break;
+			case 1:
+				Debug.Log ("Invicibility Spawned!");
+				pw = Game.Powerups.Invincible;
+				c = Color.magenta;
+				break;
+			case 2:
+				Debug.Log ("Single Colour Enemies Spawned!");
+				pw = Game.Powerups.ChangeColor;
+				c = Color.grey;
+				break;
+			case 3:
+				Debug.Log ("Chain Reaction Spawned!");
+				pw = Game.Powerups.ChainReaction;
+				c = Color.black;
+				break;
+			default:
+				Debug.Log ("Powerup Failed...");
+				c = Color.white;
+				pw = Game.Powerups.None;
+				break;
+		}
+		return c;
 	}
 	
 	private Vector3 randomPos() {

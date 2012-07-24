@@ -36,6 +36,7 @@ public class EnemyScript : MonoBehaviour {
 	protected float UVWidth = 1f;
 
 	private bool givenScore;			// Has the enemy given its score upon death?
+	public bool spawnInvincible;		//Make the enemy spawn invincible, so that it lasts for a bit
 	private Color mainColor;            // The color of the enemy
 	protected float currentSpeed = 10;         // The speed of the enemy
 	private float x, y, z;              // Position coordinates of the enemy
@@ -48,6 +49,7 @@ public class EnemyScript : MonoBehaviour {
 	#region Functions
 
 	protected virtual void Awake() {
+		spawnInvincible = true;
 		givenScore = false;
 		spriteManager = GameObject.Find("EnemySpawner").GetComponent<LinkedSpriteManager>();
 		SetPositionAndSpeed();
@@ -60,7 +62,12 @@ public class EnemyScript : MonoBehaviour {
 		SetColor();
 		iTween.MoveTo(gameObject, iTween.Hash("position", Vector3.zero,
 											  "speed", currentSpeed,
-											  "easetype", "linear"));
+											  "easetype", "linear"));	
+	}
+	
+	protected virtual void Update() {
+		if(spawnInvincible) 
+			spawnInvincible = false;
 	}
 
 	public void ChangeColor(Color c) {
@@ -88,7 +95,7 @@ public class EnemyScript : MonoBehaviour {
 			StartCoroutine(DamageEnemy(true));
 		}
 		// If the enemy collides with a pulse of the right color, reduce enemy health, increase score
-		if (otherObject.name == "Pulse(Clone)") {
+		if (otherObject.name == "Pulse(Clone)" && !spawnInvincible) {
 			if (otherObject.gameObject.GetComponent<PulseSender>().CurrentColor == MainColor ||
 				otherObject.gameObject.GetComponent<PulseSender>().SecondaryColor == MainColor ||
 				otherObject.gameObject.GetComponent<PulseSender>().CurrentColor == Color.white) {

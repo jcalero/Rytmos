@@ -18,15 +18,6 @@ public class CenterPowerupDisplay : MonoBehaviour {
 	// Use this for initialization
 	void Awake () {
 		spriteManager = smObject.GetComponent<LinkedSpriteManager>();
-//		spriteName = "2-blue";
-//		
-//		 if (SpriteAtlas.GetSprite(spriteName) == null) {
-//            Debug.LogWarning("Sprite " + "\"" + spriteName + "\" " + "not found in atlas " + "\"" + SpriteAtlas + "\"" + ". Using default sprite, \"circle\".");	
-//        }
-//        // Calculate sprite atlas coordinates
-//        CalculateSprite(SpriteAtlas, spriteName);
-//        // Add sprite to game object
-//        powerupDisplay = spriteManager.AddSprite(gameObject, UVWidth, UVHeight, left, bottom, width, height, false);
 	}
 	
 	public void showSprite() {

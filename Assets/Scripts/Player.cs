@@ -138,6 +138,8 @@ public class Player : MonoBehaviour, PeakListener {
 				if (hasPowerup && playerpowerup != Game.Powerups.None) {
 					powerupDisplay.GetComponent<CenterPowerupDisplay>().changeSprite(playerpowerup);
 				}
+			} else if (Game.DevMode && Game.sendSuper){
+				triggerMassivePulse();
 			} else if (energy - pulseCost >= 0) {
 				// Show the touch sprite at the mouse location.
 				Level.ShowTouchSprite(new Vector3(ray.origin.x, ray.origin.y, 0));
@@ -157,6 +159,14 @@ public class Player : MonoBehaviour, PeakListener {
 				}
 			}
 		}
+	}
+	
+	public void triggerMassivePulse() {
+		Game.PowerupActive = Game.Powerups.MassivePulse;
+		Instantiate(pulsePrefab, Vector3.zero, pulsePrefab.transform.localRotation);
+		superPulseCount = 0;
+		playerpowerup = Game.Powerups.None;
+		Debug.Log ("Activated super pulse");
 	}
 
 	/// <summary>

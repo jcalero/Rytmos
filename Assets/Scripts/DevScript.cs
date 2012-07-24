@@ -7,7 +7,8 @@ using System.Collections;
 /// </summary>
 public class DevScript : MonoBehaviour {
     #region Fields
-
+	public GameObject powerup;
+	
     // TODO: Refactor this to something cleaner. Maybe an enum + case switch.
     private bool devMode1 = false;          // Flag: God mode
 	private bool devMode2 = false;			// Flag: Powerups
@@ -18,11 +19,14 @@ public class DevScript : MonoBehaviour {
 
     private EnemySpawnScript enemySpawner;
     private bool wasDevMode;
+	private bool spawned;
     #endregion
 
     #region Functions
     void Awake() {
-        if (Game.GameState.Equals(Game.State.Playing)) enemySpawner = (EnemySpawnScript)GameObject.Find("EnemySpawner").GetComponent("EnemySpawnScript");
+        if (Game.GameState.Equals(Game.State.Playing)) {
+			enemySpawner = (EnemySpawnScript)GameObject.Find("EnemySpawner").GetComponent("EnemySpawnScript");
+		}
     }
 
     void Update() {
@@ -100,28 +104,15 @@ public class DevScript : MonoBehaviour {
 			}
 			
 			if(Input.GetKeyDown(KeyCode.F) && devMode2) {
-				if(Game.PowerupActive != Game.Powerups.MassivePulse)  {
-					Game.PowerupActive = Game.Powerups.MassivePulse;
-					Player.hasPowerup = true;
+				if(Game.sendSuper != true)  {
+					Game.sendSuper = true;
 				}
 				else {
-					Game.PowerupActive = Game.Powerups.None;
-					Player.hasPowerup = false;
+					Game.sendSuper = false;
 				}
-				Debug.Log ("Massive pulse powerup active");
+				Debug.Log ("Massive pulse powerup");
 			}
 			
-			if(Input.GetKeyDown (KeyCode.G) && devMode2) {
-				if(Game.PowerupActive != Game.Powerups.TimeSlow) {
-					Game.PowerupActive = Game.Powerups.TimeSlow;
-					Player.hasPowerup = true;
-				}
-				else {
-					Game.PowerupActive = Game.Powerups.None;
-					Player.hasPowerup = false;
-				}
-				Debug.Log ("Time slow powerup active");
-			}
 
             // Mega Swarm
             if (Input.GetKeyDown(KeyCode.Alpha3) && !devMode3) {
