@@ -14,7 +14,7 @@ public class Level : MonoBehaviour {
 	private static Level Instance;                                  // The Instance of this class for self reference
 
 	protected LinkedSpriteManager spriteManagerScript;
-	protected SpriteManager bgSpriteManagerScript;
+	protected LinkedSpriteManager bgSpriteManagerScript;
 	protected Sprite touchSprite;                                     // The SpriteManager created sprite
 
 	public static Color purple = new Color(.5f, 0, .5f, 1f);
@@ -35,7 +35,7 @@ public class Level : MonoBehaviour {
 		else fourColors = false;
 		Instance = this;
 		spriteManagerScript = spriteManager.GetComponent<LinkedSpriteManager>();
-		bgSpriteManagerScript = bgSpriteManager.GetComponent<SpriteManager>();
+		bgSpriteManagerScript = bgSpriteManager.GetComponent<LinkedSpriteManager>();
 		Game.PowerupActive = Game.Powerups.None;
 	}
 
