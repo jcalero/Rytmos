@@ -66,8 +66,21 @@ public class Win : MonoBehaviour {
 	string CalculatedRank {
 		get {
 			if (Player.TotalKills > 0) {
-				int value = (int)((Player.TotalKills / (float)EnemySpawnScript.spawnCount) * 100);
-				Debug.Log(Player.TotalKills + " / " + (float)EnemySpawnScript.spawnCount + " = " + (Player.TotalKills / (float)EnemySpawnScript.spawnCount));
+				//int value = (int)((Player.TotalKills / (float)EnemySpawnScript.spawnCount) * 100);
+				//Debug.Log(Player.TotalKills + " / " + (float)EnemySpawnScript.spawnCount + " = " + (Player.TotalKills / (float)EnemySpawnScript.spawnCount));
+				int value = 0;
+				if (EnemySpawnScript.spawnCount > (Player.MultiplierKillDivisor * Player.MaxMultiplier)) {
+					value = (EnemySpawnScript.spawnCount * Player.MaxMultiplier * 10);
+					for (int cnt = 1; cnt <= Player.MaxMultiplier - 1; cnt++)
+						value -= Player.MultiplierKillDivisor * cnt * 10;
+					value = (int)((Player.score / (float)value) * 100);
+				} else {
+					int localMaxMultiplier = (EnemySpawnScript.spawnCount / Player.MultiplierKillDivisor) + 1;
+					for (int cnt = 1; cnt <= localMaxMultiplier - 1; cnt++)
+						value += Player.MultiplierKillDivisor * cnt * 10;
+					value = value + ((EnemySpawnScript.spawnCount - ((localMaxMultiplier-1) * 6))*localMaxMultiplier*10);
+					value = (int)((Player.score / (float)value) * 100);
+				}
 				return "[33FF33]" + value + "%";
 			} else
 				return "[FF3333]0%";

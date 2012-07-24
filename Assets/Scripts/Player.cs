@@ -319,5 +319,13 @@ public class Player : MonoBehaviour, PeakListener {
 		multiplier = 1;
 		HUD.UpdateMultiplier();
 	}
+
+	public static int MaxMultiplier {
+		get { return maxMultiplier; }
+	}
+
+	public static int MultiplierKillDivisor {
+		get { return multiplierKillDivisor; }
+	}
 	#endregion
 }
