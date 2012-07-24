@@ -1,0 +1,5 @@
+C:\Users\David\Documents\___NEW\SoundTouch.Net\trunk\SoundTouch.Net\bin\Debug\SoundTouch.Net.dll
+C:\Users\David\Documents\___NEW\SoundTouch.Net\trunk\SoundTouch.Net\bin\Debug\SoundTouch.Net.pdb
+C:\Users\David\Documents\___NEW\SoundTouch.Net\trunk\SoundTouch.Net\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\David\Documents\___NEW\SoundTouch.Net\trunk\SoundTouch.Net\obj\Debug\SoundTouch.Net.dll
+C:\Users\David\Documents\___NEW\SoundTouch.Net\trunk\SoundTouch.Net\obj\Debug\SoundTouch.Net.pdb
