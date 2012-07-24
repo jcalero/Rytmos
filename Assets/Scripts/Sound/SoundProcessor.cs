@@ -86,6 +86,7 @@ public class SoundProcessor
 		while (dec.readSamples(ref samples) !=0) {	
 			float max = -1;
 			
+			/* Normalize the volume using the previously calculated factor */ 
 			for (int i =0; i < samples.Length; i++) {
 				samples [i] = Mathf.Abs (samples[i] * factor);
 				if (samples [i] > max)
@@ -99,7 +100,7 @@ public class SoundProcessor
 			rollingAverage = (alpha * max) + ((1 - alpha) * rollingAverage);
 			
 			// Have we found a part which classifies as extremely loud?
-			if (rollingAverage > 0.7f) {
+			if (rollingAverage > 0.82f) { //0.8
 				
 				// Are we already in that part?
 				if (activePart != 5) {
@@ -109,7 +110,7 @@ public class SoundProcessor
 				}
 			
 				// Have we found a part which classifies as damn loud?
-			} else if (rollingAverage > 0.5f) {
+			} else if (rollingAverage > 0.7f) { //0.6
 				
 				// Are we already in that part?
 				if (activePart != 4) {
@@ -119,7 +120,7 @@ public class SoundProcessor
 				}
 			
 				// Have we found a part which classifies as pretty loud?
-			} else if (rollingAverage > 0.126f) {
+			} else if (rollingAverage > 0.4f) { //0.2
 				
 				// Are we already in that part?
 				if (activePart != 3) {
@@ -129,7 +130,7 @@ public class SoundProcessor
 				}
 			
 				// Have we found a part which classifies as pretty normal?
-			} else if (rollingAverage > 0.0316f) {
+			} else if (rollingAverage > 0.1f) { //0.0716
 				
 				// Are we already in that part?
 				if (activePart != 2) {
@@ -139,7 +140,7 @@ public class SoundProcessor
 				}
 			
 				// Have we found a part which classifies as pretty quiet?
-			} else if (rollingAverage > 0.0016f) {
+			} else if (rollingAverage > 0.045f) { //0.0016
 				
 				// Are we already in that part?
 				if (activePart != 1) {
@@ -248,7 +249,7 @@ public class SoundProcessor
 		#endregion
 		
 		
-		#region VARIAION FACTOR
+		#region VARIATION FACTOR
 		float[] dbLvls = decibelLevels.ToArray();
 		decibelLevels.Clear();
 		decibelLevels = null;
