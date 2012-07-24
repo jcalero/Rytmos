@@ -3,6 +3,7 @@ using System.Collections;
 using System.IO;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 /// <summary>
 /// MainMenu.cs
 /// 
@@ -19,6 +20,8 @@ public class MainMenu : MonoBehaviour {
 	public UIPanel MainMenuOptionsPanel;
 	public UIPanel MainMenuScoresPanel;
 	public UIPanel MainMenuFileBrowserPanel;
+	public UIPanel MainMenuLoggedInBoxPanel;
+	public UIPanel MainMenuLogInPanel;
 
 	// File browser
 	public GameObject FileBrowser;
@@ -26,29 +29,29 @@ public class MainMenu : MonoBehaviour {
 	// Current state of the menu.
 	public MenuLevel CurrentMenuLevel;
 
-	//// Mode menu level buttons
-	//public UIButton ArcadeButton;
-	//public UIButton CasualButton;
-	//public UIButton ChallengeButton;
-	//public UIButton StoryButton;
-
-	//// Mode menu level particles;
-	//public ParticleSystem ArcadeParticles;
-	//public ParticleSystem CasualParticles;
-	//public ParticleSystem ChallengeParticles;
-	//public ParticleSystem StoryParticles;
-
 	// Mode menu button states
 	private bool arcadeButtonActive;
 	private bool casualButtonActive;
 	private bool challengeButtonActive;
 	private bool storyButtonActive;
 
+	// Options menu objects
+	public UILabel LoggedOutLabel;
+
 	// Options menu settable objects
 	public UISlider EffectsVolumeSlider;
 	public UISlider MusicVolumeSlider;
 	public UILabel ColorblindSettingLabel;
 	public UILabel LowGraphicsSettingLabel;
+
+	// LoggedInBox menu objects
+	public UILabel UsernameLabel;
+
+	// Login Menu Objects
+	public UIInput UserNameInput;
+	public UILabel ErrorLabel;
+	public UICheckbox RememberMeCheckbox;
+	private Regex nameRegEx = new Regex("^[a-zA-Z0-9]*$");
 	#endregion
 
 	#region Functions
@@ -71,6 +74,7 @@ public class MainMenu : MonoBehaviour {
 	/// Change the menu now to watever the CurrentMenuLevel is set to.
 	/// </summary>
 	private void ChangeMenu() {
+		Debug.Log(Game.IsLoggedIn);
 		ChangeMenu(CurrentMenuLevel);
 	}
 
@@ -86,6 +90,8 @@ public class MainMenu : MonoBehaviour {
 				if (MainMenuModePanel.enabled) UITools.SetActiveState(MainMenuModePanel, false);
 				if (MainMenuOptionsPanel.enabled) UITools.SetActiveState(MainMenuOptionsPanel, false);
 				if (MainMenuScoresPanel.enabled) UITools.SetActiveState(MainMenuScoresPanel, false);
+				if (MainMenuLoggedInBoxPanel.enabled) UITools.SetActiveState(MainMenuLoggedInBoxPanel, false);
+				if (MainMenuLogInPanel.enabled) UITools.SetActiveState(MainMenuLogInPanel, false);
 				UITools.SetActiveState(MainMenuBasePanel, true);
 				UITools.SetActiveState(MainMenuPlayPanel, true);
 				break;
@@ -98,6 +104,8 @@ public class MainMenu : MonoBehaviour {
 			case MenuLevel.Options:
 				UITools.SetActiveState(MainMenuPlayPanel, false);
 				UITools.SetActiveState(MainMenuOptionsPanel, true);
+				if (Game.IsLoggedIn) UITools.SetActiveState(MainMenuLoggedInBoxPanel, true);
+				UsernameLabel.text = Game.PlayerName;
 				break;
 			case MenuLevel.Quit:
 				UITools.SetActiveState(MainMenuPlayPanel, false);
@@ -106,6 +114,7 @@ public class MainMenu : MonoBehaviour {
 			case MenuLevel.Scores:
 				UITools.SetActiveState(MainMenuPlayPanel, false);
 				UITools.SetActiveState(MainMenuBasePanel, false);
+				UITools.SetActiveState(MainMenuLogInPanel, false);
 				UITools.SetActiveState(MainMenuScoresPanel, true);
 				HSController.InitHSDisplay();
 				break;
@@ -113,6 +122,15 @@ public class MainMenu : MonoBehaviour {
 				UITools.SetActiveState(MainMenuModePanel, false);
 				UITools.SetActiveState(MainMenuBasePanel, false);
 				UITools.SetActiveState(MainMenuFileBrowserPanel, true);
+				break;
+			case MenuLevel.LogIn:
+				UITools.SetActiveState(MainMenuPlayPanel, false);
+				UITools.SetActiveState(MainMenuBasePanel, false);
+				UITools.SetActiveState(MainMenuLogInPanel, true);
+				if (PlayerPrefs.GetString("playername") != null)
+					UserNameInput.text = PlayerPrefs.GetString("playername");
+				RememberMeCheckbox.isChecked = Game.RememberLogin;
+				ErrorLabel.text = "";                                   // Clear error text if any
 				break;
 		}
 	}
@@ -129,7 +147,11 @@ public class MainMenu : MonoBehaviour {
 	/// Button handler for "Highscores" button
 	/// </summary>
 	void OnScoresClicked() {
-		ChangeMenu(MenuLevel.Scores);
+		Debug.Log(Game.RememberLogin + " : " + Game.IsLoggedIn);
+		if ((!Game.RememberLogin && !Game.IsLoggedIn) || Game.PlayerName.Length < 1)
+			ChangeMenu(MenuLevel.LogIn);
+		else
+			ChangeMenu(MenuLevel.Scores);
 	}
 
 	/// <summary>
@@ -228,6 +250,43 @@ public class MainMenu : MonoBehaviour {
 		Game.LowGraphicsMode = !tempValue;
 		LowGraphicsSettingLabel.text = !tempValue ? "[44ff44]On" : "[FF4444]Off";
 	}
+
+	private void OnLogOutClicked() {
+		UITools.SetActiveState(MainMenuLoggedInBoxPanel, false);
+		Game.IsLoggedIn = false;
+		Game.RememberLogin = false;
+		StartCoroutine(DelayLabel(LoggedOutLabel, "Logged out..", 2f));
+	}
+
+	private IEnumerator DelayLabel(UILabel label, string text, float time) {
+		label.text = text;
+		yield return new WaitForSeconds(time);
+		label.text = "";
+	}
+	#endregion
+
+	#region Login Menu buttons
+	void OnRememberMeActivate() {
+		Game.RememberLogin = RememberMeCheckbox.isChecked;
+	}
+	void OnLoginClicked() {
+		string playerName = UserNameInput.text;
+		if (playerName.Length < 2) {                            // Error if input text is too short
+			UserNameInput.text = "";
+			ErrorLabel.text = "[F87431]Too short. Try again";
+			return;
+		}
+		if (!nameRegEx.IsMatch(playerName)) {
+			UserNameInput.text = "";
+			ErrorLabel.text = "[F87431]Invalid. Only letters & numbers allowed.";
+			return;
+		}
+		Game.IsLoggedIn = true;
+		// Store the new player name
+		PlayerPrefs.SetString("playername", playerName);
+		// Change the menu
+		ChangeMenu(MenuLevel.Scores);
+	}
 	#endregion
 
 	#region Highscore buttons
@@ -285,5 +344,6 @@ public enum MenuLevel {
 	Quit,
 	Scores,
 	Options,
-	FileBrowser
+	FileBrowser,
+	LogIn
 }

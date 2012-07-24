@@ -40,6 +40,8 @@ public class Game : MonoBehaviour {
 	private static bool colorBlindModeDefault = false;
 	private static bool lowGraphicsMode;
 	private static bool lowGraphicsModeDefault = false;
+	private static bool rememberLogin;
+	private static bool rememberLoginDefault = false;
 	#endregion
 
 	#region Functions
@@ -55,12 +57,12 @@ public class Game : MonoBehaviour {
 		screenMiddle = 0f;
 		//if(Application.platform == RuntimePlatform.WindowsEditor && filePath == null) 
 		//    filePath = ""; //"C:\\Users\\Scott\\Desktop\\test.mp3";
-		sendSuper = false;
 
 	}
 
 	void Start() {
 		if (PlayerPrefs.GetString("playername") != null) PlayerName = PlayerPrefs.GetString("playername");
+		IsLoggedIn = RememberLogin;
 		DontDestroyOnLoad(gameObject);      // Makes sure this object is persistent between all scenes of the game
 		//AudioManager.initMusic(@"peppers.wav");
 	}
@@ -221,7 +223,12 @@ public class Game : MonoBehaviour {
 	}
 
 	public static string PlayerName {
-		get { return PlayerPrefs.GetString("playername"); }
+		get {
+			if (PlayerPrefs.HasKey("playername"))
+				return PlayerPrefs.GetString("playername");
+			else
+				return null;
+		}
 		set { PlayerPrefs.SetString("playername", value); }
 	}
 
@@ -294,6 +301,24 @@ public class Game : MonoBehaviour {
 			lowGraphicsMode = value;
 			int tempValue = lowGraphicsMode ? 1 : 0;
 			PlayerPrefs.SetInt("lowGraphicsMode", tempValue);
+		}
+	}
+
+	public static bool RememberLogin {
+		get {
+			if (PlayerPrefs.HasKey("rememberLogin")) {
+				bool tempValue = PlayerPrefs.GetInt("rememberLogin") > 0 ? true : rememberLoginDefault;
+				rememberLogin = tempValue;
+				return rememberLogin;
+			} else {
+				PlayerPrefs.SetInt("rememberLogin", rememberLoginDefault ? 1 : 0);
+				return rememberLoginDefault;
+			}
+		}
+		set {
+			rememberLogin = value;
+			int tempValue = rememberLogin ? 1 : 0;
+			PlayerPrefs.SetInt("rememberLogin", tempValue);
 		}
 	}
 

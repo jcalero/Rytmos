@@ -30,10 +30,10 @@ public class Win : MonoBehaviour {
 	public UIButton HighscoreButton;
 	// Login Menu Objects
 	public UIInput UserNameInput;
-	// Show Scores Objects
-	//public UILabel SubmitButtonLabel;
-	//public UILabel submittedLabel;
-	//public UILabel errorLabel;
+	public UILabel ErrorLabel;
+	public UICheckbox RememberMeCheckbox;
+	// Create Menu Objects
+	// ??
 
 	private WinMenuLevel currentMenuLevel;
 
@@ -49,7 +49,7 @@ public class Win : MonoBehaviour {
 
 	void Start() {
 		instance = this;
-		SongLabel.text = Game.Artist + " - " + Game.SongName;
+		SongLabel.text = AudioManager.artist + " - " + AudioManager.title;
 		HitsValueLabel.text = Player.TotalKills.ToString();
 		MissesValueLabel.text = (EnemySpawnScript.spawnCount - Player.TotalKills).ToString();
 		ScoreValueLabel.text = Player.score.ToString();
@@ -62,13 +62,13 @@ public class Win : MonoBehaviour {
 	/// <summary>
 	/// Returns the final calculated score after the end of the game.
 	/// </summary>
-	/// <value>Calculated score (Health * Score * 0.1)</value>
+	/// <value>Calculated rank (total hits / total spawns)</value>
 	string CalculatedRank {
 		get {
 			if (Player.TotalKills > 0) {
-				int value = Mathf.RoundToInt(((Player.TotalKills / (float)EnemySpawnScript.spawnCount) * 100));
+				int value = (int)((Player.TotalKills / (float)EnemySpawnScript.spawnCount) * 100);
 				Debug.Log(Player.TotalKills + " / " + (float)EnemySpawnScript.spawnCount + " = " + (Player.TotalKills / (float)EnemySpawnScript.spawnCount));
-				return "[33FF33]"+ value + "%";
+				return "[33FF33]" + value + "%";
 			} else
 				return "[FF3333]0%";
 		}
@@ -94,11 +94,14 @@ public class Win : MonoBehaviour {
 				UITools.SetActiveState(LoginPanel, true);
 				if (PlayerPrefs.GetString("playername") != null)
 					UserNameInput.text = PlayerPrefs.GetString("playername");
+				RememberMeCheckbox.isChecked = Game.RememberLogin;
+				ErrorLabel.text = "";                                   // Clear error text if any
 				break;
 			case WinMenuLevel.Scores:
+				if (BasePanel.enabled) UITools.SetActiveState(BasePanel, false);
 				if (CreatePanel.enabled) UITools.SetActiveState(CreatePanel, false);
 				if (LoginPanel.enabled) UITools.SetActiveState(LoginPanel, false);
-				if (!TitlePanel.enabled) UITools.SetActiveState(TitlePanel, true);
+				if (TitlePanel.enabled) UITools.SetActiveState(TitlePanel, false);
 				UITools.SetActiveState(ScoresPanel, true);
 				break;
 		}
@@ -120,16 +123,42 @@ public class Win : MonoBehaviour {
 	}
 
 	void OnSubmitHighscoreClicked() {
-		if (!Game.IsLoggedIn)
+		if ((!Game.RememberLogin && !Game.IsLoggedIn) || Game.PlayerName.Length < 1)
 			ChangeMenu(WinMenuLevel.Login);
-		else
+		else {
+			SubmitScores(Game.PlayerName);
 			ChangeMenu(WinMenuLevel.Scores);
+			HSController.LoadSong(AudioManager.artist, AudioManager.title, Game.GameMode);
+		}
 	}
 	#endregion
 
 	#region Login Menu Buttons
 	void OnBackClicked() {
 		ChangeMenu(WinMenuLevel.Base);
+	}
+	void OnRememberMeActivate() {
+		Game.RememberLogin = RememberMeCheckbox.isChecked;
+	}
+	/// <summary>
+	/// Button and input text handler for submitting highscore.
+	/// </summary>
+	void OnLoginSubmit() {
+		string playerName = UserNameInput.text;                     // Set input box text to playerName
+		if (playerName.Length < 2) {                            // Error if input text is too short
+			UserNameInput.text = "";
+			ErrorLabel.text = "[F87431]Too short. Try again";
+			return;
+		}
+		if (!nameRegEx.IsMatch(playerName)) {
+			UserNameInput.text = "";
+			ErrorLabel.text = "[F87431]Invalid. Only letters & numbers allowed.";
+			return;
+		}
+		Game.IsLoggedIn = true;
+		SubmitScores(playerName);
+		ChangeMenu(WinMenuLevel.Scores);
+		HSController.LoadSong(AudioManager.artist, AudioManager.title, Game.GameMode);
 	}
 	#endregion
 
@@ -139,6 +168,7 @@ public class Win : MonoBehaviour {
 	/// </summary>
 	/// <param name="text">The string to set the text to</param>
 	public static void SetSubmitText(string text) {
+		Debug.LogWarning(text);
 		//instance.submittedLabel.text = text;
 	}
 
@@ -148,25 +178,11 @@ public class Win : MonoBehaviour {
 	/// </summary>
 	/// <param name="text">The string to set the text to</param>
 	public static void SetErrorText(string text) {
+		Debug.LogWarning(text);
 		//instance.errorLabel.text = text;
 	}
 
-	/// <summary>
-	/// Button and input text handler for submitting highscore.
-	/// </summary>
-	void OnLoginSubmit() {
-		//errorLabel.text = "";                                   // Clear error text if any
-		string playerName = UserNameInput.text;                     // Set input box text to playerName
-		//if (playerName.Length < 2) {                            // Error if input text is too short
-		//    nameInput.text = "";
-		//    errorLabel.text = "[F87431]Too short. Try again";
-		//    return;
-		//}
-		//if (!nameRegEx.IsMatch(playerName)) {
-		//    nameInput.text = "";
-		//    errorLabel.text = "[F87431]Invalid. Only letters & numbers allowed.";
-		//    return;
-		//}
+	private void SubmitScores(string playerName) {
 		// Store the new player name
 		PlayerPrefs.SetString("playername", playerName);
 		// Store the song high score
@@ -210,6 +226,7 @@ public class Win : MonoBehaviour {
 
 		// Submit the highscore
 		StartCoroutine(HSController.PostScores(playerName, Player.score, AudioManager.artist, AudioManager.title, Game.GameMode));
+
 	}
 
 

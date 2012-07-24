@@ -210,19 +210,19 @@ public class HSController : MonoBehaviour {
 		close5names[0].text = "Loading Close Scores...";
 		top5scores[0].text = "";
 		close5scores[0].text = "";
-		int labelcnt = 1;
-		while (labelcnt < 5) {
+		for (int labelcnt = 1; labelcnt < top5names.Length; labelcnt++) {
 			top5names[labelcnt].text = "";
-			close5names[labelcnt].text = "";
 			top5scores[labelcnt].text = "";
+		}
+		for (int labelcnt = 1; labelcnt < close5names.Length; labelcnt++) {
+			close5names[labelcnt].text = "";
 			close5scores[labelcnt].text = "";
-			labelcnt++;
 		}
 
 		yield return StartCoroutine(GetTop5Scores(artist, song, gameMode));
 		if (FetchError == null) {
 			for (int cnt = 0; cnt < Top5List.Length; cnt++) {
-				if (cnt < 5) {
+				if (cnt < top5names.Length) {
 					top5names[cnt].text = (cnt + 1) + ". " + Top5List[cnt][0];
 					top5scores[cnt].text = UITools.FormatNumber(Top5List[cnt][1]);
 				}
@@ -237,7 +237,7 @@ public class HSController : MonoBehaviour {
 			bool formattedOwnRow = false;
 			Sort<string>(Close5List, 2);
 			for (int cnt = 0; cnt < Close5List.Length; cnt++) {
-				if (cnt < 5) {
+				if (cnt < close5names.Length) {
 					string nr = Close5List[cnt][2];
 					close5names[cnt].text = nr + ". " + Close5List[cnt][0];
 					close5scores[cnt].text = UITools.FormatNumber(Close5List[cnt][1]);
@@ -316,6 +316,10 @@ public class HSController : MonoBehaviour {
 
 	public static void LoadPrevMode() {
 
+	}
+
+	public static void LoadSong(string artist, string song, Game.Mode mode) {
+		instance.StartCoroutine(instance.fetchScores(artist, song, mode));
 	}
 
 	private static void Sort<T>(T[][] data, int col) {
