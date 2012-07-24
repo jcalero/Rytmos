@@ -168,10 +168,6 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	}
 	
 	private float calcSpeed() {
-		
-//		float baseSpeed = 3f;
-//		
-//		float x = 2.5f - loudFlag*AudioManager.variationFactor;
 
 		// Loudflag between 0 and 5, median is 2.5
 		// variationFactor between 0.2 & 1
@@ -181,30 +177,6 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	
 		return speed;
 		
-		
-//		switch (loudFlag) {
-//		case 0:
-//			baseSpeed = baseSpeed - (1.5f*AudioManager.variationFactor);
-//			break;
-//		case 1:
-//			baseSpeed = baseSpeed - (1f*AudioManager.variationFactor);
-//			break;
-//		case 2:
-//			baseSpeed = baseSpeed - (0.5f*AudioManager.variationFactor);
-//			break;
-//		case 3:
-//			break;
-//		case 4:
-//			baseSpeed = baseSpeed + (1f*AudioManager.variationFactor);
-//			break;
-//		case 5:
-//			baseSpeed = baseSpeed + (1.5f*AudioManager.variationFactor);
-//			break;
-//		default:
-//			break;
-//		}
-//		
-//		return baseSpeed;
 	}
 	
 	

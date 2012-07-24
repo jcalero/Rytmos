@@ -5,7 +5,7 @@ using System.Collections;
 /// 
 /// Main class for any enemy instance. Enemy types inherit from this class.
 /// </summary>
-public class EnemyScript : MonoBehaviour {
+public class EnemyScript : MonoBehaviour,PeakListener {
 
 	#region Fields
 	//public GameObject ExplosionPrefab;  // Inspector reference. Location: Enemy[Type]Prefab.
@@ -34,13 +34,15 @@ public class EnemyScript : MonoBehaviour {
 	protected int height;
 	protected float UVHeight = 1f;
 	protected float UVWidth = 1f;
+	protected float loudFlag;
 
 	private bool givenScore;			// Has the enemy given its score upon death?
-	public bool spawnInvincible;		//Make the enemy spawn invincible, so that it lasts for a bit
+	private bool spawnInvincible;		//Make the enemy spawn invincible, so that it lasts for a bit
 	private Color mainColor;            // The color of the enemy
 	protected float currentSpeed = 10;         // The speed of the enemy
 	private float x, y, z;              // Position coordinates of the enemy
 	private int fixPos;                 // Random value for moving the enemy off the screen
+	private bool changeSpeed;
 
 	public static int energyReturn = 2;			// The amount of energy to return to the player when an enemy dies.
 
@@ -49,8 +51,10 @@ public class EnemyScript : MonoBehaviour {
 	#region Functions
 
 	protected virtual void Awake() {
+		loudFlag = 0;
 		spawnInvincible = true;
 		givenScore = false;
+		changeSpeed = false;
 		spriteManager = GameObject.Find("EnemySpawner").GetComponent<LinkedSpriteManager>();
 		SetPositionAndSpeed();
 		if (Level.fourColors) colors = new Color[] { Color.red, Color.cyan, Color.blue, Color.yellow };
@@ -59,6 +63,7 @@ public class EnemyScript : MonoBehaviour {
 
 	protected virtual void Start() {
 		// Start moving towards the player
+		PeakTriggerManager.addSelfToListenerList(this);
 		SetColor();
 		iTween.MoveTo(gameObject, iTween.Hash("position", Vector3.zero,
 											  "speed", currentSpeed,
@@ -67,7 +72,7 @@ public class EnemyScript : MonoBehaviour {
 	
 	protected virtual void Update() {
 		if(spawnInvincible) 
-			spawnInvincible = false;
+			spawnInvincible = false;		
 	}
 
 	public void ChangeColor(Color c) {
@@ -76,6 +81,28 @@ public class EnemyScript : MonoBehaviour {
 
 	public Color GetColor() {
 		return enemyCircle.color;
+	}
+	
+	private float calcSpeed() {
+
+		// Loudflag between 0 and 5, median is 2.5
+		// variationFactor between 0.2 & 1
+		float speed = 2.5f + (loudFlag - 2.5f)*AudioManager.variationFactor;
+		if(speed < 1) speed = 1f;
+		else if(speed > 4.5) speed = 4.5f;
+	
+		return speed;
+		
+	}
+	
+	public void onPeakTrigger(int channel,int intensity) {}
+	
+	public void setLoudFlag(int flag) {
+		loudFlag = flag;
+		currentSpeed = calcSpeed();
+		iTween.MoveTo(gameObject, iTween.Hash("position", Vector3.zero,
+								  "speed", currentSpeed,
+								  "easetype", "linear"));
 	}
 
 	// Triggered when the enemy collides with something
@@ -200,6 +227,7 @@ public class EnemyScript : MonoBehaviour {
 	public IEnumerator DamageEnemy(bool isPlayer) {
 		health--;
 		if (health < 1) {
+			PeakTriggerManager.removeSelfFromListenerList(this);
 			if (Game.PowerupActive != Game.Powerups.MassivePulse) {
 				Player.energy += energyReturn;            // Return a bit of energy when the enemy is killed
 				if (Player.energy > Player.maxEnergy)     // Make sure energy is never more than maxEnergy
