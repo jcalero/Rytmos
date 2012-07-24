@@ -68,6 +68,7 @@ public class MainMenu : MonoBehaviour {
 			if (CurrentMenuLevel == MenuLevel.Base) ChangeMenu(MenuLevel.Quit);
 			else ChangeMenu(MenuLevel.Base);
 		}
+		gameObject.audio.volume = Game.MusicVolume;
 	}
 
 	/// <summary>
