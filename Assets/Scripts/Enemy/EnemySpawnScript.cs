@@ -14,6 +14,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	public int[] spawnPositions;
 	public static int currentlySelectedEnemy;
 	public static int spawnCount;
+	private float maxMag;
 	
 	private int RandomSeed;                 // The enemy type to spawn
 	private int[] counters;					// "Pointers" for the triggers of each channel
@@ -68,12 +69,13 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		timers = new float[AudioManager.peaks.Length];
 		spawnRestrictors = new int[AudioManager.peaks.Length];
 		spawnDivisors = new int[]{1,1,8,2,2,2};
-		spawnPositions = new int[]{0,33,66};
+		spawnPositions = new int[]{40,90,35,85};
 		currentlySelectedEnemy = Random.Range(0,6);
 		spawnCount = 0;
 		rotateDirection = 1;
 		Level.SetUpParticlesFeedback(spawnPositions.Length, currentlySelectedEnemy);		
 		loudFlag = 0;
+		maxMag = new Vector2(Game.screenTop,Game.screenRight).magnitude;
 	}
 	
 	public void setLoudFlag(int flag) {
@@ -100,14 +102,13 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 					// This is the bass frequency, used for spawning enemies (for now at least)
 					
 					//Find magnitude of the furthest away
-					float maxMag = 0;
 					if(Game.SyncMode) {
-						foreach(int spawnPosition in spawnPositions) {
-							float currMaxMag = findSpawnPositionVector(spawnPosition).magnitude;
-							if(currMaxMag > maxMag) {
-								maxMag = currMaxMag;	
-							}
-						}
+//						foreach(int spawnPosition in spawnPositions) {
+//							float currMaxMag = findSpawnPositionVector(spawnPosition).magnitude;
+//							if(currMaxMag > maxMag) {
+//								maxMag = currMaxMag;	
+//							}
+//						}
 //						float currMaxMag = findSpawnPositionVector(spawnPositions[spawnerNumber]-5).magnitude;
 //						if(currMaxMag > maxMag) maxMag = currMaxMag;
 //						currMaxMag = findSpawnPositionVector(spawnPositions[spawnerNumber]+5).magnitude;
@@ -124,15 +125,17 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 //						SpawnEnemy(currentlySelectedEnemy,speed,spawnDist);
 //						spawnCount++;
 					}
-					for (int i = 0; i < spawnPositions.Length; i++) {
-						incrementSpawnPosition(ref spawnPositions[i],1,rotateDirection);
-					}
+//					for (int i = 0; i < spawnPositions.Length; i++) {
+//						incrementSpawnPosition(ref spawnPositions[i],1,rotateDirection);
+//					}
+					moveSpawners(1,rotateDirection);
 					break;
 				case 1:
 					// These are more medium ranged frequencies, used to change the spawn position (for now at least)
-					for (int i = 0; i < spawnPositions.Length; i++) {
-						incrementSpawnPosition(ref spawnPositions[i],3,rotateDirection);
-					}
+//					for (int i = 0; i < spawnPositions.Length; i++) {
+//						incrementSpawnPosition(ref spawnPositions[i],3,rotateDirection);
+//					}
+					moveSpawners(3,rotateDirection);
 					Level.SetUpParticlesFeedback(spawnPositions.Length, currentlySelectedEnemy);
 					break;
 				case 2:
@@ -197,6 +200,26 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 			else if(rnd < 95) currentlySelectedEnemy = 4;
 			else if(rnd < 101) currentlySelectedEnemy = 5;			
 		}
+	}
+	
+	private void moveSpawners(int increment,int rotateDirection) {
+		spawnPositions[0] += increment*rotateDirection;
+		correctSpawnPosition(0);
+		
+		spawnPositions[1] = spawnPositions[0] + 50;
+		correctSpawnPosition(1);
+		
+		spawnPositions[2] -= increment*rotateDirection;
+		correctSpawnPosition(2);
+		
+		spawnPositions[3] = spawnPositions[2] + 50;
+		correctSpawnPosition(3);
+	}
+	
+	private void correctSpawnPosition(int position) {
+			
+		if(spawnPositions[position] > 100) spawnPositions[position] -= 100;
+		else if(spawnPositions[position] < 0) spawnPositions[position] += 100;
 	}
 	
 	private static void incrementSpawnPosition(ref int currentPos, int increment, int direction) {
