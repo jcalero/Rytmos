@@ -191,6 +191,7 @@ public class HSController : MonoBehaviour {
 		MainMenu.EnableReloadButton();
 	}
 	private IEnumerator fetchScores(string artist, string song, Game.Mode gameMode) {
+		Debug.Log("Fetching scores");
 		string artistDisplay = artist;
 		string songDisplay = song;
 		//string md5Artist = HSController.RemoveSpecialCharacters(artist).ToLower();

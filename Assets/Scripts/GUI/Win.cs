@@ -21,6 +21,7 @@ public class Win : MonoBehaviour {
 	public UIPanel LoginPanel;
 	public UIPanel CreatePanel;
 	public UIPanel ScoresPanel;
+	public UIPanel ScoresTitlePanel;
 	// Base Menu Objects
 	public UILabel SongLabel;
 	public UILabel HitsValueLabel;
@@ -34,6 +35,11 @@ public class Win : MonoBehaviour {
 	public UICheckbox RememberMeCheckbox;
 	// Create Menu Objects
 	// ??
+	// Scores Menu Objects
+	public UILabel SongNameLabel;
+	public UILabel SongModeLabel;
+	// Scores Loading Objects
+	public UILabel SubmittingScoreLabel;
 
 	private WinMenuLevel currentMenuLevel;
 
@@ -78,7 +84,7 @@ public class Win : MonoBehaviour {
 					int localMaxMultiplier = (EnemySpawnScript.spawnCount / Player.MultiplierKillDivisor) + 1;
 					for (int cnt = 1; cnt <= localMaxMultiplier - 1; cnt++)
 						value += Player.MultiplierKillDivisor * cnt * 10;
-					value = value + ((EnemySpawnScript.spawnCount - ((localMaxMultiplier-1) * 6))*localMaxMultiplier*10);
+					value = value + ((EnemySpawnScript.spawnCount - ((localMaxMultiplier - 1) * 6)) * localMaxMultiplier * 10);
 					value = (int)((Player.score / (float)value) * 100);
 				}
 				return "[33FF33]" + value + "%";
@@ -94,6 +100,7 @@ public class Win : MonoBehaviour {
 				if (CreatePanel.enabled) UITools.SetActiveState(CreatePanel, false);
 				if (LoginPanel.enabled) UITools.SetActiveState(LoginPanel, false);
 				if (ScoresPanel.enabled) UITools.SetActiveState(ScoresPanel, false);
+				if (ScoresTitlePanel.enabled) UITools.SetActiveState(ScoresTitlePanel, false);
 				UITools.SetActiveState(TitlePanel, true);
 				UITools.SetActiveState(BasePanel, true);
 				break;
@@ -117,6 +124,15 @@ public class Win : MonoBehaviour {
 				if (TitlePanel.enabled) UITools.SetActiveState(TitlePanel, false);
 				UITools.SetActiveState(ScoresPanel, true);
 				break;
+			case WinMenuLevel.LoadingScores:
+				if (BasePanel.enabled) UITools.SetActiveState(BasePanel, false);
+				if (CreatePanel.enabled) UITools.SetActiveState(CreatePanel, false);
+				if (LoginPanel.enabled) UITools.SetActiveState(LoginPanel, false);
+				if (TitlePanel.enabled) UITools.SetActiveState(TitlePanel, false);
+				SongNameLabel.text = AudioManager.artist + " - " + AudioManager.title;
+				SongModeLabel.text = Game.GameMode.ToString();
+				UITools.SetActiveState(ScoresTitlePanel, true);
+				break;
 		}
 	}
 
@@ -139,9 +155,8 @@ public class Win : MonoBehaviour {
 		if ((!Game.RememberLogin && !Game.IsLoggedIn) || Game.PlayerName.Length < 1)
 			ChangeMenu(WinMenuLevel.Login);
 		else {
-			SubmitScores(Game.PlayerName);
-			ChangeMenu(WinMenuLevel.Scores);
-			HSController.LoadSong(AudioManager.artist, AudioManager.title, Game.GameMode);
+			ChangeMenu(WinMenuLevel.LoadingScores);
+			StartCoroutine(SubmitScores(Game.PlayerName));
 		}
 	}
 	#endregion
@@ -169,9 +184,9 @@ public class Win : MonoBehaviour {
 			return;
 		}
 		Game.IsLoggedIn = true;
-		SubmitScores(playerName);
-		ChangeMenu(WinMenuLevel.Scores);
-		HSController.LoadSong(AudioManager.artist, AudioManager.title, Game.GameMode);
+		ChangeMenu(WinMenuLevel.LoadingScores);
+		StartCoroutine(SubmitScores(playerName));
+		
 	}
 	#endregion
 
@@ -195,13 +210,14 @@ public class Win : MonoBehaviour {
 		//instance.errorLabel.text = text;
 	}
 
-	private void SubmitScores(string playerName) {
+	private IEnumerator SubmitScores(string playerName) {
 		// Store the new player name
 		PlayerPrefs.SetString("playername", playerName);
 		// Store the song high score
 		string localMD5 = HSController.CalculateTableName(AudioManager.artist, AudioManager.title, Game.GameMode);
 		if (PlayerPrefs.GetInt(localMD5) < Player.score) PlayerPrefs.SetInt(localMD5, Player.score);
 		// Fix song name and artist
+
 
 		// Store the song in song list
 		string songRow = RemovePipeChar(AudioManager.artist).Trim() + "|" + RemovePipeChar(AudioManager.title).Trim() + "|" + Game.GameMode.GetHashCode();
@@ -238,8 +254,10 @@ public class Win : MonoBehaviour {
 		//HideSubmitBox();                                        // Hide the submit box and button
 
 		// Submit the highscore
-		StartCoroutine(HSController.PostScores(playerName, Player.score, AudioManager.artist, AudioManager.title, Game.GameMode));
-
+		yield return StartCoroutine(HSController.PostScores(playerName, Player.score, AudioManager.artist, AudioManager.title, Game.GameMode));
+		SubmittingScoreLabel.text = "";
+		ChangeMenu(WinMenuLevel.Scores);
+		HSController.LoadSong(AudioManager.artist, AudioManager.title, Game.GameMode);
 	}
 
 
@@ -271,5 +289,6 @@ public enum WinMenuLevel {
 	Base,
 	Login,
 	Create,
+	LoadingScores,
 	Scores
 }
