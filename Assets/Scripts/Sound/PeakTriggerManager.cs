@@ -6,7 +6,7 @@ public class PeakTriggerManager : MonoBehaviour
 {
 	
 	#region vars
-	private static List<PeakListener> listeners = new List<PeakListener> (); // List of object which are to be alerted when an event occurs
+	private static List<PeakListener> listeners; // List of object which are to be alerted when an event occurs
 	private int loudPartCounter;											// Iterator for the loud parts
 	private float timer;													// Keep track of time
 	private int[] peakCounters;												// Iterator for the array of peaks
@@ -14,6 +14,10 @@ public class PeakTriggerManager : MonoBehaviour
 	public static float[] timeThreshs;
 	public static float[] peakReductionFactors;
 	#endregion
+	
+	void Awake() {
+		listeners = new List<PeakListener> ();	
+	}
 	
 	// Init
 	void Start ()
