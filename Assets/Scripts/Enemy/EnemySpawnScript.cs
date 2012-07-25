@@ -69,7 +69,8 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		timers = new float[AudioManager.peaks.Length];
 		spawnRestrictors = new int[AudioManager.peaks.Length];
 		spawnDivisors = new int[]{1,1,8,2,2,2};
-		spawnPositions = new int[]{40,90,35,85};
+		//spawnPositions = new int[]{40,90,35,85};
+		spawnPositions = new int[] { 0,33,66 };
 		currentlySelectedEnemy = Random.Range(0,6);
 		spawnCount = 0;
 		rotateDirection = 1;
@@ -103,12 +104,12 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 					
 					//Find magnitude of the furthest away
 					if(Game.SyncMode) {
-//						foreach(int spawnPosition in spawnPositions) {
-//							float currMaxMag = findSpawnPositionVector(spawnPosition).magnitude;
-//							if(currMaxMag > maxMag) {
-//								maxMag = currMaxMag;	
-//							}
-//						}
+						foreach (int spawnPosition in spawnPositions) {
+							float currMaxMag = findSpawnPositionVector(spawnPosition).magnitude;
+							if (currMaxMag > maxMag) {
+								maxMag = currMaxMag;
+							}
+						}
 //						float currMaxMag = findSpawnPositionVector(spawnPositions[spawnerNumber]-5).magnitude;
 //						if(currMaxMag > maxMag) maxMag = currMaxMag;
 //						currMaxMag = findSpawnPositionVector(spawnPositions[spawnerNumber]+5).magnitude;
@@ -125,17 +126,17 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 //						SpawnEnemy(currentlySelectedEnemy,speed,spawnDist);
 //						spawnCount++;
 					}
-//					for (int i = 0; i < spawnPositions.Length; i++) {
-//						incrementSpawnPosition(ref spawnPositions[i],1,rotateDirection);
-//					}
-					moveSpawners(1,rotateDirection);
+					for (int i = 0; i < spawnPositions.Length; i++) {
+						incrementSpawnPosition(ref spawnPositions[i], 1, rotateDirection);
+					}
+					//moveSpawners(1,rotateDirection);
 					break;
 				case 1:
 					// These are more medium ranged frequencies, used to change the spawn position (for now at least)
-//					for (int i = 0; i < spawnPositions.Length; i++) {
-//						incrementSpawnPosition(ref spawnPositions[i],3,rotateDirection);
-//					}
-					moveSpawners(3,rotateDirection);
+					for (int i = 0; i < spawnPositions.Length; i++) {
+						incrementSpawnPosition(ref spawnPositions[i], 3, rotateDirection);
+					}
+					//moveSpawners(3,rotateDirection);
 					Level.SetUpParticlesFeedback(spawnPositions.Length, currentlySelectedEnemy);
 					break;
 				case 2:
