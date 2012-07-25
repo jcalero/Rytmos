@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class CenterPowerupDisplay : MonoBehaviour {
+public class CenterPowerupDisplay : MonoBehaviour, PeakListener {
 	public GameObject smObject;
 	public UIAtlas SpriteAtlas;
 	
@@ -20,8 +20,26 @@ public class CenterPowerupDisplay : MonoBehaviour {
 		spriteManager = smObject.GetComponent<LinkedSpriteManager>();
 	}
 	
-	public void showSprite() {
-		renderer.enabled = true;
+	void Start() {
+		PeakTriggerManager.addSelfToListenerList(this);
+	}
+	
+	void Update() {
+		if(spriteName == "Atom" || spriteName == "Circles") {
+			transform.localEulerAngles = new Vector3(0,0,transform.localEulerAngles.z+.125f);
+		}
+	}
+	
+	public void onPeakTrigger(int channel,int intensity) {}
+	
+	public void setLoudFlag(int flag) {
+		if(spriteName == "Atom" || spriteName == "Circles") {
+			Debug.Log ("Yes");
+			transform.localEulerAngles = new Vector3(0,0,transform.localEulerAngles.z+(float)(flag/5)*90);
+		}
+		if(spriteName == "shield") {
+			iTween.ScaleTo(gameObject, new Vector3(flag/3, flag/3, 1), .5f);
+		}
 	}
 	
 	public void hideSprite() {

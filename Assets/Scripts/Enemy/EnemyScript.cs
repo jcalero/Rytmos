@@ -118,6 +118,8 @@ public class EnemyScript : MonoBehaviour,PeakListener {
 				//    StartCoroutine(Level.InitiateCameraShakeTimer());
 				//}
 
+			} else {
+				Player.shieldFlash = true;
 			}
 			StartCoroutine(DamageEnemy(true));
 		}

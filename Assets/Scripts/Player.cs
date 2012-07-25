@@ -22,6 +22,7 @@ public class Player : MonoBehaviour, PeakListener {
 	public static int TotalKills = 0;			// Kill count
 	public static bool hasPowerup = false;		// Current status of the player's powerup
 	public static bool takenPowerup = false;	// If the player takes the powerup from the screne
+	public static bool shieldFlash = false;
 
 	public GameObject pulsePrefab;              // The pulse. Inspector reference. Location: Player
 	public GameObject powerupPrefab; 			// The powerup. Inspector refernce. Location: PLayer
