@@ -1,15 +1,13 @@
 fileFormatVersion: 2
-guid: 61278ab586cb34583b200459e0ce8e17
+guid: 7b37f472af46bcd449b1fdc96602f4cb
 TrueTypeFontImporter:
   serializedVersion: 2
-  fontSize: 15
+  fontSize: 16
   fontColor: {r: 1, g: 1, b: 1, a: 1}
   forceTextureCase: 0
   renderMode: 0
   style: 0
   includeFontData: 1
   use2xBehaviour: 0
-  fontNames:
-  - Folio Light BT
-  - Arial
+  fontNames: []
   customCharacters: 

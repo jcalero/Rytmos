@@ -66,7 +66,7 @@ public class MainMenu : MonoBehaviour {
 		// or goes to the quit menu if on the main menu already.
 		if (Input.GetKeyDown(KeyCode.Escape)) {
 			if (CurrentMenuLevel == MenuLevel.Base) ChangeMenu(MenuLevel.Quit);
-			else ChangeMenu(MenuLevel.Base);
+			else OnBackClicked();
 		}
 		gameObject.audio.volume = Game.MusicVolume;
 	}
@@ -75,7 +75,6 @@ public class MainMenu : MonoBehaviour {
 	/// Change the menu now to watever the CurrentMenuLevel is set to.
 	/// </summary>
 	private void ChangeMenu() {
-		Debug.Log(Game.IsLoggedIn);
 		ChangeMenu(CurrentMenuLevel);
 	}
 
@@ -93,6 +92,7 @@ public class MainMenu : MonoBehaviour {
 				if (MainMenuScoresPanel.enabled) UITools.SetActiveState(MainMenuScoresPanel, false);
 				if (MainMenuLoggedInBoxPanel.enabled) UITools.SetActiveState(MainMenuLoggedInBoxPanel, false);
 				if (MainMenuLogInPanel.enabled) UITools.SetActiveState(MainMenuLogInPanel, false);
+				if (MainMenuFileBrowserPanel.enabled) UITools.SetActiveState(MainMenuFileBrowserPanel, false);
 				UITools.SetActiveState(MainMenuBasePanel, true);
 				UITools.SetActiveState(MainMenuPlayPanel, true);
 				break;

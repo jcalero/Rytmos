@@ -314,9 +314,9 @@ private function DrawFileWindow () {
     }
     
     // Cancel button
-    if (GUI.Button(Rect(fileWindowRect.width-buttonPosition.x, fileWindowRect.height-buttonPosition.y, buttonSize.x, buttonSize.y), "Cancel") ) {
-        CloseFileWindow();
-    }
+//    if (GUI.Button(Rect(fileWindowRect.width-buttonPosition.x, fileWindowRect.height-buttonPosition.y, buttonSize.x, buttonSize.y), "Cancel") ) {
+//        CloseFileWindow();
+//    }
     
     // Open/Save button
     if (fileType == FileType.Open) {
@@ -795,7 +795,7 @@ protected function OnUpClicked () {
 private function UpdateDirectoryLabel() {
 	var directoryStructure : String[];
 	var directoryPath : String;
-	var maxPathLength : int = 48;
+	var maxPathLength : int = 55;
 	var remPathLength : int;
 	var numFoldersInPath : int = 1;
 	
