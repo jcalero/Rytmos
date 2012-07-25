@@ -98,13 +98,6 @@ public class Player : MonoBehaviour, PeakListener {
 				meshRenders[0].material.SetColor("_Color", Color.white);
 				meshRenders[1].material.SetColor("_Color", new Color(1, 1, 1, .3f));
 				meshRenders[2].material.SetColor("_Color", Color.white);
-			} else if (Game.PowerupActive == Game.Powerups.MassivePulse) {
-				if (superPulseCount == 0) showAnimRing(Color.white);
-				else {
-					meshRenders[0].material.SetColor("_Color", new Color(1, 1, 1, .3f));
-					meshRenders[1].material.SetColor("_Color", Color.white);
-					meshRenders[2].material.SetColor("_Color", new Color(1, 1, 1, .3f));
-				}
 			} else
 				showAnimRing(Color.white);
 		}
