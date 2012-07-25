@@ -83,7 +83,6 @@ public class HSController : MonoBehaviour {
 			Win.SetSubmitText("");
 			//instance.errorLabel.text = "[FF2222]Error submitting, please try again.";
 			Win.SetErrorText("[FF2222]Error submitting, please try again.");
-			Win.ShowSubmitBox();
 		} else {
 			//instance.submittedLabel.text = "Highscore submitted";
 			Win.SetSubmitText("Highscore submitted");
