@@ -259,6 +259,10 @@ public class EnemyScript : MonoBehaviour,PeakListener {
 	}
 
 	public void CreateExplosion() {
+		if(gameObject.audio != null) {
+			gameObject.audio.volume = Game.EffectsVolume;
+			gameObject.audio.Play();
+		}
 		ExplosionParticles.GetComponent<ParticleSystem>().Emit(70);
 	}
 
