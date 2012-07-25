@@ -229,6 +229,7 @@ public class EnemyScript : MonoBehaviour,PeakListener {
 	public IEnumerator DamageEnemy(bool isPlayer) {
 		health--;
 		if (health < 1) {
+			Level.EnemiesDespawned++;
 			PeakTriggerManager.removeSelfFromListenerList(this);
 			if (Game.PowerupActive != Game.Powerups.MassivePulse) {
 				Player.energy += energyReturn;            // Return a bit of energy when the enemy is killed

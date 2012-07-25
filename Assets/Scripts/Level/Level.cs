@@ -19,6 +19,7 @@ public class Level : MonoBehaviour {
 
 	public static Color purple = new Color(.5f, 0, .5f, 1f);
 	public static bool fourColors = false;							// Used for dealing with multiple colors - currently 4 or 6
+	public static int EnemiesDespawned = 0;
 
 	public GameObject[] particlesFeedback = new GameObject[6];      // The six feedback particles. Inspector reference. Location: LevelManager
 	public GameObject spriteManager;                                // Reference to the SpriteManager. Inspector reference. Location: LevelManager
