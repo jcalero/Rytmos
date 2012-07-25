@@ -357,11 +357,9 @@ public class Game : MonoBehaviour {
 
 	public enum Powerups {
 		None,
-		TimeSlow,
 		MassivePulse,				//Massive Pulse - No Energy to Send, Destroys All Enemies, Score Does not increase
 		ChainReaction,
-		Invincible,
-		ChangeColor
+		Invincible
 	}
 
 

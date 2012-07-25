@@ -148,10 +148,8 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 					break;
 				case 3:
 					// Some higher frequencies to change the currently spawned enemy
-					if(Game.PowerupActive != Game.Powerups.ChangeColor) {
-						changeEnemy();
-						Level.SetUpParticlesFeedback(spawnPositions.Length, currentlySelectedEnemy);
-					}
+					changeEnemy();
+					Level.SetUpParticlesFeedback(spawnPositions.Length, currentlySelectedEnemy);
 					break;
 				case 4:
 					break;

@@ -71,7 +71,7 @@ public class PowerupScript : MonoBehaviour {
 			else {
 				Vector3 spawnPos = randomPos();
 				//Here, we assign the powerup - this will be moved below once we have graphics
-				int choice = Random.Range(0,4);
+				int choice = Random.Range(0,3);
 				moveSprite(spawnPos,setPowerup(choice));
 				spawned = true;
 				totalTimer = screenTime;
@@ -116,7 +116,7 @@ public class PowerupScript : MonoBehaviour {
 	}
 	
 	public bool spawnSprite() {
-		int choice = Random.Range(0,4);
+		int choice = Random.Range(0,3);
 		return spawnSprite(choice);
 	}
 	
@@ -148,14 +148,9 @@ public class PowerupScript : MonoBehaviour {
 				c = Color.magenta;
 				break;
 			case 2:
-				Debug.Log ("Single Colour Enemies Spawned!");
-				pw = Game.Powerups.ChangeColor;
-				c = Color.grey;
-				break;
-			case 3:
 				Debug.Log ("Chain Reaction Spawned!");
 				pw = Game.Powerups.ChainReaction;
-				c = Color.black;
+				c = Color.grey;
 				break;
 			default:
 				Debug.Log ("Powerup Failed...");

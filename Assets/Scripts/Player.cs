@@ -74,8 +74,7 @@ public class Player : MonoBehaviour, PeakListener {
 
 			//If you have the invincibility, singleColor or chainPulse powerups, increment its personal timer
 			if (Game.PowerupActive == Game.Powerups.Invincible ||
-			   Game.PowerupActive == Game.Powerups.ChainReaction ||
-			   Game.PowerupActive == Game.Powerups.ChangeColor) {
+			   Game.PowerupActive == Game.Powerups.ChainReaction) {
 				pwTimer += Time.deltaTime;
 				if (pwTimer > pwTotalTime) {
 					Debug.Log("Powerup: " + Game.PowerupActive + " deactivated");
@@ -105,9 +104,6 @@ public class Player : MonoBehaviour, PeakListener {
 					meshRenders[1].material.SetColor("_Color", Color.white);
 					meshRenders[2].material.SetColor("_Color", new Color(1, 1, 1, .3f));
 				}
-			} else if (Game.PowerupActive == Game.Powerups.ChangeColor) {
-				Color selected = Level.singleColourSelect(EnemySpawnScript.currentlySelectedEnemy);
-				showAnimRing(selected);
 			} else
 				showAnimRing(Color.white);
 		}

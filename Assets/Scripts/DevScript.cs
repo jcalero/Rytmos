@@ -79,19 +79,7 @@ public class DevScript : MonoBehaviour {
 				Debug.Log ("Chain reaction powerup active");
 			} 
 			
-			if(Input.GetKeyDown (KeyCode.S) && devMode2) {
-				if(Game.PowerupActive != Game.Powerups.ChangeColor) {
-					Game.PowerupActive = Game.Powerups.ChangeColor;
-					Player.hasPowerup = true;
-				}
-				else {
-					Game.PowerupActive = Game.Powerups.None;
-					Player.hasPowerup = false;	
-				}
-				Debug.Log ("Change color powerup active");
-			}
-			
-			if(Input.GetKeyDown(KeyCode.D) && devMode2) {
+			if(Input.GetKeyDown(KeyCode.S) && devMode2) {
 				if(Game.PowerupActive != Game.Powerups.Invincible) {
 					Game.PowerupActive = Game.Powerups.Invincible;
 					Player.hasPowerup = true;
@@ -103,7 +91,7 @@ public class DevScript : MonoBehaviour {
 				Debug.Log ("Invincible powerup active");
 			}
 			
-			if(Input.GetKeyDown(KeyCode.F) && devMode2) {
+			if(Input.GetKeyDown(KeyCode.D) && devMode2) {
 				if(Game.sendSuper != true)  {
 					Game.sendSuper = true;
 				}
