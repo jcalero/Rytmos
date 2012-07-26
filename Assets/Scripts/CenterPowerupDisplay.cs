@@ -21,11 +21,8 @@ public class CenterPowerupDisplay : MonoBehaviour {
 	}
 	
 	void Update() {
-		if(spriteName == "Atom" || spriteName == "Circles") {
+		if(spriteName == "Atom" || spriteName == "Circles") 
 			transform.localEulerAngles = new Vector3(0,0,transform.localEulerAngles.z+(Time.deltaTime*50f));
-		} else if (spriteName == "shield"){
-			transform.localEulerAngles = new Vector3(0,0,0);
-		}
 	}
 	
 	public void hideSprite() {
@@ -46,11 +43,15 @@ public class CenterPowerupDisplay : MonoBehaviour {
 	public void updateSprite(string name) {
 		spriteName = name;
 		
-		 if (SpriteAtlas.GetSprite(spriteName) == null) {
+		 if (SpriteAtlas.GetSprite(spriteName) == null) 
             Debug.LogWarning("Sprite " + "\"" + spriteName + "\" " + "not found in atlas " + "\"" + SpriteAtlas + "\"" + ". Using default sprite, \"circle\".");	
-        }
+     
         // Calculate sprite atlas coordinates
         CalculateSprite(SpriteAtlas, spriteName);
+		if (spriteName == "shield"){
+			transform.localEulerAngles = new Vector3(0,0,0);
+			transform.localScale = new Vector3(1,1,1);
+		}
         // Add sprite to game object
         powerupDisplay = spriteManager.AddSprite(gameObject, UVWidth, UVHeight, left, bottom, width, height, false);
 	}

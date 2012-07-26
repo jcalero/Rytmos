@@ -15,11 +15,11 @@ public class ShieldDisplay : MonoBehaviour {
     private int height;
     private float UVHeight = 1f;
     private float UVWidth = 1f;
+	private bool first;
 	
-	private float timer;
 	// Use this for initialization
 	void Start () {
-		timer = 1;
+		first = true;
 		sm = smManager.GetComponent<LinkedSpriteManager>();
 		updateSprite("ForceField");
 		gameObject.transform.localScale = new Vector3(2.3f,2.3f,1);
@@ -28,19 +28,21 @@ public class ShieldDisplay : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if(Game.PowerupActive == Game.Powerups.Invincible) {
+			if(first) {
+				intensity = .3f;
+				first = false;
+			}
 			if(Player.shieldFlash) {
-				intensity = 1f - (3.5f*timer);			
-				timer += Time.deltaTime;
-				if(timer>.2) {
-					intensity = .3f;
-					timer = 0;
-					Player.shieldFlash = false;
-				}				
-			} else 
-				intensity = .3f;	
+				if(gameObject.GetComponent<Animation>().isPlaying) 
+					gameObject.GetComponent<Animation>().Stop();
+				gameObject.GetComponent<Animation>().Play("ShieldFlash");
+				Player.shieldFlash = false;			
+			} 
 			
-		} else 
+		} else {
 			intensity = 0f;
+			first = true;
+		}
 		
 		shield.SetColor (new Color(shield.color.r, shield.color.g, shield.color.b, intensity));
 	}
