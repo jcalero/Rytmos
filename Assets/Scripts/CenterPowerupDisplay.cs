@@ -22,7 +22,7 @@ public class CenterPowerupDisplay : MonoBehaviour {
 	
 	void Update() {
 		if(spriteName == "Atom" || spriteName == "Circles") {
-			transform.localEulerAngles = new Vector3(0,0,transform.localEulerAngles.z+.125f);
+			transform.localEulerAngles = new Vector3(0,0,transform.localEulerAngles.z+(Time.deltaTime*50f));
 		} else if (spriteName == "shield"){
 			transform.localEulerAngles = new Vector3(0,0,0);
 		}
