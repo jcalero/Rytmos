@@ -22,7 +22,7 @@ public static class AudioManager
 	public static int frameSize;
 	public static string artist = "Unknown";
 	public static string title = "Unknown";
-	public static int loadingProgress;
+	public static float loadingProgress;
 	#endregion
 	
 	#region private vars

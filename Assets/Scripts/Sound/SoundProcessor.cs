@@ -19,7 +19,7 @@ public class SoundProcessor
 	private static int[][] peaks;
 	private static float variationFactor;
 	public static bool isAnalyzing = true;
-	public static int loadingProgress;
+	public static float loadingProgress;
 	// { 0, 500, 500, 2000, 2000, 4000, 4000, 8000, 8000, 16000, 16000, 22000 };
 	
 	public static void analyse (DecoderInterface decoder)
@@ -68,7 +68,7 @@ public class SoundProcessor
 			#endregion
 			
 			bufferCounter++;
-			loadingProgress = Mathf.RoundToInt(75f*(((bufferCounter*BUFFER_SIZE)/(float)AudioManager.frequency)/AudioManager.audioLength));
+			loadingProgress = 0.75f*(((bufferCounter*BUFFER_SIZE)/(float)AudioManager.frequency)/AudioManager.audioLength);
 			
 		} while( (spectrum = spectrumProvider.nextSpectrum() ) != null );
 		
@@ -81,7 +81,7 @@ public class SoundProcessor
 		List<float> decibelLevels = new List<float>();
 		float avgDecibels = 0;
 		
-		int oldProgress = loadingProgress;
+		float oldProgress = loadingProgress;
 		
 		while (dec.readSamples(ref samples) !=0) {	
 			float max = -1;
@@ -161,7 +161,7 @@ public class SoundProcessor
 				}
 			}
 			sampleCounter++;
-			loadingProgress = oldProgress + Mathf.RoundToInt( 25f*(((sampleCounter*BUFFER_SIZE)/(float)AudioManager.frequency)/AudioManager.audioLength));
+			loadingProgress = oldProgress + 0.25f*(((sampleCounter*BUFFER_SIZE)/(float)AudioManager.frequency)/AudioManager.audioLength);
 		}
 		#endregion
 		
