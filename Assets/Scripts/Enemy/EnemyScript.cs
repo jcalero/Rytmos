@@ -124,7 +124,7 @@ public class EnemyScript : MonoBehaviour,PeakListener {
 			StartCoroutine(DamageEnemy(true));
 		}
 		// If the enemy collides with a pulse of the right color, reduce enemy health, increase score
-		if (otherObject.name == "Pulse(Clone)" && !spawnInvincible) {
+		if ((otherObject.name == "Pulse(Clone)" || otherObject.name == "SuperPulse(Clone)" )&& !spawnInvincible) {
 			if (otherObject.gameObject.GetComponent<PulseSender>().CurrentColor == MainColor ||
 				otherObject.gameObject.GetComponent<PulseSender>().SecondaryColor == MainColor ||
 				otherObject.gameObject.GetComponent<PulseSender>().CurrentColor == Color.white) {

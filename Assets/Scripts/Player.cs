@@ -25,6 +25,7 @@ public class Player : MonoBehaviour, PeakListener {
 	public static bool shieldFlash = false;
 
 	public GameObject pulsePrefab;              // The pulse. Inspector reference. Location: Player
+	public GameObject superPulsePrefab;			// The super pulse powerup. Inspector reference. Location: Player
 	public GameObject powerupPrefab; 			// The powerup. Inspector refernce. Location: PLayer
 	public GameObject powerupDisplay;			// The sprite to display in the center. Inspector reference. Location: Player
 
@@ -113,7 +114,7 @@ public class Player : MonoBehaviour, PeakListener {
 					powerupDisplay.GetComponent<CenterPowerupDisplay>().hideSprite();
 					hasPowerup = false;
 					if (playerpowerup == Game.Powerups.MassivePulse) {
-						Instantiate(pulsePrefab, Vector3.zero, pulsePrefab.transform.localRotation);
+						Instantiate(superPulsePrefab, Vector3.zero, superPulsePrefab.transform.localRotation);
 						superPulseCount = 0;
 						playerpowerup = Game.Powerups.None;
 					}
@@ -153,7 +154,7 @@ public class Player : MonoBehaviour, PeakListener {
 	
 	public void triggerMassivePulse() {
 		Game.PowerupActive = Game.Powerups.MassivePulse;
-		Instantiate(pulsePrefab, Vector3.zero, pulsePrefab.transform.localRotation);
+		Instantiate(superPulsePrefab, Vector3.zero, superPulsePrefab.transform.localRotation);
 		superPulseCount = 0;
 		playerpowerup = Game.Powerups.None;
 		Debug.Log ("Activated super pulse");
