@@ -30,6 +30,7 @@ public static class AudioManager
 	private static AudioClip audioClip;			// AudioClip reference for the buffered music file, part 1
 	public static bool songLoaded = false;		// Flag if the song has finished loading
 	private static string currentlyLoadedSong;	// Path to the currently loaded song (can be used to check if a new song is loaded)
+	public static bool tagDataSet = false;
 	#endregion
 	
 	/// <summary>
@@ -54,7 +55,8 @@ public static class AudioManager
 		songLoaded = true;
 		currentlyLoadedSong = "xXBACKgroundMUSICXx";
 		yield break;
-#else			
+#else	
+		tagDataSet = false;
 		// Read Audio Data/Initialize everything to read on the fly
 		float start = Time.realtimeSinceStartup;
 		if(freader!=null) {
@@ -81,6 +83,8 @@ public static class AudioManager
 		frameSize = freader.getFrameSize();
 		artist = freader.getArtist();
 		title = freader.getTitle();
+		
+		tagDataSet = true;
 		
 		start = Time.realtimeSinceStartup;
 		
@@ -139,6 +143,7 @@ public static class AudioManager
 		closeMusicStream();
 		Debug.Log ("Song loaded in: " + (Time.realtimeSinceStartup - start) + " seconds");
 		songLoaded = true;
+		tagDataSet = false;
 #endif
 	}
 	
