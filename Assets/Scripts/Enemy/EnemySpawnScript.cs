@@ -8,6 +8,7 @@ using System.Collections;
 public class EnemySpawnScript : MonoBehaviour,PeakListener {
 
 	#region Fields
+	public UIAtlas enemyAtlas;
 	public GameObject[] EnemyPrefabs;       // List of enemy types to spawn. Inspector reference. Location: EnemySpawner
 	public float FirstSpawn;                // The delay the spawner will initialise itself with (time for first spawn)
 	public float SpawnRate;                 // The time between spawns
@@ -30,9 +31,14 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	public float loudFlag;
 	
 	private int spawnerNumber;
+
+	private static EnemySpawnScript instance;
 	#endregion
 
 	#region Functions
+	void Awake() {
+		instance = this;
+	}
 
 	void Start() {
 		spawnerNumber = 0;
@@ -305,6 +311,12 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	/// </summary>
 	public void StopSpawner() {
 		//CancelInvoke("SpawnEnemy");
+	}
+
+	public static UIAtlas EnemyAtlas {
+		get {
+			return instance.enemyAtlas;
+		}
 	}
 	#endregion
 }

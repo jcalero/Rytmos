@@ -6,8 +6,6 @@ using UnityEngine;
 /// </summary>
 public class EnemyBlue : EnemyScript {
 	#region Fields
-	public float speed;
-	
 	#endregion
 
 	#region Functions
@@ -23,8 +21,7 @@ public class EnemyBlue : EnemyScript {
 	/// Overriding Start() to set unique values for this enemy type
 	/// </summary>
 	protected override void Start() {
-		speed = currentSpeed;
-		spriteName = "7-blue";
+		spriteName = "Blue";
 
 		// Checks that the sprite name exists in the atlas, if not falls back to default sprite
 		if (SpriteAtlas.GetSprite(spriteName) == null) {

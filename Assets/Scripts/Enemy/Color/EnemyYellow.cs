@@ -21,7 +21,7 @@ public class EnemyYellow : EnemyScript {
 	/// Overriding Start() to set unique values for this enemy type
 	/// </summary>
 	protected override void Start() {
-		spriteName = "5-yellow";
+		spriteName = "Yellow";
 
 		// Checks that the sprite name exists in the atlas, if not falls back to default sprite
 		if (SpriteAtlas.GetSprite(spriteName) == null) {

@@ -12,11 +12,12 @@ public class EnemyScript : MonoBehaviour,PeakListener {
 	public GameObject CollisionParticles;
 	public GameObject ExplosionParticles;
 	public ParticleSystem TrailParticles;
-	public UIAtlas SpriteAtlas;         // Inspector reference. Location: Enemy[Type]Prefab.
 	public GameObject PulsePrefab;		// Inspector reference. Location: Enemy[Type]Prefab.
 	public GameObject SecondPulseColl;		// Inspector reference. Location: Enemy[Type]Prefab.
 
+
 	// Protected values with access from its descendants
+	protected UIAtlas SpriteAtlas;
 	protected LinkedSpriteManager spriteManager;
 	protected Sprite enemyCircle;
 	protected float minSpeed;           // The minimum random speed of the enemy
@@ -27,7 +28,7 @@ public class EnemyScript : MonoBehaviour,PeakListener {
 	//protected Color[] colors;
 
 	// Sprite parameters for Atlas-lookup
-	protected string spriteName = "default";
+	protected string spriteName = "Yellow";
 	protected int left;
 	protected int bottom;
 	protected int width;
@@ -51,6 +52,7 @@ public class EnemyScript : MonoBehaviour,PeakListener {
 	#region Functions
 
 	protected virtual void Awake() {
+		SpriteAtlas = EnemySpawnScript.EnemyAtlas;
 		loudFlag = 0;
 		spawnInvincible = true;
 		givenDespawn = false;
