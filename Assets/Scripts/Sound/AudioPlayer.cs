@@ -55,7 +55,7 @@ public class AudioPlayer : MonoBehaviour
 	{
 		
 #if UNITY_ANDROID
-		if(!isPlaying && androidPlayer.Call<int> ("getCurrentPosition")) > 171) {
+		if(!isPlaying && androidPlayer.Call<int>("getCurrentPosition") > 171)
 			isPlaying = true;
 #else
 			if(!isPlaying && audioSource.timeSamples > 0)
