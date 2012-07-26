@@ -43,6 +43,9 @@ public class PowerupScript : MonoBehaviour {
 		Level.SetUpParticlesFeedback(4, spawnPos);
 		gameObject.transform.localPosition = spawnPos;
 		
+		// Set audio volume
+		gameObject.audio.volume = Game.EffectsVolume;
+		
 	}
 	
 	// Update is called once per frame
@@ -75,6 +78,7 @@ public class PowerupScript : MonoBehaviour {
 				moveSprite(spawnPos,setPowerup(choice));
 				spawned = true;
 				totalTimer = screenTime;
+				gameObject.audio.Play();
 			}
 			powerUpTimer = 0;
 		}

@@ -47,10 +47,14 @@ public class Player : MonoBehaviour, PeakListener {
 
 	public GameObject[] players = new GameObject[3];
 	private MeshRenderer[] meshRenders = new MeshRenderer[3];
+	
+	private static AudioSource[] audioSources;
 	#endregion
 
 	#region Functions
 	void Start() {
+		audioSources = gameObject.GetComponentsInChildren<AudioSource>();
+		foreach(AudioSource AS in audioSources) AS.volume = Game.EffectsVolume;
 		superPulseCount = totalSuperpulses;
 		// Resets player stats at the start of a level
 		for (int i = 0; i < players.Length; i++) {
@@ -273,6 +277,13 @@ public class Player : MonoBehaviour, PeakListener {
 	}
 
 	public void setLoudFlag(int flag) { }
+	
+	public static void playGetHitSound() {
+		if(shieldFlash)
+			audioSources[0].Play();
+		else
+			audioSources[1].Play();
+	}
 
 	void OnDisable() {
 		PeakTriggerManager.removeSelfFromListenerList(this);

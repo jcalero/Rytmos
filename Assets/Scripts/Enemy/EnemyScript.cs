@@ -121,6 +121,7 @@ public class EnemyScript : MonoBehaviour,PeakListener {
 			} else {
 				Player.shieldFlash = true;
 			}
+			Player.playGetHitSound();
 			StartCoroutine(DamageEnemy(true));
 		}
 		// If the enemy collides with a pulse of the right color, reduce enemy health, increase score
