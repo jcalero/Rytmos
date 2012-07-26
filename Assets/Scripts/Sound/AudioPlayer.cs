@@ -71,7 +71,7 @@ public class AudioPlayer : MonoBehaviour
 					Debug.Log("timer made audio stop");
 				} else if(Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WindowsEditor) {
 					audioSources [0].Stop ();
-					Debug.Log("timer made audio stop");
+//					Debug.Log("timer made audio stop");
 				}
 			}
 		}

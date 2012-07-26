@@ -42,15 +42,12 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	
 	void Update() {
 		
-		timer += Time.deltaTime;
-
-		
+		timer += Time.deltaTime;		
 		if (timer >= audioLength){
-			Debug.Log (spawnCount);
 			if (!AudioManager.songLoaded) Application.LoadLevel("LoadScreen");
 			else {
-				Debug.Log ("Enemies spawned "+spawnCount+" Enemies destroyed "+Level.EnemiesDespawned);
-				Application.LoadLevel("Win");
+				if(spawnCount == Level.EnemiesDespawned || timer >= audioLength + 5) 
+					Application.LoadLevel("Win");
 			}
 		}
 	}

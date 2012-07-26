@@ -34,6 +34,7 @@ public class Level : MonoBehaviour {
 		// Local static reference to this class.
 		if (Game.ColorMode == Game.NumOfColors.Four) fourColors = true;
 		else fourColors = false;
+		EnemiesDespawned = 0;
 		Instance = this;
 		spriteManagerScript = spriteManager.GetComponent<LinkedSpriteManager>();
 		bgSpriteManagerScript = bgSpriteManager.GetComponent<LinkedSpriteManager>();

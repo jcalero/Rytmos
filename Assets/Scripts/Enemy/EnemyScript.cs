@@ -37,12 +37,12 @@ public class EnemyScript : MonoBehaviour,PeakListener {
 	protected float loudFlag;
 
 	private bool givenScore;			// Has the enemy given its score upon death?
+	private bool givenDespawn;			// Make the enemy only increment the despawnCount once 
 	private bool spawnInvincible;		//Make the enemy spawn invincible, so that it lasts for a bit
 	private Color mainColor;            // The color of the enemy
-	protected float currentSpeed = 10;         // The speed of the enemy
+	protected float currentSpeed = 10;  // The speed of the enemy
 	private float x, y, z;              // Position coordinates of the enemy
 	private int fixPos;                 // Random value for moving the enemy off the screen
-	private bool changeSpeed;
 
 	public static int energyReturn = 2;			// The amount of energy to return to the player when an enemy dies.
 
@@ -53,8 +53,8 @@ public class EnemyScript : MonoBehaviour,PeakListener {
 	protected virtual void Awake() {
 		loudFlag = 0;
 		spawnInvincible = true;
+		givenDespawn = false;
 		givenScore = false;
-		changeSpeed = false;
 		spriteManager = GameObject.Find("EnemySpawner").GetComponent<LinkedSpriteManager>();
 		SetPositionAndSpeed();
 		if (Level.fourColors) colors = new Color[] { Color.red, Color.cyan, Color.blue, Color.yellow };
@@ -121,15 +121,22 @@ public class EnemyScript : MonoBehaviour,PeakListener {
 			} else {
 				Player.shieldFlash = true;
 			}
-			Player.playGetHitSound();
-			StartCoroutine(DamageEnemy(true));
+			if(!givenDespawn) {
+				givenDespawn = true;
+				Player.playGetHitSound();
+				StartCoroutine(DamageEnemy(true));
+			}
 		}
 		// If the enemy collides with a pulse of the right color, reduce enemy health, increase score
 		if ((otherObject.name == "Pulse(Clone)" || otherObject.name == "SuperPulse(Clone)" )&& !spawnInvincible) {
 			if (otherObject.gameObject.GetComponent<PulseSender>().CurrentColor == MainColor ||
 				otherObject.gameObject.GetComponent<PulseSender>().SecondaryColor == MainColor ||
 				otherObject.gameObject.GetComponent<PulseSender>().CurrentColor == Color.white) {
-				StartCoroutine(DamageEnemy(false));
+				
+				if(!givenDespawn) {
+					givenDespawn = true;
+					StartCoroutine(DamageEnemy(false));
+				}
 
 				if (Game.PowerupActive == Game.Powerups.ChainReaction) {
 					GameObject pulse = (GameObject)Instantiate(PulsePrefab, gameObject.transform.position, Quaternion.identity);
