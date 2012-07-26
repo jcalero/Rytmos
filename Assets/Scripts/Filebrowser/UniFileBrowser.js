@@ -2,7 +2,7 @@
 // © 2012 Starscene Software. All rights reserved. Redistribution without permission not allowed.
 
 #pragma strict
-
+#if !UNITY_WEBPLAYER
 import System.IO;
 import UnityEngine.GUILayout;
 import System.Collections.Generic;
@@ -827,3 +827,4 @@ private function UpdateDirectoryLabel() {
     }
    	objectToSendTo.SendMessage ("UpdateDirLabel", directoryPath);
 }
+#endif
