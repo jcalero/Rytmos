@@ -27,7 +27,6 @@ public static class AudioManager
 	
 	#region private vars
 	/*Variables for internal logic*/
-	private static AudioSource ingameMusic;		// Reference which needs to be set if we want to use music which we prvovide ingame!
 	private static AudioClip audioClip;			// AudioClip reference for the buffered music file, part 1
 	public static bool songLoaded = false;		// Flag if the song has finished loading
 	private static string currentlyLoadedSong;	// Path to the currently loaded song (can be used to check if a new song is loaded)
@@ -48,101 +47,99 @@ public static class AudioManager
 		loadingProgress = 0;
 		// If the cam object has been set, analyze the music file which is loaded as the background music in unity
 		// May be useful for the story mode
-		if (ingameMusic != null) {
-			float[] data = new float[ingameMusic.audio.clip.samples];
-			ingameMusic.audio.clip.GetData (data, 0);
-			SoundProcessor.analyse(new MockDecoder (data));
-			peaks = SoundProcessor.getPeaks ();
-			loudPartTimeStamps = SoundProcessor.getVolumeLevels();
-			songLoaded = true;
-			currentlyLoadedSong = "xXBACKgroundMUSICXx";
-			// If the AudioSource object is not set, analyze the music file which has been passed
-		} else {			
-			// Read Audio Data/Initialize everything to read on the fly
-			float start = Time.realtimeSinceStartup;
-			if(freader!=null) {
-				freader.close();
-				freader = null;
-			}
-			freader = new FileReader (pathToMusicFile);
-			FileReader.ReadStatus success = freader.read ();
-			while (freader.isReading()) {
+#if UNITY_WEBPLAYER
+		peaks = WebPlayerRytData.getPeaks("song1");
+		loudPartTimeStamps = WebPlayerRytData.getLoudFlags("song1");
+		variationFactor = WebPlayerRytData.getVariationFactor("song1");
+		songLoaded = true;
+		currentlyLoadedSong = "xXBACKgroundMUSICXx";
+		yield break;
+#else			
+		// Read Audio Data/Initialize everything to read on the fly
+		float start = Time.realtimeSinceStartup;
+		if(freader!=null) {
+			freader.close();
+			freader = null;
+		}
+		freader = new FileReader (pathToMusicFile);
+		FileReader.ReadStatus success = freader.read ();
+		while (freader.isReading()) {
+			yield return 0;
+		}
+		
+		// Succeeded reading? (Which means it found the file when we're just streaming)
+		if (success != FileReader.ReadStatus.SUCCESS)
+		{
+			yield break;
+		}
+		
+		// Set useful information, like AudioClip,length,etc..	
+		frequency = freader.getFrequency ();
+		channels = freader.getChannels ();
+		audioLength = freader.getAudioLengthInSecs ();
+		currentlyLoadedSong = pathToMusicFile;
+		frameSize = freader.getFrameSize();
+		artist = freader.getArtist();
+		title = freader.getTitle();
+		
+		start = Time.realtimeSinceStartup;
+		
+		// Check if we have a cache file for the current song
+		string cacheFile = FileWriter.convertToCacheFileName (pathToMusicFile);
+		System.IO.FileInfo fInf = new System.IO.FileInfo (cacheFile);
+		
+		if (fInf.Exists) {
+			// We have a cache file, so we just read the peaks etc from there.
+			FileReader rytFile = new FileReader (cacheFile);
+			success = rytFile.read ();
+			while (rytFile.isReading()) {
 				yield return 0;
-			}
-			
-			// Succeeded reading? (Which means it found the file when we're just streaming)
+			}				
 			if (success != FileReader.ReadStatus.SUCCESS)
 			{
 				yield break;
 			}
 			
-			// Set useful information, like AudioClip,length,etc..	
-			frequency = freader.getFrequency ();
-			channels = freader.getChannels ();
-			audioLength = freader.getAudioLengthInSecs ();
-			currentlyLoadedSong = pathToMusicFile;
-			frameSize = freader.getFrameSize();
-			artist = freader.getArtist();
-			title = freader.getTitle();
+			peaks = rytFile.getPeaks ();
+			loudPartTimeStamps = rytFile.getLoudnessData ();
+			variationFactor = rytFile.getVariationFactor();
+			rytFile.close ();
+			rytFile = null;
 			
-			start = Time.realtimeSinceStartup;
-			
-			// Check if we have a cache file for the current song
-			string cacheFile = FileWriter.convertToCacheFileName (pathToMusicFile);
-			System.IO.FileInfo fInf = new System.IO.FileInfo (cacheFile);
-			
-			if (fInf.Exists) {
-				// We have a cache file, so we just read the peaks etc from there.
-				FileReader rytFile = new FileReader (cacheFile);
-				success = rytFile.read ();
-				while (rytFile.isReading()) {
-					yield return 0;
-				}				
-				if (success != FileReader.ReadStatus.SUCCESS)
-				{
-					yield break;
-				}
-				
-				peaks = rytFile.getPeaks ();
-				loudPartTimeStamps = rytFile.getLoudnessData ();
-				variationFactor = rytFile.getVariationFactor();
-				rytFile.close ();
-				rytFile = null;
-				
-			} else {
-				// We have no cache file, so do the actual analysis!
-				System.Threading.Thread t = new System.Threading.Thread(() => SoundProcessor.analyse(freader));
+		} else {
+			// We have no cache file, so do the actual analysis!
+			System.Threading.Thread t = new System.Threading.Thread(() => SoundProcessor.analyse(freader));
 //				t.IsBackground = true;
-				t.Start();
-				while(SoundProcessor.isAnalyzing) {
-					loadingProgress = SoundProcessor.loadingProgress;
-					yield return 0;
-				}
-				SoundProcessor.reset();
-				t.Join();
-				t.Abort();
-				t = null;
+			t.Start();
+			while(SoundProcessor.isAnalyzing) {
+				loadingProgress = SoundProcessor.loadingProgress;
+				yield return 0;
+			}
+			SoundProcessor.reset();
+			t.Join();
+			t.Abort();
+			t = null;
 //				SoundProcessor.analyse(freader);
-				peaks = SoundProcessor.getPeaks ();
-				loudPartTimeStamps = SoundProcessor.getVolumeLevels ();
-				variationFactor = SoundProcessor.getVariationFactor();
-				FileWriter.writeAnalysisData (pathToMusicFile, peaks, loudPartTimeStamps, variationFactor);
-			}
-			
-			if(Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WindowsEditor) {
-				// Now that we have analyzed the song, we need to reset & initialize everything for playback
-				freader.reset ();
-				
-				audioBufferSize = (int)(channels * Mathf.Ceil (audioLength) * frequency);
-				audioClip = AudioClip.Create ("main_music1", audioBufferSize, channels, frequency, false, false);
-				
-				// Fill audio buffer with the first few samples
-				initAudioBuffer ();
-			}
-			closeMusicStream();
-			Debug.Log ("Song loaded in: " + (Time.realtimeSinceStartup - start) + " seconds");
-			songLoaded = true;
+			peaks = SoundProcessor.getPeaks ();
+			loudPartTimeStamps = SoundProcessor.getVolumeLevels ();
+			variationFactor = SoundProcessor.getVariationFactor();
+			FileWriter.writeAnalysisData (pathToMusicFile, peaks, loudPartTimeStamps, variationFactor);
 		}
+		
+		if(Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WindowsEditor) {
+			// Now that we have analyzed the song, we need to reset & initialize everything for playback
+			freader.reset ();
+			
+			audioBufferSize = (int)(channels * Mathf.Ceil (audioLength) * frequency);
+			audioClip = AudioClip.Create ("main_music1", audioBufferSize, channels, frequency, false, false);
+			
+			// Fill audio buffer with the first few samples
+			initAudioBuffer ();
+		}
+		closeMusicStream();
+		Debug.Log ("Song loaded in: " + (Time.realtimeSinceStartup - start) + " seconds");
+		songLoaded = true;
+#endif
 	}
 	
 	/// <summary>
@@ -213,11 +210,6 @@ public static class AudioManager
 	public static AudioClip getAudioClip ()
 	{
 		return audioClip;
-	}
-	
-	public static void setCam (AudioSource reference)
-	{
-		ingameMusic = reference;
 	}
 	
 	public static IEnumerator yieldRoutine ()
