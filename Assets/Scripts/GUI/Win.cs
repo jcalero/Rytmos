@@ -56,6 +56,7 @@ public class Win : MonoBehaviour {
 	void Start() {
 		instance = this;
 		SongLabel.text = AudioManager.artist + " - " + AudioManager.title;
+		CalculateSongLabelSize();
 		HitsValueLabel.text = Player.TotalKills.ToString();
 		MissesValueLabel.text = (EnemySpawnScript.spawnCount - Player.TotalKills).ToString();
 		ScoreValueLabel.text = Player.score.ToString();
@@ -193,6 +194,14 @@ public class Win : MonoBehaviour {
 		
 	}
 	#endregion
+
+	void CalculateSongLabelSize() {
+		if (SongLabel.text.Length > 38) {
+			SongLabel.transform.localScale = new Vector2(38, 38);
+		} else if (SongLabel.text.Length > 28) {
+			SongLabel.transform.localScale = new Vector2(50, 50);
+		}
+	}
 
 	/// <summary>
 	/// Sets the text of the information box while submitting to a specified

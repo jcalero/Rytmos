@@ -41,7 +41,7 @@ public class LoadingUI : MonoBehaviour {
 
 		if (!SongTitleSet && AudioManager.tagDataSet) {
 			SongLabel.text = AudioManager.artist + " - " + AudioManager.title;
-			//CalculateSongLabelSize();
+			CalculateSongLabelSize();
 			SongTitleSet = true;
 		}
 
@@ -61,7 +61,11 @@ public class LoadingUI : MonoBehaviour {
 		}
 		else Application.LoadLevel("Game");
 	}
-	//void CalculateSongLabelSize() {
-	//    if (SongLabel.text.Length > 
-	//}
+	void CalculateSongLabelSize() {
+		if (SongLabel.text.Length > 38) {
+			SongLabel.transform.localScale = new Vector2(38, 38);
+		} else if (SongLabel.text.Length > 28) {
+			SongLabel.transform.localScale = new Vector2(50, 50);
+		}
+	}
 }
