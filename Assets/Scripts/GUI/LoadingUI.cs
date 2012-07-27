@@ -2,16 +2,20 @@ using UnityEngine;
 using System.Collections;
 
 public class LoadingUI : MonoBehaviour {
-	
+
 	public UILabel SongLabel;
 	public UISlider ProgressBar;
 	public UILabel LoadingTextLabel;
+	public UISprite WaveForm1;
+	public UISprite WaveForm2;
+	public UITiledSprite WaveForm;
 
 	private bool SongTitleSet;
 	private string[] bullshitText;
+	private float stepTimer;
 
 	// Use this for initialization
-	void Start () {
+	void Start() {
 
 		bullshitText = new string[5];
 		bullshitText[0] = "Copying Audiosurfs idea...";
@@ -23,21 +27,22 @@ public class LoadingUI : MonoBehaviour {
 		//LoadingLabel.text = "[FDD017]" + "0";
 		// Check whether we want to load in a song (Game.Song is set) or use one which has been provided as an asset
 		if (Game.Song != null && Game.Song != "") {
-			if (Game.Song != AudioManager.getCurrentSong ())
-				StartCoroutine( AudioManager.initMusic (Game.Song));
+			if (Game.Song != AudioManager.getCurrentSong())
+				StartCoroutine(AudioManager.initMusic(Game.Song));
 		}
-//		} else if (audioSources [0].clip != null) {
-//			if (!AudioManager.isSongLoaded ()) {
-//				AudioManager.setCam (audioSources [0]);
-//				StartCoroutine( AudioManager.initMusic (""));
-//			}
-//		}	
+
+		//		} else if (audioSources [0].clip != null) {
+		//			if (!AudioManager.isSongLoaded ()) {
+		//				AudioManager.setCam (audioSources [0]);
+		//				StartCoroutine( AudioManager.initMusic (""));
+		//			}
+		//		}	
 	}
 
 	//void IEnumerate() 
-	
+
 	// Update is called once per frame
-	void Update () {
+	void Update() {
 
 		if (!SongTitleSet && AudioManager.tagDataSet) {
 			SongLabel.text = AudioManager.artist + " - " + AudioManager.title;
@@ -57,6 +62,19 @@ public class LoadingUI : MonoBehaviour {
 				LoadingTextLabel.text = bullshitText[1];
 			} else {
 				LoadingTextLabel.text = bullshitText[0];
+			}
+
+			if (WaveForm1.transform.localPosition.x < -661) WaveForm1.transform.localPosition = new Vector2(670, WaveForm1.transform.localPosition.y);
+			if (WaveForm2.transform.localPosition.x < -661) WaveForm2.transform.localPosition = new Vector2(670, WaveForm2.transform.localPosition.y);
+
+			stepTimer += (15 * Time.deltaTime);
+
+			if (stepTimer > 1) {
+				WaveForm2.transform.localPosition = new Vector2(WaveForm2.transform.localPosition.x - 1,
+																WaveForm2.transform.localPosition.y);
+				WaveForm1.transform.localPosition = new Vector2(WaveForm1.transform.localPosition.x - 1,
+																WaveForm1.transform.localPosition.y);
+				stepTimer = 0;
 			}
 		}
 		else Application.LoadLevel("Game");
