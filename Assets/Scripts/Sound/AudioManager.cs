@@ -143,7 +143,6 @@ public static class AudioManager
 		closeMusicStream();
 		Debug.Log ("Song loaded in: " + (Time.realtimeSinceStartup - start) + " seconds");
 		songLoaded = true;
-		tagDataSet = false;
 #endif
 	}
 	
