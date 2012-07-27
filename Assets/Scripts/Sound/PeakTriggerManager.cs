@@ -46,7 +46,7 @@ public class PeakTriggerManager : MonoBehaviour
 			timer += Time.deltaTime;
 			
 			/* Update the flags for loud parts of a song */
-			if (loudPartCounter < AudioManager.loudPartTimeStamps.Length && AudioManager.loudPartTimeStamps [loudPartCounter] / (float)AudioManager.frequency < timer) {
+			if (loudPartCounter < AudioManager.loudPartTimeStamps.Length-1 && AudioManager.loudPartTimeStamps [loudPartCounter] / (float)AudioManager.frequency < timer) {
 				loudFlag = AudioManager.loudPartTimeStamps[loudPartCounter+1];
 				foreach (PeakListener l in listeners) l.setLoudFlag (loudFlag);
 				loudPartCounter+=2;			
@@ -56,7 +56,7 @@ public class PeakTriggerManager : MonoBehaviour
 			for (int t = 0; t < AudioManager.peaks.Length; t++) {
 				
 				// Sync peaks (can call them triggers) to the music
-				while (peakCounters[t] < AudioManager.peaks[t].Length && AudioManager.peaks[t][peakCounters[t]] * (1024f/(float)AudioManager.frequency) < timer) {
+				while (peakCounters[t] < AudioManager.peaks[t].Length-1 && AudioManager.peaks[t][peakCounters[t]] * (1024f/(float)AudioManager.frequency) < timer) {
 					#region TRIGGER PEAKS
 					// Call the trigger methods in the classes which have "registered" with peakTriggerManager
 					foreach (PeakListener l in listeners) l.onPeakTrigger (t,AudioManager.peaks[t][peakCounters[t]+1]);
