@@ -83,7 +83,6 @@ public class Player : MonoBehaviour, PeakListener {
 			   Game.PowerupActive == Game.Powerups.ChainReaction) {
 				pwTimer += Time.deltaTime;
 				if (pwTimer > pwTotalTime) {
-					Debug.Log("Powerup: " + Game.PowerupActive + " deactivated");
 					Game.PowerupActive = Game.Powerups.None;
 					if (playerpowerup == Game.Powerups.None) {
 						hasPowerup = false;
@@ -122,7 +121,6 @@ public class Player : MonoBehaviour, PeakListener {
 						superPulseCount = 0;
 						playerpowerup = Game.Powerups.None;
 					}
-					Debug.Log(Game.PowerupActive + "Activated!");
 					pwTimer = 0;
 				}
 			} else if (hit.collider.name == "Powerup") {

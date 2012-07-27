@@ -142,22 +142,18 @@ public class PowerupScript : MonoBehaviour {
 		Color c;
 		switch(choice) {
 			case 0:
-				Debug.Log ("Massive Pulse Spawned!");
 				pw = Game.Powerups.MassivePulse;
 				c = Color.white;
 				break;
 			case 1:
-				Debug.Log ("Invicibility Spawned!");
 				pw = Game.Powerups.Invincible;
 				c = Color.magenta;
 				break;
 			case 2:
-				Debug.Log ("Chain Reaction Spawned!");
 				pw = Game.Powerups.ChainReaction;
 				c = Color.grey;
 				break;
 			default:
-				Debug.Log ("Powerup Failed...");
 				c = Color.white;
 				pw = Game.Powerups.None;
 				break;
