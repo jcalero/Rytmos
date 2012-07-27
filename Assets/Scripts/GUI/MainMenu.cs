@@ -59,6 +59,9 @@ public class MainMenu : MonoBehaviour {
 	void Awake() {
 		Game.GameState = Game.State.Menu;
 		ChangeMenu(MenuLevel.Base);
+#if UNITY_WEBPLAYER
+		Game.Song = "";
+#endif
 	}
 
 	void Update() {
@@ -197,11 +200,23 @@ public class MainMenu : MonoBehaviour {
 	private void OnArcadeButtonClicked() {
 		arcadeButtonActive = true;
 		if (arcadeButtonActive) {
+#if !UNITY_WEBPLAYER
 			FadeOutMenu();
 			ChangeMenu(MenuLevel.FileBrowser);
 			if (!string.IsNullOrEmpty(Game.Path)) FileBrowser.SendMessage("OpenFileWindow", PlayerPrefs.GetString("filePath"));
 			else FileBrowser.SendMessage("OpenFileWindow", "");
 			//StartCoroutine(LoadLevelDelayed("Game", 1f));
+#else
+			if(Game.Song != "Jazz-Fog" && Game.Song != "KnoxCanyon" && Game.Song != "LG-F1" && Game.Song != "YouGotToChange") {
+				Game.Song = "Poundcake";
+				AudioManager.artist = "GRiZ";
+				AudioManager.title = "Poundcake";
+			}
+			StartCoroutine(AudioManager.initMusic(""));
+			while(!AudioManager.isSongLoaded()) {}
+			AudioManager.tagDataSet = true;
+			Application.LoadLevel("LoadScreen");
+#endif
 		} else {
 			//Vector3 buttonScale = ArcadeButton.GetComponentInChildren<UISlicedSprite>().transform.localScale;
 			//buttonScale =
@@ -214,6 +229,9 @@ public class MainMenu : MonoBehaviour {
 	/// Button handler for "Casual" button
 	/// </summary>
 	private void OnCasualButtonClicked() {
+		Game.Song = "Jazz-Fog";
+		AudioManager.artist = "Daveisgr81";
+		AudioManager.title = "Jazz-Fog";
 		OnArcadeButtonClicked();
 	}
 
@@ -221,12 +239,18 @@ public class MainMenu : MonoBehaviour {
 	/// Button handler for "Challenge" button
 	/// </summary>
 	private void OnChallengeButtonClicked() {
+		Game.Song = "KnoxCanyon";
+		AudioManager.artist = "Knoxius";
+		AudioManager.title = "Canyon Song";
 		OnArcadeButtonClicked();
 	}
 	/// <summary>
 	/// Button handler for "Story" button
 	/// </summary>
 	private void OnStoryButtonClicked() {
+		Game.Song = "LG-F1";
+		AudioManager.artist = "Dan & Frank Johansen";
+		AudioManager.title = "LG-F1";
 		OnArcadeButtonClicked();
 	}
 	#endregion

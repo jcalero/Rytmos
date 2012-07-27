@@ -54,10 +54,9 @@ public class PeakTriggerManager : MonoBehaviour
 	
 			// Iterate over every channel
 			for (int t = 0; t < AudioManager.peaks.Length; t++) {
-	
+				
 				// Sync peaks (can call them triggers) to the music
 				while (peakCounters[t] < AudioManager.peaks[t].Length && AudioManager.peaks[t][peakCounters[t]] * (1024f/(float)AudioManager.frequency) < timer) {
-					
 					#region TRIGGER PEAKS
 					// Call the trigger methods in the classes which have "registered" with peakTriggerManager
 					foreach (PeakListener l in listeners) l.onPeakTrigger (t,AudioManager.peaks[t][peakCounters[t]+1]);

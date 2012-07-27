@@ -49,9 +49,9 @@ public static class AudioManager
 		// If the cam object has been set, analyze the music file which is loaded as the background music in unity
 		// May be useful for the story mode
 #if UNITY_WEBPLAYER
-		peaks = WebPlayerRytData.getPeaks("song1");
-		loudPartTimeStamps = WebPlayerRytData.getLoudFlags("song1");
-		variationFactor = WebPlayerRytData.getVariationFactor("song1");
+		peaks = WebPlayerRytData.getPeaks(Game.Song);
+		loudPartTimeStamps = WebPlayerRytData.getLoudFlags(Game.Song);
+		variationFactor = WebPlayerRytData.getVariationFactor(Game.Song);
 		songLoaded = true;
 		currentlyLoadedSong = "xXBACKgroundMUSICXx";
 		yield break;

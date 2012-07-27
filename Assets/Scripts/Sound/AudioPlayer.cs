@@ -23,14 +23,24 @@ public class AudioPlayer : MonoBehaviour
 	
 	void Awake ()
 	{
-		audioSource = gameObject.GetComponentInChildren<AudioSource> (); // get references to audiosources
-
 #if UNITY_ANDROID && !UNITY_EDITOR
 			androidPlayer = new AndroidJavaObject("android.media.MediaPlayer",new object[]{});
 			androidPlayer.Call("setDataSource",new object[]{Game.Song});
 			androidPlayer.Call("prepare",new object[]{});
+#elif UNITY_WEBPLAYER
+		AudioSource[] audioSources = gameObject.GetComponentsInChildren<AudioSource> (); // get references to audiosources
+		if(Game.Song == "Jazz-Fog") audioSource = audioSources[1];
+		else if(Game.Song == "KnoxCanyon") audioSource = audioSources[2];
+		else if(Game.Song == "LG-F1") audioSource = audioSources[3];
+		else if(Game.Song == "YouGotToChange") audioSource = audioSources[4];
+		else audioSource = audioSources[0];
+		
+		Debug.Log(Game.Song);
+		AudioManager.audioLength = audioSource.clip.length;
+		AudioManager.frequency = audioSource.clip.frequency;
 #else
-			audioSource.clip = AudioManager.getAudioClip ();
+		audioSource = gameObject.GetComponentInChildren<AudioSource> (); // get references to audiosources
+		audioSource.clip = AudioManager.getAudioClip ();
 #endif
 		isPlaying = false;
 		timer = 0;
@@ -58,7 +68,7 @@ public class AudioPlayer : MonoBehaviour
 		if(!isPlaying && androidPlayer.Call<int>("getCurrentPosition") > 171)
 			isPlaying = true;
 #else
-			if(!isPlaying && audioSource.timeSamples > 0)
+		if(!isPlaying && audioSource.timeSamples > 0)
 			isPlaying = true;
 #endif		
 		timer += Time.deltaTime;
