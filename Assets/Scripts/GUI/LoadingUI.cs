@@ -8,11 +8,13 @@ public class LoadingUI : MonoBehaviour {
 	public UILabel LoadingTextLabel;
 	public UISprite WaveForm1;
 	public UISprite WaveForm2;
-	public UITiledSprite WaveForm;
+	public UIPanel LoadingPanel;
+	public UIPanel ReadyToPlayPanel;
 
 	private bool SongTitleSet;
 	private string[] bullshitText;
 	private float stepTimer;
+	private bool songIsReady;
 
 	// Use this for initialization
 	void Start() {
@@ -43,6 +45,7 @@ public class LoadingUI : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update() {
+		if (songIsReady) return;
 
 		if (!SongTitleSet && AudioManager.tagDataSet) {
 			SongLabel.text = AudioManager.artist + " - " + AudioManager.title;
@@ -50,7 +53,7 @@ public class LoadingUI : MonoBehaviour {
 			SongTitleSet = true;
 		}
 
-		if(!AudioManager.isSongLoaded()) {
+		if (!AudioManager.isSongLoaded()) {
 			ProgressBar.sliderValue = AudioManager.loadingProgress;
 			if (AudioManager.loadingProgress > 0.8) {
 				LoadingTextLabel.text = bullshitText[4];
@@ -76,9 +79,17 @@ public class LoadingUI : MonoBehaviour {
 																WaveForm1.transform.localPosition.y);
 				stepTimer = 0;
 			}
+		} else {
+			songIsReady = true;
+			UITools.SetActiveState(LoadingPanel, false);
+			UITools.SetActiveState(ReadyToPlayPanel, true);
 		}
-		else Application.LoadLevel("Game");
 	}
+
+	void OnPlayClicked() {
+		Application.LoadLevel("Game");
+	}
+
 	void CalculateSongLabelSize() {
 		if (SongLabel.text.Length > 38) {
 			SongLabel.transform.localScale = new Vector2(38, 38);
