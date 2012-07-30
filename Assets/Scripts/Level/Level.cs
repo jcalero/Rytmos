@@ -27,6 +27,8 @@ public class Level : MonoBehaviour {
 	public GameObject touchPrefab;                                  // The touch sprite. Inspector reference. Location: LevelManager
 	public GameObject backgroundObject;
 	public EnemySpawnScript enemySpawner;                           // The enemy spawn script.
+	public Material bgNormal;
+	public Material bgDark;
 	#endregion
 
 	#region Functions
@@ -44,6 +46,14 @@ public class Level : MonoBehaviour {
 	protected virtual void Start() {
 		Game.Cheated = false;       // Reset cheated value
 
+		if (Application.platform == RuntimePlatform.WindowsEditor) {
+			bgSpriteManagerScript.material = bgDark;
+			bgSpriteManager.renderer.material = bgDark;
+		} else {
+			bgSpriteManagerScript.material = bgNormal;
+			bgSpriteManager.renderer.material = bgNormal;
+		}
+		
 		bgSpriteManagerScript.AddSprite(backgroundObject, 1f, 1f, Vector2.zero, new Vector2(1f, 1f), false);
 
 		// Create and hide the touch sprite
