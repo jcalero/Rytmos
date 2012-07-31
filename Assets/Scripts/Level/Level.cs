@@ -25,12 +25,12 @@ public class Level : MonoBehaviour {
 	public GameObject spriteManager;                                // Reference to the SpriteManager. Inspector reference. Location: LevelManager
 	public GameObject bgSpriteManager;                              // Reference to the SpriteManager. Inspector reference. Location: LevelManager
 	public GameObject touchPrefab;                                  // The touch sprite. Inspector reference. Location: LevelManager
-	public GameObject backgroundObject;
+	public GameObject[] backgroundObject;
 	public EnemySpawnScript enemySpawner;                           // The enemy spawn script.
 	public Material bgNormal;
 	public Material bgDark;
 	#endregion
-
+	
 	#region Functions
 	protected virtual void Awake() {
 		// Local static reference to this class.
@@ -53,8 +53,9 @@ public class Level : MonoBehaviour {
 			bgSpriteManagerScript.material = bgNormal;
 			bgSpriteManager.renderer.material = bgNormal;
 		}
-		
-		bgSpriteManagerScript.AddSprite(backgroundObject, 1f, 1f, Vector2.zero, new Vector2(1f, 1f), false);
+
+		//for (int cnt = 0; cnt < backgroundObject.Length; cnt++ )
+		bgSpriteManagerScript.AddSprite(backgroundObject[0], 1f, 1f, Vector2.zero, new Vector2(1f, 1f), false);
 
 		// Create and hide the touch sprite
 		touchSprite = spriteManagerScript.AddSprite(touchPrefab, 0.25f, 0.25f, new Vector2(0f, 0.365f), new Vector2(0.63f, 0.63f), false);
