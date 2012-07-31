@@ -113,7 +113,7 @@ public class EnemyScript : MonoBehaviour,PeakListener {
 		if (otherObject.tag == "Player") {
 			if (Game.PowerupActive != Game.Powerups.Invincible) {
 				//				Player.health -= 10 * health;       // Reduces the player health by 10 * the remaining enemy health
-				Player.ResetMultiplier();
+				Player.ReduceMultiplier();
 				//Debug.Log(Level.cameraShakeTimer);
 				//if (Level.cameraShakeTimer == 0) {
 				Camera.mainCamera.animation.Play("CameraShake");

@@ -10,7 +10,7 @@ public class PulseSender : MonoBehaviour {
     public float CurrentHealth;                     // Current health of the pulse
 	public Color CurrentColor;						// Currently selected color (discrete values)
 	public Color SecondaryColor;					// Used for the boundaries between discrete color selection to determine a hit
-    public float MaxHealth = 4;                     // Max health of the pulse
+    public float MaxHealth = 6;                     // Max health of the pulse
 
     private int segments = 50;                      // The nr of segments the pulse has. Fewer means less "smooth".
     private LineRenderer line;                      // The line renderer that creates the pulse
@@ -28,7 +28,7 @@ public class PulseSender : MonoBehaviour {
         line.SetVertexCount(segments + 1);
         line.useWorldSpace = false;
         line.material.color = finalColor;
-        CurrentHealth = MaxHealth;
+        CurrentHealth = EnemySpawnScript.spawnerCounter+1;
 		CurrentColor = Color.clear;
         float lineWidth = CurrentHealth / 10;
         line.SetWidth(lineWidth, lineWidth);

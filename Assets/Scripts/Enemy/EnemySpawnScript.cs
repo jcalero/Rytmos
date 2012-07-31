@@ -31,6 +31,8 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	public float loudFlag;
 	
 	private int spawnerNumber;
+	
+	public static int spawnerCounter;
 
 	private static EnemySpawnScript instance;
 	#endregion
@@ -48,7 +50,8 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	
 	void Update() {
 		
-		timer += Time.deltaTime;		
+		timer += Time.deltaTime;
+		
 		if (timer >= audioLength){
 			if (!AudioManager.songLoaded) Application.LoadLevel("LoadScreen");
 			else {
@@ -56,6 +59,14 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 					Application.LoadLevel("Win");
 			}
 		}
+		
+		if(Player.multiplier < 3) spawnerCounter = 1;
+		else if(Player.multiplier < 6) spawnerCounter = 2;
+		else if(Player.multiplier < 12) spawnerCounter = 3;
+		else if(Player.multiplier < 17) spawnerCounter = 4;
+		else spawnerCounter = 5;
+		
+		updateSpawnPositions();
 	}
 	
 	/// <summary>
@@ -76,13 +87,33 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		spawnRestrictors = new int[AudioManager.peaks.Length];
 		spawnDivisors = new int[]{1,1,8,2,2,2};
 		//spawnPositions = new int[]{40,90,35,85};
-		spawnPositions = new int[] { 0,33,66 };
+		spawnPositions = new int[] { 0 };
+		spawnerCounter = 1;
 		currentlySelectedEnemy = Random.Range(0,6);
 		spawnCount = 0;
 		rotateDirection = 1;
 		Level.SetUpParticlesFeedback(spawnPositions.Length, currentlySelectedEnemy);		
 		loudFlag = 0;
 		maxMag = new Vector2(Game.screenTop,Game.screenRight).magnitude;
+	}
+	
+	void updateSpawnPositions() {
+		// We have as many spawners as we want -> Do nothing
+		if(spawnPositions.Length == spawnerCounter) return;
+		
+		/* Change he number of spawners:
+		 * 1. Divide 100 into (spawnerCounter) parts.
+		 * 2. Take the first spawner in the list as an offset.
+		 * 3. Calculate position of remaining (spawnerCounter)-1 spawners 
+		 */
+		
+		int spacing = 100/spawnerCounter;
+		int firstPosition = spawnPositions[0];
+		spawnPositions = new int[spawnerCounter];
+		spawnPositions[0] = firstPosition;
+		for(int i = 1; i < spawnPositions.Length; i++) {
+			spawnPositions[i] = firstPosition + (i*spacing);
+		}
 	}
 	
 	public void setLoudFlag(int flag) {
@@ -135,14 +166,15 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 					for (int i = 0; i < spawnPositions.Length; i++) {
 						incrementSpawnPosition(ref spawnPositions[i], 1, rotateDirection);
 					}
-					//moveSpawners(1,rotateDirection);
+//						moveSpawnersMirrored(1,rotateDirection);
 					break;
 				case 1:
 					// These are more medium ranged frequencies, used to change the spawn position (for now at least)
 					for (int i = 0; i < spawnPositions.Length; i++) {
 						incrementSpawnPosition(ref spawnPositions[i], 3, rotateDirection);
 					}
-					//moveSpawners(3,rotateDirection);
+//					moveSpawnersMirrored(3,rotateDirection);
+	
 					Level.SetUpParticlesFeedback(spawnPositions.Length, currentlySelectedEnemy);
 					break;
 				case 2:
@@ -207,7 +239,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		}
 	}
 	
-	private void moveSpawners(int increment,int rotateDirection) {
+	private void moveSpawnersMirrored(int increment,int rotateDirection) {
 		spawnPositions[0] += increment*rotateDirection;
 		correctSpawnPosition(0);
 		
