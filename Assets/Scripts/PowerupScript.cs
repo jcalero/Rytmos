@@ -6,7 +6,6 @@ public class PowerupScript : MonoBehaviour {
 	public GameObject powerupManager;
 	private Game.Powerups pw;
 	
-	
 	private string spriteName = "default";
     private int left;
     private int bottom;

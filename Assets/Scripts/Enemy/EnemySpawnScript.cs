@@ -61,11 +61,11 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 			}
 		}
 		
-		if(Player.multiplier < 3) spawnerCounter = 1;
-		else if(Player.multiplier < 6) spawnerCounter = 2;
+		if(Player.multiplier < 3) spawnerCounter = 2;
+		else if(Player.multiplier < 6) spawnerCounter = 3;
 		else if(Player.multiplier < 12) spawnerCounter = 3;
-		else if(Player.multiplier < 17) spawnerCounter = 4;
-		else if(Game.GameMode != Game.Mode.Casual) spawnerCounter = 5;
+		else if(Player.multiplier < 17) spawnerCounter = 3;
+		else if(Game.GameMode != Game.Mode.Casual) spawnerCounter = 3;
 		
 		updateSpawnPositions();
 	}

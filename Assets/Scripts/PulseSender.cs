@@ -156,9 +156,9 @@ public class PulseSender : MonoBehaviour {
             x = Mathf.Sin(Mathf.Deg2Rad * angle);
             y = Mathf.Cos(Mathf.Deg2Rad * angle);
             line.SetPosition(i, new Vector3(x, y, z) * Radius);
-            line.SetColors(new Color(c.r, c.g, c.b, ((CurrentHealth / MaxHealth) * .5f) + .5f), new Color(c.r, c.g, c.b, ((CurrentHealth / MaxHealth) * .5f) + .5f));
+            line.SetColors(new Color(c.r, c.g, c.b, ((CurrentHealth / MaxHealth) * .3f) + .3f), new Color(c.r, c.g, c.b, ((CurrentHealth / MaxHealth) * .3f) + .3f));
             line.material.SetColor("_Emission", new Color(c.r, c.g, c.b, c.a / 3));
-			float lineWidth = (CurrentHealth / 7) + 0.5f;
+			float lineWidth = (CurrentHealth / 10) + 0.5f;
 			//float lineWidth = MaxHealth / 5;
             if (lineWidth < .2f)
                 lineWidth += .05f;
