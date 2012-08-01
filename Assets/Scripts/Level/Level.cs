@@ -39,23 +39,23 @@ public class Level : MonoBehaviour {
 		EnemiesDespawned = 0;
 		Instance = this;
 		spriteManagerScript = spriteManager.GetComponent<LinkedSpriteManager>();
-		bgSpriteManagerScript = bgSpriteManager.GetComponent<LinkedSpriteManager>();
+		//bgSpriteManagerScript = bgSpriteManager.GetComponent<LinkedSpriteManager>();
 		Game.PowerupActive = Game.Powerups.None;
 	}
 
 	protected virtual void Start() {
 		Game.Cheated = false;       // Reset cheated value
 
-		if (Application.platform == RuntimePlatform.WindowsEditor) {
-			bgSpriteManagerScript.material = bgDark;
-			bgSpriteManager.renderer.material = bgDark;
-		} else {
-			bgSpriteManagerScript.material = bgNormal;
-			bgSpriteManager.renderer.material = bgNormal;
-		}
+		//if (Application.platform == RuntimePlatform.WindowsEditor) {
+		//    bgSpriteManagerScript.material = bgDark;
+		//    bgSpriteManager.renderer.material = bgDark;
+		//} else {
+		//    bgSpriteManagerScript.material = bgNormal;
+		//    bgSpriteManager.renderer.material = bgNormal;
+		//}
 
 		//for (int cnt = 0; cnt < backgroundObject.Length; cnt++ )
-		bgSpriteManagerScript.AddSprite(backgroundObject[0], 1f, 1f, Vector2.zero, new Vector2(1f, 1f), false);
+		//bgSpriteManagerScript.AddSprite(backgroundObject[0], 1f, 1f, Vector2.zero, new Vector2(1f, 1f), false);
 
 		// Create and hide the touch sprite
 		touchSprite = spriteManagerScript.AddSprite(touchPrefab, 0.25f, 0.25f, new Vector2(0f, 0.365f), new Vector2(0.63f, 0.63f), false);

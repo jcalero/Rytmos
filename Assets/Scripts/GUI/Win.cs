@@ -73,8 +73,8 @@ public class Win : MonoBehaviour {
 	string CalculatedRank {
 		get {
 			if (Player.TotalKills > 0) {
-				float valueOneWeight = 0.4f;
-				float valueTwoWeight = 0.6f;
+				float valueOneWeight = 0.5f;
+				float valueTwoWeight = 0.5f;
 				int valueOne = (int)((Player.TotalKills / (float)EnemySpawnScript.spawnCount) * 100);
 				//Debug.Log(Player.TotalKills + " / " + (float)EnemySpawnScript.spawnCount + " = " + (Player.TotalKills / (float)EnemySpawnScript.spawnCount));
 				int valueTwo = 0;

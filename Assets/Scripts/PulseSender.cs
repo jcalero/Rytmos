@@ -12,7 +12,7 @@ public class PulseSender : MonoBehaviour {
 	public Color SecondaryColor;					// Used for the boundaries between discrete color selection to determine a hit
     public float MaxHealth = 6;                     // Max health of the pulse
 
-    private int segments = 100;                      // The nr of segments the pulse has. Fewer means less "smooth".
+    private int segments = 80;                      // The nr of segments the pulse has. Fewer means less "smooth".
     private LineRenderer line;                      // The line renderer that creates the pulse
     private SphereCollider sphereColl;              // The collider attatched to the pulse
     private bool held;                              // Flag for whether the player is keeping his pulse "active"

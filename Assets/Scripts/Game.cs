@@ -48,6 +48,7 @@ public class Game : MonoBehaviour {
 	void Awake() {
 		// Stops phone screen from shutting down on timeout
 		Screen.sleepTimeout = (int)SleepTimeout.NeverSleep;
+		//Application.targetFrameRate = 30;
 
 		// Define screen edges based on screen resolution (requires camera to be placed at XY origin, i.e. Vector3 (0, 0, _) )
 		screenLeft = Camera.main.ViewportToWorldPoint(new Vector3(0, 0, 10)).x;

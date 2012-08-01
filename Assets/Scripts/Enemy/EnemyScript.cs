@@ -151,7 +151,7 @@ public class EnemyScript : MonoBehaviour,PeakListener {
 				}
 
 			} else {
-				CollisionParticles.GetComponent<ParticleSystem>().Emit(10);
+				//CollisionParticles.GetComponent<ParticleSystem>().Emit(10);
 			}
 		}
 	}
