@@ -214,7 +214,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 
 		// Loudflag between 0 and 5, median is 2.5
 		// variationFactor between 0.2 & 1
-		float speed = baseSpeed + (loudFlag - baseSpeed)*AudioManager.variationFactor;
+		float speed = baseSpeed + (loudFlag - 2.5f)*AudioManager.variationFactor;
 		if(speed < 1) speed = 1f;
 		else if(speed > 4.5 && Game.GameMode != Game.Mode.Casual) speed = 4.5f;
 		else if(speed > 3.5 && Game.GameMode == Game.Mode.Casual) speed = 3.5f;
