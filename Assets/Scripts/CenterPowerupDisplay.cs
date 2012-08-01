@@ -48,10 +48,9 @@ public class CenterPowerupDisplay : MonoBehaviour {
      
         // Calculate sprite atlas coordinates
         CalculateSprite(SpriteAtlas, spriteName);
-		if (spriteName == "shield"){
-			transform.localEulerAngles = new Vector3(0,0,0);
-			transform.localScale = new Vector3(1,1,1);
-		}
+		transform.localEulerAngles = new Vector3(0,0,0);
+		transform.localScale = new Vector3(1,1,1);
+		
         // Add sprite to game object
         powerupDisplay = spriteManager.AddSprite(gameObject, UVWidth, UVHeight, left, bottom, width, height, false);
 	}
@@ -70,8 +69,12 @@ public class CenterPowerupDisplay : MonoBehaviour {
         float widthHeightRatio = sprite.inner.width / sprite.inner.height;
         if (widthHeightRatio > 1)
             UVHeight = 1f / widthHeightRatio;       // It's a "wide" sprite
-        else if (widthHeightRatio < 1)
+        else 
+			UVHeight = 1;
+		if (widthHeightRatio < 1)
             UVWidth = 1f * widthHeightRatio;        // It's a "tall" sprite
+		else 
+			UVWidth = 1;
     }
 	
 	void OnDestroy() {
