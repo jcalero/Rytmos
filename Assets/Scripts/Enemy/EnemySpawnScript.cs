@@ -24,6 +24,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	private float[] timers;
 	private int[] spawnRestrictors;
 	private int[] spawnDivisors;
+	private float baseSpeed;
 	
 	private bool resetColor;
 	private int rotateDirection;
@@ -64,7 +65,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		else if(Player.multiplier < 6) spawnerCounter = 2;
 		else if(Player.multiplier < 12) spawnerCounter = 3;
 		else if(Player.multiplier < 17) spawnerCounter = 4;
-		else spawnerCounter = 5;
+		else if(Game.GameMode != Game.Mode.Casual) spawnerCounter = 5;
 		
 		updateSpawnPositions();
 	}
@@ -95,6 +96,8 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		Level.SetUpParticlesFeedback(spawnPositions.Length, currentlySelectedEnemy);		
 		loudFlag = 0;
 		maxMag = new Vector2(Game.screenTop,Game.screenRight).magnitude;
+		if(Game.GameMode == Game.Mode.Casual) baseSpeed = 1.5f;
+		else baseSpeed = 2.5f;
 	}
 	
 	void updateSpawnPositions() {
@@ -211,9 +214,10 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 
 		// Loudflag between 0 and 5, median is 2.5
 		// variationFactor between 0.2 & 1
-		float speed = 2.5f + (loudFlag - 2.5f)*AudioManager.variationFactor;
+		float speed = baseSpeed + (loudFlag - baseSpeed)*AudioManager.variationFactor;
 		if(speed < 1) speed = 1f;
-		else if(speed > 4.5) speed = 4.5f;
+		else if(speed > 4.5 && Game.GameMode != Game.Mode.Casual) speed = 4.5f;
+		else if(speed > 3.5 && Game.GameMode == Game.Mode.Casual) speed = 3.5f;
 	
 		return speed;
 		

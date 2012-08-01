@@ -229,28 +229,36 @@ public class MainMenu : MonoBehaviour {
 	/// Button handler for "Casual" button
 	/// </summary>
 	private void OnCasualButtonClicked() {
-		Game.Song = "Jazz-Fog";
-		AudioManager.artist = "Daveisgr81";
-		AudioManager.title = "Jazz-Fog";
-		OnArcadeButtonClicked();
+//		Game.Song = "Jazz-Fog";
+//		AudioManager.artist = "Daveisgr81";
+//		AudioManager.title = "Jazz-Fog";
+		Game.GameMode = Game.Mode.Casual;
+		FadeOutMenu();
+		ChangeMenu(MenuLevel.FileBrowser);
+		if (!string.IsNullOrEmpty(Game.Path)) FileBrowser.SendMessage("OpenFileWindow", PlayerPrefs.GetString("filePath"));
+		else FileBrowser.SendMessage("OpenFileWindow", "");	
 	}
 
 	/// <summary>
 	/// Button handler for "Challenge" button
 	/// </summary>
 	private void OnChallengeButtonClicked() {
-		Game.Song = "KnoxCanyon";
-		AudioManager.artist = "Knoxius";
-		AudioManager.title = "Canyon Song";
+//		Game.Song = "KnoxCanyon";
+//		AudioManager.artist = "Knoxius";
+//		AudioManager.title = "Canyon Song";
+		
+//		Game.GameMode = Game.Mode.Challenge;
 		OnArcadeButtonClicked();
 	}
 	/// <summary>
 	/// Button handler for "Story" button
 	/// </summary>
 	private void OnStoryButtonClicked() {
-		Game.Song = "LG-F1";
-		AudioManager.artist = "Dan & Frank Johansen";
-		AudioManager.title = "LG-F1";
+//		Game.Song = "LG-F1";
+//		AudioManager.artist = "Dan & Frank Johansen";
+//		AudioManager.title = "LG-F1";
+		
+//		Game.GameMode = Game.Mode.Story;
 		OnArcadeButtonClicked();
 	}
 	#endregion

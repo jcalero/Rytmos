@@ -31,7 +31,8 @@ public class PeakTriggerManager : MonoBehaviour
 		loudFlag = -1;
 		timeThreshs = new float[AudioManager.peaks.Length];
 		peakReductionFactors = new float[AudioManager.peaks.Length];
-		peakReductionFactors[0] = 1f;
+		if(Game.GameMode == Game.Mode.Casual) peakReductionFactors[0] = 2f;
+		else peakReductionFactors[0] = 1f;
 		peakReductionFactors[1] = 0;
 		peakReductionFactors[2] = 0;
 		peakReductionFactors[3] = 1f;

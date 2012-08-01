@@ -25,7 +25,7 @@ public class DeathMatch : Level {
 	}
 
 	protected override void Start() {
-		Game.GameMode = Game.Mode.Arcade;
+//		Game.GameMode = Game.Mode.Arcade;
 		Game.GameState = Game.State.Playing;
 		base.Start();
 		//SurviveLabel.text = "[FFAA22]Survive!";
@@ -33,6 +33,7 @@ public class DeathMatch : Level {
 		Player.ResetStats();
 		EnemyScript.energyReturn = 5;
 		//StartCoroutine(DelayLabel());
+		Debug.Log("GameMode: " + Game.GameMode);
 	}
 
 	void Update() {

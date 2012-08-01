@@ -117,13 +117,17 @@ public class HUD : MonoBehaviour {
 			return;
 		} else if (Player.multiplier > 1 && Player.multiplier <= 4) {
 			instance.MultiplierLabel.animation.Play("Thump");
+			instance.MultiplierLabel.animation.wrapMode = WrapMode.Default;
 		} else if (Player.multiplier > 4 && Player.multiplier <= 9) {
 			instance.MultiplierLabel.animation.Play("Thump2");
+			instance.MultiplierLabel.animation.wrapMode = WrapMode.Default;
 		} else if (Player.multiplier > 9 && Player.multiplier <= 14) {
 			instance.MultiplierLabel.animation.Play("Thump3");
+			instance.MultiplierLabel.animation.wrapMode = WrapMode.Default;
 		} else if (Player.multiplier > 14 && Player.multiplier <= 19) {
 			instance.MultiplierLabel.animation.Play("Thump4");
 			instance.MultiplierLabel.animation.Play("Thump4-loop");
+			instance.MultiplierLabel.animation.wrapMode = WrapMode.Default;
 		} else if (Player.multiplier == 20) {
 			instance.MultiplierLabel.animation.Play("Thump5");
 			instance.MultiplierLabel.animation.wrapMode = WrapMode.Loop;

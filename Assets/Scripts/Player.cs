@@ -133,7 +133,7 @@ public class Player : MonoBehaviour, PeakListener {
 				}
 			} else if (Game.DevMode && Game.sendSuper){
 				triggerMassivePulse();
-			} else if (energy - pulseCost >= 0) {
+			} else if (energy - pulseCost >= 0 ||  Game.GameMode == Game.Mode.Casual) {
 				// Show the touch sprite at the mouse location.
 				Level.ShowTouchSprite(new Vector3(ray.origin.x, ray.origin.y, 0));
 				// Create a pulse and trigger animation

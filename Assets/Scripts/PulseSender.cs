@@ -116,7 +116,7 @@ public class PulseSender : MonoBehaviour {
 
     void OnTriggerExit(Collider otherObject) {
         if (otherObject.GetType() == typeof(BoxCollider) && Game.PowerupActive != Game.Powerups.MassivePulse) {
-            CurrentHealth--;
+            if(!(Game.GameMode == Game.Mode.Casual)) CurrentHealth--;
             if (CurrentHealth == 0)
                 Destroy(gameObject);
         }
@@ -125,7 +125,10 @@ public class PulseSender : MonoBehaviour {
     // Reduce pulse health if it collides with another object
     void OnTriggerEnter(Collider otherObject) {
         if (otherObject.GetType() == typeof(SphereCollider) && CurrentColor != Color.white) {
-            CurrentHealth--;
+            if(Game.GameMode != Game.Mode.Casual) CurrentHealth--;
+			else if(otherObject.gameObject.GetComponent<EnemyScript>().MainColor == CurrentColor || 
+					otherObject.gameObject.GetComponent<EnemyScript>().MainColor == SecondaryColor)
+				CurrentHealth--;
             if (CurrentHealth == 0) {
                 Destroy(gameObject);
             }
