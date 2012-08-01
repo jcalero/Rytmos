@@ -347,7 +347,7 @@ public class Game : MonoBehaviour {
 	public enum Mode {
 		Arcade,
 		Casual,
-		Story,
+		Tutorial,
 		Challenge
 	}
 

@@ -214,7 +214,8 @@ public class LoadingUI : MonoBehaviour
 
 	void OnPlayClicked ()
 	{
-		Application.LoadLevel ("Game");
+		if(Game.GameMode != Game.Mode.Tutorial) Application.LoadLevel ("Game");
+		else Application.LoadLevel("Tutorial");
 	}
 
 	void CalculateSongLabelSize ()

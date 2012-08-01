@@ -254,13 +254,14 @@ public class MainMenu : MonoBehaviour {
 	/// <summary>
 	/// Button handler for "Story" button
 	/// </summary>
-	private void OnStoryButtonClicked() {
+	private void OnTutorialButtonClicked() {
 //		Game.Song = "LG-F1";
 //		AudioManager.artist = "Dan & Frank Johansen";
 //		AudioManager.title = "LG-F1";
 		
 //		Game.GameMode = Game.Mode.Story;
-		OnArcadeButtonClicked();
+		Game.GameMode = Game.Mode.Tutorial;
+		Application.LoadLevel("LoadScreen");
 	}
 	#endregion
 
