@@ -71,13 +71,6 @@ public class Player : MonoBehaviour, PeakListener {
 			if (Input.GetMouseButtonDown(0))
 				clickOnScreen();
 
-			int newMultiplier = (KillStreakCounter / multiplierKillDivisor) + 1;
-			//Debug.Log(KillStreakCounter + " : " + newMultiplier);
-			// Update the multiplier if it should increase and it's not larger than max multiplier
-			if (newMultiplier > multiplier && newMultiplier <= maxMultiplier)
-				IncrementMultiplier();
-
-
 			//If you have the invincibility, singleColor or chainPulse powerups, increment its personal timer
 			if (Game.PowerupActive == Game.Powerups.Invincible ||
 			   Game.PowerupActive == Game.Powerups.ChainReaction) {
@@ -302,15 +295,18 @@ public class Player : MonoBehaviour, PeakListener {
 	}
 
 	public static int IncrementScore(int value) {
+		
+		UpdateMultiplier();
+		
 		int scoreIncrement = value * multiplier;
 		score += scoreIncrement;
 		HUD.UpdateScore();
 		return scoreIncrement;
 	}
 
-	public static void IncrementMultiplier() {
+	public static void UpdateMultiplier() {
 		multiplier = (KillStreakCounter / multiplierKillDivisor) + 1;
-		//multiplier = Mathf.Clamp(multiplier, 1, 20);
+		if(multiplier > maxMultiplier) multiplier = maxMultiplier;
 		HUD.UpdateMultiplier();
 	}
 

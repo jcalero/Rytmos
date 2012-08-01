@@ -201,6 +201,7 @@ public class MainMenu : MonoBehaviour {
 		arcadeButtonActive = true;
 		if (arcadeButtonActive) {
 #if !UNITY_WEBPLAYER
+			Game.GameMode = Game.Mode.Arcade;
 			FadeOutMenu();
 			ChangeMenu(MenuLevel.FileBrowser);
 			if (!string.IsNullOrEmpty(Game.Path)) FileBrowser.SendMessage("OpenFileWindow", PlayerPrefs.GetString("filePath"));
