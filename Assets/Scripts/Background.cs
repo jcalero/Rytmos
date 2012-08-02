@@ -3,167 +3,132 @@ using System.Collections;
 
 public class Background : MonoBehaviour, PeakListener {
 
-    #region Fields
-	public GameObject backgroundObject;
-	private float originalBGX;
-	private float originalBGY;
-	private float enhancedBGX;
-	private float enhancedBGY;
+	#region Fields
+	public GameObject[] HexagonObjects;
+	public UIAtlas GameAtlas;
+	public LinkedSpriteManager BGSpriteManager;
+	private float[] originalBGX;
+	private float[] originalBGY;
+	private float[] enhancedBGX;
+	private float[] enhancedBGY;
 	private bool bgIncrease;
-	
-	private float originalSpotLightX;
-	private float originalSpotLightY;
-	private float enhancedSpotLightX;
-	private float enhancedSpotLightY;
-	private bool spotLightIncrease;
-	
-    private float timer;
+	private float[] spriteValues = new float[6];
+
+	private float timer;
 	private float lastTime;
-    float directionU;
-    float directionV;
+	float directionU;
+	float directionV;
 	private static float intensity;
 	private static float targetIntensity;
 	private static float decay;
 	private static bool increase;
-    #endregion
+	#endregion
 
-    #region Functions
+	#region Functions
+	void Awake() {
+		spriteValues = SpriteTools.CalculateSprite(GameAtlas, "bgHexagon");
+		for (int cnt = 0; cnt < HexagonObjects.Length; cnt++ )
+			BGSpriteManager.AddSprite(HexagonObjects[cnt], spriteValues[0], spriteValues[1], (int)spriteValues[2], (int)spriteValues[3], (int)spriteValues[4], (int)spriteValues[5], false);
+		originalBGX = new float[HexagonObjects.Length];
+		originalBGY = new float[HexagonObjects.Length];
+		enhancedBGX = new float[HexagonObjects.Length];
+		enhancedBGY = new float[HexagonObjects.Length];
+	}
 
-    void Start() {
-		changeDirectionOfShader();
+	void Start() {
 		intensity = 0.1f;
 		targetIntensity = intensity;
 		increase = false;
 		decay = 0.01f;
 		lastTime = Time.realtimeSinceStartup;
 		PeakTriggerManager.addSelfToListenerList(this);
-		
-		originalBGX = backgroundObject.transform.localScale.x;
-		originalBGY = backgroundObject.transform.localScale.y;
-		enhancedBGX = originalBGX + (0.1f * originalBGX);
-		enhancedBGY = originalBGY + (0.1f * originalBGY);
+
+		originalBGX[0] = HexagonObjects[0].transform.localScale.x;
+		originalBGY[0] = HexagonObjects[0].transform.localScale.y;
+		originalBGX[1] = HexagonObjects[1].transform.localScale.x;
+		originalBGY[1] = HexagonObjects[1].transform.localScale.y;
+		originalBGX[2] = HexagonObjects[2].transform.localScale.x;
+		originalBGY[2] = HexagonObjects[2].transform.localScale.y;
+		enhancedBGX[0] = originalBGX[0] + (0.1f * originalBGX[0]);
+		enhancedBGY[0] = originalBGY[0] + (0.1f * originalBGY[0]);
+		enhancedBGX[1] = originalBGX[1] + (0.1f * originalBGX[1]);
+		enhancedBGY[1] = originalBGY[1] + (0.1f * originalBGY[1]);
+		enhancedBGX[2] = originalBGX[2] + (0.1f * originalBGX[2]);
+		enhancedBGY[2] = originalBGY[2] + (0.1f * originalBGY[2]);
 		bgIncrease = false;
-		
-//		originalSpotLightX = 0.8f;
-//		originalSpotLightY = 0.8f;
-//		enhancedSpotLightX = 0.6f;
-//		enhancedSpotLightY = 0.6f;
-//		spotLightIncrease = false;
-//      	renderer.lightmapTilingOffset = new Vector4(enhancedSpotLightX,enhancedSpotLightY,renderer.lightmapTilingOffset.z,renderer.lightmapTilingOffset.w);
-    }
 
-    void Update() {
+	}
 
-        timer += Time.deltaTime;
-		
-		if(timer > 0.05) {
-			if(targetIntensity > intensity && increase) {
-				intensity *= 1+decay+(targetIntensity - intensity);
-			}
-			else {
+	void Update() {
+
+		timer += Time.deltaTime;
+
+		if (timer > 0.05) {
+			if (targetIntensity > intensity && increase) {
+				intensity *= 1 + decay + (targetIntensity - intensity);
+			} else {
 				increase = false;
-				intensity *= (1-decay);
+				intensity *= (1 - decay);
 			}
 			timer = 0f;
 		}
-		if(intensity < 0.05f) intensity = 0.05f;		
+		if (intensity < 0.05f) intensity = 0.05f;
 
-        float rateU = intensity * Time.deltaTime * 10;
-        float rateV = intensity * Time.deltaTime * 10;
 
-//      Vector2 spotLightScale = calculateSpotLightScale();
-//		Debug.Log("x: " + spotLightScale.x + "; y: " + spotLightScale.y);
-//      	renderer.lightmapTilingOffset = new Vector4(spotLightScale.x,spotLightScale.y,renderer.lightmapTilingOffset.z,renderer.lightmapTilingOffset.w);
-		
-//		float z = renderer.lightmapTilingOffset.z - renderer.bounds.center.x;
-//		float w = renderer.lightmapTilingOffset.w - renderer.bounds.center.y;
-//		renderer.lightmapTilingOffset = new Vector4(spotLightScale.x,spotLightScale.y,0f,0f);
-		
-		renderer.lightmapTilingOffset = new Vector4(renderer.lightmapTilingOffset.x, renderer.lightmapTilingOffset.y, renderer.lightmapTilingOffset.z + rateU * directionU, renderer.lightmapTilingOffset.w + rateV * directionV);
-		
-		backgroundObject.transform.localScale = calculateBackgroundSize();
-    }
-	
+		HexagonObjects[0].transform.Rotate(0, 0, Time.deltaTime * 10);
+		HexagonObjects[1].transform.Rotate(0, 0, -Time.deltaTime * 7);
+		HexagonObjects[2].transform.Rotate(0, 0, Time.deltaTime * 5);
+		HexagonObjects[0].transform.localScale = calculateBackgroundSize(0);
+		HexagonObjects[1].transform.localScale = calculateBackgroundSize(1);
+		HexagonObjects[2].transform.localScale = calculateBackgroundSize(2);
+	}
+
 	public void onPeakTrigger(int channel, int intensity) {
-		switch(channel) {
-		case 0:
-			targetIntensity = intensity/100f;
-			increase = true;
-			float timeDiff = Time.realtimeSinceStartup - lastTime;
-			lastTime = Time.realtimeSinceStartup;
-			if(timeDiff > 1f) timeDiff = 1f;
-			else if(timeDiff < 0.1f) timeDiff = 0.1f;
-			decay = timeDiff;
-			break;
-		case 3:
-			changeDirectionOfShader();
-			break;
-		default:
-			break;
+		switch (channel) {
+			case 0:
+				targetIntensity = intensity / 100f;
+				increase = true;
+				float timeDiff = Time.realtimeSinceStartup - lastTime;
+				lastTime = Time.realtimeSinceStartup;
+				if (timeDiff > 1f) timeDiff = 1f;
+				else if (timeDiff < 0.1f) timeDiff = 0.1f;
+				decay = timeDiff;
+				break;
+			case 3:
+				break;
+			default:
+				break;
 		}
-		
-	
+
+
 	}
-	public void setLoudFlag (int flag) {}
-	
-	private void changeDirectionOfShader() {
-		directionU = Random.Range(-1f, 1f);
-        directionV = Random.Range(-1f, 1f);
-		if(directionU == 0 && directionV == 0) directionU = 1f;
-	}
-	
-	private Vector3 calculateBackgroundSize() {
-		float x = backgroundObject.transform.localScale.x;
-		float y = backgroundObject.transform.localScale.y;
-		
-		if(increase) {
-			x *= 1+(intensity * Time.deltaTime * 0.125f);
-			y *= 1+(intensity * Time.deltaTime * 0.125f);
-		} else if((x < enhancedBGX || y < enhancedBGY) && bgIncrease) {
-			x *= 1+(intensity * Time.deltaTime * 0.08f);
-			y *= 1+(intensity * Time.deltaTime * 0.08f);
-		} else if((x > enhancedBGX || y > enhancedBGY) && bgIncrease) {
-			x = enhancedBGX;
-			y = enhancedBGY;
+	public void setLoudFlag(int flag) { }
+
+	private Vector3 calculateBackgroundSize(int index) {
+		float y = HexagonObjects[index].transform.localScale.y;
+		float x = HexagonObjects[index].transform.localScale.x;
+
+		if (increase) {
+			x *= 1 + (intensity * Time.deltaTime * 1.8f);
+			y *= 1 + (intensity * Time.deltaTime * 1.8f);
+		} else if ((x < enhancedBGX[index] || y < enhancedBGY[index]) && bgIncrease) {
+			x *= 1 + (intensity * Time.deltaTime * 0.6f);
+			y *= 1 + (intensity * Time.deltaTime * 0.6f);
+		} else if ((x > enhancedBGX[index] || y > enhancedBGY[index]) && bgIncrease) {
+			x = enhancedBGX[index];
+			y = enhancedBGY[index];
 			bgIncrease = false;
-		} else if(!bgIncrease) {
-			x *= 1-(intensity * Time.deltaTime * 0.25f);
-			y *= 1-(intensity * Time.deltaTime * 0.25f);
+		} else if (!bgIncrease) {
+			x *= 1 - (intensity * Time.deltaTime * 3.6f);
+			y *= 1 - (intensity * Time.deltaTime * 3.6f);
 		}
-		if(x < originalBGX || y < originalBGY) {
-			x = originalBGX;
-			y = originalBGY;
+		if (x < originalBGX[index] || y < originalBGY[index]) {
+			x = originalBGX[index];
+			y = originalBGY[index];
 			bgIncrease = true;
 		}
-		return new UnityEngine.Vector3(x,y,0f);
+
+		return new UnityEngine.Vector3(x, y, 0.3f);
 	}
-	
-	private Vector2 calculateSpotLightScale() {
-		
-		float x = renderer.lightmapTilingOffset.x;
-		float y = renderer.lightmapTilingOffset.y;
-		
-		if(increase) {
-			x *= 1-(intensity * Time.deltaTime * 5f);
-			y *= 1-(intensity * Time.deltaTime * 5f);
-		} else if((x > enhancedSpotLightX || y > enhancedSpotLightY) && spotLightIncrease) {
-			x *= 1-(intensity * Time.deltaTime * 3f);
-			y *= 1-(intensity * Time.deltaTime * 3f);
-		} else if((x < enhancedSpotLightX || y < enhancedSpotLightY) && spotLightIncrease) {
-			x = enhancedSpotLightX;
-			y = enhancedSpotLightY;
-			spotLightIncrease = false;
-		} else if(!bgIncrease) {
-			x *= 1+(intensity * Time.deltaTime * 10f);
-			y *= 1+(intensity * Time.deltaTime * 10f);
-		}
-		if(x > originalSpotLightX || y > originalSpotLightY) {
-			x = originalSpotLightX;
-			y = originalSpotLightY;
-			spotLightIncrease = true;
-		}
-		
-		return new Vector2(x,y);
-	}
-    #endregion
+	#endregion
 }

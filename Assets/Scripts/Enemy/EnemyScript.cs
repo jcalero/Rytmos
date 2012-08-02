@@ -14,11 +14,11 @@ public class EnemyScript : MonoBehaviour,PeakListener {
 	public ParticleSystem TrailParticles;
 	public GameObject PulsePrefab;		// Inspector reference. Location: Enemy[Type]Prefab.
 	public GameObject SecondPulseColl;		// Inspector reference. Location: Enemy[Type]Prefab.
-
+	public LinkedSpriteManager spriteManager;
 
 	// Protected values with access from its descendants
 	protected UIAtlas SpriteAtlas;
-	protected LinkedSpriteManager spriteManager;
+	//protected LinkedSpriteManager spriteManager;
 	protected Sprite enemyCircle;
 	protected float minSpeed;           // The minimum random speed of the enemy
 	protected float maxSpeed;           // The maximum random speed of the enemy
@@ -35,6 +35,7 @@ public class EnemyScript : MonoBehaviour,PeakListener {
 	protected int height;
 	protected float UVHeight = 1f;
 	protected float UVWidth = 1f;
+
 	protected float loudFlag;
 
 	private bool givenScore;			// Has the enemy given its score upon death?
@@ -59,7 +60,7 @@ public class EnemyScript : MonoBehaviour,PeakListener {
 		spawnInvincible = true;
 		givenDespawn = false;
 		givenScore = false;
-		spriteManager = GameObject.Find("EnemySpawner").GetComponent<LinkedSpriteManager>();
+		spriteManager = GameObject.Find("GameAtlas").GetComponent<LinkedSpriteManager>();
 		SetPositionAndSpeed();
 		if (Level.fourColors) colors = new Color[] { Color.red, Color.cyan, Color.blue, Color.yellow };
 		if(Game.GameMode == Game.Mode.Casual) baseSpeed = 1.5f;

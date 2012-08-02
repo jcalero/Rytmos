@@ -6,134 +6,167 @@ using System.Collections;
 /// Handles the pulse animation, color and events.
 /// </summary>
 public class PulseSender : MonoBehaviour {
-    public float Radius;                            // The radius of he pulse
-    public float CurrentHealth;                     // Current health of the pulse
+	public float Radius;                            // The radius of he pulse
+	public float CurrentHealth;                     // Current health of the pulse
 	public Color CurrentColor;						// Currently selected color (discrete values)
 	public Color SecondaryColor;					// Used for the boundaries between discrete color selection to determine a hit
-    public float MaxHealth = 6;                     // Max health of the pulse
+	public float MaxHealth = 6;                     // Max health of the pulse
+	Camera SuperPulseCamera;
 
-    private int segments = 80;                      // The nr of segments the pulse has. Fewer means less "smooth".
-    private LineRenderer line;                      // The line renderer that creates the pulse
-    private SphereCollider sphereColl;              // The collider attatched to the pulse
-    private bool held;                              // Flag for whether the player is keeping his pulse "active"
-    private Color finalColor = Color.clear;         // The final color of the pulse once the player releases his finger
-    private float pulseMax;                         // Maximum range of the pulse
-    private float timer = 0;                        // Timer for energy cost when retracting the pulse
-    private float pulseBackEnergyRate = 0.1f;       // The rate at which the pulse retraction reduces energy. Lower = higher rate.
+	private int segments = 80;                      // The nr of segments the pulse has. Fewer means less "smooth".
+	private LineRenderer line;                      // The line renderer that creates the pulse
+	private SphereCollider sphereColl;              // The collider attatched to the pulse
+	private bool held;                              // Flag for whether the player is keeping his pulse "active"
+	private Color finalColor = Color.clear;         // The final color of the pulse once the player releases his finger
+	private float pulseMax;                         // Maximum range of the pulse
+	private float timer = 0;                        // Timer for energy cost when retracting the pulse
+	private float pulseBackEnergyRate = 0.1f;       // The rate at which the pulse retraction reduces energy. Lower = higher rate.
+	float flashTimer = 1f;
+	float flashTimerMax = 1f;
+	bool isFlashingScreen;
 
-    void Start() {
-        held = true;
-        Radius = .4f;
-        line = gameObject.GetComponent<LineRenderer>();
-        line.SetVertexCount(segments + 1);
-        line.useWorldSpace = false;
-        line.material.color = finalColor;
-        CurrentHealth = EnemySpawnScript.spawnerCounter+1;
+	void Awake() {
+		SuperPulseCamera = GameObject.Find("3DCamera").camera;
+	}
+
+	void Start() {
+		held = true;
+		Radius = .4f;
+		line = gameObject.GetComponent<LineRenderer>();
+		line.SetVertexCount(segments + 1);
+		line.useWorldSpace = false;
+		line.material.color = finalColor;
+		CurrentHealth = EnemySpawnScript.spawnerCounter+1;
 		CurrentColor = Color.clear;
-        float lineWidth = CurrentHealth / 10;
-        line.SetWidth(lineWidth, lineWidth);
+		float lineWidth = CurrentHealth / 10;
+		line.SetWidth(lineWidth, lineWidth);
 
-        sphereColl = gameObject.GetComponent<SphereCollider>();
+		sphereColl = gameObject.GetComponent<SphereCollider>();
 
-        //Find distance for the maximum radius
-        pulseMax = new Vector2(Game.screenLeft, Game.screenTop).magnitude;
+		//Find distance for the maximum radius
+		pulseMax = new Vector2(Game.screenLeft, Game.screenTop).magnitude;
 		gameObject.audio.volume = Game.EffectsVolume;
 
-    }
+	}
 
-    void Update() {
+	void Update() {
 		if(gameObject.transform.position!= new Vector3(0,0,0)) ChainPulse ();
 		else MainPulse ();
 
-    }
+	}
 	
 	void ChainPulse() {
 		Radius += 3 * Time.deltaTime;
 		RedrawPoints(finalColor);
-        line.material.color = finalColor;
-        sphereColl.radius = Radius + 0.1f;
+		line.material.color = finalColor;
+		sphereColl.radius = Radius + 0.1f;
 
-        //If too big, destroy itself
-        if (Radius > 1.5f || CurrentHealth == 0)
-            Destroy(gameObject);
+		//If too big, destroy itself
+		if (Radius > 1.5f || CurrentHealth == 0)
+			Destroy(gameObject);
 	}
 	
 	void MainPulse() {
 		//If holding the second finger, increase timer and decrease energy
-        if (Input.GetMouseButton(1) && held && CurrentColor != Color.white) {
-            timer += Time.deltaTime;
-            if (timer > pulseBackEnergyRate) {
-                if (Player.energy > 1)
-                    Player.energy--;
-                else {
-                    held = false;
-                    finalColor = Level.chunkyColorSelect(Input.mousePosition);
-                }
-                timer = 0;
-            }
-            Radius = Radius - 3 * Time.deltaTime;
-        } else
-            Radius = Radius + 3 * Time.deltaTime;
+		if (Input.GetMouseButton(1) && held && CurrentColor != Color.white) {
+			timer += Time.deltaTime;
+			if (timer > pulseBackEnergyRate) {
+				if (Player.energy > 1)
+					Player.energy--;
+				else {
+					held = false;
+					finalColor = Level.chunkyColorSelect(Input.mousePosition);
+				}
+				timer = 0;
+			}
+			Radius = Radius - 3 * Time.deltaTime;
+		} else
+			Radius = Radius + 3 * Time.deltaTime;
 
-        //If you have released the button, and the pulse is the current one, set it to be not held and set the Colour
-        if (Input.GetMouseButtonUp(0) && held) {
-            held = false;
-            finalColor = Level.chunkyColorSelect(Input.mousePosition);
+		//If you have released the button, and the pulse is the current one, set it to be not held and set the Colour
+		if (Input.GetMouseButtonUp(0) && held) {
+			held = false;
+			finalColor = Level.chunkyColorSelect(Input.mousePosition);
 			CurrentColor = Level.singleColourSelect(Input.mousePosition);
 			if(Game.PowerupActive==Game.Powerups.MassivePulse) {
 				finalColor = Color.white;
 				CurrentColor = Color.white;
 			}
 			
-        }
+		}
 
-        //What the colour should be - this is where the transition has to take place. 
-        Color chosen;
-        if (held) {
-            chosen = Level.chunkyColorSelect(Input.mousePosition);
+		//What the colour should be - this is where the transition has to take place. 
+		Color chosen;
+		if (held) {
+			chosen = Level.chunkyColorSelect(Input.mousePosition);
 			CurrentColor = Level.singleColourSelect(Input.mousePosition);
 			if(Game.PowerupActive==Game.Powerups.MassivePulse) {
 				chosen = Color.white;
 				CurrentColor = Color.white;
 			}
 		} else 
-            chosen = finalColor;
+			chosen = finalColor;
 		
-
+		//Super pulse effect
+		if (Game.PowerupActive == Game.Powerups.MassivePulse && !isFlashingScreen) StartCoroutine(FlashScreen());
 		
 		//Select the secondary color
 		if(held) SecondaryColor = Level.secondaryColourSelect(Input.mousePosition);
 		
-        //Create the circle, and set the line material
-        RedrawPoints(chosen);
-        line.material.color = chosen;
-        sphereColl.radius = Radius + 0.1f;
+		//Create the circle, and set the line material
+		RedrawPoints(chosen);
+		line.material.color = chosen;
+		sphereColl.radius = Radius + 0.1f;
 
-        //If too big, destroy itself
-        if (Radius > pulseMax || (Radius < .3f) || CurrentHealth == 0)
-            Destroy(gameObject);
+		//If too big, destroy itself
+		if (Radius > pulseMax || (Radius < .3f) || CurrentHealth == 0) {
+			SuperPulseCamera.backgroundColor = Color.black;
+			Destroy(gameObject);
+		}
 	}
 
-    void OnTriggerExit(Collider otherObject) {
-        if (otherObject.GetType() == typeof(BoxCollider) && Game.PowerupActive != Game.Powerups.MassivePulse) {
-            if(!(Game.GameMode == Game.Mode.Casual)) CurrentHealth--;
-            if (CurrentHealth == 0)
-                Destroy(gameObject);
-        }
-    }
+	IEnumerator FlashScreen() {
+		isFlashingScreen = true;
+		if (flashTimer > 0) {
+			//Debug.Log("Increasing camera color");
+			if (flashTimer < (flashTimerMax / 2)) {
+				SuperPulseCamera.backgroundColor = new Color(SuperPulseCamera.backgroundColor.r - (0.3f * Time.deltaTime),
+					SuperPulseCamera.backgroundColor.g - (0.3f * Time.deltaTime),
+					SuperPulseCamera.backgroundColor.b - (0.3f * Time.deltaTime));
+				flashTimer -= Time.deltaTime;
+			} else {
+				SuperPulseCamera.backgroundColor = new Color(SuperPulseCamera.backgroundColor.r + (0.3f * Time.deltaTime),
+					SuperPulseCamera.backgroundColor.g + (0.3f * Time.deltaTime),
+					SuperPulseCamera.backgroundColor.b + (0.3f * Time.deltaTime));
+				flashTimer -= Time.deltaTime;
+			}
+		}
+		if (flashTimer <= 0) {
+			flashTimer = flashTimerMax;
+		}
+		yield return 0;
+	}
 
-    // Reduce pulse health if it collides with another object
-    void OnTriggerEnter(Collider otherObject) {
-        if (otherObject.GetType() == typeof(SphereCollider) && CurrentColor != Color.white) {
-            if(Game.GameMode != Game.Mode.Casual) CurrentHealth--;
+	void OnTriggerExit(Collider otherObject) {
+		if (otherObject.GetType() == typeof(BoxCollider) && Game.PowerupActive != Game.Powerups.MassivePulse) {
+			if(!(Game.GameMode == Game.Mode.Casual)) CurrentHealth--;
+			if (CurrentHealth == 0)
+				Destroy(gameObject);
+		}
+	}
+
+	// Reduce pulse health if it collides with another object
+	void OnTriggerEnter(Collider otherObject) {
+		if (otherObject.GetType() == typeof(SphereCollider) && CurrentColor != Color.white) {
+			if(Game.GameMode != Game.Mode.Casual) CurrentHealth--;
 			else if(otherObject.gameObject.GetComponent<EnemyScript>().MainColor == CurrentColor || 
 					otherObject.gameObject.GetComponent<EnemyScript>().MainColor == SecondaryColor)
 				CurrentHealth--;
-            if (CurrentHealth == 0) {
-                Destroy(gameObject);
-            }
-        }
-    }
+			if (CurrentHealth == 0) {
+				Destroy(gameObject);
+			}
+		}
+	}
 	
 	public void SetFinalColor(Color c) {
 		finalColor = c;
@@ -142,30 +175,30 @@ public class PulseSender : MonoBehaviour {
 		CurrentHealth = 1;
 	}
 	
-    /// <summary>
-    ///  Recalculates point positions
-    /// </summary>
-    /// <param name="c">Color of the points/line</param>
-    void RedrawPoints(Color c) {
-        float x;
-        float y;
-        float z = 0f;
-        float angle = 0f;
+	/// <summary>
+	///  Recalculates point positions
+	/// </summary>
+	/// <param name="c">Color of the points/line</param>
+	void RedrawPoints(Color c) {
+		float x;
+		float y;
+		float z = 0f;
+		float angle = 0f;
 
-        for (int i = 0; i < (segments + 1); i++) {
-            x = Mathf.Sin(Mathf.Deg2Rad * angle);
-            y = Mathf.Cos(Mathf.Deg2Rad * angle);
-            line.SetPosition(i, new Vector3(x, y, z) * Radius);
-            line.SetColors(new Color(c.r, c.g, c.b, ((CurrentHealth / MaxHealth) * .3f) + .3f), new Color(c.r, c.g, c.b, ((CurrentHealth / MaxHealth) * .3f) + .3f));
-            line.material.SetColor("_Emission", new Color(c.r, c.g, c.b, c.a / 3));
+		for (int i = 0; i < (segments + 1); i++) {
+			x = Mathf.Sin(Mathf.Deg2Rad * angle);
+			y = Mathf.Cos(Mathf.Deg2Rad * angle);
+			line.SetPosition(i, new Vector3(x, y, z) * Radius);
+			line.SetColors(new Color(c.r, c.g, c.b, ((CurrentHealth / MaxHealth) * .3f) + .3f), new Color(c.r, c.g, c.b, ((CurrentHealth / MaxHealth) * .3f) + .3f));
+			line.material.SetColor("_Emission", new Color(c.r, c.g, c.b, c.a / 3));
 			float lineWidth = (CurrentHealth / 10) + 0.5f;
 			//float lineWidth = MaxHealth / 5;
-            if (lineWidth < .2f)
-                lineWidth += .05f;
+			if (lineWidth < .2f)
+				lineWidth += .05f;
 
-            line.SetWidth(lineWidth, lineWidth);
+			line.SetWidth(lineWidth, lineWidth);
 			//angle += (720f / segments - (720f / segments * 0.01f));
 			angle += (720f / segments);
 		}
-    }
+	}
 }
