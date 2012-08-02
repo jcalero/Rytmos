@@ -39,8 +39,15 @@ public class AudioPlayer : MonoBehaviour
 		AudioManager.audioLength = audioSource.clip.length;
 		AudioManager.frequency = audioSource.clip.frequency;
 #else
-		audioSource = gameObject.GetComponentInChildren<AudioSource> (); // get references to audiosources
-		audioSource.clip = AudioManager.getAudioClip ();
+		if(Game.GameMode != Game.Mode.Tutorial) {
+			audioSource = gameObject.GetComponentInChildren<AudioSource> (); // get references to audiosources
+			audioSource.clip = AudioManager.getAudioClip ();
+		} else {
+			AudioSource[] audioSources = gameObject.GetComponentsInChildren<AudioSource> (); // get references to audiosources
+			audioSource = audioSources[0];
+			AudioManager.audioLength = audioSource.clip.length;
+			AudioManager.frequency = audioSource.clip.frequency;
+		}
 #endif
 		isPlaying = false;
 		timer = 0;

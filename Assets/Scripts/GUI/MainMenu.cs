@@ -260,7 +260,15 @@ public class MainMenu : MonoBehaviour {
 //		AudioManager.title = "LG-F1";
 		
 //		Game.GameMode = Game.Mode.Story;
+		
+		Game.Song = "Tutorial";
+		AudioManager.artist = "Luke Stark";
+		AudioManager.title = "The Price Of Victory";
 		Game.GameMode = Game.Mode.Tutorial;
+		
+		StartCoroutine(AudioManager.initMusic(""));
+		while(!AudioManager.isSongLoaded()) {}
+		
 		Application.LoadLevel("LoadScreen");
 	}
 	#endregion

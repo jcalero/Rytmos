@@ -45,6 +45,7 @@ public static class AudioManager
 	public static IEnumerator initMusic (string pathToMusicFile)
 	{
 		songLoaded = false;
+		tagDataSet = false;
 		loadingProgress = 0;
 		// If the cam object has been set, analyze the music file which is loaded as the background music in unity
 		// May be useful for the story mode
@@ -56,7 +57,15 @@ public static class AudioManager
 		currentlyLoadedSong = "xXBACKgroundMUSICXx";
 		yield break;
 #else	
-		tagDataSet = false;
+		if(Game.GameMode == Game.Mode.Tutorial) {
+			peaks = TutorialRytData.getPeaks();
+			loudPartTimeStamps = TutorialRytData.getLoudFlags();
+			variationFactor = TutorialRytData.getVariationFactor();
+			songLoaded = true;
+			currentlyLoadedSong = "xXBACKgroundMUSICXx";
+			tagDataSet = true;
+			yield break;
+		}
 		// Read Audio Data/Initialize everything to read on the fly
 		float start = Time.realtimeSinceStartup;
 		if(freader!=null) {
