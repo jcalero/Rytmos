@@ -158,7 +158,7 @@ public class PulseSender : MonoBehaviour {
 	// Reduce pulse health if it collides with another object
 	void OnTriggerEnter(Collider otherObject) {
 		if (otherObject.GetType() == typeof(SphereCollider) && CurrentColor != Color.white) {
-			if(Game.GameMode != Game.Mode.Casual) CurrentHealth--;
+			if(Game.GameMode != Game.Mode.Casual && Game.GameMode != Game.Mode.Tutorial) CurrentHealth--;
 			else if(otherObject.gameObject.GetComponent<EnemyScript>().MainColor == CurrentColor || 
 					otherObject.gameObject.GetComponent<EnemyScript>().MainColor == SecondaryColor)
 				CurrentHealth--;
