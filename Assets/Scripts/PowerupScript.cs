@@ -61,24 +61,22 @@ public class PowerupScript : MonoBehaviour {
 			Player.takenPowerup = false;
 		}
 		
+		if(DevScript.devModeAccess) {
+			if(Input.GetKeyDown(KeyCode.Z))
+				spawnPowerupOnScreen(0);
+			if(Input.GetKeyDown(KeyCode.X))
+				spawnPowerupOnScreen (1);
+			if(Input.GetKeyDown(KeyCode.C))
+				spawnPowerupOnScreen (2);
+		}
 		//Check the timer		
 		if(powerUpTimer > totalTimer) {
 			//If the powerup is spawned (on the screen), remove it
 			if(spawned) {
 				moveSprite(new Vector3(20,20, 0));
 				spawned = false;
-			}
-			
-			//If the powerup is not on the screen, move it to a random position and set the timer to be the screenTime
-			else {
-				Vector3 spawnPos = randomPos();
-				//Here, we assign the powerup - this will be moved below once we have graphics
-				int choice = Random.Range(0,3);
-				moveSprite(spawnPos,setPowerup(choice));
-				spawned = true;
-				totalTimer = screenTime;
-				gameObject.audio.Play();
-			}
+			} else 
+				spawnPowerupOnScreen();
 			powerUpTimer = 0;
 		}
 		
@@ -111,6 +109,37 @@ public class PowerupScript : MonoBehaviour {
 	private void moveSprite(Vector3 movePos) {
 		gameObject.transform.localPosition = movePos;
 		Level.SetUpParticlesFeedback(4, movePos);
+	}
+	
+	private void spawnPowerupOnScreen() {
+		Vector3 spawnPos = randomPos();
+		//Here, we assign the powerup - this will be moved below once we have graphics
+		int choice = Random.Range(0,3);
+		moveSprite(spawnPos,setPowerup(choice));
+		spawned = true;
+		totalTimer = screenTime;
+		gameObject.audio.Play();	
+	}
+	
+	public void spawnPowerupOnScreen(int choice) {
+		Vector3 spawnPos = randomPos();
+		//Here, we assign the powerup - this will be moved below once we have graphics
+		if(choice > 2 || choice < 0) 
+			choice = 0;
+		moveSprite(spawnPos,setPowerup(choice));
+		spawned = true;
+		totalTimer = screenTime;
+		gameObject.audio.Play();		
+	}
+	
+	public void spawnPowerupOnScreen(int choice, Vector3 spawnPos) {
+		//Here, we assign the powerup - this will be moved below once we have graphics
+		if(choice > 2 || choice < 0) 
+			choice = 0;
+		moveSprite(spawnPos,setPowerup(choice));
+		spawned = true;
+		totalTimer = screenTime;
+		gameObject.audio.Play();		
 	}
 	
 	private void moveSprite(Vector3 movePos, Color c) {

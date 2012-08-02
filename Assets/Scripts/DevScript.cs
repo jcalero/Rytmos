@@ -8,6 +8,7 @@ using System.Collections;
 public class DevScript : MonoBehaviour {
     #region Fields
 	public GameObject powerup;
+	public static bool devModeAccess = false;
 	
     // TODO: Refactor this to something cleaner. Maybe an enum + case switch.
     private bool devMode1 = false;          // Flag: God mode
@@ -59,10 +60,12 @@ public class DevScript : MonoBehaviour {
             }
 			
 			if (Input.GetKeyDown(KeyCode.P) && !devMode2) {
-				Debug.Log ("Powerup Mode Enabled");			
+				Debug.Log ("Powerup Mode Enabled");
+				devModeAccess = true;
 				devMode2 = true;
 			} else if(Input.GetKeyDown(KeyCode.P) && devMode2) {
 				Debug.Log ("Powerup Mode Disabled");
+				devModeAccess = false;
 				devMode2 = false;
 				Game.PowerupActive = Game.Powerups.None;
 			}
@@ -100,7 +103,6 @@ public class DevScript : MonoBehaviour {
 				}
 				Debug.Log ("Massive pulse powerup");
 			}
-			
 
             // Mega Swarm
             if (Input.GetKeyDown(KeyCode.Alpha3) && !devMode3) {
