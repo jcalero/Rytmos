@@ -44,12 +44,12 @@ public class DevScript : MonoBehaviour {
             if (Input.GetKeyDown(KeyCode.Alpha1) && !devMode1) {
                 Debug.Log("God Mode Enabled");
                 devMode1 = true;
-                Player.energy = 100000;
+                Player.Energy = 100000;
                 Player.maxEnergy = 100000;
             } else if (Input.GetKeyDown(KeyCode.Alpha1) && devMode1) {
                 Debug.Log("God Mode Disabled");
                 devMode1 = false;
-                Player.energy = Player.startEnergy;
+                Player.Energy = Player.startEnergy;
                 Player.maxEnergy = Player.startEnergy;
             }
 
@@ -139,7 +139,7 @@ public class DevScript : MonoBehaviour {
     void DisableAll() {
         enemySpawner.SpawnRate = originalSpawnRate;
         enemySpawner.RestartSpawner();
-        Player.energy = Player.startEnergy;
+        Player.Energy = Player.startEnergy;
         Player.maxEnergy = Player.startEnergy;
         devMode1 = false;
         devMode3 = false;

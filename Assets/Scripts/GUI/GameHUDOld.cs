@@ -50,7 +50,7 @@ public class GameHUDOld : MonoBehaviour {
 
     void Update() {
         ScoreValueLabel.text = "[FDD017]" + Player.score;
-        EnergyValueLabel.text = "[736AFF]" + Player.energy;
+        EnergyValueLabel.text = "[736AFF]" + Player.Energy;
         if (Game.DevMode) {
             DevmodeLabel.gameObject.active = true;
         } else {

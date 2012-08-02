@@ -13,7 +13,7 @@ public class Player : MonoBehaviour, PeakListener {
 	public static int maxEnergy = 50;           // Maximum energy of the player
 	public static bool GodMode = false;         // God mode
 
-	public static int energy;                   // Current energy of the player
+	private static int energy;                   // Current energy of the player
 	public static int score;                    // Current score of the player
 	public static int multiplier = 1;			// Current multiplier of the player
 	private readonly static int multiplierKillDivisor = 6;	// Amount of enemies needed to kill before multiplier increases.
@@ -28,10 +28,12 @@ public class Player : MonoBehaviour, PeakListener {
 	public GameObject superPulsePrefab;			// The super pulse powerup. Inspector reference. Location: Player
 	public GameObject powerupPrefab; 			// The powerup. Inspector refernce. Location: PLayer
 	public GameObject powerupDisplay;			// The sprite to display in the center. Inspector reference. Location: Player
+	public UISprite energyBar;					// Energy bar, location: Player
 
 	private float energyTimer = 0;              // Timer for energy regeneration
 	private float pwTimer = 0;					// Timer for current invincibility duration
 	private readonly float pwTotalTime = 10f;	// Total time for invincibility to last
+	private int energyBarSize;
 
 	private bool glowAnimOut = false;			// Flag for starting glow animation
 	private bool glowAnimIn = false;			// Flag for second half of glow animation
@@ -49,9 +51,17 @@ public class Player : MonoBehaviour, PeakListener {
 	private MeshRenderer[] meshRenders = new MeshRenderer[3];
 	
 	private static AudioSource[] audioSources;
+
+	private static Player instance;
 	#endregion
 
 	#region Functions
+	void Awake() {
+		instance = this;
+		Debug.Log(energyBar.transform.localScale);
+		energyBarSize = (int)energyBar.transform.localScale.x;
+	}
+
 	void Start() {
 		audioSources = gameObject.GetComponentsInChildren<AudioSource>();
 		foreach(AudioSource AS in audioSources) AS.volume = Game.EffectsVolume;
@@ -86,8 +96,8 @@ public class Player : MonoBehaviour, PeakListener {
 
 			// Regenerate energy. 1 energy every 2 seconds.
 			energyTimer += Time.deltaTime;
-			if (energyTimer > energyRegenRate && energy < maxEnergy) {
-				energy++;
+			if (energyTimer > energyRegenRate && Energy < maxEnergy) {
+				Energy++;
 				energyTimer = 0;
 			}
 
@@ -98,6 +108,11 @@ public class Player : MonoBehaviour, PeakListener {
 			} else
 				showAnimRing(Color.white);
 		}
+	}
+
+	private void UpdateEnergyBar() {
+		if (instance.energyBar.gameObject != null)
+			instance.energyBar.transform.localScale = new Vector2(energyBarSize * ((float)Energy / (float)maxEnergy), instance.energyBar.transform.localScale.y);
 	}
 
 	public void clickOnScreen() {
@@ -135,12 +150,12 @@ public class Player : MonoBehaviour, PeakListener {
 				resetGlowTimers();
 				// Reduce the player energy if not a superpulse
 				if (Game.PowerupActive != Game.Powerups.MassivePulse) {
-					energy -= pulseCost;
+					Energy -= pulseCost;
 				} else {
 					//Only allow 1 superpulses
 					if (superPulseCount == 0) {
 						Game.PowerupActive = Game.Powerups.None;
-						energy -= pulseCost;
+						Energy -= pulseCost;
 					}
 				}
 			}
@@ -287,7 +302,7 @@ public class Player : MonoBehaviour, PeakListener {
 		score = startScore;
 		ResetMultiplier();
 		TotalKills = 0;
-		energy = startEnergy = maxEnergy;
+		Energy = startEnergy = maxEnergy;
 	}
 
 	public static int IncrementScore() {
@@ -330,6 +345,14 @@ public class Player : MonoBehaviour, PeakListener {
 
 	public static int MaxMultiplier {
 		get { return maxMultiplier; }
+	}
+
+	public static int Energy {
+		get { return energy; }
+		set { 
+			energy = value;
+			instance.UpdateEnergyBar();
+		}
 	}
 
 	public static int MultiplierKillDivisor {

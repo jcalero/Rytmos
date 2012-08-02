@@ -241,9 +241,9 @@ public class EnemyScript : MonoBehaviour,PeakListener {
 			Level.EnemiesDespawned++;
 			PeakTriggerManager.removeSelfFromListenerList(this);
 			if (Game.PowerupActive != Game.Powerups.MassivePulse) {
-				Player.energy += energyReturn;            // Return a bit of energy when the enemy is killed
-				if (Player.energy > Player.maxEnergy)     // Make sure energy is never more than maxEnergy
-					Player.energy = Player.maxEnergy;
+				Player.Energy += energyReturn;            // Return a bit of energy when the enemy is killed
+				if (Player.Energy > Player.maxEnergy)     // Make sure energy is never more than maxEnergy
+					Player.Energy = Player.maxEnergy;
 			}
 			if (!givenScore && !isPlayer) {
 				//Player.score += 10 * Player.multiplier;

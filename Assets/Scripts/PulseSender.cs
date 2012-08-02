@@ -71,8 +71,8 @@ public class PulseSender : MonoBehaviour {
 		if (Input.GetMouseButton(1) && held && CurrentColor != Color.white) {
 			timer += Time.deltaTime;
 			if (timer > pulseBackEnergyRate) {
-				if (Player.energy > 1)
-					Player.energy--;
+				if (Player.Energy > 1)
+					Player.Energy--;
 				else {
 					held = false;
 					finalColor = Level.chunkyColorSelect(Input.mousePosition);

@@ -5,8 +5,10 @@ public class Background : MonoBehaviour, PeakListener {
 
 	#region Fields
 	public GameObject[] HexagonObjects;
+	public ParticleSystem[] BGFireworks;
 	public UIAtlas GameAtlas;
 	public LinkedSpriteManager BGSpriteManager;
+
 	private float[] originalBGX;
 	private float[] originalBGY;
 	private float[] enhancedBGX;
@@ -14,10 +16,11 @@ public class Background : MonoBehaviour, PeakListener {
 	private bool bgIncrease;
 	private float[] spriteValues = new float[6];
 
+	private int[] channelRestrictors;
+	private int[] channelDivisors = new int[] { 1, 1, 16, 2, 2, 2 };
+
 	private float timer;
 	private float lastTime;
-	float directionU;
-	float directionV;
 	private static float intensity;
 	private static float targetIntensity;
 	private static float decay;
@@ -33,9 +36,11 @@ public class Background : MonoBehaviour, PeakListener {
 		originalBGY = new float[HexagonObjects.Length];
 		enhancedBGX = new float[HexagonObjects.Length];
 		enhancedBGY = new float[HexagonObjects.Length];
+		channelRestrictors = new int[AudioManager.peaks.Length];
 	}
 
 	void Start() {
+
 		intensity = 0.1f;
 		targetIntensity = intensity;
 		increase = false;
@@ -95,12 +100,22 @@ public class Background : MonoBehaviour, PeakListener {
 				decay = timeDiff;
 				break;
 			case 3:
+				if (channelRestrictors[channel] == 0) {
+					int chosenFireworks = Random.Range(0, BGFireworks.Length);
+					if (intensity > 15) {
+						BGFireworks[chosenFireworks].startSpeed = 2.5f;
+						BGFireworks[chosenFireworks].startLifetime = 1;
+					} else {
+						BGFireworks[chosenFireworks].startSpeed = 1.5f;
+						BGFireworks[chosenFireworks].startLifetime = 1.5f;
+					}
+					BGFireworks[chosenFireworks].Emit(30);
+				}
 				break;
 			default:
 				break;
 		}
-
-
+		channelRestrictors[channel] = (channelRestrictors[channel] + 1) % channelDivisors[channel];
 	}
 	public void setLoudFlag(int flag) { }
 
