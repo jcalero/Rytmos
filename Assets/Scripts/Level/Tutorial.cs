@@ -11,7 +11,12 @@ public class Tutorial : Level {
 	#region Fields
 	private static DeathMatch Instance;                                  // The Instance of this class for self reference
 
-	private float timer;
+	private float audioTimer;
+	private float waitTimer;
+	public static bool showFirstMessage;
+	public static bool showSecondMessage;
+	public static bool showThirdMessage;
+	
 
 	public UILabel SurviveLabel;
 	public UILabel invincibility;	
@@ -25,6 +30,12 @@ public class Tutorial : Level {
 	}
 
 	protected override void Start() {
+		showFirstMessage = false;
+		showSecondMessage = false;
+		showThirdMessage = false;
+		EnemySpawnScript.firstSpawn = false;
+		EnemySpawnScript.secondSpawn = false;
+		EnemySpawnScript.thirdSpawn = false;
 //		Game.GameMode = Game.Mode.Arcade;
 		Game.GameState = Game.State.Playing;
 		base.Start();
@@ -34,17 +45,37 @@ public class Tutorial : Level {
 		EnemyScript.energyReturn = 5;
 		//StartCoroutine(DelayLabel());
 		Debug.Log("GameMode: " + Game.GameMode);
+		audioTimer = 0;
+		
 	}
 
 	void Update() {
-		// Shows the "Survive!" label for 5 seconds
+		if(AudioPlayer.isPlaying)
+			audioTimer += Time.deltaTime;
 		
-		//If you invincible, display the words (TODO: Temporary fix, make more visual)
-		//if(Game.PowerupActive == Game.Powerups.Invincible) {
-		//    invincibility.enabled = true;
-		//} else {
-		//    invincibility.enabled = false;
-		//}
+		if(EnemySpawnScript.firstSpawn && !showFirstMessage) {
+			waitTimer += Time.deltaTime;
+			if(waitTimer > .75f) {
+				Game.Pause(true);
+				showFirstMessage = true;
+				waitTimer = 0;
+			}
+		} else if(EnemySpawnScript.secondSpawn && !showSecondMessage) {
+			waitTimer += Time.deltaTime;
+			if(waitTimer >.55f) {
+				Game.Pause (true);
+				showSecondMessage = true;
+				waitTimer = 0;
+			}
+		} else if(EnemySpawnScript.thirdSpawn && !showThirdMessage) {
+			waitTimer += Time.deltaTime;
+			if(waitTimer > .55f) {
+				Game.Pause (true);
+				showThirdMessage = true;
+				waitTimer = 0;
+			}
+		}
+		
 		
 	}
 

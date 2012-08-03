@@ -32,10 +32,14 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	public float loudFlag;
 	
 	private int spawnerNumber;
-	
 	public static int spawnerCounter;
-
 	private static EnemySpawnScript instance;
+	
+	//Tutorial crap
+	public static bool firstSpawn;
+	public static bool secondSpawn;
+	public static bool thirdSpawn;
+	private static bool done;
 	#endregion
 
 	#region Functions
@@ -44,13 +48,10 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	}
 
 	void Start() {
-		spawnerNumber = 0;
-		Game.SyncMode = true;
 		init ();		
 	}
 	
 	void Update() {
-		
 		timer += Time.deltaTime;
 		
 		if (timer >= audioLength){
@@ -87,6 +88,8 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		timers = new float[AudioManager.peaks.Length];
 		spawnRestrictors = new int[AudioManager.peaks.Length];
 		spawnDivisors = new int[]{1,1,8,2,2,2};
+		spawnerNumber = 0;
+		Game.SyncMode = true;
 		//spawnPositions = new int[]{40,90,35,85};
 		spawnPositions = new int[] { 0 };
 		spawnerCounter = 1;
@@ -98,6 +101,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		maxMag = new Vector2(Game.screenTop,Game.screenRight).magnitude;
 		if(Game.GameMode == Game.Mode.Casual) baseSpeed = 1.5f;
 		else baseSpeed = 2.5f;
+
 	}
 	
 	void updateSpawnPositions() {
@@ -155,10 +159,20 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 //						currMaxMag = findSpawnPositionVector(spawnPositions[spawnerNumber]+5).magnitude;
 //						if(currMaxMag > maxMag) maxMag = currMaxMag;
 					}
+					if(Game.GameMode == Game.Mode.Tutorial && !done) {
+						if(!firstSpawn) {
+							firstSpawn = true;
+						} else if(firstSpawn && !secondSpawn) {
+							secondSpawn = true;
+						} else if(firstSpawn && secondSpawn && !thirdSpawn) {
+							thirdSpawn = true;
+							done = true;
+						}
+					}
 					foreach(int spawnPosition in spawnPositions) {
 						Vector3 spawnDist = findSpawnPositionVector(spawnPosition);
 						float speed = calcSpeed();
-						if(Game.SyncMode) speed *= (spawnDist.magnitude)/maxMag;									
+						if(Game.SyncMode) speed *= (spawnDist.magnitude)/maxMag;
 						SpawnEnemy(currentlySelectedEnemy,speed,spawnDist);
 						spawnCount++;
 //						spawnDist = findSpawnPositionVector(spawnPositions[spawnerNumber]+5);

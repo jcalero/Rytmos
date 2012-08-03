@@ -7,7 +7,7 @@ using System.Collections;
 /// </summary>
 public class TutorialMenu : MonoBehaviour {
 	#region Fields
-	public UIPanel PausePanel;
+	public UIPanel TutorialPopup;
 
 	private static TutorialMenu instance;
 	#endregion
@@ -16,32 +16,27 @@ public class TutorialMenu : MonoBehaviour {
 	void Awake() {
 		instance = this;
 		//menuCamera = NGUITools.FindCameraForLayer(LayerMask.NameToLayer("Pause Menu"));
-		UITools.SetActiveState(PausePanel, false);
+		UITools.SetActiveState(TutorialPopup, false);
 	}
 
 	void Update() {
-		// Checks if the game state has been paused. Shows or hides the Pause menu.
-		//if (Game.Paused) {
-		//    Debug.Log("Pause");
-		//    UITools.SetActiveState(PausePanel, true);
-		//} else {
-		//    if (PausePanel.enabled) UITools.SetActiveState(PausePanel, false);
-		//}
+		
 	}
 
 	public static void Show() {
-		UITools.SetActiveState(instance.PausePanel, true);
+		UITools.SetActiveState(instance.TutorialPopup, true);
 	}
 
 	public static void Hide() {
-		UITools.SetActiveState(instance.PausePanel, false);
+		UITools.SetActiveState(instance.TutorialPopup, false);
 	}
 
 	/// <summary>
 	/// Button handler for "Resume" button
 	/// </summary>
 	void OnResumeClicked() {
-		Game.Resume();
+		Debug.Log ("Does this work?");
+		Game.Resume(true);
 	}
 
 	/// <summary>
@@ -56,6 +51,7 @@ public class TutorialMenu : MonoBehaviour {
 	}
 	
 	void OnRetryClicked() {
+		Debug.Log ("Does this work?");
 		// Call retry functionality
 	}
 
