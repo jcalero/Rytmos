@@ -1,17 +1,9 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Sound\AudioManager.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\PulseSender.cs">
     <Files>
-      <File FileName="Assets\Scripts\Game.cs" Line="328" Column="81" />
-      <File FileName="Assets\Scripts\PulseSender.cs" Line="121" Column="1" />
-      <File FileName="Assets\Scripts\Enemy\EnemyScript.cs" Line="49" Column="49" />
-      <File FileName="Assets\Scripts\Level\Level.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\GUI\PauseMenu.cs" Line="56" Column="3" />
-      <File FileName="Assets\Scripts\Level\Tutorial.cs" Line="15" Column="1" />
-      <File FileName="Assets\Scripts\GUI\TutorialMenu.cs" Line="59" Column="18" />
-      <File FileName="Assets\Scripts\GUI\MainMenu.cs" Line="266" Column="38" />
-      <File FileName="Assets\Scripts\GUI\LoadingUI.cs" Line="218" Column="1" />
-      <File FileName="Assets\Scripts\Sound\AudioManager.cs" Line="47" Column="22" />
+      <File FileName="Assets\Scripts\FloatingScorePool.cs" Line="36" Column="1" />
+      <File FileName="Assets\Scripts\PulseSender.cs" Line="160" Column="8" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

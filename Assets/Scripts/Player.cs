@@ -41,8 +41,8 @@ public class Player : MonoBehaviour, PeakListener {
 	private bool sentPulse = false;				// Flag for if you have sent a pulse
 	private bool sentPulseTwo = false;			// Second half of the pulse animation
 
-	private int pulseCost = 10;                 // Cost of a pulse
-	private float energyRegenRate = 0.5f;       // The rate at which the energy regenerates. Lower is faster.
+	private int pulseCost = 20;                 // Cost of a pulse
+	private float energyRegenRate = 0.1f;       // The rate at which the energy regenerates. Lower is faster.
 	private readonly int totalSuperpulses = 1;
 	private int superPulseCount;	// Counter for the amount of invincible pulses
 	private Game.Powerups playerpowerup;
