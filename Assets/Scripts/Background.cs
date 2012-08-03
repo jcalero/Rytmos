@@ -8,6 +8,7 @@ public class Background : MonoBehaviour, PeakListener {
 	public ParticleSystem[] BGFireworks;
 	public UIAtlas GameAtlas;
 	public LinkedSpriteManager BGSpriteManager;
+	public ParticleSystem[] FeedbackStars;
 
 	private float[] originalBGX;
 	private float[] originalBGY;
@@ -15,6 +16,12 @@ public class Background : MonoBehaviour, PeakListener {
 	private float[] enhancedBGY;
 	private bool bgIncrease;
 	private float[] spriteValues = new float[6];
+	
+	private float originalEmissionRate;
+	private float enhancedEmissionRate;
+	private float originalParticleSpeed;
+	private float enhancedParticleSpeed;
+	private bool[] particlesActive;
 
 	private int[] channelRestrictors;
 	private int[] channelDivisors = new int[] { 1, 1, 16, 2, 2, 2 };
@@ -25,6 +32,8 @@ public class Background : MonoBehaviour, PeakListener {
 	private static float targetIntensity;
 	private static float decay;
 	private static bool increase;
+	
+	private int lastSelectedEnemy;
 	#endregion
 
 	#region Functions
@@ -37,6 +46,7 @@ public class Background : MonoBehaviour, PeakListener {
 		enhancedBGX = new float[HexagonObjects.Length];
 		enhancedBGY = new float[HexagonObjects.Length];
 		channelRestrictors = new int[AudioManager.peaks.Length];
+		particlesActive = new bool[FeedbackStars.Length];
 	}
 
 	void Start() {
@@ -61,7 +71,11 @@ public class Background : MonoBehaviour, PeakListener {
 		enhancedBGX[2] = originalBGX[2] + (0.1f * originalBGX[2]);
 		enhancedBGY[2] = originalBGY[2] + (0.1f * originalBGY[2]);
 		bgIncrease = false;
-
+		
+		originalEmissionRate = FeedbackStars[0].emissionRate;
+		originalParticleSpeed = FeedbackStars[0].playbackSpeed;
+		enhancedEmissionRate = originalEmissionRate * 10f;
+		enhancedParticleSpeed = originalParticleSpeed * 10f;
 	}
 
 	void Update() {
@@ -87,6 +101,42 @@ public class Background : MonoBehaviour, PeakListener {
 		HexagonObjects[1].transform.localScale = calculateBackgroundSize(1);
 		HexagonObjects[2].transform.localScale = calculateBackgroundSize(2);
 	}
+	
+	private IEnumerator FlashStars(int enemy, int intensity) {
+		
+		float y = FeedbackStars[enemy].playbackSpeed;
+		float x = FeedbackStars[enemy].emissionRate;
+		
+		Debug.Log ("Incrementing: " + enemy);
+				
+		bool increase = x < enhancedEmissionRate || y < enhancedParticleSpeed? true : false;
+		
+		do {
+			
+			if (increase) {
+//				x *= 1 + (intensity * Time.deltaTime * 2f);
+//				y *= 1 + (intensity * Time.deltaTime * 2f);
+				x = enhancedEmissionRate;
+				y = enhancedParticleSpeed;
+				increase = false;
+			} else if (x > originalEmissionRate || y > originalParticleSpeed) {
+				x *= 1 - (intensity * Time.deltaTime * 3f);
+				y *= 1 - (intensity * Time.deltaTime * 3f);
+			}
+			
+//			if(x > enhancedEmissionRate || y > enhancedParticleSpeed) increase = false;
+			if(x < originalEmissionRate*1.1f || y < originalEmissionRate*1.1f) {
+				x = originalEmissionRate;
+				y = originalParticleSpeed;
+			}
+				
+			FeedbackStars[enemy].playbackSpeed = y;
+			FeedbackStars[enemy].emissionRate = x;
+			Debug.Log(x);
+			yield return new WaitForSeconds(0.1f);
+		} while(x != originalEmissionRate || y != originalParticleSpeed);
+		particlesActive[enemy] = false;
+	}
 
 	public void onPeakTrigger(int channel, int intensity) {
 		switch (channel) {
@@ -98,10 +148,27 @@ public class Background : MonoBehaviour, PeakListener {
 				if (timeDiff > 1f) timeDiff = 1f;
 				else if (timeDiff < 0.1f) timeDiff = 0.1f;
 				decay = timeDiff;
+				
+				if(!particlesActive[EnemySpawnScript.currentlySelectedEnemy]) {
+					StartCoroutine(FlashStars(EnemySpawnScript.currentlySelectedEnemy, intensity));
+					particlesActive[EnemySpawnScript.currentlySelectedEnemy] = true;
+				}
 				break;
 			case 3:
 				if (channelRestrictors[channel] == 0) {
 					int chosenFireworks = Random.Range(0, BGFireworks.Length);
+				
+//					// Get one of the firework ParticleSytems which is NOT currently playing.
+//					int chosenFireworks = -1;
+//					for(int i = 0; i < BGFireworks.Length; i++) {
+//						if(!BGFireworks[i].isPlaying) chosenFireworks = i;
+//					}
+//					// If all are in use, just ignore this trigger
+//					if(chosenFireworks == -1) break;
+//				
+//					// Move the firework into the area of the corresponding colour, depending on what the currently spawning enemy is
+////					EnemySpawnScript.currentlySelectedEnemy
+				
 					if (intensity > 15) {
 						BGFireworks[chosenFireworks].startSpeed = 2.5f;
 						BGFireworks[chosenFireworks].startLifetime = 1;
