@@ -156,15 +156,16 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 					if(Game.GameMode == Game.Mode.Tutorial && !Tutorial.done) {
 						if(!Tutorial.firstSpawn) {
 							Tutorial.firstSpawn = true;
-							currentlySelectedEnemy = 1;
+//							currentlySelectedEnemy = 1;
 						} else if(Tutorial.firstSpawn && !Tutorial.secondSpawn) {
 							Tutorial.secondSpawn = true;
-							currentlySelectedEnemy = 3;
+//							currentlySelectedEnemy = 3;
 						} else if(Tutorial.firstSpawn && Tutorial.secondSpawn && !Tutorial.thirdSpawn) {
 							Tutorial.thirdSpawn = true;
-							currentlySelectedEnemy = 4;
+//							currentlySelectedEnemy = 4;
 							Tutorial.done = true;
 						}
+						
 					}
 					foreach(int spawnPosition in spawnPositions) {
 						Vector3 spawnDist = findSpawnPositionVector(spawnPosition);
@@ -188,7 +189,8 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 						incrementSpawnPosition(ref spawnPositions[i], 3, rotateDirection);
 					}
 //					moveSpawnersMirrored(3,rotateDirection);
-	
+					if(Game.GameMode == Game.Mode.Tutorial) 
+						setupTutorialSpawns(spawnCount, false);
 					Level.SetUpParticlesFeedback(spawnPositions.Length, currentlySelectedEnemy);
 					break;
 				case 2:
@@ -202,6 +204,9 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 				case 3:
 					// Some higher frequencies to change the currently spawned enemy
 					changeEnemy();
+					if(Game.GameMode == Game.Mode.Tutorial) 
+						setupTutorialSpawns(spawnCount, true);
+					
 					Level.SetUpParticlesFeedback(spawnPositions.Length, currentlySelectedEnemy);
 					break;
 				case 4:
@@ -232,6 +237,35 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	
 		return speed;
 		
+	}
+	
+	private void setupTutorialSpawns(int spawn, bool change) {
+		switch(spawnCount/2) {
+			case 0:
+				currentlySelectedEnemy = 1;
+				break;
+			case 1:
+				currentlySelectedEnemy = 3;
+				break;
+			case 2:
+				currentlySelectedEnemy = 4;
+				break;
+			case 3:
+				currentlySelectedEnemy = 2;
+				break;
+			case 4:
+				currentlySelectedEnemy = 5;
+				break;
+			case 5:
+				currentlySelectedEnemy = 0;
+				break;
+			case 6:
+				break;
+			default:
+				if(change)
+					changeEnemy ();
+				break;
+			}
 	}
 	
 	

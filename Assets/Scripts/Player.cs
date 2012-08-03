@@ -124,7 +124,7 @@ public class Player : MonoBehaviour, PeakListener {
 					Game.PowerupActive = playerpowerup;
 					powerupDisplay.GetComponent<CenterPowerupDisplay>().hideSprite();
 					hasPowerup = false;
-					if(Game.GameMode == Game.Mode.Tutorial && !Tutorial.showSeventhMessage) 
+					if(Game.GameMode == Game.Mode.Tutorial && !Tutorial.demoShieldMessage) 
 						Tutorial.activatedPowerup = true;
 					
 					if (playerpowerup == Game.Powerups.MassivePulse) {
