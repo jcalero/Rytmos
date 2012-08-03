@@ -124,6 +124,9 @@ public class Player : MonoBehaviour, PeakListener {
 					Game.PowerupActive = playerpowerup;
 					powerupDisplay.GetComponent<CenterPowerupDisplay>().hideSprite();
 					hasPowerup = false;
+					if(Game.GameMode == Game.Mode.Tutorial && !Tutorial.showSeventhMessage) 
+						Tutorial.activatedPowerup = true;
+					
 					if (playerpowerup == Game.Powerups.MassivePulse) {
 						Instantiate(superPulsePrefab, Vector3.zero, superPulsePrefab.transform.localRotation);
 						superPulseCount = 0;
@@ -136,9 +139,8 @@ public class Player : MonoBehaviour, PeakListener {
 				hasPowerup = true;
 				takenPowerup = true;
 				playerpowerup = powerupPrefab.GetComponent<PowerupScript>().Powerup();
-				if (hasPowerup && playerpowerup != Game.Powerups.None) {
+				if (hasPowerup && playerpowerup != Game.Powerups.None) 
 					powerupDisplay.GetComponent<CenterPowerupDisplay>().changeSprite(playerpowerup);
-				}
 			} else if (Game.DevMode && Game.sendSuper){
 				triggerMassivePulse();
 			} else if (energy - pulseCost >= 0 ||  Game.GameMode == Game.Mode.Casual) {

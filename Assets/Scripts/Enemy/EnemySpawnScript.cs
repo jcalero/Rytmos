@@ -10,7 +10,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	#region Fields
 	public UIAtlas enemyAtlas;
 	public GameObject[] EnemyPrefabs;       // List of enemy types to spawn. Inspector reference. Location: EnemySpawner
-	public float FirstSpawn;                // The delay the spawner will initialise itself with (time for first spawn)
+//	public float FirstSpawn;                // The delay the spawner will initialise itself with (time for first spawn)
 	public float SpawnRate;                 // The time between spawns
 	public int[] spawnPositions;
 	public static int currentlySelectedEnemy;
@@ -34,12 +34,6 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	private int spawnerNumber;
 	public static int spawnerCounter;
 	private static EnemySpawnScript instance;
-	
-	//Tutorial crap
-	public static bool firstSpawn;
-	public static bool secondSpawn;
-	public static bool thirdSpawn;
-	private static bool done;
 	#endregion
 
 	#region Functions
@@ -159,14 +153,17 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 //						currMaxMag = findSpawnPositionVector(spawnPositions[spawnerNumber]+5).magnitude;
 //						if(currMaxMag > maxMag) maxMag = currMaxMag;
 					}
-					if(Game.GameMode == Game.Mode.Tutorial && !done) {
-						if(!firstSpawn) {
-							firstSpawn = true;
-						} else if(firstSpawn && !secondSpawn) {
-							secondSpawn = true;
-						} else if(firstSpawn && secondSpawn && !thirdSpawn) {
-							thirdSpawn = true;
-							done = true;
+					if(Game.GameMode == Game.Mode.Tutorial && !Tutorial.done) {
+						if(!Tutorial.firstSpawn) {
+							Tutorial.firstSpawn = true;
+							currentlySelectedEnemy = 1;
+						} else if(Tutorial.firstSpawn && !Tutorial.secondSpawn) {
+							Tutorial.secondSpawn = true;
+							currentlySelectedEnemy = 3;
+						} else if(Tutorial.firstSpawn && Tutorial.secondSpawn && !Tutorial.thirdSpawn) {
+							Tutorial.thirdSpawn = true;
+							currentlySelectedEnemy = 4;
+							Tutorial.done = true;
 						}
 					}
 					foreach(int spawnPosition in spawnPositions) {

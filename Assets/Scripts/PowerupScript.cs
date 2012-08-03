@@ -38,12 +38,17 @@ public class PowerupScript : MonoBehaviour {
 		powerup = spriteManager.AddSprite(gameObject, UVWidth, UVHeight, left, bottom, width, height, false);
 		
 		//Move object 
-		Vector3 spawnPos = randomPos();
-		Level.SetUpParticlesFeedback(4, spawnPos);
-		gameObject.transform.localPosition = spawnPos;
-		
+		if(Game.GameMode != Game.Mode.Tutorial) {
+			Vector3 spawnPos = randomPos();
+			Level.SetUpParticlesFeedback(4, spawnPos);
+			gameObject.transform.localPosition = spawnPos;
+		} else {
+			gameObject.transform.localPosition = new Vector3(20,20,0);
+			Level.SetUpParticlesFeedback(4, new Vector3(20,20,0));
+		}
 		// Set audio volume
 		gameObject.audio.volume = Game.EffectsVolume;
+		
 		
 	}
 	
@@ -54,6 +59,7 @@ public class PowerupScript : MonoBehaviour {
 		
 		//If the player has selected the powerup, move it from visibility, and restart the timer
 		if(Player.takenPowerup == true) {
+			if(Game.GameMode == Game.Mode.Tutorial && !Tutorial.spawnPowerupsNormal) Tutorial.selectedPowerup = true;
 			moveSprite(new Vector3(20,20, 0));
 			powerUpTimer = 0;
 			totalTimer = respawnTime;
@@ -70,17 +76,19 @@ public class PowerupScript : MonoBehaviour {
 				spawnPowerupOnScreen (2);
 		}
 		//Check the timer		
-		if(powerUpTimer > totalTimer) {
-			//If the powerup is spawned (on the screen), remove it
-			if(spawned) {
-				moveSprite(new Vector3(20,20, 0));
-				spawned = false;
-			} else 
-				spawnPowerupOnScreen();
-			powerUpTimer = 0;
-		}
+		if(Game.GameMode != Game.Mode.Tutorial || (Game.Mode.Tutorial == Game.GameMode && Tutorial.spawnPowerupsNormal)) {
+			if(powerUpTimer > totalTimer) {
+				//If the powerup is spawned (on the screen), remove it
+				if(spawned) {
+					moveSprite(new Vector3(20,20, 0));
+					spawned = false;
+				} else 
+					spawnPowerupOnScreen();
+				powerUpTimer = 0;
+			}
 		
-		powerUpTimer += Time.deltaTime;
+			powerUpTimer += Time.deltaTime;
+		}
 	}
 	
 	void CalculateSprite(UIAtlas atlas, string name) {

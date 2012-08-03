@@ -9,13 +9,32 @@ using System.Collections;
 public class Tutorial : Level {
 
 	#region Fields
+	public GameObject powerupScript;
+
+	
 	private static DeathMatch Instance;                                  // The Instance of this class for self reference
 
 	private float audioTimer;
 	private float waitTimer;
+	private float resendMessageTimer; 
+	private bool resendMessage;
+	
 	public static bool showFirstMessage;
 	public static bool showSecondMessage;
 	public static bool showThirdMessage;
+	public static bool showFourthMessage;
+	public static bool showFifthMessage;
+	public static bool showSixthMessage;
+	public static bool showSeventhMessage;
+	
+	public static bool firstSpawn;
+	public static bool secondSpawn;
+	public static bool thirdSpawn;
+	public static bool done;
+	public static bool selectedPowerup;
+	public static bool activatedPowerup;
+	public static bool spawnPowerupsNormal;
+	
 	
 
 	public UILabel SurviveLabel;
@@ -33,19 +52,27 @@ public class Tutorial : Level {
 		showFirstMessage = false;
 		showSecondMessage = false;
 		showThirdMessage = false;
-		EnemySpawnScript.firstSpawn = false;
-		EnemySpawnScript.secondSpawn = false;
-		EnemySpawnScript.thirdSpawn = false;
-//		Game.GameMode = Game.Mode.Arcade;
+		showFourthMessage = false;
+		showFifthMessage = false;
+		showSixthMessage = false;
+		showSeventhMessage = false;
+		
+		firstSpawn = false;
+		secondSpawn = false;
+		thirdSpawn = false;
+		done = false;
+		selectedPowerup = false;
+		spawnPowerupsNormal = false;
+		
 		Game.GameState = Game.State.Playing;
 		base.Start();
-		//SurviveLabel.text = "[FFAA22]Survive!";
 		Player.maxEnergy = 100;
 		Player.ResetStats();
 		EnemyScript.energyReturn = 5;
-		//StartCoroutine(DelayLabel());
 		Debug.Log("GameMode: " + Game.GameMode);
 		audioTimer = 0;
+		waitTimer = 0;
+		resendMessageTimer = 0;
 		
 	}
 
@@ -53,26 +80,94 @@ public class Tutorial : Level {
 		if(AudioPlayer.isPlaying)
 			audioTimer += Time.deltaTime;
 		
-		if(EnemySpawnScript.firstSpawn && !showFirstMessage) {
+		//First enemy spawn message
+		if(firstSpawn && !showFirstMessage) {
 			waitTimer += Time.deltaTime;
 			if(waitTimer > .75f) {
 				Game.Pause(true);
 				showFirstMessage = true;
 				waitTimer = 0;
 			}
-		} else if(EnemySpawnScript.secondSpawn && !showSecondMessage) {
+		//Second enemy spawn message
+		} else if(secondSpawn && !showSecondMessage) {
 			waitTimer += Time.deltaTime;
-			if(waitTimer >.55f) {
+			if(waitTimer >.85f) {
 				Game.Pause (true);
 				showSecondMessage = true;
 				waitTimer = 0;
 			}
-		} else if(EnemySpawnScript.thirdSpawn && !showThirdMessage) {
+		//Third enemy spawn message
+		} else if(thirdSpawn && !showThirdMessage) {
 			waitTimer += Time.deltaTime;
-			if(waitTimer > .55f) {
+			if(waitTimer > .75f) {
 				Game.Pause (true);
 				showThirdMessage = true;
 				waitTimer = 0;
+			}
+		}
+		
+		//PLayer multiplier has increased
+		if(Player.multiplier >= 2 && !showFourthMessage) {
+			waitTimer += Time.deltaTime;
+			if(waitTimer >.2f) {
+				showFourthMessage = true;	
+				Game.Pause(true);
+				waitTimer = 0;
+			}
+		}
+		
+		//Spawn powerup
+		if(audioTimer > 44.5f && !showFifthMessage) {
+			powerupScript.GetComponent<PowerupScript>().spawnPowerupOnScreen(1, new Vector3(3,3,0));
+			Game.Pause (true);
+			showFifthMessage = true;
+			resendMessageTimer = 0;
+			resendMessage = true;
+		}
+		
+		//Spawn powerup reset
+		if(resendMessage && !showSixthMessage) {
+			resendMessageTimer += Time.deltaTime;
+			if(resendMessageTimer > 5) {
+				//Revert here
+				resendMessageTimer = 0;
+				showFifthMessage = false;
+			}
+		}
+		
+		//Activate powerup
+		if(selectedPowerup && !showSixthMessage) {
+			resendMessage = false;
+			resendMessageTimer = 0;
+			waitTimer += Time.deltaTime;
+			if(waitTimer > .2f) {
+				showSixthMessage = true;
+				Game.Pause (true);
+				waitTimer = 0;
+				resendMessage = true;
+			}
+		}
+		
+		//Activate powerup reset
+		if(resendMessage && !showSeventhMessage) {
+			resendMessageTimer += Time.deltaTime;
+			if(resendMessageTimer > 5) {
+				//Revert here
+				resendMessageTimer = 0;
+				showSixthMessage = false;
+			}
+		}
+		
+		//Shield powerup demo
+		if(activatedPowerup && !showSeventhMessage) {
+			waitTimer+= Time.deltaTime;
+			resendMessage = false;
+			resendMessageTimer = 0;
+			if(waitTimer > .2f) {
+				Game.Pause(true);
+				showSeventhMessage = true;
+				waitTimer = 0;
+				spawnPowerupsNormal = true;
 			}
 		}
 		
