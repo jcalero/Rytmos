@@ -10,7 +10,7 @@ public class FileBrowserEvents : MonoBehaviour {
 	#endregion
 
 	#region Functions
-	
+
 	private void OpenFile(string pathToFile) {
 		Game.Song = pathToFile;
 		Application.LoadLevel("LoadScreen");

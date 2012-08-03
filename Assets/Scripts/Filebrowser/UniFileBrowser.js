@@ -93,7 +93,7 @@ function Awake () {
     fileWindowRect = defaultFileWindowRect;
     fileWindowRect.width = Mathf.Clamp(fileWindowRect.width, minWindowWidth, 1600);	// The file browser window really doesn't need to be huge
     fileWindowRect.height = Mathf.Clamp(fileWindowRect.height, minWindowHeight, 1200);
-    fileWindowRect.x = Mathf.Min(fileWindowRect.x, Screen.width - fileWindowRect.width);	// In case small resolutions make it go partially off screen
+    //fileWindowRect.x = Mathf.Min(fileWindowRect.x, Screen.width - fileWindowRect.width);	// In case small resolutions make it go partially off screen
     // Set up message window position to be in the middle of the screen
     messageWindowRect = Rect(Screen.width/2-messageWindowSize.x/2, Screen.height/2-messageWindowSize.y/2, messageWindowSize.x, messageWindowSize.y);
     
@@ -116,6 +116,76 @@ function Awake () {
     
     linePixelHeight = scrollViewStyle.CalcHeight(GUIContent(" ", folderIcon), 1.0);
     enabled = false;
+}
+
+// Internal variables for managing touches and drags
+private var selected :int = -1;
+private var scrollVelocity :float = 0f;
+private var timeTouchPhaseEnded = 0f;
+private var previousDelta :float = 0f;
+private var inertiaDuration :float = 0.5f;
+
+function Update () { 
+//		Debug.Log("Input.touchCount: " + Input.touchCount + "; Scroll velocity: " + scrollVelocity);
+	if (Input.touchCount != 1) //if this is a short touch
+	{
+		selected = -1;
+//        Debug.Log("Scroll velocity when called: " + scrollVelocity);
+		if ( scrollVelocity != 0.0f )
+		{
+			// slow down over time
+			var t : float;
+			t = Time.time;
+			t = t - timeTouchPhaseEnded;
+			t = t / inertiaDuration;
+			var frameVelocity : float = Mathf.Lerp(scrollVelocity, 0, t);
+            Debug.Log("frameVelocity" + frameVelocity);
+			scrollPos.y += frameVelocity * Time.deltaTime;
+			scrollVelocity -= t;
+			// after N seconds, we’ve stopped
+			if (t >= inertiaDuration) scrollVelocity = 0.0f;
+		}
+		return;
+	}
+
+    var touch : Touch = Input.touches[0];
+    if (touch.phase == TouchPhase.Began)
+	{
+//		selected = TouchToRowIndex(touch.position);
+//        selected = selectedFileNumber;
+		previousDelta = 0.0f;
+		scrollVelocity = 0.0f;
+	}
+	else if (touch.phase == TouchPhase.Canceled)
+	{
+		selected = -1;
+		previousDelta = 0f;
+	}
+	else if (touch.phase == TouchPhase.Moved)
+	{
+		// dragging
+		selected = -1;
+		previousDelta = touch.deltaPosition.y;
+		scrollPos.y += touch.deltaPosition.y * 2;
+//        Debug.Log("touch.deltaPosition.y: " + touch.deltaPosition.y);
+	}
+	else if (touch.phase == TouchPhase.Ended)
+	{
+		// Was it a tap, or a drag-release?
+		if ( selected > -1 )
+		{
+			Debug.Log("Player selected row " + selected);
+		}
+		else
+		{
+			// impart momentum, using last delta as the starting velocity
+			// ignore delta = 10)
+//			scrollVelocity = touch.deltaPosition.y / touch.deltaTime;
+            scrollVelocity = previousDelta / touch.deltaTime;
+//            Debug.Log("scrollVelocity when set: " + scrollVelocity + " (" + touch.deltaPosition.y + "/" + touch.deltaTime + ")" + " || Previous delta: " + previousDelta);
+			timeTouchPhaseEnded = Time.time;
+		}
+	}
 }
 
 function SetDefaultPath () {
@@ -334,10 +404,10 @@ private function DrawFileWindow () {
             GUI.enabled = false;
         }
     }
-    if (GUI.Button(Rect(fileWindowRect.width-buttonPosition.x/2, fileWindowRect.height-buttonPosition.y, buttonSize.x, buttonSize.y),
-            selectButtonText[fileType])) {
-        SelectFile();
-    }
+//    if (GUI.Button(Rect(fileWindowRect.width-buttonPosition.x/2, fileWindowRect.height-buttonPosition.y, buttonSize.x, buttonSize.y),
+//            selectButtonText[fileType])) {
+//        SelectFile();
+//    }
     
     if (!showMessageWindow) {
         GUI.enabled = true;
