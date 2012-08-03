@@ -123,7 +123,8 @@ private var selected :int = -1;
 private var scrollVelocity :float = 0f;
 private var timeTouchPhaseEnded = 0f;
 private var previousDelta :float = 0f;
-private var inertiaDuration :float = 0.5f;
+private var inertiaDuration :float = 0.7f;
+private var minSlideTime :float = 2.0f;
 
 function Update () { 
 //		Debug.Log("Input.touchCount: " + Input.touchCount + "; Scroll velocity: " + scrollVelocity);
@@ -138,12 +139,19 @@ function Update () {
 			t = Time.time;
 			t = t - timeTouchPhaseEnded;
 			t = t / inertiaDuration;
-			var frameVelocity : float = Mathf.Lerp(scrollVelocity, 0, t);
-            Debug.Log("frameVelocity" + frameVelocity);
-			scrollPos.y += frameVelocity * Time.deltaTime;
-			scrollVelocity -= t;
+
+            // Start slowing down after minSlideTime seconds
+//            if (t >= minSlideTime) scrollVelocity -= Time.deltaTime * scrollVelocity;
+            scrollVelocity -= Time.deltaTime * scrollVelocity;
+
+//			var frameVelocity : float = Mathf.Lerp(scrollVelocity, 0, t);
+			scrollPos.y += scrollVelocity * Time.deltaTime;
+
+            // Make sure it stops at some point (when slow enough).
+            if (Mathf.Abs(scrollVelocity) < 100) scrollVelocity = 0.0f;
+
 			// after N seconds, we’ve stopped
-			if (t >= inertiaDuration) scrollVelocity = 0.0f;
+			//if (t >= inertiaDuration) scrollVelocity = 0.0f;
 		}
 		return;
 	}
@@ -166,7 +174,7 @@ function Update () {
 		// dragging
 		selected = -1;
 		previousDelta = touch.deltaPosition.y;
-		scrollPos.y += touch.deltaPosition.y * 2;
+		scrollPos.y += touch.deltaPosition.y * 4;
 //        Debug.Log("touch.deltaPosition.y: " + touch.deltaPosition.y);
 	}
 	else if (touch.phase == TouchPhase.Ended)
