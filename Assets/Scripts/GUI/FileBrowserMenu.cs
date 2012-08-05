@@ -23,8 +23,8 @@ public class FileBrowserMenu : MonoBehaviour {
 		if (recentlyPlayedActive) {
 			PathLabel.text = "";
 		} else {
-			if (!string.IsNullOrEmpty(Game.Path)) FileBrowser.SendMessage("OpenFileWindow", PlayerPrefs.GetString("filePath"));
-			else FileBrowser.SendMessage("OpenFileWindow", "");
+			//if (!string.IsNullOrEmpty(Game.Path)) FileBrowser.SendMessage("OpenFileWindow", PlayerPrefs.GetString("filePath"));
+			//else FileBrowser.SendMessage("OpenFileWindow", "");
 		}
 	}
 
@@ -42,8 +42,8 @@ public class FileBrowserMenu : MonoBehaviour {
 			if (!FileBrowserActiveTabBG.active) {
 				FileBrowserActiveTabBG.SetActiveRecursively(true);
 				UpButton.enabled = true;
-				if (!string.IsNullOrEmpty(Game.Path)) FileBrowser.SendMessage("OpenFileWindow", PlayerPrefs.GetString("filePath"));
-				else FileBrowser.SendMessage("OpenFileWindow", "");
+				//if (!string.IsNullOrEmpty(Game.Path)) FileBrowser.SendMessage("OpenFileWindow", PlayerPrefs.GetString("filePath"));
+				//else FileBrowser.SendMessage("OpenFileWindow", "");
 			}
 			if (RecentlyPlayedActiveTabBG.active) {
 				RecentlyPlayedActiveTabBG.SetActiveRecursively(false);

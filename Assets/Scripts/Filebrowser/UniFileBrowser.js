@@ -63,6 +63,7 @@ private var pathChar = "/"[0];
 private var windowsSystem = false;
 private var numberOfVolumes : int;
 
+private var isRecentFiles = false;
 private var fileWindowOpen = false;
 private var fileWindowRect : Rect;
 private var windowTitle : String;
@@ -243,7 +244,7 @@ function SetDefaultPath () {
             break;
         case RuntimePlatform.IPhonePlayer:
         case RuntimePlatform.Android:
-            if (filePath.Length < 1) { Debug.Log("TRUE"); filePath = Directory.GetCurrentDirectory(); }
+            if (filePath.Length < 1) { filePath = Directory.GetCurrentDirectory(); }
             break;
         default:
             Debug.LogError("You are not using a supported platform");
@@ -588,6 +589,9 @@ private function BuildPathList (pathEntry : int) {
 private function GetCurrentFileInfo () {
     dirList = new List.<String>();
     fileList = new List.<String>();
+//    if (isRecentFiles) {
+//        
+//    } else {
     var info = new DirectoryInfo(filePath);
     if (!info.Exists) {
         HandleError("The directory \"" + filePath + "\" does not exist");

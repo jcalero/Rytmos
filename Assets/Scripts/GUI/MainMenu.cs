@@ -29,12 +29,6 @@ public class MainMenu : MonoBehaviour {
 	// Current state of the menu.
 	public MenuLevel CurrentMenuLevel;
 
-	// Mode menu button states
-	private bool arcadeButtonActive;
-	private bool casualButtonActive;
-	private bool challengeButtonActive;
-	private bool storyButtonActive;
-
 	// Options menu objects
 	public UILabel LoggedOutLabel;
 
@@ -199,31 +193,24 @@ public class MainMenu : MonoBehaviour {
 	/// Button handler for "Arcade" button
 	/// </summary>
 	private void OnArcadeButtonClicked() {
-		arcadeButtonActive = true;
-		if (arcadeButtonActive) {
 #if !UNITY_WEBPLAYER
-			Game.GameMode = Game.Mode.Arcade;
-			ChangeMenu(MenuLevel.FileBrowser);
-			//if (!string.IsNullOrEmpty(Game.Path)) FileBrowser.SendMessage("OpenFileWindow", PlayerPrefs.GetString("filePath"));
-			//else FileBrowser.SendMessage("OpenFileWindow", "");
-			//StartCoroutine(LoadLevelDelayed("Game", 1f));
-#else
-			if(Game.Song != "Jazz-Fog" && Game.Song != "KnoxCanyon" && Game.Song != "LG-F1" && Game.Song != "YouGotToChange") {
-				Game.Song = "Poundcake";
-				AudioManager.artist = "GRiZ";
-				AudioManager.title = "Poundcake";
-			}
-			StartCoroutine(AudioManager.initMusic(""));
-			while(!AudioManager.isSongLoaded()) {}
-			AudioManager.tagDataSet = true;
-			Application.LoadLevel("LoadScreen");
-#endif
-		} else {
-			//Vector3 buttonScale = ArcadeButton.GetComponentInChildren<UISlicedSprite>().transform.localScale;
-			//buttonScale =
-			//    new Vector3(buttonScale.x*1.1f, buttonScale.y*1.1f, buttonScale.z);
-			arcadeButtonActive = true;
+		Game.GameMode = Game.Mode.Arcade;
+		ChangeMenu(MenuLevel.FileBrowser);
+		if (!FileBrowserMenu.RecentlyPlayedActive) {
+			if (!string.IsNullOrEmpty(Game.Path)) FileBrowser.SendMessage("OpenFileWindow", PlayerPrefs.GetString("filePath"));
+			else FileBrowser.SendMessage("OpenFileWindow", "");
 		}
+#else
+		if(Game.Song != "Jazz-Fog" && Game.Song != "KnoxCanyon" && Game.Song != "LG-F1" && Game.Song != "YouGotToChange") {
+			Game.Song = "Poundcake";
+			AudioManager.artist = "GRiZ";
+			AudioManager.title = "Poundcake";
+		}
+		StartCoroutine(AudioManager.initMusic(""));
+		while(!AudioManager.isSongLoaded()) {}
+		AudioManager.tagDataSet = true;
+		Application.LoadLevel("LoadScreen");
+#endif
 	}
 
 	/// <summary>
@@ -233,39 +220,30 @@ public class MainMenu : MonoBehaviour {
 		Game.GameMode = Game.Mode.Casual;
 		FadeOutMenu();
 		ChangeMenu(MenuLevel.FileBrowser);
-		//if (!string.IsNullOrEmpty(Game.Path)) FileBrowser.SendMessage("OpenFileWindow", PlayerPrefs.GetString("filePath"));
-		//else FileBrowser.SendMessage("OpenFileWindow", "");	
+		if (!FileBrowserMenu.RecentlyPlayedActive) {
+			if (!string.IsNullOrEmpty(Game.Path)) FileBrowser.SendMessage("OpenFileWindow", PlayerPrefs.GetString("filePath"));
+			else FileBrowser.SendMessage("OpenFileWindow", "");
+		}
 	}
 
 	/// <summary>
 	/// Button handler for "Challenge" button
 	/// </summary>
 	private void OnChallengeButtonClicked() {
-//		Game.Song = "KnoxCanyon";
-//		AudioManager.artist = "Knoxius";
-//		AudioManager.title = "Canyon Song";
-		
-//		Game.GameMode = Game.Mode.Challenge;
 		OnArcadeButtonClicked();
 	}
 	/// <summary>
 	/// Button handler for "Story" button
 	/// </summary>
 	private void OnTutorialButtonClicked() {
-//		Game.Song = "LG-F1";
-//		AudioManager.artist = "Dan & Frank Johansen";
-//		AudioManager.title = "LG-F1";
-		
-//		Game.GameMode = Game.Mode.Story;
-		
 		Game.Song = "Tutorial";
 		AudioManager.artist = "Luke Stark";
 		AudioManager.title = "The Price Of Victory";
 		Game.GameMode = Game.Mode.Tutorial;
-		
+
 		StartCoroutine(AudioManager.initMusic(""));
-		while(!AudioManager.isSongLoaded()) {}
-		
+		while (!AudioManager.isSongLoaded()) { }
+
 		Application.LoadLevel("LoadScreen");
 	}
 	#endregion

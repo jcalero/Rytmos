@@ -11,10 +11,10 @@ public class BackgroundStatic : MonoBehaviour, PeakListener {
 	private float enhancedBGY;
 	private bool bgIncrease;
 	
-	private float originalSpotLightX;
-	private float originalSpotLightY;
-	private float enhancedSpotLightX;
-	private float enhancedSpotLightY;
+	//private float originalSpotLightX;
+	//private float originalSpotLightY;
+	//private float enhancedSpotLightX;
+	//private float enhancedSpotLightY;
 	private bool spotLightIncrease;
 	
 	private float timer;
@@ -138,32 +138,32 @@ public class BackgroundStatic : MonoBehaviour, PeakListener {
 		return new UnityEngine.Vector3(x,y,0f);
 	}
 	
-	private Vector2 calculateSpotLightScale() {
+	//private Vector2 calculateSpotLightScale() {
 		
-		float x = renderer.lightmapTilingOffset.x;
-		float y = renderer.lightmapTilingOffset.y;
+	//    float x = renderer.lightmapTilingOffset.x;
+	//    float y = renderer.lightmapTilingOffset.y;
 		
-		if(increase) {
-			x *= 1-(intensity * Time.deltaTime * 5f);
-			y *= 1-(intensity * Time.deltaTime * 5f);
-		} else if((x > enhancedSpotLightX || y > enhancedSpotLightY) && spotLightIncrease) {
-			x *= 1-(intensity * Time.deltaTime * 3f);
-			y *= 1-(intensity * Time.deltaTime * 3f);
-		} else if((x < enhancedSpotLightX || y < enhancedSpotLightY) && spotLightIncrease) {
-			x = enhancedSpotLightX;
-			y = enhancedSpotLightY;
-			spotLightIncrease = false;
-		} else if(!bgIncrease) {
-			x *= 1+(intensity * Time.deltaTime * 10f);
-			y *= 1+(intensity * Time.deltaTime * 10f);
-		}
-		if(x > originalSpotLightX || y > originalSpotLightY) {
-			x = originalSpotLightX;
-			y = originalSpotLightY;
-			spotLightIncrease = true;
-		}
+	//    if(increase) {
+	//        x *= 1-(intensity * Time.deltaTime * 5f);
+	//        y *= 1-(intensity * Time.deltaTime * 5f);
+	//    } else if((x > enhancedSpotLightX || y > enhancedSpotLightY) && spotLightIncrease) {
+	//        x *= 1-(intensity * Time.deltaTime * 3f);
+	//        y *= 1-(intensity * Time.deltaTime * 3f);
+	//    } else if((x < enhancedSpotLightX || y < enhancedSpotLightY) && spotLightIncrease) {
+	//        x = enhancedSpotLightX;
+	//        y = enhancedSpotLightY;
+	//        spotLightIncrease = false;
+	//    } else if(!bgIncrease) {
+	//        x *= 1+(intensity * Time.deltaTime * 10f);
+	//        y *= 1+(intensity * Time.deltaTime * 10f);
+	//    }
+	//    if(x > originalSpotLightX || y > originalSpotLightY) {
+	//        x = originalSpotLightX;
+	//        y = originalSpotLightY;
+	//        spotLightIncrease = true;
+	//    }
 		
-		return new Vector2(x,y);
-	}
+	//    return new Vector2(x,y);
+	//}
 	#endregion
 }
