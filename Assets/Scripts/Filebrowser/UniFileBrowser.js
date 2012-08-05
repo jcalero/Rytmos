@@ -81,6 +81,7 @@ private var selectFileInProgress = false;
 private var arrowKeysDown = false;
 private var showFiles = true;
 private var objectToSendTo : GameObject;
+private var resetPath = false;
 
 function Awake () {
     if (!guiSkin) {
@@ -216,7 +217,9 @@ function Update () {
 }
 
 function SetDefaultPath () {
-    filePath = PlayerPrefs.GetString("filePath");
+    if (!resetPath) filePath = PlayerPrefs.GetString("filePath");
+    else filePath = "";
+    resetPath = false;
     switch (Application.platform) {
         case RuntimePlatform.OSXEditor:
             filePath = filePath.Substring(0, filePath.LastIndexOf(pathChar)) + pathChar;
@@ -594,6 +597,7 @@ private function GetCurrentFileInfo () {
 //    } else {
     var info = new DirectoryInfo(filePath);
     if (!info.Exists) {
+        resetPath = true;
         HandleError("The directory \"" + filePath + "\" does not exist");
         return;
     }
@@ -717,6 +721,7 @@ private function HandleError (errorMessage : String) {
     SetDefaultPath();
     fileDisplayList = new GUIContent[0];
     pathList = new GUIContent[0];
+    OpenFileWindow(filePath);
 }
 
 public function SetPath (thisPath : String) {
