@@ -47,6 +47,7 @@ private var fileDisplayList : GUIContent[];
 private var windowControlsSpace : int = 205;
 
 private var scrollViewStyle : GUIStyle;
+private var scrollViewStyleActive : GUIStyle;
 private var popupListStyle : GUIStyle;
 private var popupButtonStyle : GUIStyle;
 private var popupBoxStyle : GUIStyle;
@@ -99,11 +100,12 @@ function Awake () {
     
     // Styles are packaged in the GUI skin
     scrollViewStyle = guiSkin.GetStyle("listScrollview");
+    scrollViewStyleActive = guiSkin.GetStyle("listScrollviewActive");
     popupListStyle = guiSkin.GetStyle("popupList");
     popupButtonStyle = guiSkin.GetStyle("popupButton");
     popupBoxStyle = guiSkin.GetStyle("popupBox");
     messageWindowStyle = guiSkin.GetStyle("messageWindow");
-    
+
     // Add "." to file extensions if not already there
     for (extension in filterFileExtensions) {
         if (!extension.StartsWith(".")) {
@@ -125,8 +127,13 @@ private var timeTouchPhaseEnded = 0f;
 private var previousDelta :float = 0f;
 private var inertiaDuration :float = 0.7f;
 private var minSlideTime :float = 2.0f;
+private var tapTimerStart : float = 0.1f;
+private var tapTimer : float = 0.0f;
 
-function Update () { 
+private var selectionAreaRect : Rect;
+
+function Update () {
+//    if (Input.touchCount == 1) Debug.Log("One touch"); 
 //		Debug.Log("Input.touchCount: " + Input.touchCount + "; Scroll velocity: " + scrollVelocity);
 	if (Input.touchCount != 1) //if this is a short touch
 	{
@@ -156,11 +163,18 @@ function Update () {
 		return;
 	}
 
+    // A touch was initiated, count down the timer.
+    if (selected > -1) {
+//            Debug.Log("Tap timer: " + tapTimer);
+            tapTimer -= Time.deltaTime; // Count down the time you're dragging
+    }
+    
     var touch : Touch = Input.touches[0];
     if (touch.phase == TouchPhase.Began)
 	{
 //		selected = TouchToRowIndex(touch.position);
-//        selected = selectedFileNumber;
+        selected = selectedFileNumber;
+        tapTimer = tapTimerStart;
 		previousDelta = 0.0f;
 		scrollVelocity = 0.0f;
 	}
@@ -172,17 +186,20 @@ function Update () {
 	else if (touch.phase == TouchPhase.Moved)
 	{
 		// dragging
-		selected = -1;
+		if (tapTimer < 0) selected = -1;    // If dragging for longer than tapTimer, count as a "real" drag.
 		previousDelta = touch.deltaPosition.y;
 		scrollPos.y += touch.deltaPosition.y * 4;
-//        Debug.Log("touch.deltaPosition.y: " + touch.deltaPosition.y);
 	}
 	else if (touch.phase == TouchPhase.Ended)
 	{
+//        Debug.Log("touch phase ended");
+        tapTimer = tapTimerStart; // Reset tap timer
+
 		// Was it a tap, or a drag-release?
-		if ( selected > -1 )
+		if ( selected > -1 && selectionAreaRect.Contains(mousePos) && Mathf.Abs(previousDelta / touch.deltaTime) < 200.0f)
 		{
-			Debug.Log("Player selected row " + selected);
+//			Debug.Log("Player selected row " + selected);
+            SelectFile();
 		}
 		else
 		{
@@ -190,6 +207,7 @@ function Update () {
 			// ignore delta = 10)
 //			scrollVelocity = touch.deltaPosition.y / touch.deltaTime;
             scrollVelocity = previousDelta / touch.deltaTime;
+//            Debug.Log("scrollVelocity: " + scrollVelocity);
 //            Debug.Log("scrollVelocity when set: " + scrollVelocity + " (" + touch.deltaPosition.y + "/" + touch.deltaTime + ")" + " || Previous delta: " + previousDelta);
 			timeTouchPhaseEnded = Time.time;
 		}
@@ -318,13 +336,14 @@ private function DrawFileWindow () {
     //else if (fileType == FileType.Save) {GUI.Label (Rect(25, 101, 90, 30), "Save as:");}
 
     // List of folders/files
-    var selectionAreaRect = Rect(25, 135, fileWindowRect.width-50, fileWindowRect.height-windowControlsSpace);
+    selectionAreaRect = Rect(25, 135, fileWindowRect.width-50, fileWindowRect.height-windowControlsSpace);
     if (arrowKeysDown) {
         GUI.SetNextControlName ("Area");
     }
     BeginArea (selectionAreaRect, "", "box");
         scrollPos = BeginScrollView (scrollPos);
-        selectedFileNumber = SelectionGrid (selectedFileNumber, fileDisplayList, 1, scrollViewStyle, MaxWidth(1600));
+        if (selected == -1) selectedFileNumber = SelectionGrid (selectedFileNumber, fileDisplayList, 1, scrollViewStyle, MaxWidth(1600));
+        else selectedFileNumber = SelectionGrid (selectedFileNumber, fileDisplayList, 1, scrollViewStyleActive, MaxWidth(1600));
         // See if a different file name was chosen, so we don't overwrite any user input in the text box except when needed
         if (selectedFileNumber != oldSelectedFileNumber && frameDone) {
             oldSelectedFileNumber = selectedFileNumber;
@@ -352,14 +371,14 @@ private function DrawFileWindow () {
         messageWindowDelay = true;
     }
 #else
-    for (var evt : Touch in Input.touches) {
-        if (evt.tapCount == 2 && selectionAreaRect.Contains(mousePos) && frameDone) {
-            SelectFile();
-            WaitForFrame();
-            messageWindowDelay = true;
-            break;
-        }
-    }
+//    for (var evt : Touch in Input.touches) {
+//        if (evt.tapCount == 2 && selectionAreaRect.Contains(mousePos) && frameDone) {
+//            SelectFile();
+//            WaitForFrame();
+//            messageWindowDelay = true;
+//            break;
+//        }
+//    }
 #endif
     
     // Filter button
@@ -765,6 +784,17 @@ public function CloseFileWindow () {
     enabled = false;
 }
 
+public function CloseFileWindowTab () {
+    if (showMessageWindow) return;	// Don't let window close if error/confirm window is open
+    PlayerPrefs.SetString("filePath", filePath);
+    fileWindowOpen = false;
+    selectedFileNumber = oldSelectedFileNumber = -1;
+    fileName = "";
+    // For maximum efficiency, the OnGUI function in this script doesn't run at all when the file browser window isn't open,
+    // but is enabled in ShowFileWindow when necessary
+    enabled = false;
+}
+
 public function SetWindowTitle (title : String) {
     windowTitle = title;
 }
@@ -863,7 +893,7 @@ private function SelectFile () : IEnumerator {
 }
 
 // Button handler for the file browser up button, needs to be protected or the compiler thinks the method is never used.
-protected function OnUpClicked () {
+protected function FolderUp () {
 	if (pathList.Length > 1) {
 		BuildPathList(1);
 		UpdateDirectoryLabel();

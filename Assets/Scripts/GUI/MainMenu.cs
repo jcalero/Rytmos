@@ -69,6 +69,7 @@ public class MainMenu : MonoBehaviour {
 		// or goes to the quit menu if on the main menu already.
 		if (Input.GetKeyDown(KeyCode.Escape)) {
 			if (CurrentMenuLevel == MenuLevel.Base) ChangeMenu(MenuLevel.Quit);
+			else if (CurrentMenuLevel == MenuLevel.FileBrowser && !FileBrowserMenu.RecentlyPlayedActive) FileBrowser.SendMessage("OnUpClicked");
 			else OnBackClicked();
 		}
 		gameObject.audio.volume = Game.MusicVolume;
@@ -202,10 +203,9 @@ public class MainMenu : MonoBehaviour {
 		if (arcadeButtonActive) {
 #if !UNITY_WEBPLAYER
 			Game.GameMode = Game.Mode.Arcade;
-			FadeOutMenu();
 			ChangeMenu(MenuLevel.FileBrowser);
-			if (!string.IsNullOrEmpty(Game.Path)) FileBrowser.SendMessage("OpenFileWindow", PlayerPrefs.GetString("filePath"));
-			else FileBrowser.SendMessage("OpenFileWindow", "");
+			//if (!string.IsNullOrEmpty(Game.Path)) FileBrowser.SendMessage("OpenFileWindow", PlayerPrefs.GetString("filePath"));
+			//else FileBrowser.SendMessage("OpenFileWindow", "");
 			//StartCoroutine(LoadLevelDelayed("Game", 1f));
 #else
 			if(Game.Song != "Jazz-Fog" && Game.Song != "KnoxCanyon" && Game.Song != "LG-F1" && Game.Song != "YouGotToChange") {
@@ -230,14 +230,11 @@ public class MainMenu : MonoBehaviour {
 	/// Button handler for "Casual" button
 	/// </summary>
 	private void OnCasualButtonClicked() {
-//		Game.Song = "Jazz-Fog";
-//		AudioManager.artist = "Daveisgr81";
-//		AudioManager.title = "Jazz-Fog";
 		Game.GameMode = Game.Mode.Casual;
 		FadeOutMenu();
 		ChangeMenu(MenuLevel.FileBrowser);
-		if (!string.IsNullOrEmpty(Game.Path)) FileBrowser.SendMessage("OpenFileWindow", PlayerPrefs.GetString("filePath"));
-		else FileBrowser.SendMessage("OpenFileWindow", "");	
+		//if (!string.IsNullOrEmpty(Game.Path)) FileBrowser.SendMessage("OpenFileWindow", PlayerPrefs.GetString("filePath"));
+		//else FileBrowser.SendMessage("OpenFileWindow", "");	
 	}
 
 	/// <summary>

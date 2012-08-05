@@ -7,6 +7,7 @@ public class FileBrowserEvents : MonoBehaviour {
 	#region Fields
 	public UILabel PathLabel;
 	public MainMenu MainMenu;
+	//public GameObject FileBrowser;
 	#endregion
 
 	#region Functions
@@ -22,6 +23,10 @@ public class FileBrowserEvents : MonoBehaviour {
 
 	private void UpdateDirLabel(string path) {
 		PathLabel.text = path;
+	}
+
+	private void OnUpClicked() {
+		if (!FileBrowserMenu.RecentlyPlayedActive) gameObject.SendMessage("FolderUp");
 	}
 
 	#endregion

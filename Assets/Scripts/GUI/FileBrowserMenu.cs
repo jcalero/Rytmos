@@ -7,67 +7,75 @@ public class FileBrowserMenu : MonoBehaviour {
 	#region Fields
 	public GameObject FileBrowserActiveTabBG;
 	public GameObject RecentlyPlayedActiveTabBG;
+	public GameObject FileBrowser;
+	public UILabel PathLabel;
+	public UIButton UpButton;
 	//public UISlicedSprite FBInactiveBackground;
 	//public UISlicedSprite RPInactiveBackground;
 
-	private bool recentlyPlayedActive = true;
-	private bool fileBrowserActive = false;
+	private static bool recentlyPlayedActive = true;
+	private static bool fileBrowserActive = false;
 	#endregion
 
 	#region Functions
 
 	private void Awake() {
 		if (recentlyPlayedActive) {
-			//RecentlyPlayedActiveTabSprite.color = Color.white;
-			//FileBrowserActiveTabSprite.color = Color.clear;
-			//RecentlyPlayedActiveTabSprite.enabled = true;
-			//FileBrowserActiveTabSprite.enabled = false;
+			PathLabel.text = "";
 		} else {
-			//RecentlyPlayedActiveTabSprite.color = Color.clear;
-			//FileBrowserActiveTabSprite.color = Color.white;
-			//FileBrowserActiveTabSprite.enabled = true;
-			//RecentlyPlayedActiveTabSprite.enabled = false;
+			if (!string.IsNullOrEmpty(Game.Path)) FileBrowser.SendMessage("OpenFileWindow", PlayerPrefs.GetString("filePath"));
+			else FileBrowser.SendMessage("OpenFileWindow", "");
 		}
 	}
 
 	private void Update() {
 		if (recentlyPlayedActive) {
-			if (!RecentlyPlayedActiveTabBG.active)
+			if (!RecentlyPlayedActiveTabBG.active) {
 				RecentlyPlayedActiveTabBG.SetActiveRecursively(true);
-			if (FileBrowserActiveTabBG.active)
+				UpButton.enabled = false;
+			}
+			if (FileBrowserActiveTabBG.active) {
 				FileBrowserActiveTabBG.SetActiveRecursively(false);
+				UpButton.enabled = false;
+			}
 		} else {
-			if (!FileBrowserActiveTabBG.active)
+			if (!FileBrowserActiveTabBG.active) {
 				FileBrowserActiveTabBG.SetActiveRecursively(true);
-			if (RecentlyPlayedActiveTabBG.active)
+				UpButton.enabled = true;
+				if (!string.IsNullOrEmpty(Game.Path)) FileBrowser.SendMessage("OpenFileWindow", PlayerPrefs.GetString("filePath"));
+				else FileBrowser.SendMessage("OpenFileWindow", "");
+			}
+			if (RecentlyPlayedActiveTabBG.active) {
 				RecentlyPlayedActiveTabBG.SetActiveRecursively(false);
+				UpButton.enabled = true;
+			}
 		}
 	}
 
 	private void RecentlyPlayedTabClicked() {
-		Debug.Log("Recently played tab clicked");
+		//Debug.Log("Recently played tab clicked");
 		if (!recentlyPlayedActive) {
-			Debug.Log("Recently played tab activated");
-			//RecentlyPlayedActiveTabSprite.color = Color.white;
-			//FileBrowserActiveTabSprite.color = Color.clear;
-			//RecentlyPlayedActiveTabSprite.enabled = true;
-			//FileBrowserActiveTabSprite.enabled = false;
+			//Debug.Log("Recently played tab activated");
 			recentlyPlayedActive = true;
 			fileBrowserActive = false;
+			PathLabel.text = "";
+			FileBrowser.SendMessage("CloseFileWindowTab");
 		}
 	}
 
 	private void FileBrowserTabClicked() {
-		Debug.Log("Filebrowser tab clicked");
+		//Debug.Log("Filebrowser tab clicked");
 		if (!fileBrowserActive) {
-			Debug.Log("Filebrowser tab activated");
-			//FileBrowserActiveTabSprite.color = Color.white;
-			//RecentlyPlayedActiveTabSprite.color = Color.clear;
-			//FileBrowserActiveTabSprite.enabled = true;
-			//RecentlyPlayedActiveTabSprite.enabled = false;
+			//Debug.Log("Filebrowser tab activated");
 			recentlyPlayedActive = false;
 			fileBrowserActive = true;
+			if (!string.IsNullOrEmpty(Game.Path)) FileBrowser.SendMessage("OpenFileWindow", PlayerPrefs.GetString("filePath"));
+			else FileBrowser.SendMessage("OpenFileWindow", "");
 		}
+	}
+
+	public static bool RecentlyPlayedActive {
+		get { return recentlyPlayedActive; }
 	}
 
 	#endregion
