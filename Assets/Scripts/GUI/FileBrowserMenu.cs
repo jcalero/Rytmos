@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections;
 using System.IO;
+using System.Collections.Generic;
+using System;
 
 public class FileBrowserMenu : MonoBehaviour {
 
@@ -20,6 +22,7 @@ public class FileBrowserMenu : MonoBehaviour {
 	#region Functions
 
 	private void Awake() {
+		SendRecentSongList();
 		if (recentlyPlayedActive) {
 			PathLabel.text = "";
 		} else {
@@ -60,6 +63,7 @@ public class FileBrowserMenu : MonoBehaviour {
 			fileBrowserActive = false;
 			PathLabel.text = "";
 			FileBrowser.SendMessage("CloseFileWindowTab");
+			FileBrowser.SendMessage("OpenRecentFilesWindow");
 		}
 	}
 
@@ -69,14 +73,61 @@ public class FileBrowserMenu : MonoBehaviour {
 			//Debug.Log("Filebrowser tab activated");
 			recentlyPlayedActive = false;
 			fileBrowserActive = true;
+			FileBrowser.SendMessage("CloseRecentFilesWindowTab");
 			if (!string.IsNullOrEmpty(Game.Path)) FileBrowser.SendMessage("OpenFileWindow", PlayerPrefs.GetString("filePath"));
 			else FileBrowser.SendMessage("OpenFileWindow", "");
 		}
 	}
 
+	private void SendRecentSongList() {
+		string file = "";
+
+		// Set the file path to save the song info to
+		if (Application.platform == RuntimePlatform.Android)
+			file = (Application.persistentDataPath + "/recentlist.r");
+		else if (Application.platform == RuntimePlatform.WindowsPlayer
+			|| Application.platform == RuntimePlatform.WindowsEditor)
+			file = (Application.persistentDataPath + "\\recentlist.r");
+		else {
+			Debug.Log("PLATFORM NOT SUPPORTED YET");
+			file = "";
+		}
+
+		List<string> displayName = new List<string>();
+		List<FileInfo> songPath = new List<FileInfo>();
+
+		// Gather rows from the file
+		List<string> fileRows = new List<string>();
+		string line;
+		try {
+			using (StreamReader sr = new StreamReader(file)) {
+				while ((line = sr.ReadLine()) != null) {
+					fileRows.Add(line);
+				}
+				sr.Close();
+			}
+			// Create the new lists that are to be sent to the file browser
+
+			for (int i = 0; i < fileRows.Count; i++) {
+				string song = fileRows[i].Split('|')[0] + " - " + fileRows[i].Split('|')[1];
+				if (song == "Unknown - Unknown") displayName.Add(fileRows[i].Split('|')[0] + " - " + fileRows[i].Split('|')[1] + " (" + new FileInfo(fileRows[i].Split('|')[2]).Name + ")");
+				else displayName.Add(fileRows[i].Split('|')[0] + " - " + fileRows[i].Split('|')[1]);
+				songPath.Add(new FileInfo(fileRows[i].Split('|')[2]));
+			}
+		} catch (Exception e) {
+			Debug.LogWarning(e.Message + " But don't worry, file will be created once at least one song has been started.");
+		}
+
+		FileBrowser.SendMessage("FetchRecentFilesNames", displayName);
+		FileBrowser.SendMessage("FetchRecentFilesInfos", songPath);
+
+	}
+
 	public static bool RecentlyPlayedActive {
 		get { return recentlyPlayedActive; }
 	}
+
+
 
 	#endregion
 }

@@ -1,7 +1,9 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using System;
 using System.Globalization;
+using System.IO;
 /// <summary>
 /// Level.cs
 /// 
@@ -30,7 +32,7 @@ public class Level : MonoBehaviour {
 	public Material bgNormal;
 	public Material bgDark;
 	#endregion
-	
+
 	#region Functions
 	protected virtual void Awake() {
 		// Local static reference to this class.
@@ -46,6 +48,7 @@ public class Level : MonoBehaviour {
 	protected virtual void Start() {
 		Game.Cheated = false;       // Reset cheated value
 
+		SaveToRecentSongList();
 		//if (Application.platform == RuntimePlatform.WindowsEditor) {
 		//    bgSpriteManagerScript.material = bgDark;
 		//    bgSpriteManager.renderer.material = bgDark;
@@ -349,6 +352,58 @@ public class Level : MonoBehaviour {
 			default:
 				return Color.black;
 		}
+	}
+
+	private void SaveToRecentSongList() {
+		string songRow = RemovePipeChar(AudioManager.artist).Trim() + "|" + RemovePipeChar(AudioManager.title).Trim() + "|" + Game.Song;
+		string file = "";
+		bool songExists = false;
+
+		// Set the file path to save the song info to
+		if (Application.platform == RuntimePlatform.Android)
+			file = (Application.persistentDataPath + "/recentlist.r");
+		else if (Application.platform == RuntimePlatform.WindowsPlayer
+			|| Application.platform == RuntimePlatform.WindowsEditor)
+			file = (Application.persistentDataPath + "\\recentlist.r");
+		else {
+			Debug.Log("PLATFORM NOT SUPPORTED YET");
+			file = "";
+		}
+
+
+		// Check if the file was already recently played and save the file content to memory
+		List<string> fileRows = new List<string>();
+		string line;
+		try {
+			using (StreamReader sr = new StreamReader(file)) {
+				while ((line = sr.ReadLine()) != null) {
+					fileRows.Add(line);
+					string lineClean = HSController.RemoveSpecialCharacters(line).ToLower();
+					string songRowClean = HSController.RemoveSpecialCharacters(songRow).ToLower();
+					if (lineClean == songRowClean)
+						songExists = true;
+				}
+				sr.Close();
+			}
+		} catch (Exception) {
+		}
+
+		if (!songExists) {
+			StreamWriter sw = new StreamWriter(file, false);
+			sw.WriteLine(songRow);
+			sw.Close();
+			StreamWriter sw2 = new StreamWriter(file, true);
+			for (int i = 0; i < fileRows.Count; i++) {
+				if (i > 8) break;
+				sw2.WriteLine(fileRows[i]);
+			}
+			sw2.Close();
+		}
+	}
+
+	public static string RemovePipeChar(string str) {
+		string tmpStr = str.Replace("|", "/");
+		return tmpStr.TrimEnd("\0".ToCharArray());
 	}
 	#endregion
 

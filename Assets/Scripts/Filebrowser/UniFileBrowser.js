@@ -83,6 +83,10 @@ private var showFiles = true;
 private var objectToSendTo : GameObject;
 private var resetPath = false;
 
+private var recentFilesDisplayNames : List.<String>;
+private var recentFileInfos : List.<FileInfo>;
+private var recentFileSelectedFile : int;
+
 function Awake () {
     if (!guiSkin) {
         Debug.LogError("GUI skin missing");
@@ -348,6 +352,7 @@ private function DrawFileWindow () {
         scrollPos = BeginScrollView (scrollPos);
         if (selected == -1) selectedFileNumber = SelectionGrid (selectedFileNumber, fileDisplayList, 1, scrollViewStyle, MaxWidth(1600));
         else selectedFileNumber = SelectionGrid (selectedFileNumber, fileDisplayList, 1, scrollViewStyleActive, MaxWidth(1600));
+        recentFileSelectedFile = selectedFileNumber;
         // See if a different file name was chosen, so we don't overwrite any user input in the text box except when needed
         if (selectedFileNumber != oldSelectedFileNumber && frameDone) {
             oldSelectedFileNumber = selectedFileNumber;
@@ -589,126 +594,151 @@ private function BuildPathList (pathEntry : int) {
     GetCurrentFileInfo();
 }
 
+protected function FetchRecentFilesNames (displayNames : List.<String>) {
+    recentFilesDisplayNames = new List.<String>();
+    recentFilesDisplayNames = displayNames;
+}
+
+protected function FetchRecentFilesInfos (fileInfos : List.<FileInfo> ) {
+    recentFileInfos = new List.<FileInfo>();
+    recentFileInfos = fileInfos;
+}
+
 private function GetCurrentFileInfo () {
     dirList = new List.<String>();
     fileList = new List.<String>();
-//    if (isRecentFiles) {
-//        
-//    } else {
-    var info = new DirectoryInfo(filePath);
-    if (!info.Exists) {
-        resetPath = true;
-        HandleError("The directory \"" + filePath + "\" does not exist");
-        return;
-    }
+    if (isRecentFiles) {
+        // Put file names into a sorted array
+        if (showFiles && recentFileInfos.Count > 0) {
+            for (var i = 0; i < recentFileInfos.Count; i++) {
+                fileList.Add(recentFileInfos[i].Name);
+            }
+        }
 
-    try {
-        var fileInfo = info.GetFiles();
-        var dirInfo = info.GetDirectories();
-    }
-    catch (err) {
-        if (err instanceof System.UnauthorizedAccessException) {
-            HandleAccessError(err.Message);
-            return;
-        } else {
-            HandleError(err.Message);
+        // Create the file list that's actually displayed
+        fileDisplayList = new GUIContent[recentFilesDisplayNames.Count];
+        for (i = 0; i < fileList.Count; i++) {
+            fileDisplayList[i] = new GUIContent(recentFilesDisplayNames[i], fileIcon);
+        }
+    
+        // Reset stuff so no filenames are selected and the scrollbar is always at the top
+        selectedFileNumber = oldSelectedFileNumber = -1;
+        scrollPos = Vector2.zero;
+    } else {
+        var info = new DirectoryInfo(filePath);
+        if (!info.Exists) {
+            resetPath = true;
+            HandleError("The directory \"" + filePath + "\" does not exist");
             return;
         }
-    }
-    
-    // Put folder names into a sorted array
-    if (!limitToInitialFolder && dirInfo.Length > 0) {
-        for (var i = 0; i < dirInfo.Length; i++) {
-            // Don't include ".app" folders or hidden folders, if set
-            if (dirInfo[i].Name.EndsWith(".app") && !allowAppBundleBrowsing) continue;
-            if (dirInfo[i].Name.StartsWith(".") && !showHiddenOSXFiles) continue;
-            dirList.Add(dirInfo[i].Name);
+
+        try {
+            var fileInfo = info.GetFiles();
+            var dirInfo = info.GetDirectories();
         }
-        dirList.Sort();
-    }
-    
-    // Get volumes/drives, if set
-    if (showVolumes && !limitToInitialFolder) {
-        if (!windowsSystem) {
-            try {
-                info = new DirectoryInfo("/Volumes");
-                dirInfo = info.GetDirectories();
-                numberOfVolumes = dirInfo.Length;
-                for (i = 0; i < numberOfVolumes; i++) {
-                    dirList.Insert(i, dirInfo[i].Name);
-                }
-            }
-            catch (err) {
+        catch (err) {
+            if (err instanceof System.UnauthorizedAccessException) {
+                HandleAccessError(err.Message);
+                return;
+            } else {
                 HandleError(err.Message);
+                return;
             }
         }
-        else {
-            var drives = Directory.GetLogicalDrives();
-            for (i = 0; i < drives.Length; i++) {
-                dirList.Insert(i, drives[i].Substring(0, drives[i].Length-1));
+        // Put folder names into a sorted array
+        if (!limitToInitialFolder && dirInfo.Length > 0) {
+            for (i = 0; i < dirInfo.Length; i++) {
+                // Don't include ".app" folders or hidden folders, if set
+                if (dirInfo[i].Name.EndsWith(".app") && !allowAppBundleBrowsing) continue;
+                if (dirInfo[i].Name.StartsWith(".") && !showHiddenOSXFiles) continue;
+                dirList.Add(dirInfo[i].Name);
             }
-            numberOfVolumes = drives.Length;
+            dirList.Sort();
         }
-    }
     
-    // Put file names into a sorted array
-    if (showFiles && fileInfo.Length > 0) {
-        for (i = 0; i < fileInfo.Length; i++) {
-            // Don't include hidden files, if set
-            if (fileInfo[i].Name.StartsWith(".") && !showHiddenOSXFiles) continue;
-            if (filterFiles && filterFileExtensions.Length > 0) {
-                // Go through all extensions for this file type
-                var dontAddFile = true;
-                for (var j = 0; j < filterFileExtensions.Length; j++) {
-                    if (fileInfo[i].Name.ToLower().EndsWith(filterFileExtensions[j])) {
-                        dontAddFile = false;
-                        break;
+        // Get volumes/drives, if set
+        if (showVolumes && !limitToInitialFolder) {
+            if (!windowsSystem) {
+                try {
+                    info = new DirectoryInfo("/Volumes");
+                    dirInfo = info.GetDirectories();
+                    numberOfVolumes = dirInfo.Length;
+                    for (i = 0; i < numberOfVolumes; i++) {
+                        dirList.Insert(i, dirInfo[i].Name);
                     }
                 }
-                if (dontAddFile) continue;
+                catch (err) {
+                    HandleError(err.Message);
+                }
             }
-            fileList.Add(fileInfo[i].Name);
+            else {
+                var drives = Directory.GetLogicalDrives();
+                for (i = 0; i < drives.Length; i++) {
+                    dirList.Insert(i, drives[i].Substring(0, drives[i].Length-1));
+                }
+                numberOfVolumes = drives.Length;
+            }
         }
-        fileList.Sort();
-    }
+    
+        // Put file names into a sorted array
+        if (showFiles && fileInfo.Length > 0) {
+            for (i = 0; i < fileInfo.Length; i++) {
+                // Don't include hidden files, if set
+                if (fileInfo[i].Name.StartsWith(".") && !showHiddenOSXFiles) continue;
+                if (filterFiles && filterFileExtensions.Length > 0) {
+                    // Go through all extensions for this file type
+                    var dontAddFile = true;
+                    for (var j = 0; j < filterFileExtensions.Length; j++) {
+                        if (fileInfo[i].Name.ToLower().EndsWith(filterFileExtensions[j])) {
+                            dontAddFile = false;
+                            break;
+                        }
+                    }
+                    if (dontAddFile) continue;
+                }
+                fileList.Add(fileInfo[i].Name);
+            }
+            fileList.Sort();
+        }
 
-    // Create the combined folder + file list that's actually displayed
-    fileDisplayList = new GUIContent[dirList.Count + fileList.Count];
-    for (i = 0; i < dirList.Count; i++) {
-        if (showVolumes && i < numberOfVolumes) {
-            fileDisplayList[i] = new GUIContent(dirList[i], driveIcon);
+        // Create the combined folder + file list that's actually displayed
+        fileDisplayList = new GUIContent[dirList.Count + fileList.Count];
+        for (i = 0; i < dirList.Count; i++) {
+            if (showVolumes && i < numberOfVolumes) {
+                fileDisplayList[i] = new GUIContent(dirList[i], driveIcon);
+            }
+            else {
+                fileDisplayList[i] = new GUIContent(dirList[i], folderIcon);	
+            }
+        }
+        for (i = 0; i < fileList.Count; i++) {
+            fileDisplayList[i + dirList.Count] = new GUIContent(fileList[i], fileIcon);
+        }
+    
+        // Get path list
+        var currentPathList = filePath.Split(pathChar);
+        var pathListArray = new List.<String>();
+        for (i = 0; i < currentPathList.length-1; i++) {
+            if (currentPathList[i] == "") {pathListArray.Add(pathChar.ToString());}
+            else {pathListArray.Add(currentPathList[i]);}
+        }
+        pathListArray.Reverse();
+        pathList = new GUIContent[pathListArray.Count];
+        for (i = 0; i < pathList.Length; i++) {
+            pathList[i] = new GUIContent(pathListArray[i], folderIcon);
+        }
+    
+        // Reset stuff so no filenames are selected and the scrollbar is always at the top
+        selectedFileNumber = oldSelectedFileNumber = -1;
+        scrollPos = Vector2.zero;
+        if (autoAddExtension && fileType == FileType.Save) {
+            fileName = addedExtension;
         }
         else {
-            fileDisplayList[i] = new GUIContent(dirList[i], folderIcon);	
+            fileName = "";
         }
+        UpdateDirectoryLabel();
     }
-    for (i = 0; i < fileList.Count; i++) {
-        fileDisplayList[i + dirList.Count] = new GUIContent(fileList[i], fileIcon);
-    }
-    
-    // Get path list
-    var currentPathList = filePath.Split(pathChar);
-    var pathListArray = new List.<String>();
-    for (i = 0; i < currentPathList.length-1; i++) {
-        if (currentPathList[i] == "") {pathListArray.Add(pathChar.ToString());}
-        else {pathListArray.Add(currentPathList[i]);}
-    }
-    pathListArray.Reverse();
-    pathList = new GUIContent[pathListArray.Count];
-    for (i = 0; i < pathList.Length; i++) {
-        pathList[i] = new GUIContent(pathListArray[i], folderIcon);
-    }
-    
-    // Reset stuff so no filenames are selected and the scrollbar is always at the top
-    selectedFileNumber = oldSelectedFileNumber = -1;
-    scrollPos = Vector2.zero;
-    if (autoAddExtension && fileType == FileType.Save) {
-        fileName = addedExtension;
-    }
-    else {
-        fileName = "";
-    }
-    UpdateDirectoryLabel();
 }
 
 private function HandleAccessError (errorMessage : String) {
@@ -738,6 +768,16 @@ public function SetGameObject (go : GameObject) {
     objectToSendTo = go;
 }
 
+public function OpenRecentFilesWindow () {
+    if (fileWindowOpen) return;
+
+    isRecentFiles = true;
+
+    showFiles = true;
+    fileType = FileType.Open;
+    ShowFileWindow();
+}
+
 public function OpenFileWindow ( path : String ) {
     if (fileWindowOpen) return;
     if (path != "") {
@@ -751,6 +791,8 @@ public function OpenFileWindow ( path : String ) {
 //        }
         filePath = path;
     }
+
+    isRecentFiles = false;
 
     showFiles = true;
     fileType = FileType.Open;
@@ -774,7 +816,7 @@ public function SaveFileWindow () {
 }
 
 private function ShowFileWindow () {
-	UpdateDirectoryLabel();
+	if (!isRecentFiles) UpdateDirectoryLabel();
     GetCurrentFileInfo();
     windowTitle = fileWindowTitles[fileType];
     fileWindowOpen = true;
@@ -796,6 +838,16 @@ public function CloseFileWindow () {
 public function CloseFileWindowTab () {
     if (showMessageWindow) return;	// Don't let window close if error/confirm window is open
     PlayerPrefs.SetString("filePath", filePath);
+    fileWindowOpen = false;
+    selectedFileNumber = oldSelectedFileNumber = -1;
+    fileName = "";
+    // For maximum efficiency, the OnGUI function in this script doesn't run at all when the file browser window isn't open,
+    // but is enabled in ShowFileWindow when necessary
+    enabled = false;
+}
+
+public function CloseRecentFilesWindowTab () {
+    if (showMessageWindow) return;	// Don't let window close if error/confirm window is open
     fileWindowOpen = false;
     selectedFileNumber = oldSelectedFileNumber = -1;
     fileName = "";
@@ -890,7 +942,12 @@ private function SelectFile () : IEnumerator {
     // If user selected a name, load/save that file
     if (fileType == FileType.Open) {
         CloseFileWindow();
-        objectToSendTo.SendMessage ("OpenFile", filePath + thisFileName);
+        if (isRecentFiles) {
+//            Debug.Log(recentFileSelectedFile);
+            objectToSendTo.SendMessage ("OpenFile", recentFileInfos[recentFileSelectedFile].FullName);
+        } else {
+            objectToSendTo.SendMessage ("OpenFile", filePath + thisFileName);
+        }
     }
     else if (fileType == FileType.Save) {
         CloseFileWindow();

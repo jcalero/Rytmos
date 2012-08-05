@@ -199,6 +199,8 @@ public class MainMenu : MonoBehaviour {
 		if (!FileBrowserMenu.RecentlyPlayedActive) {
 			if (!string.IsNullOrEmpty(Game.Path)) FileBrowser.SendMessage("OpenFileWindow", PlayerPrefs.GetString("filePath"));
 			else FileBrowser.SendMessage("OpenFileWindow", "");
+		} else {
+			FileBrowser.SendMessage("OpenRecentFilesWindow");
 		}
 #else
 		if(Game.Song != "Jazz-Fog" && Game.Song != "KnoxCanyon" && Game.Song != "LG-F1" && Game.Song != "YouGotToChange") {
@@ -223,6 +225,8 @@ public class MainMenu : MonoBehaviour {
 		if (!FileBrowserMenu.RecentlyPlayedActive) {
 			if (!string.IsNullOrEmpty(Game.Path)) FileBrowser.SendMessage("OpenFileWindow", PlayerPrefs.GetString("filePath"));
 			else FileBrowser.SendMessage("OpenFileWindow", "");
+		} else {
+			FileBrowser.SendMessage("OpenRecentFilesWindow");
 		}
 	}
 
