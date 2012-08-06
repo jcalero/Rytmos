@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class LoadingUI : MonoBehaviour
 {
@@ -13,56 +14,47 @@ public class LoadingUI : MonoBehaviour
 	public UIPanel ReadyToPlayPanel;
 	private bool SongTitleSet;
 	private string[,] bullshitText;
+	private string[] BSText;
 	private float stepTimer;
 	private bool songIsReady;
-	private float timeCounter;
-	private int offSet;
-	private const float TIME_OFFSET = 0.5f;
-	private bool reset = false;
-	private float current_step = 0f;
-	private float new_step =0f;
-
+	private int TextIterator = 0;
+	private int currentText = 0;
+	private List<int> usedStrings;
 
 	// Use this for initialization
 	void Start ()
-	{
-		timeCounter = 0f;
-		offSet = 0;
+	{		
+		BSText = new string[] {
+			"Splitting Channels",
+			"Charging Spectral Flux Capacitors",
+			"Inspecting Waveform Data",
+			"Disregarding Waveform Data",
+			"Taping Channels Together",
+			"Taking A Break",
+			"Imagining Lyrics",
+			"Making Silence Louder",
+			"Turning Volume Up To 11",
+			"Adding More Cowbell",
+			"Surfing Waveform",
+			"Composing Noise",
+			"Tripping Over Amplitudes",
+			"Deafening Test Subjects",
+			"Warming Up Touchscreen",
+			"Motivating Red Enemies",
+			"Motivating Blue Enemies",
+			"Motivating Green Enemies",
+			"Motivating Yellow Enemies",
+			"Motivating Cyan Enemies",
+			"Motivating Purple Enemies",
+			"Adding Random Circles",
+			"Applying Autotune",
+			"Shifting Pitch",
+			"Correcting Pitch",
+			"Injecting Neon Lights"
+		};
 		
-//		bullshitText = new string[5];
-//		bullshitText[0] = "Copying Audiosurfs idea...";
-//		bullshitText[1] = "Hand drawing audio form data...";
-//		bullshitText[2] = "Assigning notes to color spectrum...";
-//		bullshitText[3] = "Mishmashing peaks with other stuff...";
-//		bullshitText[4] = "Humming to the tune...";
-		
-		bullshitText = new string[5,4];
-		
-		bullshitText [0,0] = "Splitting Channels";
-		bullshitText [0,1] = "Splitting Channels.";
-		bullshitText [0,2] = "Splitting Channels..";
-		bullshitText [0,3] = "Splitting Channels...";
-		
-		bullshitText [1,0] = "Loading Spectral Flux Capacitors";
-		bullshitText [1,1] = "Loading Spectral Flux Capacitors.";
-		bullshitText [1,2] = "Loading Spectral Flux Capacitors..";
-		bullshitText [1,3] = "Loading Spectral Flux Capacitors...";
-		
-		bullshitText [2,0] = "Inspecting Waveform Data";
-		bullshitText [2,1] = "Inspecting Waveform Data.";
-		bullshitText [2,2] = "Inspecting Waveform Data..";
-		bullshitText [2,3] = "Inspecting Waveform Data...";
-		
-		bullshitText [3,0] = "Disregarding Waveform Data";
-		bullshitText [3,1] = "Disregarding Waveform Data.";
-		bullshitText [3,2] = "Disregarding Waveform Data..";
-		bullshitText [3,3] = "Disregarding Waveform Data...";
-		
-		bullshitText [4,0] = "Taping Channels Back Together";
-		bullshitText [4,1] = "Taping Channels Back Together.";
-		bullshitText [4,2] = "Taping Channels Back Together..";
-		bullshitText [4,3] = "Taping Channels Back Together...";
-		
+		currentText = Random.Range(0,BSText.Length);
+		usedStrings = new List<int>();
 
 		//LoadingLabel.text = "[FDD017]" + "0";
 		// Check whether we want to load in a song (Game.Song is set) or use one which has been provided as an asset
@@ -76,7 +68,7 @@ public class LoadingUI : MonoBehaviour
 		//				AudioManager.setCam (audioSources [0]);
 		//				StartCoroutine( AudioManager.initMusic (""));
 		//			}
-		//		}	
+		//		}
 	}
 
 	//void IEnumerate() 
@@ -97,97 +89,28 @@ public class LoadingUI : MonoBehaviour
 		if (!AudioManager.isSongLoaded ()) 
 		{
 			
-			
-			
 			ProgressBar.sliderValue = AudioManager.loadingProgress;
-			
-			timeCounter += Time.deltaTime;
-			
-			
-			if (AudioManager.loadingProgress > 0.8) 
-			{
-				new_step = 0.8f;
-			} 
-			else if (AudioManager.loadingProgress > 0.6) 
-			{
-				LoadingTextLabel.text = bullshitText [3,offSet];
-				new_step = 0.6f;
-			} 
-			else if (AudioManager.loadingProgress > 0.4) 
-			{
-				LoadingTextLabel.text = bullshitText [2,offSet];
-				new_step = 0.4f;
-			} 
-			else if (AudioManager.loadingProgress > 0.2) 
-			{
-				LoadingTextLabel.text = bullshitText [1,offSet];
-				new_step = 0.2f;
-			} 
-			else 
-			{
-				LoadingTextLabel.text = bullshitText [0,offSet];
-				new_step = 0.0f;
-			}
-			
-			if(new_step != current_step)
-			{
-				offSet = 0;
-				timeCounter = 0;
-			}
-			
-			
-			if(timeCounter >= TIME_OFFSET * 4 && reset)
-			{
-				offSet = 0;
-				timeCounter = 0;
-				reset = false;
-			}
-			
-			if(timeCounter >= TIME_OFFSET * 3)
-			{
-				offSet = 3;
-				reset = true;
-			}
-			else if(timeCounter >= TIME_OFFSET * 2)
-			{
-				offSet = 2;
-			}
-			else if(timeCounter >= TIME_OFFSET)
-			{
-				offSet = 1;
+						
+			if(AudioManager.loadingProgress >= TextIterator/5f && AudioManager.loadingProgress < (TextIterator+1)/5f) {
 				
+				string baseString = BSText[currentText];				
+				
+				float subProgress = (AudioManager.loadingProgress - (TextIterator/5f)) / (((TextIterator+1)/5f) - (TextIterator/5f));
+				Debug.Log("subProgress: " + subProgress);
+				if(subProgress < 0.25f) {}
+				else if(subProgress < 0.5f) baseString += ".";
+				else if(subProgress < 0.75f) baseString += "..";
+				else baseString += "...";
+				
+				LoadingTextLabel.text = baseString;
+				
+			} else {
+				TextIterator++;
+				usedStrings.Add(currentText);
+				currentText = Random.Range(0,BSText.Length);
+				while(usedStrings.Contains(currentText))
+					currentText = Random.Range(0,BSText.Length);
 			}
-			else
-			{
-			 	offSet = 0;
-			}
-			
-			if (AudioManager.loadingProgress > 0.8) 
-			{
-				LoadingTextLabel.text = bullshitText [4,offSet];
-				current_step = 0.8f;
-			} 
-			else if (AudioManager.loadingProgress > 0.6) 
-			{
-				LoadingTextLabel.text = bullshitText [3,offSet];
-				current_step = 0.6f;
-			} 
-			else if (AudioManager.loadingProgress > 0.4) 
-			{
-				LoadingTextLabel.text = bullshitText [2,offSet];
-				current_step = 0.4f;
-			} 
-			else if (AudioManager.loadingProgress > 0.2) 
-			{
-				LoadingTextLabel.text = bullshitText [1,offSet];
-				current_step = 0.2f;
-			} 
-			else 
-			{
-				LoadingTextLabel.text = bullshitText [0,offSet];
-				current_step = 0.0f;
-			}
-	
 			
 			
 
