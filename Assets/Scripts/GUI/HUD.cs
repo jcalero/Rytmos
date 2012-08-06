@@ -66,15 +66,6 @@ public class HUD : MonoBehaviour {
 		//Debug.Log("Score label local position: (" + ScoreValueLabel.transform.localPosition.x + ", " + ScoreValueLabel.transform.localPosition.y + ")");
 		//Debug.Log(">>>>>>>>>>>>>>>>>> END OF TEST <<<<<<<<<<<<<<<<<<<<<");
 	}
-
-	void Update() {
-		// Enable the dev mode panel if dev mode is enabled
-		//if (Game.DevMode) {
-		//    if (!DevModePanel.enabled) UITools.SetActiveState(DevModePanel, true);
-		//} else {
-		//    if (DevModePanel.enabled) UITools.SetActiveState(DevModePanel, false);
-		//}
-	}
 	#endregion
 	
 	#region Properties

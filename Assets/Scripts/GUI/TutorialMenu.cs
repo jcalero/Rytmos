@@ -15,12 +15,7 @@ public class TutorialMenu : MonoBehaviour {
 	#region Functions
 	void Awake() {
 		instance = this;
-		//menuCamera = NGUITools.FindCameraForLayer(LayerMask.NameToLayer("Pause Menu"));
 		UITools.SetActiveState(TutorialPopup, false);
-	}
-
-	void Update() {
-		
 	}
 
 	public static void Show() {

@@ -15,18 +15,7 @@ public class PauseMenu : MonoBehaviour {
 	#region Functions
 	void Awake() {
 		instance = this;
-		//menuCamera = NGUITools.FindCameraForLayer(LayerMask.NameToLayer("Pause Menu"));
 		UITools.SetActiveState(PausePanel, false);
-	}
-
-	void Update() {
-		// Checks if the game state has been paused. Shows or hides the Pause menu.
-		//if (Game.Paused) {
-		//    Debug.Log("Pause");
-		//    UITools.SetActiveState(PausePanel, true);
-		//} else {
-		//    if (PausePanel.enabled) UITools.SetActiveState(PausePanel, false);
-		//}
 	}
 
 	public static void Show() {
