@@ -48,7 +48,9 @@ public class Level : MonoBehaviour {
 	protected virtual void Start() {
 		Game.Cheated = false;       // Reset cheated value
 
-		SaveToRecentSongList();
+		if (Game.GameMode != Game.Mode.Tutorial)
+			SaveToRecentSongList();
+
 		//if (Application.platform == RuntimePlatform.WindowsEditor) {
 		//    bgSpriteManagerScript.material = bgDark;
 		//    bgSpriteManager.renderer.material = bgDark;
