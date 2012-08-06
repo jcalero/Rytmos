@@ -44,7 +44,6 @@ public class FileReader : DecoderInterface {
 		else if (path.EndsWith(".ryt")) this.format = FileFormat.RYT;
 		else this.format = FileFormat.ERROR;
 		readDataPointer = 0;
-		//if(this.format == AudioFormat.MPEG) mp3Reader = new MP3(this.path);
 	}
 
 	/// <summary>
@@ -70,7 +69,6 @@ public class FileReader : DecoderInterface {
 				readWAV();
 				break;
 			case FileFormat.MPEG:
-				//readMp3();
 				mp3Reader = new MP3(this.path);
 				this.frequency = mp3Reader.getFrequency();
 				this.channels = mp3Reader.getChannels();
@@ -291,7 +289,6 @@ public class FileReader : DecoderInterface {
 			int re = 0;
 			if (forAnalysis) re = mp3Reader.readMp3ForAnalysis(ref samples);
 			else re = mp3Reader.readMp3ForPlayback(ref samples);
-			//if(re < samples.Length) mp3Reader.close();
 			return re;
 
 		} else {
@@ -444,9 +441,7 @@ public class FileReader : DecoderInterface {
 			FrameSize = MPGImport.mpg123_outblock(handle_mpg);
 
 			len = MPGImport.mpg123_length(handle_mpg);
-			//float[] clipData = new float[len*_channels];
-			//			dataCounter = 0;
-			//			int clipDataCounter = 0;
+
 			maxVal = (float)short.MaxValue;
 			fChan = (float)_channels;
 
@@ -510,8 +505,6 @@ public class FileReader : DecoderInterface {
 
 						float tempVal = System.BitConverter.ToInt16(overFlow, i + j);
 						outBuff[outBuffFillCounter] += tempVal;
-						//clipData[clipDataCounter] = tempVal/maxVal;
-						//clipDataCounter++;
 					}
 					outBuff[outBuffFillCounter] /= fChan;
 					outBuff[outBuffFillCounter] /= maxVal;
@@ -578,9 +571,5 @@ public class FileReader : DecoderInterface {
 			MPGImport.mpg123_delete(handle_mpg);
 			MPGImport.mpg123_exit();
 		}
-
-
 	}
-
-
 }

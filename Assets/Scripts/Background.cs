@@ -106,16 +106,12 @@ public class Background : MonoBehaviour, PeakListener {
 		
 		float y = FeedbackStars[enemy].playbackSpeed;
 		float x = FeedbackStars[enemy].emissionRate;
-		
-		Debug.Log ("Incrementing: " + enemy);
-				
+						
 		bool increase = x < enhancedEmissionRate || y < enhancedParticleSpeed? true : false;
 		
 		do {
 			
 			if (increase) {
-//				x *= 1 + (intensity * Time.deltaTime * 2f);
-//				y *= 1 + (intensity * Time.deltaTime * 2f);
 				x = enhancedEmissionRate;
 				y = enhancedParticleSpeed;
 				increase = false;
@@ -123,8 +119,7 @@ public class Background : MonoBehaviour, PeakListener {
 				x *= 1 - (intensity * Time.deltaTime * 3f);
 				y *= 1 - (intensity * Time.deltaTime * 3f);
 			}
-			
-//			if(x > enhancedEmissionRate || y > enhancedParticleSpeed) increase = false;
+
 			if(x < originalEmissionRate*1.1f || y < originalEmissionRate*1.1f) {
 				x = originalEmissionRate;
 				y = originalParticleSpeed;
@@ -132,7 +127,6 @@ public class Background : MonoBehaviour, PeakListener {
 				
 			FeedbackStars[enemy].playbackSpeed = y;
 			FeedbackStars[enemy].emissionRate = x;
-			Debug.Log(x);
 			yield return new WaitForSeconds(0.1f);
 		} while(x != originalEmissionRate || y != originalParticleSpeed);
 		particlesActive[enemy] = false;

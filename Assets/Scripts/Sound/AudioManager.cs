@@ -122,17 +122,18 @@ public static class AudioManager
 		} else {
 			// We have no cache file, so do the actual analysis!
 			System.Threading.Thread t = new System.Threading.Thread(() => SoundProcessor.analyse(freader));
-//				t.IsBackground = true;
 			t.Start();
+			
 			while(SoundProcessor.isAnalyzing) {
 				loadingProgress = SoundProcessor.loadingProgress;
-				yield return 0;
+				yield return null;
 			}
+			
 			SoundProcessor.reset();
 			t.Join();
 			t.Abort();
 			t = null;
-//				SoundProcessor.analyse(freader);
+			
 			peaks = SoundProcessor.getPeaks ();
 			loudPartTimeStamps = SoundProcessor.getVolumeLevels ();
 			variationFactor = SoundProcessor.getVariationFactor();
@@ -175,33 +176,6 @@ public static class AudioManager
 	{
 		freader.close ();
 		freader = null;
-	}
-	
-	/// <summary>
-	/// Gets the current amplitude. NOT IMPLEMENTED
-	/// </summary>
-	/// <returns>
-	/// The current amplitude.
-	/// </returns>
-	/// <param name='sample'>
-	/// Sample.
-	/// </param>
-	public static int getCurrentAmplitude (int sample)
-	{
-//		if(buffer1Clip == null) return 0;
-//		sample = sample - sample/2;
-//		if(sample < 0) sample = 0;
-//		float[] data = new float[frequency/50];
-//		if(sample + data.Length > buffer1Clip.samples) sample = buffer1Clip.samples - data.Length;
-//		buffer1Clip.GetData(data,sample);
-//		
-//		float mean = 0;
-//		for(int i = 0; i < data.Length; i++) {
-//				mean += data[i]*100.0f;
-//		}
-//		mean /= data.Length;
-//		return (int)mean;
-		return 0;
 	}
 	
 	/// <summary>

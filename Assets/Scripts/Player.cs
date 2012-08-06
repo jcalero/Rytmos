@@ -58,7 +58,6 @@ public class Player : MonoBehaviour, PeakListener {
 	#region Functions
 	void Awake() {
 		instance = this;
-		Debug.Log(energyBar.transform.localScale);
 		energyBarSize = (int)energyBar.transform.localScale.x;
 	}
 

@@ -35,7 +35,6 @@ public class AudioPlayer : MonoBehaviour
 		else if(Game.Song == "YouGotToChange") audioSource = audioSources[4];
 		else audioSource = audioSources[0];
 		
-		Debug.Log(Game.Song);
 		AudioManager.audioLength = audioSource.clip.length;
 		AudioManager.frequency = audioSource.clip.frequency;
 #else
