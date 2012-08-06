@@ -54,8 +54,6 @@ public class PowerupScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		// DEPRECATED: Sets the respawn time to be relative to the player health
-		respawnTime = 20f;
 		
 		//If the player has selected the powerup, move it from visibility, and restart the timer
 		if(Player.takenPowerup == true) {

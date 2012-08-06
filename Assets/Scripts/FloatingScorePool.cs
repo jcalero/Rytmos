@@ -17,21 +17,6 @@ public class FloatingScorePool : MonoBehaviour {
 		FloatScoreLabels = floatScoreLabels;
 	}
 
-	// Use this for initialization
-	void Start() {
-
-	}
-
-	// Update is called once per frame
-	void Update() {
-
-	}
-
-	//public static UILabel Spawn() {
-	//    int index = (lastIndex + 1) % FloatScoreLabels.Length;
-	//    return FloatScoreLabels[index];
-	//}
-
 	public static UILabel Spawn(Vector3 worldPosition) {
 		int index = nextIndex % FloatScoreLabels.Length;
 		FloatScoreLabels[index].transform.position = worldPosition;

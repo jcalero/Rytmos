@@ -152,17 +152,6 @@ public class Background : MonoBehaviour, PeakListener {
 				if (channelRestrictors[channel] == 0) {
 					int chosenFireworks = Random.Range(0, BGFireworks.Length);
 				
-//					// Get one of the firework ParticleSytems which is NOT currently playing.
-//					int chosenFireworks = -1;
-//					for(int i = 0; i < BGFireworks.Length; i++) {
-//						if(!BGFireworks[i].isPlaying) chosenFireworks = i;
-//					}
-//					// If all are in use, just ignore this trigger
-//					if(chosenFireworks == -1) break;
-//				
-//					// Move the firework into the area of the corresponding colour, depending on what the currently spawning enemy is
-////					EnemySpawnScript.currentlySelectedEnemy
-				
 					if (intensity > 15) {
 						BGFireworks[chosenFireworks].startSpeed = 2.5f;
 						BGFireworks[chosenFireworks].startLifetime = 1;

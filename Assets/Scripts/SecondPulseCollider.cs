@@ -16,7 +16,6 @@ public class SecondPulseCollider : MonoBehaviour {
 			Color c = gameObject.transform.parent.GetComponent<EnemyScript>().MainColor;
 			if (otherObject.gameObject.GetComponent<PulseSender>().CurrentColor == c ||
 				otherObject.gameObject.GetComponent<PulseSender>().SecondaryColor == c) {
-				//Player.score += 10 * Player.multiplier;
 				Player.IncrementScore();
 				Player.Energy += 5;
 				if (Player.Energy > 50)

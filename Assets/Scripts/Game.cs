@@ -1,12 +1,14 @@
 using UnityEngine;
 using System.Collections;
 using System.IO;
+
 /// <summary>
 /// Game.cs
 /// 
 /// The main game class. Holds constants and consistent methods over the entire state of the game.
 /// </summary>
-public class Game : MonoBehaviour {
+public class Game : MonoBehaviour
+{
 
 	#region Fields
 	// Static screen side coordinates, gets set at launch of game.
@@ -15,7 +17,6 @@ public class Game : MonoBehaviour {
 	public static float screenTop;
 	public static float screenRight;
 	public static float screenMiddle;
-
 	public bool isTemp;                         // Debug value for when the game manager is a temporary instance.
 	public static bool sendSuper;				// Lame variable to indicate to everything about if you want to send a superpulse
 
@@ -45,123 +46,114 @@ public class Game : MonoBehaviour {
 	#endregion
 
 	#region Functions
-	void Awake() {
+	void Awake ()
+	{
 		// Stops phone screen from shutting down on timeout
 		Screen.sleepTimeout = (int)SleepTimeout.NeverSleep;
 		//Application.targetFrameRate = 30;
 
 		// Define screen edges based on screen resolution (requires camera to be placed at XY origin, i.e. Vector3 (0, 0, _) )
-		screenLeft = Camera.main.ViewportToWorldPoint(new Vector3(0, 0, 10)).x;
-		screenBottom = Camera.main.ViewportToWorldPoint(new Vector3(0, 0, 10)).y;
+		screenLeft = Camera.main.ViewportToWorldPoint (new Vector3 (0, 0, 10)).x;
+		screenBottom = Camera.main.ViewportToWorldPoint (new Vector3 (0, 0, 10)).y;
 		screenRight = -screenLeft;
 		screenTop = -screenBottom;
 		screenMiddle = 0f;
-		//if(Application.platform == RuntimePlatform.WindowsEditor && filePath == null) 
-		//    filePath = ""; //"C:\\Users\\Scott\\Desktop\\test.mp3";
-
 	}
 
-	void Start() {
-		if (PlayerPrefs.GetString("playername") != null) PlayerName = PlayerPrefs.GetString("playername");
+	void Start ()
+	{
+		if (PlayerPrefs.GetString ("playername") != null)
+			PlayerName = PlayerPrefs.GetString ("playername");
 		IsLoggedIn = RememberLogin;
-		DontDestroyOnLoad(gameObject);      // Makes sure this object is persistent between all scenes of the game
-		//AudioManager.initMusic(@"peppers.wav");
+		DontDestroyOnLoad (gameObject);      // Makes sure this object is persistent between all scenes of the game
 	}
 
-	void Update() {
+	void Update ()
+	{
 		// Key input condition for pausing the game
-		if ((Input.GetKeyDown(KeyCode.Home) || Input.GetKeyDown(KeyCode.Escape) ||
-			Input.GetKeyDown("escape") || Input.GetKeyDown(KeyCode.Space)) && GameState == State.Playing) {
+		if ((Input.GetKeyDown (KeyCode.Home) || Input.GetKeyDown (KeyCode.Escape) ||
+			Input.GetKeyDown ("escape") || Input.GetKeyDown (KeyCode.Space)) && GameState == State.Playing) {
 			if (!paused)
-				Pause();
+				Pause ();
 			else
-				Resume();
+				Resume ();
 			return;
 		}
 		// Key input position for DevMode, only works in the "Game" level
-		if (Input.GetKeyDown(KeyCode.BackQuote) && GameState == State.Playing) {
+		if (Input.GetKeyDown (KeyCode.BackQuote) && GameState == State.Playing) {
 			DevMode = !DevMode;
 		}
-
-		//if (Application.loadedLevelName == "Game" || Application.loadedLevelName == "DeathMatch") {
-		//    switch (mode) {
-		//        case Mode.TimeAttack:
-		//            break;
-		//        case Mode.DeathMatch:
-		//            break;
-		//        default:
-		//            break;
-		//    }
-		//}
 	}
 
-	void OnApplicationPause() {
+	void OnApplicationPause ()
+	{
 		if (GameState == State.Playing && !Game.Paused)
-			Pause();
+			Pause ();
 	}
 
 	// Global method for pausing the game.
-	public static void Pause() {
-		//        AudioSource audio = Camera.main.GetComponent<AudioSource>();
-		//        if (audio != null)	// Pause the music if it exists
+	public static void Pause ()
+	{
 		if (GameState == State.Playing) {
-			AudioPlayer.pause();
-			PauseMenu.Show();
+			AudioPlayer.pause ();
+			PauseMenu.Show ();
 		}
 		Time.timeScale = 0f;                        // Stop game time
 		paused = true;
-		Debug.Log(">> Game paused.");
+		Debug.Log (">> Game paused.");
 	}
 	
-	public static void Pause(bool isTutorial) {
-		if(isTutorial) {
+	public static void Pause (bool isTutorial)
+	{
+		if (isTutorial) {
 			if (GameState == State.Playing) {					
-				AudioPlayer.pause();
-				TutorialMenu.Show();
+				AudioPlayer.pause ();
+				TutorialMenu.Show ();
 			}
 			Time.timeScale = 0f;                        // Stop game time
 			paused = true;
-			Debug.Log(">> Tutorial showcasing.");
+			Debug.Log (">> Tutorial showcasing.");
 		}
 	}
 	
-	public static void Resume(bool isTutorial) {
-		if(isTutorial) {
+	public static void Resume (bool isTutorial)
+	{
+		if (isTutorial) {
 			if (GameState == State.Playing) {
-				AudioPlayer.resume();	
-				TutorialMenu.Hide();
+				AudioPlayer.resume ();	
+				TutorialMenu.Hide ();
 			}
 			Time.timeScale = 1f;                        // Restores game time
 			paused = false;
-			Debug.Log(">> Tutorial done showcasing.");
+			Debug.Log (">> Tutorial done showcasing.");
 		}
 	}
 
-	public static void Resume() {
-		//        AudioSource audio = Camera.main.GetComponent<AudioSource>();
-		//        if (audio != null)
+	public static void Resume ()
+	{
 		if (GameState == State.Playing) {
-			AudioPlayer.resume();                           // Resume the music if it exists
-			PauseMenu.Hide();
+			AudioPlayer.resume ();
+			PauseMenu.Hide ();
 		}
 		Time.timeScale = 1f;                        // Restores game time
 		paused = false;
-		Debug.Log(">> Game resumed.");
+		Debug.Log (">> Game resumed.");
 	}
 
 	/// <summary>
 	/// Runs when any new scene was loaded
 	/// </summary>
-	void OnLevelWasLoaded(int level) {
-		Debug.Log(">> Level: \"" + Application.loadedLevelName + "\" was loaded");
+	void OnLevelWasLoaded (int level)
+	{
+		Debug.Log (">> Level: \"" + Application.loadedLevelName + "\" was loaded");
 		if (level == (int)LevelNames.Game) {
 			GameState = State.Playing;
 		} else {
 			GameState = State.Menu;
-			Resume();
+			Resume ();
 		}
 		DevMode = false;
-		Debug.Log(">> Current game mode: " + GameMode);
+		Debug.Log (">> Current game mode: " + GameMode);
 	}
 
 	/// <summary>
@@ -171,7 +163,8 @@ public class Game : MonoBehaviour {
 		get { return devMode; }
 		private set {
 			devMode = value;
-			if (value) cheated = true;
+			if (value)
+				cheated = true;
 		}
 	}
 
@@ -184,7 +177,6 @@ public class Game : MonoBehaviour {
 		set { paused = value; }
 	}
 
-
 	public static bool Cheated {
 		get { return cheated; }
 		set { cheated = value; }
@@ -193,12 +185,12 @@ public class Game : MonoBehaviour {
 	public static string Song {
 		get {
 			if (filePath == "" || filePath == null)
-				filePath = PlayerPrefs.GetString("lastSongPlayed");
+				filePath = PlayerPrefs.GetString ("lastSongPlayed");
 			return filePath; 
 		}
 		set {
 			filePath = value; 
-			PlayerPrefs.SetString("lastSongPlayed", filePath);
+			PlayerPrefs.SetString ("lastSongPlayed", filePath);
 		}
 	}
 
@@ -215,7 +207,7 @@ public class Game : MonoBehaviour {
 	public static string Path {
 		get {
 			if (filePath != null) {
-				return new DirectoryInfo(filePath).Parent.FullName;
+				return new DirectoryInfo (filePath).Parent.FullName;
 			} else {
 				return null;
 			}
@@ -249,101 +241,101 @@ public class Game : MonoBehaviour {
 
 	public static string PlayerName {
 		get {
-			if (PlayerPrefs.HasKey("playername"))
-				return PlayerPrefs.GetString("playername");
+			if (PlayerPrefs.HasKey ("playername"))
+				return PlayerPrefs.GetString ("playername");
 			else
 				return null;
 		}
-		set { PlayerPrefs.SetString("playername", value); }
+		set { PlayerPrefs.SetString ("playername", value); }
 	}
 
 	public static float EffectsVolume {
 		get {
-			if (PlayerPrefs.HasKey("effectsVolume")) {
-				float tempVolume = PlayerPrefs.GetFloat("effectsVolume");
-				effectsVolume = Mathf.Clamp(tempVolume, 0f, 1f);
+			if (PlayerPrefs.HasKey ("effectsVolume")) {
+				float tempVolume = PlayerPrefs.GetFloat ("effectsVolume");
+				effectsVolume = Mathf.Clamp (tempVolume, 0f, 1f);
 				return effectsVolume;
 			} else {
-				PlayerPrefs.SetFloat("effectsVolume", effectsVolumeDefault);
+				PlayerPrefs.SetFloat ("effectsVolume", effectsVolumeDefault);
 				return effectsVolumeDefault;
 			}
 		}
 		set {
-			float tempVolume = Mathf.Clamp(value, 0f, 1f);
-			effectsVolume = Mathf.Clamp(tempVolume, 0f, 1f);
-			PlayerPrefs.SetFloat("effectsVolume", tempVolume);
+			float tempVolume = Mathf.Clamp (value, 0f, 1f);
+			effectsVolume = Mathf.Clamp (tempVolume, 0f, 1f);
+			PlayerPrefs.SetFloat ("effectsVolume", tempVolume);
 		}
 	}
 
 	public static float MusicVolume {
 		get {
-			if (PlayerPrefs.HasKey("musicVolume")) {
-				float tempVolume = PlayerPrefs.GetFloat("musicVolume");
-				musicVolume = Mathf.Clamp(tempVolume, 0f, 1f);
+			if (PlayerPrefs.HasKey ("musicVolume")) {
+				float tempVolume = PlayerPrefs.GetFloat ("musicVolume");
+				musicVolume = Mathf.Clamp (tempVolume, 0f, 1f);
 				return musicVolume;
 			} else {
-				PlayerPrefs.SetFloat("musicVolume", musicVolumeDefault);
+				PlayerPrefs.SetFloat ("musicVolume", musicVolumeDefault);
 				return musicVolumeDefault;
 			}
 		}
 		set {
-			float tempVolume = Mathf.Clamp(value, 0f, 1f);
-			musicVolume = Mathf.Clamp(tempVolume, 0f, 1f);
-			PlayerPrefs.SetFloat("musicVolume", tempVolume);
+			float tempVolume = Mathf.Clamp (value, 0f, 1f);
+			musicVolume = Mathf.Clamp (tempVolume, 0f, 1f);
+			PlayerPrefs.SetFloat ("musicVolume", tempVolume);
 		}
 	}
 
 	public static bool ColorBlindMode {
 		get {
-			if (PlayerPrefs.HasKey("colorBlindMode")) {
-				bool tempValue = PlayerPrefs.GetInt("colorBlindMode") > 0 ? true : colorBlindModeDefault;
+			if (PlayerPrefs.HasKey ("colorBlindMode")) {
+				bool tempValue = PlayerPrefs.GetInt ("colorBlindMode") > 0 ? true : colorBlindModeDefault;
 				colorBlindMode = tempValue;
 				return colorBlindMode;
 			} else {
-				PlayerPrefs.SetInt("colorBlindMode", colorBlindModeDefault ? 1 : 0);
+				PlayerPrefs.SetInt ("colorBlindMode", colorBlindModeDefault ? 1 : 0);
 				return colorBlindModeDefault;
 			}
 		}
 		set {
 			colorBlindMode = value;
 			int tempValue = colorBlindMode ? 1 : 0;
-			PlayerPrefs.SetInt("colorBlindMode", tempValue);
+			PlayerPrefs.SetInt ("colorBlindMode", tempValue);
 		}
 	}
 
 	public static bool LowGraphicsMode {
 		get {
-			if (PlayerPrefs.HasKey("lowGraphicsMode")) {
-				bool tempValue = PlayerPrefs.GetInt("lowGraphicsMode") > 0 ? true : lowGraphicsModeDefault;
+			if (PlayerPrefs.HasKey ("lowGraphicsMode")) {
+				bool tempValue = PlayerPrefs.GetInt ("lowGraphicsMode") > 0 ? true : lowGraphicsModeDefault;
 				lowGraphicsMode = tempValue;
 				return lowGraphicsMode;
 			} else {
-				PlayerPrefs.SetInt("lowGraphicsMode", lowGraphicsModeDefault ? 1 : 0);
+				PlayerPrefs.SetInt ("lowGraphicsMode", lowGraphicsModeDefault ? 1 : 0);
 				return lowGraphicsModeDefault;
 			}
 		}
 		set {
 			lowGraphicsMode = value;
 			int tempValue = lowGraphicsMode ? 1 : 0;
-			PlayerPrefs.SetInt("lowGraphicsMode", tempValue);
+			PlayerPrefs.SetInt ("lowGraphicsMode", tempValue);
 		}
 	}
 
 	public static bool RememberLogin {
 		get {
-			if (PlayerPrefs.HasKey("rememberLogin")) {
-				bool tempValue = PlayerPrefs.GetInt("rememberLogin") > 0 ? true : rememberLoginDefault;
+			if (PlayerPrefs.HasKey ("rememberLogin")) {
+				bool tempValue = PlayerPrefs.GetInt ("rememberLogin") > 0 ? true : rememberLoginDefault;
 				rememberLogin = tempValue;
 				return rememberLogin;
 			} else {
-				PlayerPrefs.SetInt("rememberLogin", rememberLoginDefault ? 1 : 0);
+				PlayerPrefs.SetInt ("rememberLogin", rememberLoginDefault ? 1 : 0);
 				return rememberLoginDefault;
 			}
 		}
 		set {
 			rememberLogin = value;
 			int tempValue = rememberLogin ? 1 : 0;
-			PlayerPrefs.SetInt("rememberLogin", tempValue);
+			PlayerPrefs.SetInt ("rememberLogin", tempValue);
 		}
 	}
 
@@ -352,7 +344,8 @@ public class Game : MonoBehaviour {
 	/// There is no way to automatically get the right order for the scenes so it might not be accurate if the order has changed
 	/// and this was not updated!
 	/// </summary>
-	public enum LevelNames {
+	public enum LevelNames
+	{
 		SplashScreen,
 		MainMenu,
 		Game,
@@ -362,25 +355,29 @@ public class Game : MonoBehaviour {
 	/// <summary>
 	/// Not in use at the moment.
 	/// </summary>
-	public enum State {
+	public enum State
+	{
 		Menu,
 		Playing,
 		Paused
 	}
 
-	public enum Mode {
+	public enum Mode
+	{
 		Arcade,
 		Casual,
 		Tutorial,
 		Challenge
 	}
 
-	public enum NumOfColors {
+	public enum NumOfColors
+	{
 		Six,
 		Four
 	}
 
-	public enum Powerups {
+	public enum Powerups
+	{
 		None,
 		MassivePulse,				//Massive Pulse - No Energy to Send, Destroys All Enemies, Score Does not increase
 		ChainReaction,

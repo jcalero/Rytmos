@@ -24,11 +24,6 @@ public class HUDFPS : MonoBehaviour {
 	public bool showFPS = true; // Flag to check if it should show the fps or not
 
     void Start() {
-        //if (!guiText) {
-        //    Debug.Log("UtilityFramesPerSecond needs a GUIText component!");
-        //    enabled = false;
-        //    return;
-        //}
         fpsLabel = gameObject.GetComponent<UILabel>();
         timeleft = updateInterval;
 		if (!showFPS) fpsLabel.text = "";

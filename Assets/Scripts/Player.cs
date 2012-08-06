@@ -69,7 +69,6 @@ public class Player : MonoBehaviour, PeakListener {
 		for (int i = 0; i < players.Length; i++) {
 			meshRenders[i] = players[i].GetComponent<MeshRenderer>();
 		}
-		//TODO: Make this relative to how many rings in the player we have
 		PeakTriggerManager.addSelfToListenerList(this);
 		ResetStats();
 	}
