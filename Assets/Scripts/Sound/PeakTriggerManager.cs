@@ -7,9 +7,9 @@ public class PeakTriggerManager : MonoBehaviour
 	
 	#region vars
 	private static List<PeakListener> listeners; // List of object which are to be alerted when an event occurs
-	private int loudPartCounter;											// Iterator for the loud parts
-	private float timer;													// Keep track of time
-	private int[] peakCounters;												// Iterator for the array of peaks
+	private static int loudPartCounter;											// Iterator for the loud parts
+	private static float timer;													// Keep track of time
+	private static int[] peakCounters;												// Iterator for the array of peaks
 	private int loudFlag;													// Flag to check how loud the song currently is
 	public static float[] timeThreshs;
 	public static float[] peakReductionFactors;
@@ -89,6 +89,52 @@ public class PeakTriggerManager : MonoBehaviour
 				}
 			}
 		}
+	}
+	
+	public static void seekTo(float timeInSeconds) {
+		
+		// THIS BETTER NOT HAPPEN!
+		if(timeInSeconds < 0 || timeInSeconds > AudioManager.audioLength) Application.CancelQuit();
+		
+		// Set the timer to where we want to seek to
+		timer = timeInSeconds;
+		
+		// Find the loud part we are in with the given timer
+		loudPartCounter = 0;
+		while(loudPartCounter < AudioManager.loudPartTimeStamps.Length-1 && AudioManager.loudPartTimeStamps [loudPartCounter] / (float)AudioManager.frequency < timer) {
+			loudPartCounter+=2;			
+		}
+		
+		// Set the loud flags for all listeners
+		foreach (PeakListener l in listeners) l.setLoudFlag (AudioManager.loudPartTimeStamps[loudPartCounter+1]);
+		
+		// Find the position of the next trigger in each channel, given the new timer
+		// (also, recalculate timethresholds accordingly)
+		for (int t = 0; t < AudioManager.peaks.Length; t++) {
+			peakCounters[t] = 0;
+			while (peakCounters[t] < AudioManager.peaks[t].Length-1 && AudioManager.peaks[t][peakCounters[t]] * (1024f/(float)AudioManager.frequency) < timer) {
+				peakCounters [t]+=2;			
+			}
+			
+			int start = peakCounters[t] - 10;
+			if(start < 0) start = 0;
+			
+			int end = peakCounters[t] + 10;
+			if(end > AudioManager.peaks[t].Length) end = AudioManager.peaks[t].Length;
+			
+			// Find average time between peaks using the sourrounding 10 peaks
+			float timeAverage = 0f;
+			for(int i = start+2; i < end; i+=2) {
+				timeAverage += AudioManager.peaks[t][i] - AudioManager.peaks[t][i-2];
+			}
+			timeAverage /= ((end-start)/2)-1;
+			timeAverage *= 1024f/(float)AudioManager.frequency;
+							
+			// Update the time thresholds according to the reduction factors
+			timeThreshs[t] = Mathf.Floor(peakReductionFactors[t]/timeAverage)*0.95f*timeAverage;
+			if(timeThreshs[t] < 0.1) timeThreshs[t] = 0.1f;
+		}
+		
 	}
 	
 	/// <summary>
