@@ -263,14 +263,11 @@ public class SoundProcessor
 		
 		stDev = Mathf.Sqrt (stDev / (float)dbLvls.Length);
 		
-		Debug.Log("before conversion: " + stDev);
 		if(stDev > 25f) stDev = 25f;
 		else if (stDev < 5f) stDev = 5f;
 		
 		stDev /= 25f;
 		variationFactor = stDev;
-		
-		Debug.Log ("stdDev for song is: " + stDev);
 		#endregion
 		
 		isAnalyzing = false;

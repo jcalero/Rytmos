@@ -96,7 +96,6 @@ public class LoadingUI : MonoBehaviour
 				string baseString = BSText[currentText];				
 				
 				float subProgress = (AudioManager.loadingProgress - (TextIterator/5f)) / (((TextIterator+1)/5f) - (TextIterator/5f));
-				Debug.Log("subProgress: " + subProgress);
 				if(subProgress < 0.25f) {}
 				else if(subProgress < 0.5f) baseString += ".";
 				else if(subProgress < 0.75f) baseString += "..";
