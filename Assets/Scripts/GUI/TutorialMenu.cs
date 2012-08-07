@@ -31,7 +31,7 @@ public class TutorialMenu : MonoBehaviour {
 	/// </summary>
 	void OnResumeClicked() {
 		Debug.Log ("Does this work?");
-		Game.Resume(true);
+		Game.Resume();
 	}
 
 	/// <summary>

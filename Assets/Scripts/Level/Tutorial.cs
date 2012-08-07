@@ -95,7 +95,7 @@ public class Tutorial : Level {
 			waitTimer += Time.deltaTime;
 			if(waitTimer > .75f) {
 				Debug.Log("Your first enemy is here. Cyan... Destroy it by clicking on the cyan area here");
-				Game.Pause(true);
+				Game.Pause();
 				firstEnemyMessage = true;
 				waitTimer = 0;
 			}
@@ -104,7 +104,7 @@ public class Tutorial : Level {
 			waitTimer += Time.deltaTime;
 			if(waitTimer >.85f) {
 				Debug.Log("Different enemy this time - yellow. But you can destroy him the same way. Press here");
-				Game.Pause (true);
+				Game.Pause();
 				secondEnemyMessage = true;
 				waitTimer = 0;
 			}
@@ -113,7 +113,7 @@ public class Tutorial : Level {
 			waitTimer += Time.deltaTime;
 			if(waitTimer > .75f) {
 				Debug.Log("Third enemy - green. You know what to do. Click here. ");
-				Game.Pause (true);
+				Game.Pause();
 				thirdEnemyMessage = true;
 				waitTimer = 0;
 			}
@@ -125,7 +125,7 @@ public class Tutorial : Level {
 			if(waitTimer >.2f) {
 				Debug.Log("You're multiplier has increased. Use it to increase your score");
 				comboMessage = true;	
-				Game.Pause(true);
+				Game.Pause();
 				waitTimer = 0;
 			}
 		}
@@ -134,7 +134,7 @@ public class Tutorial : Level {
 		if(EnemySpawnScript.spawnCount/2 >= 4 && !slideMessage) {
 			Debug.Log("You're doing well. You've got two enemies coming up that are close together. Instead of two pulses, try sliding.");
 			slideMessage = true;
-			Game.Pause(true);
+			Game.Pause();
 		}
 		
 		//INcreased spawners message
@@ -143,7 +143,7 @@ public class Tutorial : Level {
 			if(waitTimer>.2f) {
 				Debug.Log("You're doing well. More enemies will be attacking. This will last until you get hit.");
 				increasedSpawnersMessage = true;
-				Game.Pause(true);
+				Game.Pause();
 				waitTimer = 0;
 			}
 		}
@@ -151,7 +151,7 @@ public class Tutorial : Level {
 		//Spawn powerup
 		if(audioTimer > 75f && !shieldPowerupMessage) {
 			powerupScript.GetComponent<PowerupScript>().spawnPowerupOnScreen(1, new Vector3(3,3,0));
-			Game.Pause (true);
+			Game.Pause();
 			Debug.Log("There's a powerup to help you. These will disappear, so click it quickly.");
 			shieldPowerupMessage = true;
 			resendMessageTimer = 0;
@@ -177,7 +177,7 @@ public class Tutorial : Level {
 			if(waitTimer > .2f) {
 				Debug.Log("You've got a shield. You can see it in the center. Use it by clicking.");
 				useShieldMessage = true;
-				Game.Pause (true);
+				Game.Pause();
 				waitTimer = 0;
 				resendMessage = true;
 			}
@@ -202,7 +202,7 @@ public class Tutorial : Level {
 			resendMessageTimer = 0;
 			if(waitTimer > .2f) {
 				Debug.Log("This is a shield. Use it to keep your combo");
-				Game.Pause(true);
+				Game.Pause();
 				demoShieldMessage = true;
 				waitTimer = 0;
 			}
@@ -211,7 +211,7 @@ public class Tutorial : Level {
 		//Spawn a superPulse, with the intention to help the player through the difficult part
 		if(!superPulseMessage && audioTimer >=activatedTime + 8.5f) {
 			Debug.Log("Spawn super Pulse to help deal with large wave");
-			Game.Pause(true);
+			Game.Pause();
 			powerupScript.GetComponent<PowerupScript>().spawnPowerupOnScreen(0, new Vector3(-3,4,0));
 			superPulseMessage = true;
 		}
@@ -220,7 +220,7 @@ public class Tutorial : Level {
 		//TODO: Time needs to be adjusted to reflect the song
 		if(!chainPulseMessage && audioTimer >= 140) {
 			Debug.Log("Spawn chain pulse to help deal with large wave");
-			Game.Pause(true);
+			Game.Pause();
 			powerupScript.GetComponent<PowerupScript>().spawnPowerupOnScreen(0, new Vector3(-3,-5,0));
 			chainPulseMessage = true;
 			spawnPowerupsNormal = true;

@@ -135,7 +135,7 @@ public class AudioPlayer : MonoBehaviour
 	public static void seekTo(float timeInSeconds) {
 #if UNITY_ANDROID && !UNITY_EDITOR
 		int androidSeekTime = (int)(timeInSeconds * 1000f)
-		androidPlayer.Call("seekTo",new Object[]{androidSeekTime});
+		androidPlayer.Call("seekTo",new object[]{androidSeekTime});
 #else
 		if(audioSource != null) {
 			audioSource.time = timeInSeconds;
