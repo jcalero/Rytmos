@@ -18,6 +18,8 @@ public class Background : MonoBehaviour, PeakListener {
 	private float originalPlayerY;
 	private float enhancedPlayerX;
 	private float enhancedPlayerY;
+	private float maxPlayerX;
+	private float maxPlayerY;
 	
 	private float originalEmissionRate;
 	private float enhancedEmissionRate;
@@ -61,6 +63,8 @@ public class Background : MonoBehaviour, PeakListener {
 		originalPlayerY = PlayerObject.transform.localScale.z;
 		enhancedPlayerX = originalPlayerX + (0.1f * originalPlayerX);
 		enhancedPlayerY = originalPlayerY + (0.1f * originalPlayerY);
+		maxPlayerX = 2*originalPlayerX;
+		maxPlayerY = 2*originalPlayerY;
 		bgIncrease = false;
 		
 		originalEmissionRate = FeedbackStars[0].emissionRate;
@@ -84,7 +88,7 @@ public class Background : MonoBehaviour, PeakListener {
 		}
 		if (intensity < 0.05f) intensity = 0.05f;
 
-		PlayerObject.transform.localScale = calculateBackgroundSize();
+		PlayerObject.transform.localScale = calculatePlayerSize();
 	}
 	
 	private IEnumerator FlashStars(int enemy, int intensity) {
@@ -145,11 +149,11 @@ public class Background : MonoBehaviour, PeakListener {
 	}
 	public void setLoudFlag(int flag) { }
 
-	private Vector3 calculateBackgroundSize() {
+	private Vector3 calculatePlayerSize() {
 		float y = PlayerObject.transform.localScale.z;
 		float x = PlayerObject.transform.localScale.x;
 
-		if (increase) {
+		if (increase && x < maxPlayerX && y < maxPlayerY) {
 			x *= 1 + (intensity * Time.deltaTime * 1.8f);
 			y *= 1 + (intensity * Time.deltaTime * 1.8f);
 		} else if ((x < enhancedPlayerX || y < enhancedPlayerY) && bgIncrease) {
