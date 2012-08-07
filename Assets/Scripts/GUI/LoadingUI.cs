@@ -58,21 +58,11 @@ public class LoadingUI : MonoBehaviour
 		currentText = Random.Range(0,BSText.Length);
 		usedStrings = new List<int>();
 
-		//LoadingLabel.text = "[FDD017]" + "0";
 		// Check whether we want to load in a song (Game.Song is set) or use one which has been provided as an asset
 		if (Game.Song != null && Game.Song != "") {
 			StartCoroutine (AudioManager.initMusic (Game.Song));
 		}
-
-		//		} else if (audioSources [0].clip != null) {
-		//			if (!AudioManager.isSongLoaded ()) {
-		//				AudioManager.setCam (audioSources [0]);
-		//				StartCoroutine( AudioManager.initMusic (""));
-		//			}
-		//		}
 	}
-
-	//void IEnumerate() 
 
 	// Update is called once per frame
 	void Update ()

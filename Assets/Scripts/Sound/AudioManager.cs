@@ -19,21 +19,20 @@ public static class AudioManager
 	public static int channels;					// Number of channels in the music file
 	public static float audioLength;			// Total length in seconds (float) of the music file
 	public static int audioBufferSize;			// How many samples we want to store in each buffer
-	public static int frameSize;
-	public static string artist = "Unknown";
-	public static string title = "Unknown";
-	public static float loadingProgress;
-	public static volatile bool isWritingCacheFile;
+	public static string artist = "Unknown";	// id3 data
+	public static string title = "Unknown";		// id3 data
+	public static float loadingProgress;		// Shows how much of the sound has been processed. Float between 0 and 1.
+	public static volatile bool isWritingCacheFile;	// Used so that we don't abort while having an open filehandle.
+	public static bool songLoaded = false;		// Flag if the song has finished loading
+	public static bool tagDataSet = false;		// Flag to announce that we have read the id3 data
 	#endregion
 	
 	#region private vars
 	/*Variables for internal logic*/
 	private static AudioClip audioClip;			// AudioClip reference for the buffered music file, part 1
-	public static bool songLoaded = false;		// Flag if the song has finished loading
 	private static string currentlyLoadedSong;	// Path to the currently loaded song (can be used to check if a new song is loaded)
-	public static bool tagDataSet = false;
-	private static System.Threading.Thread soundProcessingThread;
-	private static bool abortSoundProcessing;
+	private static System.Threading.Thread soundProcessingThread; // The thread which is created to do he analysis
+	private static bool abortSoundProcessing;	// Flag to cancel analysis
 	#endregion
 	
 	/// <summary>
@@ -47,14 +46,15 @@ public static class AudioManager
 	/// </param>
 	public static IEnumerator initMusic (string pathToMusicFile)
 	{
+		// Set flags
 		songLoaded = false;
 		tagDataSet = false;
 		abortSoundProcessing = false;
 		isWritingCacheFile = false;
 		loadingProgress = 0;
-		// If the cam object has been set, analyze the music file which is loaded as the background music in unity
-		// May be useful for the story mode
+		
 #if UNITY_WEBPLAYER
+		// For the WebPlayer: Just get everything from WebPlayerRytData.cs
 		peaks = WebPlayerRytData.getPeaks(Game.Song);
 		loudPartTimeStamps = WebPlayerRytData.getLoudFlags(Game.Song);
 		variationFactor = WebPlayerRytData.getVariationFactor(Game.Song);
@@ -62,6 +62,8 @@ public static class AudioManager
 		currentlyLoadedSong = "xXBACKgroundMUSICXx";
 		yield break;
 #else	
+		
+		// For Tutorial: Just get everything from TutorialRytData.cs
 		if(Game.GameMode == Game.Mode.Tutorial) {
 			peaks = TutorialRytData.getPeaks();
 			loudPartTimeStamps = TutorialRytData.getLoudFlags();
@@ -71,14 +73,15 @@ public static class AudioManager
 			tagDataSet = true;
 			yield break;
 		}
-		// Read Audio Data/Initialize everything to read on the fly
+		
+		// Initialize file handle
 		float start = Time.realtimeSinceStartup;
 		if(freader!=null) {
 			freader.close();
 			freader = null;
 		}
 		freader = new FileReader (pathToMusicFile);
-		FileReader.ReadStatus success = freader.read ();
+		FileReader.ReadStatus success = freader.read (); // Doesn't really "read" (unless it's a WAV file)
 		while (freader.isReading()) {
 			yield return null;
 		}
@@ -94,19 +97,18 @@ public static class AudioManager
 		channels = freader.getChannels ();
 		audioLength = freader.getAudioLengthInSecs ();
 		currentlyLoadedSong = pathToMusicFile;
-		frameSize = freader.getFrameSize();
 		artist = freader.getArtist();
 		title = freader.getTitle();
-		
+				
 		tagDataSet = true;
 		
 		start = Time.realtimeSinceStartup;
 		
-		// Check if we have a cache file for the current song
+		// Check if we have a cache file of the analyzed data for the current song
 		string cacheFile = FileWriter.convertToCacheFileName (pathToMusicFile);
-		System.IO.FileInfo fInf = new System.IO.FileInfo (cacheFile);
+		System.IO.FileInfo cachedRytData = new System.IO.FileInfo (cacheFile);
 		
-		if (fInf.Exists) {
+		if (cachedRytData.Exists) {
 			// We have a cache file, so we just read the peaks etc from there.
 			FileReader rytFile = new FileReader (cacheFile);
 			success = rytFile.read ();
@@ -132,12 +134,14 @@ public static class AudioManager
 			while(SoundProcessor.isAnalyzing) {
 				loadingProgress = SoundProcessor.loadingProgress;
 				if(abortSoundProcessing) {
+					// ABORT: Cancel processing thread, release file handle & collect all dat garbage!
 					soundProcessingThread.Join();
 					soundProcessingThread.Abort();
 					soundProcessingThread = null;
 					SoundProcessor.reset();
 					freader.close();
 					freader = null;
+					System.GC.Collect();
 					yield break;
 				}
 				yield return null;
@@ -169,6 +173,9 @@ public static class AudioManager
 		closeMusicStream();
 		Debug.Log ("Song loaded in: " + (Time.realtimeSinceStartup - start) + " seconds");
 		songLoaded = true;
+		
+		// Done a lot of work there, better clean up after ourselves!
+		System.GC.Collect();
 #endif
 	}
 	
@@ -181,8 +188,6 @@ public static class AudioManager
 		freader.readSamples (ref buffer, false);
 		audioClip.SetData (buffer, 0);
 		buffer = null;
-		// Want to actually clear the buffer array! Call garbage collector
-		System.GC.Collect();
 	}
 	
 	/// <summary>

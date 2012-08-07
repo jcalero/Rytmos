@@ -7,14 +7,17 @@ using System.Collections;
 /// </summary>
 public class EnemySpawnScript : MonoBehaviour,PeakListener {
 
-	#region Fields
+	#region Public Vars
 	public UIAtlas enemyAtlas;
 	public GameObject[] EnemyPrefabs;       // List of enemy types to spawn. Inspector reference. Location: EnemySpawner
-//	public float FirstSpawn;                // The delay the spawner will initialise itself with (time for first spawn)
 	public float SpawnRate;                 // The time between spawns
 	public int[] spawnPositions;
 	public static int currentlySelectedEnemy;
 	public static int spawnCount;
+	public static int spawnerCounter;
+	#endregion
+	
+	#region Private Vars
 	private float maxMag;
 	
 	private int RandomSeed;                 // The enemy type to spawn
@@ -29,13 +32,12 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	private bool resetColor;
 	private static int rotateDirection;
 	private int loudPartCounter;
-	public float loudFlag;
+	private float loudFlag;
 	
 	private int spawnerNumber;
-	public static int spawnerCounter;
 	private static EnemySpawnScript instance;
 	#endregion
-
+	
 	#region Functions
 	void Awake() {
 		instance = this;

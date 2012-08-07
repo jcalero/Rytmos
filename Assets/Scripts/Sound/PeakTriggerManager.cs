@@ -6,13 +6,13 @@ public class PeakTriggerManager : MonoBehaviour
 {
 	
 	#region vars
-	private static List<PeakListener> listeners; // List of object which are to be alerted when an event occurs
-	private static int loudPartCounter;											// Iterator for the loud parts
-	private static float timer;													// Keep track of time
-	private static int[] peakCounters;												// Iterator for the array of peaks
-	private int loudFlag;													// Flag to check how loud the song currently is
-	public static float[] timeThreshs;
-	public static float[] peakReductionFactors;
+	private static List<PeakListener> listeners; 	// List of object which are to be alerted when an event occurs
+	private static int loudPartCounter;				// Iterator for the loud parts
+	private static float timer;						// Keep track of time
+	private static int[] peakCounters;				// Iterator for the array of peaks
+	private int loudFlag;							// Flag to check how loud the song currently is
+	public static float[] timeThreshs;				// Minimum time between two peaks for each channel
+	public static float[] peakReductionFactors;		/* Used to calculate the time thresholds for each channel. Use 1 for approximately one enemy per second, 2 for approximately one enemy every 2 seconds, etc, etc  */
 	#endregion
 	
 	void Awake() {
@@ -23,9 +23,6 @@ public class PeakTriggerManager : MonoBehaviour
 	void Start ()
 	{
 		peakCounters = new int[AudioManager.peaks.Length];
-//		if(Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.WindowsPlayer) {
-//			timer = -0.15f;		
-//		} else timer = -0.25f;
 		timer = 0f;
 		loudPartCounter = 0;
 		loudFlag = -1;

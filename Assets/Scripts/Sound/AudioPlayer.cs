@@ -18,7 +18,6 @@ public class AudioPlayer : MonoBehaviour
 	private static AndroidJavaObject androidPlayer;
 #endif
 	public static bool isPlaying;
-	private int test;
 	#endregion
 	
 	void Awake ()
