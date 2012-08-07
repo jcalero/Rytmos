@@ -104,6 +104,28 @@ public class Game : MonoBehaviour
 		paused = true;
 		Debug.Log (">> Game paused.");
 	}
+	
+	public static void Pause(bool isTutorial) {
+		if(isTutorial) {
+			if (GameState == State.Playing) {					
+				AudioPlayer.pause();
+				TutorialMenu.Show();
+			}
+			Time.timeScale = 0f;                        // Stop game time
+			paused = true;
+		}
+	}
+	
+	public static void Resume(bool isTutorial) {
+		if(isTutorial) {
+			if (GameState == State.Playing) {
+				AudioPlayer.resume();	
+				TutorialMenu.Hide();
+			}
+			Time.timeScale = 1f;                        // Restores game time
+			paused = false;
+		}
+	}
 
 	public static void Resume ()
 	{

@@ -12,7 +12,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	public GameObject[] EnemyPrefabs;       // List of enemy types to spawn. Inspector reference. Location: EnemySpawner
 //	public float FirstSpawn;                // The delay the spawner will initialise itself with (time for first spawn)
 	public float SpawnRate;                 // The time between spawns
-	public int[] spawnPositions;
+	public static int[] spawnPositions;
 	public static int currentlySelectedEnemy;
 	public static int spawnCount;
 	private float maxMag;
@@ -27,7 +27,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	private float baseSpeed;
 	
 	private bool resetColor;
-	private int rotateDirection;
+	private static int rotateDirection;
 	private int loudPartCounter;
 	public float loudFlag;
 	
@@ -154,18 +154,12 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 //						if(currMaxMag > maxMag) maxMag = currMaxMag;
 					}
 					if(Game.GameMode == Game.Mode.Tutorial && !Tutorial.done) {
-						if(!Tutorial.firstSpawn) {
-							Tutorial.firstSpawn = true;
-//							currentlySelectedEnemy = 1;
-						} else if(Tutorial.firstSpawn && !Tutorial.secondSpawn) {
-							Tutorial.secondSpawn = true;
-//							currentlySelectedEnemy = 3;
-						} else if(Tutorial.firstSpawn && Tutorial.secondSpawn && !Tutorial.thirdSpawn) {
+						if(!Tutorial.firstSpawn) Tutorial.firstSpawn = true;
+						else if(Tutorial.firstSpawn && !Tutorial.secondSpawn) Tutorial.secondSpawn = true;
+						else if(Tutorial.firstSpawn && Tutorial.secondSpawn && !Tutorial.thirdSpawn) {
 							Tutorial.thirdSpawn = true;
-//							currentlySelectedEnemy = 4;
 							Tutorial.done = true;
 						}
-						
 					}
 					foreach(int spawnPosition in spawnPositions) {
 						Vector3 spawnDist = findSpawnPositionVector(spawnPosition);
@@ -189,8 +183,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 						incrementSpawnPosition(ref spawnPositions[i], 3, rotateDirection);
 					}
 //					moveSpawnersMirrored(3,rotateDirection);
-					if(Game.GameMode == Game.Mode.Tutorial) 
-						setupTutorialSpawns(spawnCount, false);
+					if(Game.GameMode == Game.Mode.Tutorial) setupTutorialSpawns(spawnCount, false);
 					Level.SetUpParticlesFeedback(spawnPositions.Length, currentlySelectedEnemy);
 					break;
 				case 2:
@@ -204,9 +197,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 				case 3:
 					// Some higher frequencies to change the currently spawned enemy
 					changeEnemy();
-					if(Game.GameMode == Game.Mode.Tutorial) 
-						setupTutorialSpawns(spawnCount, true);
-					
+					if(Game.GameMode == Game.Mode.Tutorial) setupTutorialSpawns(spawnCount, true);
 					Level.SetUpParticlesFeedback(spawnPositions.Length, currentlySelectedEnemy);
 					break;
 				case 4:
@@ -240,6 +231,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	}
 	
 	private void setupTutorialSpawns(int spawn, bool change) {
+		Debug.Log ("spawnCount"+spawnCount);
 		switch(spawnCount/2) {
 			case 0:
 				currentlySelectedEnemy = 1;
@@ -325,6 +317,11 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	public void SpawnEnemy ()
 	{	if(Level.fourColors) SpawnEnemy (Random.Range (0, 3));	
 		else SpawnEnemy (Random.Range (0, EnemyPrefabs.Length));	
+	}
+	
+	public static int getRotation {
+		get { return rotateDirection; }
+		set { rotateDirection = value; }
 	}
 	
 	/// <summary>
