@@ -4,6 +4,7 @@ using System.Collections;
 public class Background : MonoBehaviour, PeakListener {
 
 	#region Fields
+	public GameObject BackgroundObject;
 	public GameObject[] HexagonObjects;
 	public ParticleSystem[] BGFireworks;
 	public UIAtlas GameAtlas;
@@ -38,6 +39,10 @@ public class Background : MonoBehaviour, PeakListener {
 
 	#region Functions
 	void Awake() {
+		// Load the background sprite
+		spriteValues = SpriteTools.CalculateSprite(GameAtlas, "background");
+		BGSpriteManager.AddSprite(BackgroundObject, spriteValues[0], spriteValues[1], (int)spriteValues[2], (int)spriteValues[3], (int)spriteValues[4], (int)spriteValues[5], false);
+		// Load the hexagon sprites
 		spriteValues = SpriteTools.CalculateSprite(GameAtlas, "bgHexagon");
 		for (int cnt = 0; cnt < HexagonObjects.Length; cnt++ )
 			BGSpriteManager.AddSprite(HexagonObjects[cnt], spriteValues[0], spriteValues[1], (int)spriteValues[2], (int)spriteValues[3], (int)spriteValues[4], (int)spriteValues[5], false);

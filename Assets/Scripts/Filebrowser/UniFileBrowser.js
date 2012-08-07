@@ -511,7 +511,7 @@ private function CloseMessageWindow (isConfirmed : boolean) {
 }
 
 // Work-around for behavior where double-clicking selects files it shouldn't
-private function WaitForFrame () {
+protected function WaitForFrame () {
     frameDone = false;
     selectedFileNumber = -1;
     yield;
