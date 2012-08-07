@@ -14,6 +14,7 @@ public class FileBrowserEvents : MonoBehaviour {
 
 	private void OpenFile(string pathToFile) {
 		Game.Song = pathToFile;
+		MainMenu.ClearMenu();
 		Application.LoadLevel("LoadScreen");
 	}
 

@@ -76,6 +76,18 @@ public class MainMenu : MonoBehaviour {
 		ChangeMenu(CurrentMenuLevel);
 	}
 
+	public void ClearMenu() {
+		if (MainMenuQuitPanel.enabled) UITools.SetActiveState(MainMenuQuitPanel, false);
+		if (MainMenuModePanel.enabled) UITools.SetActiveState(MainMenuModePanel, false);
+		if (MainMenuOptionsPanel.enabled) UITools.SetActiveState(MainMenuOptionsPanel, false);
+		if (MainMenuScoresPanel.enabled) UITools.SetActiveState(MainMenuScoresPanel, false);
+		if (MainMenuLoggedInBoxPanel.enabled) UITools.SetActiveState(MainMenuLoggedInBoxPanel, false);
+		if (MainMenuLogInPanel.enabled) UITools.SetActiveState(MainMenuLogInPanel, false);
+		if (MainMenuFileBrowserPanel.enabled) UITools.SetActiveState(MainMenuFileBrowserPanel, false);
+		if (MainMenuBasePanel.enabled) UITools.SetActiveState(MainMenuBasePanel, false);
+		if (MainMenuPlayPanel.enabled) UITools.SetActiveState(MainMenuPlayPanel, false);
+	}
+
 	/// <summary>
 	/// Change the menu to the given menu level. Also set CurrentMenuLevel appropriately.
 	/// </summary>
