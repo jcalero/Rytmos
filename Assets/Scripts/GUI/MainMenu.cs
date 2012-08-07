@@ -146,7 +146,7 @@ public class MainMenu : MonoBehaviour {
 	/// Button handler for "Highscores" button
 	/// </summary>
 	void OnScoresClicked() {
-		Debug.Log(Game.RememberLogin + " : " + Game.IsLoggedIn);
+		//Debug.Log(Game.RememberLogin + " : " + Game.IsLoggedIn);
 		if ((!Game.RememberLogin && !Game.IsLoggedIn) || Game.PlayerName.Length < 1)
 			ChangeMenu(MenuLevel.LogIn);
 		else
