@@ -151,7 +151,8 @@ public class Background : MonoBehaviour, PeakListener {
 		//Debug.Log("Speed is now: " + flag);
 		switch (flag) {
 			case 0:
-				CentreNotes.startSpeed = 0.2f;
+				CentreNotes.startSpeed = 0f;
+				CentreNotes.emissionRate = 0f;
 				CentreNotes.startLifetime = 3f;
 				break;
 			case 1:
