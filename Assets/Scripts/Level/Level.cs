@@ -47,7 +47,8 @@ public class Level : MonoBehaviour {
 	protected virtual void Start() {
 		Game.Cheated = false;       // Reset cheated value
 
-		SaveToRecentSongList();
+		if (Game.GameMode != Game.Mode.Tutorial)
+			SaveToRecentSongList();
 		
 		// Create and hide the touch sprite
 		touchSprite = spriteManagerScript.AddSprite(touchPrefab, 0.25f, 0.25f, new Vector2(0f, 0.365f), new Vector2(0.63f, 0.63f), false);
