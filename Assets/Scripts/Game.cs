@@ -96,9 +96,7 @@ public class Game : MonoBehaviour
 	{
 		if (GameState == State.Playing) {
 			AudioPlayer.pause ();
-			
-			if(Game.GameMode == Mode.Tutorial) TutorialMenu.Show ();
-			else PauseMenu.Show ();
+			PauseMenu.Show();
 		}
 		Time.timeScale = 0f;                        // Stop game time
 		paused = true;
@@ -131,9 +129,7 @@ public class Game : MonoBehaviour
 	{
 		if (GameState == State.Playing) {
 			AudioPlayer.resume ();
-			
-			if(Game.GameMode == Mode.Tutorial) TutorialMenu.Hide ();
-			else PauseMenu.Hide ();
+			PauseMenu.Hide ();
 		}
 		Time.timeScale = 1f;                        // Restores game time
 		paused = false;

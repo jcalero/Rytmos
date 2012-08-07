@@ -82,7 +82,7 @@ public class Level : MonoBehaviour {
 	public static void SetUpParticlesFeedback(int numOfSpawns, int enemy) {
 		EnemySpawnScript ess = Instance.enemySpawner.GetComponent<EnemySpawnScript>();
 		for (int i = 0; i < numOfSpawns; i++) {
-			int percentage = EnemySpawnScript.spawnPositions[i];
+			int percentage = ess.spawnPositions[i];
 			Instance.particlesFeedback[i].transform.localPosition = ess.findSpawnPositionVector(percentage);
 			Instance.particlesFeedback[i].GetComponent<ParticleSystem>().startColor = singleColourSelect(enemy);
 		}

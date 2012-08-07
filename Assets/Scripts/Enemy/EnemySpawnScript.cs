@@ -12,7 +12,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	public GameObject[] EnemyPrefabs;       // List of enemy types to spawn. Inspector reference. Location: EnemySpawner
 //	public float FirstSpawn;                // The delay the spawner will initialise itself with (time for first spawn)
 	public float SpawnRate;                 // The time between spawns
-	public static int[] spawnPositions;
+	public int[] spawnPositions;
 	public static int currentlySelectedEnemy;
 	public static int spawnCount;
 	private float maxMag;
@@ -231,7 +231,6 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	}
 	
 	private void setupTutorialSpawns(int spawn, bool change) {
-		Debug.Log ("spawnCount"+spawnCount);
 		switch(spawnCount/2) {
 			case 0:
 				currentlySelectedEnemy = 1;
@@ -317,11 +316,6 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	public void SpawnEnemy ()
 	{	if(Level.fourColors) SpawnEnemy (Random.Range (0, 3));	
 		else SpawnEnemy (Random.Range (0, EnemyPrefabs.Length));	
-	}
-	
-	public static int getRotation {
-		get { return rotateDirection; }
-		set { rotateDirection = value; }
 	}
 	
 	/// <summary>
