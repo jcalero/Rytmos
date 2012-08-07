@@ -36,7 +36,7 @@ public class Background : MonoBehaviour, PeakListener {
 	private static float targetIntensity;
 	private static float decay;
 	private static bool increase;
-	
+
 	private int lastSelectedEnemy;
 	#endregion
 
@@ -66,7 +66,7 @@ public class Background : MonoBehaviour, PeakListener {
 		maxPlayerX = 2*originalPlayerX;
 		maxPlayerY = 2*originalPlayerY;
 		bgIncrease = false;
-		
+
 		originalEmissionRate = FeedbackStars[0].emissionRate;
 		originalParticleSpeed = FeedbackStars[0].playbackSpeed;
 		enhancedEmissionRate = originalEmissionRate * 10f;
@@ -90,16 +90,16 @@ public class Background : MonoBehaviour, PeakListener {
 
 		PlayerObject.transform.localScale = calculatePlayerSize();
 	}
-	
+
 	private IEnumerator FlashStars(int enemy, int intensity) {
-		
+
 		float y = FeedbackStars[enemy].playbackSpeed;
 		float x = FeedbackStars[enemy].emissionRate;
-						
-		bool increase = x < enhancedEmissionRate || y < enhancedParticleSpeed? true : false;
-		
+
+		bool increase = x < enhancedEmissionRate || y < enhancedParticleSpeed ? true : false;
+
 		do {
-			
+
 			if (increase) {
 				x = enhancedEmissionRate;
 				y = enhancedParticleSpeed;
@@ -109,15 +109,15 @@ public class Background : MonoBehaviour, PeakListener {
 				y *= 1 - (intensity * Time.deltaTime * 3f);
 			}
 
-			if(x < originalEmissionRate*1.1f || y < originalEmissionRate*1.1f) {
+			if (x < originalEmissionRate * 1.1f || y < originalEmissionRate * 1.1f) {
 				x = originalEmissionRate;
 				y = originalParticleSpeed;
 			}
-				
+
 			FeedbackStars[enemy].playbackSpeed = y;
 			FeedbackStars[enemy].emissionRate = x;
 			yield return new WaitForSeconds(0.1f);
-		} while(x != originalEmissionRate || y != originalParticleSpeed);
+		} while (x != originalEmissionRate || y != originalParticleSpeed);
 		particlesActive[enemy] = false;
 	}
 
@@ -131,8 +131,8 @@ public class Background : MonoBehaviour, PeakListener {
 				if (timeDiff > 1f) timeDiff = 1f;
 				else if (timeDiff < 0.1f) timeDiff = 0.1f;
 				decay = timeDiff;
-				
-				if(!particlesActive[EnemySpawnScript.currentlySelectedEnemy]) {
+
+				if (!particlesActive[EnemySpawnScript.currentlySelectedEnemy]) {
 					StartCoroutine(FlashStars(EnemySpawnScript.currentlySelectedEnemy, intensity));
 					particlesActive[EnemySpawnScript.currentlySelectedEnemy] = true;
 				}
@@ -147,7 +147,35 @@ public class Background : MonoBehaviour, PeakListener {
 		}
 		channelRestrictors[channel] = (channelRestrictors[channel] + 1) % channelDivisors[channel];
 	}
-	public void setLoudFlag(int flag) { }
+	public void setLoudFlag(int flag) {
+		//Debug.Log("Speed is now: " + flag);
+		switch (flag) {
+			case 0:
+				CentreNotes.startSpeed = 0.2f;
+				CentreNotes.startLifetime = 3f;
+				break;
+			case 1:
+				CentreNotes.startSpeed = 0.7f;
+				CentreNotes.startLifetime = 2f;
+				break;
+			case 2:
+				CentreNotes.startSpeed = 1.5f;
+				CentreNotes.startLifetime = 1.7f;
+				break;
+			case 3:
+				CentreNotes.startSpeed = 2.5f;
+				CentreNotes.startLifetime = 1.5f;
+				break;
+			case 4:
+				CentreNotes.startSpeed = 4f;
+				CentreNotes.startLifetime = 1.2f;
+				break;
+			case 5:
+				CentreNotes.startSpeed = 6f;
+				CentreNotes.startLifetime = 0.9f;
+				break;
+		}
+	}
 
 	private Vector3 calculatePlayerSize() {
 		float y = PlayerObject.transform.localScale.z;
