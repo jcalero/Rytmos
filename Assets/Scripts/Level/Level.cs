@@ -317,7 +317,7 @@ public class Level : MonoBehaviour {
 			sw.Close();
 			StreamWriter sw2 = new StreamWriter(file, true);
 			for (int i = 0; i < fileRows.Count; i++) {
-				if (i > 8) break;
+				if (i > 18) break;
 				sw2.WriteLine(fileRows[i]);
 			}
 			sw2.Close();
