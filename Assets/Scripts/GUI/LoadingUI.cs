@@ -2,16 +2,19 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-public class LoadingUI : MonoBehaviour
-{
+public class LoadingUI : MonoBehaviour {
 
 	public UILabel SongLabel;
 	public UISlider ProgressBar;
 	public UILabel LoadingTextLabel;
+	public UILabel ConfirmTextLabel;
+	public UILabel AbortedTextLabel;
 	public UISprite WaveForm1;
 	public UISprite WaveForm2;
 	public UIPanel LoadingPanel;
 	public UIPanel ReadyToPlayPanel;
+	public UIPanel ConfirmPanel;
+	public UIPanel AbortingPanel;
 	private bool SongTitleSet;
 	private string[,] bullshitText;
 	private string[] BSText;
@@ -20,10 +23,10 @@ public class LoadingUI : MonoBehaviour
 	private int TextIterator = 0;
 	private int currentText = 0;
 	private List<int> usedStrings;
+	private bool isConfirming;
 
 	// Use this for initialization
-	void Start ()
-	{		
+	void Start() {
 		BSText = new string[] {
 			"Splitting Channels",
 			"Charging Spectral Flux Capacitors",
@@ -52,98 +55,130 @@ public class LoadingUI : MonoBehaviour
 			"Correcting Pitch",
 			"Injecting Neon Lights"
 		};
-		
+
 		ProgressBar.sliderValue = 0f;
-		
-		currentText = Random.Range(0,BSText.Length);
+
+		currentText = Random.Range(0, BSText.Length);
 		usedStrings = new List<int>();
 
 		// Check whether we want to load in a song (Game.Song is set) or use one which has been provided as an asset
 		if (Game.Song != null && Game.Song != "") {
-			StartCoroutine (AudioManager.initMusic (Game.Song));
+			StartCoroutine(AudioManager.initMusic(Game.Song));
 		}
 	}
 
 	// Update is called once per frame
-	void Update ()
-	{
+	void Update() {
 		if (Input.GetKeyDown(KeyCode.Escape) && !AudioManager.isWritingCacheFile) {
-			LoadingTextLabel.text = "Aborting Analysis...";
-			AudioManager.abort();
-			System.GC.Collect();
-			Application.LoadLevel("MainMenu");
+			if (!isConfirming) {
+				if (songIsReady) {
+					UITools.SetActiveState(ReadyToPlayPanel, false);
+					ConfirmTextLabel.text = "Back to Main Menu?";
+				} else {
+					UITools.SetActiveState(LoadingPanel, false);
+					ConfirmTextLabel.text = "Abort song analysis?";
+				}
+				UITools.SetActiveState(ConfirmPanel, true);
+				isConfirming = true;
+			} else {
+				UITools.SetActiveState(ConfirmPanel, false);
+				if (songIsReady)
+					UITools.SetActiveState(ReadyToPlayPanel, true);
+				else
+					UITools.SetActiveState(LoadingPanel, true);
+				isConfirming = false;
+			}
 		}
-		
+
 		if (songIsReady)
 			return;
-		
-		
+
+
 		if (!SongTitleSet && AudioManager.tagDataSet) {
 			SongLabel.text = AudioManager.artist + " - " + AudioManager.title;
-			CalculateSongLabelSize ();
+			CalculateSongLabelSize();
 			SongTitleSet = true;
 		}
 
-		if (!AudioManager.isSongLoaded ()) 
-		{
-			
+		if (!AudioManager.isSongLoaded()) {
+
 			ProgressBar.sliderValue = AudioManager.loadingProgress;
-						
-			if(AudioManager.loadingProgress >= TextIterator/5f && AudioManager.loadingProgress < (TextIterator+1)/5f) {
-				
-				string baseString = BSText[currentText];				
-				
-				float subProgress = (AudioManager.loadingProgress - (TextIterator/5f)) / (((TextIterator+1)/5f) - (TextIterator/5f));
-				if(subProgress < 0.25f) {}
-				else if(subProgress < 0.5f) baseString += ".";
-				else if(subProgress < 0.75f) baseString += "..";
+
+			if (AudioManager.loadingProgress >= TextIterator / 5f && AudioManager.loadingProgress < (TextIterator + 1) / 5f) {
+
+				string baseString = BSText[currentText];
+
+				float subProgress = (AudioManager.loadingProgress - (TextIterator / 5f)) / (((TextIterator + 1) / 5f) - (TextIterator / 5f));
+				if (subProgress < 0.25f) { } else if (subProgress < 0.5f) baseString += ".";
+				else if (subProgress < 0.75f) baseString += "..";
 				else baseString += "...";
-				
+
 				LoadingTextLabel.text = baseString;
-				
+
 			} else {
 				TextIterator++;
 				usedStrings.Add(currentText);
-				currentText = Random.Range(0,BSText.Length);
-				while(usedStrings.Contains(currentText))
-					currentText = Random.Range(0,BSText.Length);
+				currentText = Random.Range(0, BSText.Length);
+				while (usedStrings.Contains(currentText))
+					currentText = Random.Range(0, BSText.Length);
 			}
-			
-			
+
+
 
 			if (WaveForm1.transform.localPosition.x < -661)
-				WaveForm1.transform.localPosition = new Vector2 (670, WaveForm1.transform.localPosition.y);
+				WaveForm1.transform.localPosition = new Vector2(670, WaveForm1.transform.localPosition.y);
 			if (WaveForm2.transform.localPosition.x < -661)
-				WaveForm2.transform.localPosition = new Vector2 (670, WaveForm2.transform.localPosition.y);
+				WaveForm2.transform.localPosition = new Vector2(670, WaveForm2.transform.localPosition.y);
 
 			stepTimer += (15 * Time.deltaTime);
 
 			if (stepTimer > 1) {
-				WaveForm2.transform.localPosition = new Vector2 (WaveForm2.transform.localPosition.x - 1,
+				WaveForm2.transform.localPosition = new Vector2(WaveForm2.transform.localPosition.x - 1,
 																WaveForm2.transform.localPosition.y);
-				WaveForm1.transform.localPosition = new Vector2 (WaveForm1.transform.localPosition.x - 1,
+				WaveForm1.transform.localPosition = new Vector2(WaveForm1.transform.localPosition.x - 1,
 																WaveForm1.transform.localPosition.y);
 				stepTimer = 0;
 			}
 		} else {
 			songIsReady = true;
-			UITools.SetActiveState (LoadingPanel, false);
-			UITools.SetActiveState (ReadyToPlayPanel, true);
+			if (!isConfirming) {
+				UITools.SetActiveState(LoadingPanel, false);
+				UITools.SetActiveState(ReadyToPlayPanel, true);
+			}
 		}
 	}
 
-	void OnPlayClicked ()
-	{
-		if(Game.GameMode != Game.Mode.Tutorial) Application.LoadLevel ("Game");
+	void OnYesClicked() {
+		if (songIsReady)
+			AbortedTextLabel.text = "Loading Main Menu...";
+		else
+			AbortedTextLabel.text = "Aborting analysis...";
+		UITools.SetActiveState(ConfirmPanel, false);
+		UITools.SetActiveState(AbortingPanel, true);
+		AudioManager.abort();
+		System.GC.Collect();
+		Application.LoadLevel("MainMenu");
+	}
+
+	void OnNoClicked() {
+		isConfirming = false;
+		UITools.SetActiveState(ConfirmPanel, false);
+		if (songIsReady)
+			UITools.SetActiveState(ReadyToPlayPanel, true);
+		else
+			UITools.SetActiveState(LoadingPanel, true);
+	}
+
+	void OnPlayClicked() {
+		if (Game.GameMode != Game.Mode.Tutorial) Application.LoadLevel("Game");
 		else Application.LoadLevel("Tutorial");
 	}
 
-	void CalculateSongLabelSize ()
-	{
+	void CalculateSongLabelSize() {
 		if (SongLabel.text.Length > 38) {
-			SongLabel.transform.localScale = new Vector2 (38, 38);
+			SongLabel.transform.localScale = new Vector2(38, 38);
 		} else if (SongLabel.text.Length > 28) {
-			SongLabel.transform.localScale = new Vector2 (50, 50);
+			SongLabel.transform.localScale = new Vector2(50, 50);
 		}
 	}
 }
