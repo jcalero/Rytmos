@@ -289,5 +289,6 @@ public class SoundProcessor
 	
 	public static void reset () {
 		isAnalyzing = true;
+		loadingProgress = 0f;
 	}
 }

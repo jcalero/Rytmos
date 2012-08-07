@@ -53,14 +53,15 @@ public class LoadingUI : MonoBehaviour
 			"Injecting Neon Lights"
 		};
 		
+		ProgressBar.sliderValue = 0f;
+		
 		currentText = Random.Range(0,BSText.Length);
 		usedStrings = new List<int>();
 
 		//LoadingLabel.text = "[FDD017]" + "0";
 		// Check whether we want to load in a song (Game.Song is set) or use one which has been provided as an asset
 		if (Game.Song != null && Game.Song != "") {
-			if (Game.Song != AudioManager.getCurrentSong ())
-				StartCoroutine (AudioManager.initMusic (Game.Song));
+			StartCoroutine (AudioManager.initMusic (Game.Song));
 		}
 
 		//		} else if (audioSources [0].clip != null) {
@@ -76,6 +77,13 @@ public class LoadingUI : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
+		if (Input.GetKeyDown(KeyCode.Escape) && !AudioManager.isWritingCacheFile) {
+			LoadingTextLabel.text = "Aborting Analysis...";
+			AudioManager.abort();
+			System.GC.Collect();
+			Application.LoadLevel("MainMenu");
+		}
+		
 		if (songIsReady)
 			return;
 		

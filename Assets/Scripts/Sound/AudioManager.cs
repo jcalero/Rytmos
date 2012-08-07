@@ -23,6 +23,7 @@ public static class AudioManager
 	public static string artist = "Unknown";
 	public static string title = "Unknown";
 	public static float loadingProgress;
+	public static volatile bool isWritingCacheFile;
 	#endregion
 	
 	#region private vars
@@ -31,6 +32,8 @@ public static class AudioManager
 	public static bool songLoaded = false;		// Flag if the song has finished loading
 	private static string currentlyLoadedSong;	// Path to the currently loaded song (can be used to check if a new song is loaded)
 	public static bool tagDataSet = false;
+	private static System.Threading.Thread soundProcessingThread;
+	private static bool abortSoundProcessing;
 	#endregion
 	
 	/// <summary>
@@ -46,6 +49,8 @@ public static class AudioManager
 	{
 		songLoaded = false;
 		tagDataSet = false;
+		abortSoundProcessing = false;
+		isWritingCacheFile = false;
 		loadingProgress = 0;
 		// If the cam object has been set, analyze the music file which is loaded as the background music in unity
 		// May be useful for the story mode
@@ -75,7 +80,7 @@ public static class AudioManager
 		freader = new FileReader (pathToMusicFile);
 		FileReader.ReadStatus success = freader.read ();
 		while (freader.isReading()) {
-			yield return 0;
+			yield return null;
 		}
 		
 		// Succeeded reading? (Which means it found the file when we're just streaming)
@@ -121,23 +126,34 @@ public static class AudioManager
 			
 		} else {
 			// We have no cache file, so do the actual analysis!
-			System.Threading.Thread t = new System.Threading.Thread(() => SoundProcessor.analyse(freader));
-			t.Start();
+			soundProcessingThread = new System.Threading.Thread(() => SoundProcessor.analyse(freader));
+			soundProcessingThread.Start();
 			
 			while(SoundProcessor.isAnalyzing) {
 				loadingProgress = SoundProcessor.loadingProgress;
+				if(abortSoundProcessing) {
+					soundProcessingThread.Join();
+					soundProcessingThread.Abort();
+					soundProcessingThread = null;
+					SoundProcessor.reset();
+					freader.close();
+					freader = null;
+					yield break;
+				}
 				yield return null;
 			}
 			
+			isWritingCacheFile = true;
 			SoundProcessor.reset();
-			t.Join();
-			t.Abort();
-			t = null;
+			soundProcessingThread.Join();
+			soundProcessingThread.Abort();
+			soundProcessingThread = null;
 			
 			peaks = SoundProcessor.getPeaks ();
 			loudPartTimeStamps = SoundProcessor.getVolumeLevels ();
 			variationFactor = SoundProcessor.getVariationFactor();
 			FileWriter.writeAnalysisData (pathToMusicFile, peaks, loudPartTimeStamps, variationFactor);
+			isWritingCacheFile = false;
 		}
 		
 		if(Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WindowsEditor) {
@@ -176,6 +192,10 @@ public static class AudioManager
 	{
 		freader.close ();
 		freader = null;
+	}
+	
+	public static void abort() {
+		abortSoundProcessing = true;	
 	}
 	
 	/// <summary>
