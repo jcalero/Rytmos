@@ -38,6 +38,7 @@ public class Background : MonoBehaviour, PeakListener {
 	private static bool increase;
 
 	private int lastSelectedEnemy;
+	private float originalCentreNotesEmissionRate;
 	#endregion
 
 	#region Functions
@@ -71,6 +72,8 @@ public class Background : MonoBehaviour, PeakListener {
 		originalParticleSpeed = FeedbackStars[0].playbackSpeed;
 		enhancedEmissionRate = originalEmissionRate * 10f;
 		enhancedParticleSpeed = originalParticleSpeed * 10f;
+		
+		originalCentreNotesEmissionRate = CentreNotes.emissionRate;
 	}
 
 	void Update() {
@@ -157,22 +160,27 @@ public class Background : MonoBehaviour, PeakListener {
 				break;
 			case 1:
 				CentreNotes.startSpeed = 0.7f;
+				CentreNotes.emissionRate = originalCentreNotesEmissionRate;
 				CentreNotes.startLifetime = 2f;
 				break;
 			case 2:
 				CentreNotes.startSpeed = 1.5f;
+				CentreNotes.emissionRate = originalCentreNotesEmissionRate;
 				CentreNotes.startLifetime = 1.7f;
 				break;
 			case 3:
 				CentreNotes.startSpeed = 2.5f;
+				CentreNotes.emissionRate = originalCentreNotesEmissionRate;
 				CentreNotes.startLifetime = 1.5f;
 				break;
 			case 4:
 				CentreNotes.startSpeed = 4f;
+				CentreNotes.emissionRate = originalCentreNotesEmissionRate;
 				CentreNotes.startLifetime = 1.2f;
 				break;
 			case 5:
 				CentreNotes.startSpeed = 6f;
+				CentreNotes.emissionRate = originalCentreNotesEmissionRate;
 				CentreNotes.startLifetime = 0.9f;
 				break;
 		}
