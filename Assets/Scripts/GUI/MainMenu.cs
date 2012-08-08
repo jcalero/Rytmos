@@ -22,6 +22,7 @@ public class MainMenu : MonoBehaviour {
 	public UIPanel MainMenuFileBrowserPanel;
 	public UIPanel MainMenuLoggedInBoxPanel;
 	public UIPanel MainMenuLogInPanel;
+	public UIPanel MainMenuChoicePanel;
 
 	// File browser
 	public GameObject FileBrowser;
@@ -46,6 +47,9 @@ public class MainMenu : MonoBehaviour {
 	public UILabel ErrorLabel;
 	public UICheckbox RememberMeCheckbox;
 	private Regex nameRegEx = new Regex("^[a-zA-Z0-9]*$");
+	
+	// Confirm Message Objects
+	public UILabel SongNameLabel;
 	#endregion
 
 	#region Functions
@@ -103,12 +107,14 @@ public class MainMenu : MonoBehaviour {
 				if (MainMenuLoggedInBoxPanel.enabled) UITools.SetActiveState(MainMenuLoggedInBoxPanel, false);
 				if (MainMenuLogInPanel.enabled) UITools.SetActiveState(MainMenuLogInPanel, false);
 				if (MainMenuFileBrowserPanel.enabled) UITools.SetActiveState(MainMenuFileBrowserPanel, false);
+				if (MainMenuChoicePanel.enabled) UITools.SetActiveState(MainMenuChoicePanel,false);
 				UITools.SetActiveState(MainMenuBasePanel, true);
 				UITools.SetActiveState(MainMenuPlayPanel, true);
 				break;
 			case MenuLevel.Mode:
 				if (MainMenuFileBrowserPanel.enabled) UITools.SetActiveState(MainMenuFileBrowserPanel, false);
 				if (MainMenuPlayPanel.enabled) UITools.SetActiveState(MainMenuPlayPanel, false);
+				if (MainMenuChoicePanel.enabled) UITools.SetActiveState(MainMenuChoicePanel,false);
 				UITools.SetActiveState(MainMenuBasePanel, true);
 				UITools.SetActiveState(MainMenuModePanel, true);
 				break;
@@ -130,6 +136,7 @@ public class MainMenu : MonoBehaviour {
 				HSController.InitHSDisplay();
 				break;
 			case MenuLevel.FileBrowser:
+				if (MainMenuChoicePanel.enabled) UITools.SetActiveState(MainMenuChoicePanel,false);
 				UITools.SetActiveState(MainMenuModePanel, false);
 				UITools.SetActiveState(MainMenuBasePanel, false);
 				UITools.SetActiveState(MainMenuFileBrowserPanel, true);
@@ -142,6 +149,14 @@ public class MainMenu : MonoBehaviour {
 					UserNameInput.text = PlayerPrefs.GetString("playername");
 				RememberMeCheckbox.isChecked = Game.RememberLogin;
 				ErrorLabel.text = "";                                   // Clear error text if any
+				break;
+			case MenuLevel.ConfirmChoice:
+				if(MainMenuBasePanel.enabled) UITools.SetActiveState(MainMenuBasePanel,false);
+				if (MainMenuFileBrowserPanel.enabled) UITools.SetActiveState(MainMenuFileBrowserPanel, false);
+				if (MainMenuModePanel.enabled) UITools.SetActiveState(MainMenuModePanel,false);
+				SongNameLabel.text = GetSongTitleFromFile();
+				CalculateSongLabelSize();
+				UITools.SetActiveState(MainMenuChoicePanel,true);
 				break;
 		}
 	}
@@ -197,6 +212,41 @@ public class MainMenu : MonoBehaviour {
 	/// </summary>
 	private void OnQuitCancelClicked() {
 		ChangeMenu(MenuLevel.Base);
+	}
+	#endregion
+	
+	#region Confirm Choice Menu
+	void OnChoiceConfirmedClicked() {
+		ClearMenu();
+		Application.LoadLevel("LoadScreen");
+	}
+	
+	void OnChoiceDeclineClicked() {
+		ChangeMenu(MenuLevel.FileBrowser);
+		if (!FileBrowserMenu.RecentlyPlayedActive) {
+			if (!string.IsNullOrEmpty(Game.Path)) FileBrowser.SendMessage("OpenFileWindow", PlayerPrefs.GetString("filePath"));
+			else FileBrowser.SendMessage("OpenFileWindow", "");
+		} else {
+			FileBrowser.SendMessage("OpenRecentFilesWindow");
+		}
+	}
+	
+	void CalculateSongLabelSize() {
+		if (SongNameLabel.text.Length > 38) {
+			SongNameLabel.transform.localScale = new Vector2(38, 38);
+		} else if (SongNameLabel.text.Length > 28) {
+			SongNameLabel.transform.localScale = new Vector2(50, 50);
+		}
+	}
+	
+	string GetSongTitleFromFile() {
+		if(Game.Song != null && Game.Song != "") {
+			if(Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.WindowsPlayer) 
+				return Game.Song.Substring(Game.Song.LastIndexOf('\\')+1,Game.Song.LastIndexOf('.')-Game.Song.LastIndexOf('\\')-1);
+			else
+				return Game.Song.Substring(Game.Song.LastIndexOf('/')+1,Game.Song.LastIndexOf('.')-Game.Song.LastIndexOf('/')-1);
+		}
+		else return "";
 	}
 	#endregion
 
@@ -379,5 +429,6 @@ public enum MenuLevel {
 	Scores,
 	Options,
 	FileBrowser,
-	LogIn
+	LogIn,
+	ConfirmChoice
 }
