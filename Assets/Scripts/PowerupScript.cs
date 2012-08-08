@@ -4,6 +4,7 @@ using System.Collections;
 public class PowerupScript : MonoBehaviour {
 	public UIAtlas SpriteAtlas;
 	public GameObject powerupManager;
+	
 	private Game.Powerups pw;
 	
 	private string spriteName = "default";
@@ -19,14 +20,23 @@ public class PowerupScript : MonoBehaviour {
 	private float powerUpTimer;
 	private float totalTimer;
 	private readonly float screenTime = 5f;
-	private float respawnTime = 20f;
+	private float respawnTime = 15f;
 	private bool spawned;
+	
+	private static bool canTriggerSpawn;
+	private static bool canSpawn;
+	private static Vector3 spawnPosition;
 	// Use this for initialization
 	void Awake () {
 		pw = Game.Powerups.None;
 		spriteManager = powerupManager.GetComponent<LinkedSpriteManager>();
 		spriteName = "Powerup";
 		spawned = true;
+		canTriggerSpawn = false;
+		canSpawn = false;
+		if(Game.GameMode == Game.Mode.Tutorial)
+			totalTimer = respawnTime/2f;
+		else totalTimer = respawnTime;
 		// Checks that the sprite name exists in the atlas, if not falls back to default sprite
 		if (SpriteAtlas.GetSprite(spriteName) == null) {
 			Debug.LogWarning("Sprite " + "\"" + spriteName + "\" " + "not found in atlas " + "\"" + SpriteAtlas + "\"" + ". Using default sprite, \"circle\".");
@@ -37,19 +47,11 @@ public class PowerupScript : MonoBehaviour {
 		// Add sprite to game object
 		powerup = spriteManager.AddSprite(gameObject, UVWidth, UVHeight, left, bottom, width, height, false);
 		
-		//Move object 
-		if(Game.GameMode != Game.Mode.Tutorial) {
-			Vector3 spawnPos = randomPos();
-			Level.SetUpParticlesFeedback(4, spawnPos);
-			gameObject.transform.localPosition = spawnPos;
-		} else {
-			gameObject.transform.localPosition = new Vector3(20,20,0);
-			Level.SetUpParticlesFeedback(4, new Vector3(20,20,0));
-		}
+		//Initialize the powerup-sprite to be off the screen
+		gameObject.transform.localPosition = new Vector3(20,20,0);
+		Level.SetUpParticlesFeedback(4, new Vector3(20,20,0));
 		// Set audio volume
 		gameObject.audio.volume = Game.EffectsVolume;
-		
-		
 	}
 	
 	// Update is called once per frame
@@ -79,9 +81,14 @@ public class PowerupScript : MonoBehaviour {
 				if(spawned) {
 					moveSprite(new Vector3(20,20, 0));
 					spawned = false;
-				} else 
-					spawnPowerupOnScreen();
+				} else {
+					canTriggerSpawn = true;
+				}
 				powerUpTimer = 0;
+			}
+			else if(canSpawn) {
+				spawnPowerupOnScreen(spawnPosition);
+				canSpawn = false;
 			}
 		
 			powerUpTimer += Time.deltaTime;
@@ -118,6 +125,15 @@ public class PowerupScript : MonoBehaviour {
 	
 	private void spawnPowerupOnScreen() {
 		Vector3 spawnPos = randomPos();
+		//Here, we assign the powerup - this will be moved below once we have graphics
+		int choice = Random.Range(0,3);
+		moveSprite(spawnPos,setPowerup(choice));
+		spawned = true;
+		totalTimer = screenTime;
+		gameObject.audio.Play();	
+	}
+	
+	private void spawnPowerupOnScreen(Vector3 spawnPos) {
 		//Here, we assign the powerup - this will be moved below once we have graphics
 		int choice = Random.Range(0,3);
 		moveSprite(spawnPos,setPowerup(choice));
@@ -206,6 +222,19 @@ public class PowerupScript : MonoBehaviour {
 	
 	public Game.Powerups Powerup() {
 		return pw;
+	}
+	
+	public static void SpawnPowerup(Vector3 position) {
+		if(!canTriggerSpawn) return;
+		else {
+			canSpawn = true;
+			canTriggerSpawn = false;
+			spawnPosition = position;
+		}
+	}
+	
+	public static bool CanSpaw {
+		get {return canTriggerSpawn;}
 	}
 	
 }

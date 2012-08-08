@@ -261,6 +261,11 @@ public class EnemyScript : MonoBehaviour,PeakListener {
 			CreateExplosion();
 
 			iTween.Stop(gameObject);
+			
+			if(PowerupScript.CanSpaw) {
+				PowerupScript.SpawnPowerup(gameObject.transform.localPosition);	
+			}
+			
 			collider.enabled = false;
 			SecondPulseColl.collider.enabled = false;
 			TrailParticles.Stop();
