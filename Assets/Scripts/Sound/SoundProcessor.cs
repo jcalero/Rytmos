@@ -148,7 +148,7 @@ public class SoundProcessor
 				}
 			
 				// Have we found a part which classifies as pretty quiet?
-			} else if (rollingAverage > 0.045f) { //0.0016
+			} else if (rollingAverage > 0.0016f) { //0.0016
 				
 				// Are we already in that part?
 				if (activePart != 1) {

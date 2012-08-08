@@ -113,7 +113,7 @@ public class Background : MonoBehaviour, PeakListener {
 				y *= 1 - (intensity * Time.deltaTime * 3f);
 			}
 
-			if (x < originalEmissionRate * 1.1f || y < originalEmissionRate * 1.1f) {
+			if (x < originalEmissionRate * 1.25f || y < originalEmissionRate * 1.25f) {
 				x = originalEmissionRate;
 				y = originalParticleSpeed;
 			}
@@ -143,7 +143,7 @@ public class Background : MonoBehaviour, PeakListener {
 				break;
 			case 3:
 				if (channelRestrictors[channel] == 0) {
-					CentreNotes.Emit(20);
+					if(CentreNotes.emissionRate > 0f) CentreNotes.Emit(20);
 				}
 				break;
 			default:

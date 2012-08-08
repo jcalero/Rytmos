@@ -43,6 +43,7 @@ public class Game : MonoBehaviour
 	private static bool lowGraphicsModeDefault = false;
 	private static bool rememberLogin;
 	private static bool rememberLoginDefault = false;
+	private static bool disablePause = false;
 	#endregion
 
 	#region Functions
@@ -94,6 +95,7 @@ public class Game : MonoBehaviour
 	// Global method for pausing the game.
 	public static void Pause ()
 	{
+		if(disablePause) return;
 		if (GameState == State.Playing) {
 			AudioPlayer.pause ();
 			PauseMenu.Show();
@@ -105,7 +107,8 @@ public class Game : MonoBehaviour
 	
 	public static void Pause(bool isTutorial) {
 		if(isTutorial) {
-			if (GameState == State.Playing) {					
+			if (GameState == State.Playing) {
+				disablePause = true;
 				AudioPlayer.pause();
 				TutorialMenu.Show();
 			}
@@ -117,6 +120,7 @@ public class Game : MonoBehaviour
 	public static void Resume(bool isTutorial) {
 		if(isTutorial) {
 			if (GameState == State.Playing) {
+				disablePause = false;
 				AudioPlayer.resume();	
 				TutorialMenu.Hide();
 			}
@@ -127,6 +131,7 @@ public class Game : MonoBehaviour
 
 	public static void Resume ()
 	{
+		if(disablePause) return;
 		if (GameState == State.Playing) {
 			AudioPlayer.resume ();
 			PauseMenu.Hide ();
