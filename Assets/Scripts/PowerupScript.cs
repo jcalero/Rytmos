@@ -57,7 +57,6 @@ public class PowerupScript : MonoBehaviour {
 		
 		//If the player has selected the powerup, move it from visibility, and restart the timer
 		if(Player.takenPowerup == true) {
-			if(Game.GameMode == Game.Mode.Tutorial && !Tutorial.spawnPowerupsNormal) Tutorial.selectedPowerup = true;
 			moveSprite(new Vector3(20,20, 0));
 			powerUpTimer = 0;
 			totalTimer = respawnTime;

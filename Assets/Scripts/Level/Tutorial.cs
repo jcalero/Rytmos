@@ -38,6 +38,7 @@ public class Tutorial : Level {
 	public static bool activatedPowerup;
 	public static bool spawnPowerupsNormal;
 	public static bool secondChain;
+	public static bool showingMessage;
 	
 	public static float timeStamp;
 	public static int[] spawnPosStore;
@@ -79,6 +80,8 @@ public class Tutorial : Level {
 		activatedTime = 1000000;
 		activatedPowerup = false;
 		secondChain = false;
+		sceneNumber = 1;
+		showingMessage = false;
 		
 		Game.GameState = Game.State.Playing;
 		base.Start();
@@ -94,17 +97,19 @@ public class Tutorial : Level {
 	void showMessage(int scene, float duration, ref bool message) {
 		waitTimer += Time.deltaTime;
 		if(waitTimer > duration) {
-			Game.Pause(true);
+			showingMessage = true;
 			sceneNumber = scene;
 			waitTimer = 0;
 			message = true;
+			Game.Pause(true);
 		}
 	}
 	
 	void showMessage(int scene, ref bool message) {
-		Game.Pause (true);
 		sceneNumber = scene;
+		showingMessage = true;
 		message = true;
+		Game.Pause (true);
 	}
 	
 	void Update() {
@@ -114,9 +119,6 @@ public class Tutorial : Level {
 		if(Input.GetKeyDown(KeyCode.Alpha2)) 
 			Debug.Log ("Time at chain pulse: "+audioTimer);
 		
-		if(Input.GetKeyDown (KeyCode.Alpha3))
-			Debug.Log ("Time at too difficult: "+audioTimer);
-		
 		if(Input.GetKeyDown(KeyCode.Alpha5)) {
 			PeakTriggerManager.seekTo(155);
 			AudioPlayer.seekTo(155);
@@ -124,74 +126,68 @@ public class Tutorial : Level {
 		}
 		
 		//First enemy spawn message
-		if(firstSpawn && !firstEnemyMessage) {
+		if(firstSpawn && !firstEnemyMessage && !showingMessage) {
 			showMessage(1, .75f, ref firstEnemyMessage);
 			if(firstEnemyMessage) Debug.Log ("Your first enemy is here. Cyan... Destroy it by clicking on the cyan area here");	
 		//Second enemy spawn message
-		} else if(secondSpawn && !secondEnemyMessage) {
+		} else if(secondSpawn && !secondEnemyMessage && !showingMessage) {
 			showMessage (2, .85f, ref secondEnemyMessage);
 			if(secondEnemyMessage) Debug.Log("Different enemy this time - yellow. But you can destroy him the same way. Press here");
 		//Third enemy spawn message
-		} else if(thirdSpawn && !thirdEnemyMessage) {
+		} else if(thirdSpawn && !thirdEnemyMessage && !showingMessage) {
 			showMessage (3, .75f, ref thirdEnemyMessage);
 			if(thirdEnemyMessage) Debug.Log("Third enemy - green. You know what to do. Click here. ");
 		}
 		
 		//PLayer multiplier has increased
-		if(Player.multiplier >= 2 && !comboMessage) {
+		if(Player.multiplier >= 2 && !comboMessage && !showingMessage) {
 			showMessage (4, .2f, ref comboMessage);
 			if(comboMessage) Debug.Log("You're multiplier has increased. Use it to increase your score");
 		}
 		
 		//Advanced play message
-		if(EnemySpawnScript.spawnCount/2 >= 5 && !slideMessage) {
+		if(EnemySpawnScript.spawnCount/2 >= 5 && !slideMessage && !showingMessage) {
 			showMessage (5, ref slideMessage);
 			Debug.Log("You're doing well. You've got two enemies coming up that are close together. Instead of two pulses, try sliding.");
 		}
 		
 		//INcreased spawners message
-		if(EnemySpawnScript.spawnerCounter >= 3 && !increasedSpawnersMessage) {
+		if(EnemySpawnScript.spawnerCounter >= 3 && !increasedSpawnersMessage && !showingMessage) {
 			showMessage(6, .2f, ref increasedSpawnersMessage);
 			if(increasedSpawnersMessage) Debug.Log("You're doing well. More enemies will be attacking. This will last until you get hit.");
 		}
 		
 		//Spawn powerup
-		if(audioTimer > 78f && !shieldPowerupMessage) {
+		if(audioTimer > 78f && !shieldPowerupMessage && !showingMessage) {
 			showMessage (7, ref shieldPowerupMessage);
 			powerupScript.GetComponent<PowerupScript>().spawnPowerupOnScreen(1, new Vector3(3,3,0));
 			Debug.Log("There's a powerup to help you. These will disappear, so click it quickly.");
 		}
 		
-		//Activate powerup
-		if(selectedPowerup && !useShieldMessage) {
-			showMessage(8, .2f, ref useShieldMessage);
-			if(useShieldMessage) Debug.Log("You've got a shield. You can see it in the center. Use it by clicking.");
-		}
-		
 		//Shield powerup demo
-		if(activatedPowerup && !demoShieldMessage) {
+		if(activatedPowerup && !demoShieldMessage && !showingMessage) {
 			activatedTime = audioTimer;
-			showMessage(9, .2f, ref demoShieldMessage);
+			showMessage(8, .2f, ref demoShieldMessage);
 			if(demoShieldMessage) Debug.Log("This is a shield. Use it to keep your combo");
 		}
 		
 		//Spawn a superPulse, with the intention to help the player through the difficult part
-		if(!superPulseMessage && audioTimer >=activatedTime + 8.5f) {
-			showMessage(10, ref superPulseMessage);
+		if(!superPulseMessage && audioTimer >=activatedTime + 8.5f && !showingMessage) {
+			showMessage(9, ref superPulseMessage);
 			Debug.Log("Spawn super Pulse to help deal with large wave");
-			powerupScript.GetComponent<PowerupScript>().spawnPowerupOnScreen(0, new Vector3(-3,4,0));
+			powerupScript.GetComponent<PowerupScript>().spawnPowerupOnScreen(0, new Vector3(-4,3,0));
 
 		}
 		
 		//Spawn a chainPulse, to help the player through a difficult part
-		if(!chainPulseMessage && audioTimer >=138) {
-			showMessage(11, ref chainPulseMessage);
+		if(!chainPulseMessage && audioTimer >=138 && !showingMessage) {
+			showMessage(10, ref chainPulseMessage);
 			Debug.Log("Spawn chain pulse to help deal with large wave");
-			powerupScript.GetComponent<PowerupScript>().spawnPowerupOnScreen(2, new Vector3(1,1,0));
+			powerupScript.GetComponent<PowerupScript>().spawnPowerupOnScreen(2, new Vector3(2.4f,1f,0));
 		}
 		
-		if(!secondChain && audioTimer >=159) {
-			powerupScript.GetComponent<PowerupScript>().spawnPowerupOnScreen(2, new Vector3(1,1,0));
+		if(!secondChain && audioTimer >=159 && !showingMessage) {
+			powerupScript.GetComponent<PowerupScript>().spawnPowerupOnScreen(2, new Vector3(3,-2,0));
 			secondChain = true;
 			spawnPowerupsNormal = true;
 		}		
