@@ -135,6 +135,7 @@ public static class AudioManager
 				loadingProgress = SoundProcessor.loadingProgress;
 				if(abortSoundProcessing) {
 					// ABORT: Cancel processing thread, release file handle & collect all dat garbage!
+					SoundProcessor.abort();
 					soundProcessingThread.Join();
 					soundProcessingThread.Abort();
 					soundProcessingThread = null;

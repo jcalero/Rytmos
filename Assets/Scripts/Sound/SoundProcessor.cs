@@ -18,6 +18,7 @@ public class SoundProcessor
 	private static int[] volumeLevels;
 	private static int[][] peaks;
 	private static float variationFactor;
+	private static bool abortAnalysis;
 	public static bool isAnalyzing = true;
 	public static float loadingProgress;
 	// { 0, 500, 500, 2000, 2000, 4000, 4000, 8000, 8000, 16000, 16000, 22000 };
@@ -25,6 +26,7 @@ public class SoundProcessor
 	public static void analyse (DecoderInterface decoder)
 	{			
 		loadingProgress = 0;
+		abortAnalysis = false;
 		// For finding the volume levels
 		List<int> volumeLevelList = new List<int> ();
 		float rollingAverage = 0.01f;
@@ -43,7 +45,10 @@ public class SoundProcessor
 		
 		int bufferCounter = 0;
 			
-		do {			
+		do {
+			
+			if(abortAnalysis) return;
+			
 			#region SPECTRAL ANALYSIS
 			for (int i = 0; i < bands.Length; i+=2) {				
 				int startFreq = spectrumProvider.getFFT ().freqToIndex (bands [i]);
@@ -69,7 +74,7 @@ public class SoundProcessor
 			
 			bufferCounter++;
 			loadingProgress = 0.75f*(((bufferCounter*BUFFER_SIZE)/(float)AudioManager.frequency)/AudioManager.audioLength);
-			
+						
 		} while( (spectrum = spectrumProvider.nextSpectrum() ) != null );
 		
 		#region VOLUME CLASSIFICATION		
@@ -83,7 +88,10 @@ public class SoundProcessor
 		
 		float oldProgress = loadingProgress;
 		
-		while (dec.readSamples(ref samples) !=0) {	
+		while (dec.readSamples(ref samples) !=0) {
+			
+			if(abortAnalysis) return;
+			
 			float max = -1;
 			
 			/* Normalize the volume using the previously calculated factor */ 
@@ -165,6 +173,8 @@ public class SoundProcessor
 		}
 		#endregion
 		
+		if(abortAnalysis) return;
+		
 		// Store volumelevels
 		volumeLevels = volumeLevelList.ToArray ();
 		volumeLevelList.Clear();
@@ -178,6 +188,8 @@ public class SoundProcessor
 		}
 		spectralFlux.Clear ();
 		spectralFlux = null;
+		
+		if(abortAnalysis) return;
 		
 		// Get thresholds
 		float[][] thresholds = new float[bands.Length / 2][];
@@ -196,6 +208,8 @@ public class SoundProcessor
 			prunnedSpectralFlux [i] = tempPSF;
 		}
 		thresholds = null;
+		
+		if(abortAnalysis) return;
 		
 		// Get Peaks
 		List<int[]> peaksList = new List<int[]> ();
@@ -218,6 +232,8 @@ public class SoundProcessor
 			peakAvgs [i] /= tempPeaks.Count;
 		}
 		
+		if(abortAnalysis) return;
+		
 		// Save current peaks & reset list
 		peaks = peaksList.ToArray ();
 		peaksList.Clear ();
@@ -236,6 +252,8 @@ public class SoundProcessor
 		peaks = peaksList.ToArray ();
 		#endregion
 		
+		if(abortAnalysis) return;
+		
 		#region NORMALIZE PEAK INTENSITIES
 		for(int i = 0; i < peaks.Length; i++) {
 			float max = -1;
@@ -248,6 +266,7 @@ public class SoundProcessor
 		}
 		#endregion
 		
+		if(abortAnalysis) return;
 		
 		#region VARIATION FACTOR
 		float[] dbLvls = decibelLevels.ToArray();
@@ -290,5 +309,9 @@ public class SoundProcessor
 	public static void reset () {
 		isAnalyzing = true;
 		loadingProgress = 0f;
+	}
+	
+	public static void abort() {
+		abortAnalysis = true;	
 	}
 }
