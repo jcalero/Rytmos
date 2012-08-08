@@ -163,6 +163,7 @@ public class MainMenu : MonoBehaviour {
 				SongNameLabel.text = GetSongTitleFromFile();
 				CalculateSongLabelSize();
 				UITools.SetActiveState(MainMenuChoicePanel, true);
+				foreach(UIButton c in MainMenuChoicePanel.GetComponentsInChildren<UIButton>()) StartCoroutine(DelayButton(c,0.1f));
 				break;
 		}
 	}
@@ -351,6 +352,12 @@ public class MainMenu : MonoBehaviour {
 		label.text = text;
 		yield return new WaitForSeconds(time);
 		label.text = "";
+	}
+	
+	private IEnumerator DelayButton(UIButton button, float time) {
+		button.isEnabled = false;
+		yield return new WaitForSeconds(time);
+		button.isEnabled = true;
 	}
 	#endregion
 
