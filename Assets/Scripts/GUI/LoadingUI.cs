@@ -16,8 +16,9 @@ public class LoadingUI : MonoBehaviour {
 	public UIPanel ConfirmPanel;
 	public UIPanel AbortingPanel;
 	private bool SongTitleSet;
-	private string[,] bullshitText;
 	private string[] BSText;
+	private float threeDotsTimer;
+	private readonly float DOTSPEED = 0.5f;
 	private float stepTimer;
 	private bool songIsReady;
 	private int TextIterator = 0;
@@ -57,6 +58,7 @@ public class LoadingUI : MonoBehaviour {
 		};
 
 		ProgressBar.sliderValue = 0f;
+		threeDotsTimer = 0f;
 
 		currentText = Random.Range(0, BSText.Length);
 		usedStrings = new List<int>();
@@ -99,6 +101,8 @@ public class LoadingUI : MonoBehaviour {
 			CalculateSongLabelSize();
 			SongTitleSet = true;
 		}
+		
+		threeDotsTimer += Time.deltaTime;
 
 		if (!AudioManager.isSongLoaded()) {
 
@@ -107,11 +111,12 @@ public class LoadingUI : MonoBehaviour {
 			if (AudioManager.loadingProgress >= TextIterator / 5f && AudioManager.loadingProgress < (TextIterator + 1) / 5f) {
 
 				string baseString = BSText[currentText];
-
-				float subProgress = (AudioManager.loadingProgress - (TextIterator / 5f)) / (((TextIterator + 1) / 5f) - (TextIterator / 5f));
-				if (subProgress < 0.25f) { } else if (subProgress < 0.5f) baseString += ".";
-				else if (subProgress < 0.75f) baseString += "..";
-				else baseString += "...";
+				
+				if (threeDotsTimer < DOTSPEED) {}
+				else if (threeDotsTimer < DOTSPEED*2f) baseString += ".";
+				else if (threeDotsTimer < DOTSPEED*3f) baseString += "..";
+				else if (threeDotsTimer < DOTSPEED*4f) baseString += "...";
+				else threeDotsTimer = 0f;
 
 				LoadingTextLabel.text = baseString;
 
@@ -119,6 +124,7 @@ public class LoadingUI : MonoBehaviour {
 				TextIterator++;
 				usedStrings.Add(currentText);
 				currentText = Random.Range(0, BSText.Length);
+				threeDotsTimer = 0f;
 				while (usedStrings.Contains(currentText))
 					currentText = Random.Range(0, BSText.Length);
 			}
