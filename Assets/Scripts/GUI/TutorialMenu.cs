@@ -73,10 +73,7 @@ public class TutorialMenu : MonoBehaviour {
 		default:
 			UITools.SetActiveState(instance.TutorialPopup, true);
 			break;
-				
 		}
-//		UITools.SetActiveState(instance.TutorialPopup, true);
-		Debug.Log ("Scene Number: "+Tutorial.sceneNumber);
 	}
 
 	public static void Hide() {
@@ -134,11 +131,13 @@ public class TutorialMenu : MonoBehaviour {
 	}
 
 	void OnRestartSongClicked() {
+		
 		Application.LoadLevel("LoadScreen");
 	}
 	
 	void OnRetryClicked() {
 		// Call revert to start functionality
+		Game.Resume(true);
 		Application.LoadLevel("LoadScreen");
 		
 	}
