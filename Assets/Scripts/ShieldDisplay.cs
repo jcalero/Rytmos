@@ -37,7 +37,11 @@ public class ShieldDisplay : MonoBehaviour {
 					gameObject.GetComponent<Animation>().Stop();
 				gameObject.GetComponent<Animation>().Play("ShieldFlash");
 				Player.shieldFlash = false;			
-			} 
+			}
+			gameObject.transform.localScale = new Vector3(
+				2.3f*Background.PlayerSizeFactor,
+				2.3f*Background.PlayerSizeFactor,
+				gameObject.transform.localScale.z);
 			
 		} else {
 			intensity = 0f;

@@ -10,6 +10,7 @@ public class Background : MonoBehaviour, PeakListener {
 	public UIAtlas GameAtlas;
 	public LinkedSpriteManager BGSpriteManager;
 	public ParticleSystem[] FeedbackStars;
+	public static float PlayerSizeFactor = 1f;
 
 	private bool bgIncrease;
 	private float[] spriteValues = new float[6];
@@ -59,13 +60,13 @@ public class Background : MonoBehaviour, PeakListener {
 		decay = 0.01f;
 		lastTime = Time.realtimeSinceStartup;
 		PeakTriggerManager.addSelfToListenerList(this);
-
+		
 		originalPlayerX = PlayerObject.transform.localScale.x;
 		originalPlayerY = PlayerObject.transform.localScale.z;
 		enhancedPlayerX = originalPlayerX + (0.1f * originalPlayerX);
 		enhancedPlayerY = originalPlayerY + (0.1f * originalPlayerY);
-		maxPlayerX = 2*originalPlayerX;
-		maxPlayerY = 2*originalPlayerY;
+		maxPlayerX = 1.75f*originalPlayerX;
+		maxPlayerY = 1.75f*originalPlayerY;
 		bgIncrease = false;
 
 		originalEmissionRate = FeedbackStars[0].emissionRate;
@@ -209,6 +210,9 @@ public class Background : MonoBehaviour, PeakListener {
 			y = originalPlayerY;
 			bgIncrease = true;
 		}
+		
+		PlayerSizeFactor = (x/originalPlayerX + y/originalPlayerY)/2f;
+		
 		return new UnityEngine.Vector3(x, 0.3f, y);
 	}
 	#endregion
