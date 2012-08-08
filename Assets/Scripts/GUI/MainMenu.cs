@@ -19,6 +19,7 @@ public class MainMenu : MonoBehaviour {
 	public UIPanel MainMenuModePanel;
 	public UIPanel MainMenuOptionsPanel;
 	public UIPanel MainMenuScoresPanel;
+	public UIPanel MainMenuExtrasPanel;
 	public UIPanel MainMenuFileBrowserPanel;
 	public UIPanel MainMenuLoggedInBoxPanel;
 	public UIPanel MainMenuLogInPanel;
@@ -47,7 +48,7 @@ public class MainMenu : MonoBehaviour {
 	public UILabel ErrorLabel;
 	public UICheckbox RememberMeCheckbox;
 	private Regex nameRegEx = new Regex("^[a-zA-Z0-9]*$");
-	
+
 	// Confirm Message Objects
 	public UILabel SongNameLabel;
 	#endregion
@@ -90,6 +91,7 @@ public class MainMenu : MonoBehaviour {
 		if (MainMenuFileBrowserPanel.enabled) UITools.SetActiveState(MainMenuFileBrowserPanel, false);
 		if (MainMenuBasePanel.enabled) UITools.SetActiveState(MainMenuBasePanel, false);
 		if (MainMenuPlayPanel.enabled) UITools.SetActiveState(MainMenuPlayPanel, false);
+		if (MainMenuExtrasPanel.enabled) UITools.SetActiveState(MainMenuExtrasPanel, false);
 	}
 
 	/// <summary>
@@ -107,14 +109,16 @@ public class MainMenu : MonoBehaviour {
 				if (MainMenuLoggedInBoxPanel.enabled) UITools.SetActiveState(MainMenuLoggedInBoxPanel, false);
 				if (MainMenuLogInPanel.enabled) UITools.SetActiveState(MainMenuLogInPanel, false);
 				if (MainMenuFileBrowserPanel.enabled) UITools.SetActiveState(MainMenuFileBrowserPanel, false);
-				if (MainMenuChoicePanel.enabled) UITools.SetActiveState(MainMenuChoicePanel,false);
+				if (MainMenuChoicePanel.enabled) UITools.SetActiveState(MainMenuChoicePanel, false);
+				UITools.SetActiveState(MainMenuExtrasPanel, true);
 				UITools.SetActiveState(MainMenuBasePanel, true);
 				UITools.SetActiveState(MainMenuPlayPanel, true);
 				break;
 			case MenuLevel.Mode:
 				if (MainMenuFileBrowserPanel.enabled) UITools.SetActiveState(MainMenuFileBrowserPanel, false);
 				if (MainMenuPlayPanel.enabled) UITools.SetActiveState(MainMenuPlayPanel, false);
-				if (MainMenuChoicePanel.enabled) UITools.SetActiveState(MainMenuChoicePanel,false);
+				if (MainMenuChoicePanel.enabled) UITools.SetActiveState(MainMenuChoicePanel, false);
+				UITools.SetActiveState(MainMenuExtrasPanel, true);
 				UITools.SetActiveState(MainMenuBasePanel, true);
 				UITools.SetActiveState(MainMenuModePanel, true);
 				break;
@@ -136,7 +140,8 @@ public class MainMenu : MonoBehaviour {
 				HSController.InitHSDisplay();
 				break;
 			case MenuLevel.FileBrowser:
-				if (MainMenuChoicePanel.enabled) UITools.SetActiveState(MainMenuChoicePanel,false);
+				if (MainMenuChoicePanel.enabled) UITools.SetActiveState(MainMenuChoicePanel, false);
+				if (MainMenuExtrasPanel.enabled) UITools.SetActiveState(MainMenuExtrasPanel, false);
 				UITools.SetActiveState(MainMenuModePanel, false);
 				UITools.SetActiveState(MainMenuBasePanel, false);
 				UITools.SetActiveState(MainMenuFileBrowserPanel, true);
@@ -151,12 +156,13 @@ public class MainMenu : MonoBehaviour {
 				ErrorLabel.text = "";                                   // Clear error text if any
 				break;
 			case MenuLevel.ConfirmChoice:
-				if(MainMenuBasePanel.enabled) UITools.SetActiveState(MainMenuBasePanel,false);
+				if (MainMenuBasePanel.enabled) UITools.SetActiveState(MainMenuBasePanel, false);
 				if (MainMenuFileBrowserPanel.enabled) UITools.SetActiveState(MainMenuFileBrowserPanel, false);
-				if (MainMenuModePanel.enabled) UITools.SetActiveState(MainMenuModePanel,false);
+				if (MainMenuModePanel.enabled) UITools.SetActiveState(MainMenuModePanel, false);
+				if (MainMenuExtrasPanel.enabled) UITools.SetActiveState(MainMenuExtrasPanel, false);
 				SongNameLabel.text = GetSongTitleFromFile();
 				CalculateSongLabelSize();
-				UITools.SetActiveState(MainMenuChoicePanel,true);
+				UITools.SetActiveState(MainMenuChoicePanel, true);
 				break;
 		}
 	}
@@ -214,13 +220,13 @@ public class MainMenu : MonoBehaviour {
 		ChangeMenu(MenuLevel.Base);
 	}
 	#endregion
-	
+
 	#region Confirm Choice Menu
 	void OnChoiceConfirmedClicked() {
 		ClearMenu();
 		Application.LoadLevel("LoadScreen");
 	}
-	
+
 	void OnChoiceDeclineClicked() {
 		ChangeMenu(MenuLevel.FileBrowser);
 		if (!FileBrowserMenu.RecentlyPlayedActive) {
@@ -230,7 +236,7 @@ public class MainMenu : MonoBehaviour {
 			FileBrowser.SendMessage("OpenRecentFilesWindow");
 		}
 	}
-	
+
 	void CalculateSongLabelSize() {
 		if (SongNameLabel.text.Length > 38) {
 			SongNameLabel.transform.localScale = new Vector2(38, 38);
@@ -238,15 +244,14 @@ public class MainMenu : MonoBehaviour {
 			SongNameLabel.transform.localScale = new Vector2(50, 50);
 		}
 	}
-	
+
 	string GetSongTitleFromFile() {
-		if(Game.Song != null && Game.Song != "") {
-			if(Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.WindowsPlayer) 
-				return Game.Song.Substring(Game.Song.LastIndexOf('\\')+1,Game.Song.LastIndexOf('.')-Game.Song.LastIndexOf('\\')-1);
+		if (Game.Song != null && Game.Song != "") {
+			if (Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.WindowsPlayer)
+				return Game.Song.Substring(Game.Song.LastIndexOf('\\') + 1, Game.Song.LastIndexOf('.') - Game.Song.LastIndexOf('\\') - 1);
 			else
-				return Game.Song.Substring(Game.Song.LastIndexOf('/')+1,Game.Song.LastIndexOf('.')-Game.Song.LastIndexOf('/')-1);
-		}
-		else return "";
+				return Game.Song.Substring(Game.Song.LastIndexOf('/') + 1, Game.Song.LastIndexOf('.') - Game.Song.LastIndexOf('/') - 1);
+		} else return "";
 	}
 	#endregion
 
