@@ -45,7 +45,7 @@ public class Player : MonoBehaviour, PeakListener {
 	private float energyRegenRate = 0.1f;       // The rate at which the energy regenerates. Lower is faster.
 	private readonly int totalSuperpulses = 1;
 	private int superPulseCount;	// Counter for the amount of invincible pulses
-	private Game.Powerups playerpowerup;
+	private static Game.Powerups playerpowerup;
 
 	public GameObject[] players = new GameObject[3];
 	private MeshRenderer[] meshRenders = new MeshRenderer[3];
@@ -118,40 +118,22 @@ public class Player : MonoBehaviour, PeakListener {
 		RaycastHit hit = new RaycastHit();
 		if (Physics.Raycast(new Vector3(ray.origin.x, ray.origin.y, -10), new Vector3(0, 0, 1), out hit, 10.0f)) {
 			if (hit.collider.name == "PlayerTouchFeedback") {
-				if (hasPowerup) {
-					Game.PowerupActive = playerpowerup;
-					powerupDisplay.GetComponent<CenterPowerupDisplay>().hideSprite();
-					hasPowerup = false;
-					if(Game.GameMode == Game.Mode.Tutorial && !Tutorial.demoShieldMessage) 
-						Tutorial.activatedPowerup = true;
-					
-					if (playerpowerup == Game.Powerups.MassivePulse) {
-						Instantiate(superPulsePrefab, Vector3.zero, superPulsePrefab.transform.localRotation);
-						superPulseCount = 0;
-						playerpowerup = Game.Powerups.None;
-					}
-					pwTimer = 0;
-				}
-			} else if (hit.collider.name == "Powerup") {
-				if (hasPowerup) powerupDisplay.GetComponent<CenterPowerupDisplay>().hideSprite();
-				hasPowerup = true;
-				takenPowerup = true;
-				playerpowerup = powerupPrefab.GetComponent<PowerupScript>().Powerup();
-				if (hasPowerup && playerpowerup != Game.Powerups.None) 
-					powerupDisplay.GetComponent<CenterPowerupDisplay>().changeSprite(playerpowerup);
-			} else if (Game.DevMode && Game.sendSuper){
+				if (hasPowerup) 
+					activatePowerup();
+				
+			} else if (hit.collider.name == "Powerup") 
+				changePowerup();
+			
+			 else if (Game.DevMode && Game.sendSuper)
 				triggerMassivePulse();
-			} else if (energy - pulseCost >= 0 ||  Game.GameMode == Game.Mode.Casual) {
+			
+			 else if (energy - pulseCost >= 0 ||  Game.GameMode == Game.Mode.Casual) {
 				// Show the touch sprite at the mouse location.
-				Level.ShowTouchSprite(new Vector3(ray.origin.x, ray.origin.y, 0));
-				// Create a pulse and trigger animation
-				Instantiate(pulsePrefab, Vector3.zero, pulsePrefab.transform.localRotation);
-				sentPulse = true;
-				resetGlowTimers();
+				sendPulse(ray.origin.x, ray.origin.y);
 				// Reduce the player energy if not a superpulse
-				if (Game.PowerupActive != Game.Powerups.MassivePulse) {
+				if (Game.PowerupActive != Game.Powerups.MassivePulse) 
 					Energy -= pulseCost;
-				} else {
+				else {
 					//Only allow 1 superpulses
 					if (superPulseCount == 0) {
 						Game.PowerupActive = Game.Powerups.None;
@@ -168,6 +150,44 @@ public class Player : MonoBehaviour, PeakListener {
 		superPulseCount = 0;
 		playerpowerup = Game.Powerups.None;
 		Debug.Log ("Activated super pulse");
+	}
+	
+	// Create a pulse and trigger animation
+	public void sendPulse(bool disable) {
+		GameObject instance = (GameObject) Instantiate(pulsePrefab, Vector3.zero, pulsePrefab.transform.localRotation);
+		sentPulse = true;
+		resetGlowTimers();
+	}
+	
+	public void activatePowerup() {
+		Game.PowerupActive = playerpowerup;
+		powerupDisplay.GetComponent<CenterPowerupDisplay>().hideSprite();
+		hasPowerup = false;
+		if(Game.GameMode == Game.Mode.Tutorial && !Tutorial.demoShieldMessage) 
+			Tutorial.activatedPowerup = true;
+			
+		if (playerpowerup == Game.Powerups.MassivePulse) {
+			Instantiate(superPulsePrefab, Vector3.zero, superPulsePrefab.transform.localRotation);
+			superPulseCount = 0;
+			playerpowerup = Game.Powerups.None;
+		}
+		pwTimer = 0;
+	}
+	
+	public void sendPulse(float x, float y) {
+		Level.ShowTouchSprite(new Vector3(x, y, 0));
+		Instantiate(pulsePrefab, Vector3.zero, pulsePrefab.transform.localRotation);
+		sentPulse = true;
+		resetGlowTimers();
+	}
+	
+	public void changePowerup() {
+		if (hasPowerup) powerupDisplay.GetComponent<CenterPowerupDisplay>().hideSprite();
+			hasPowerup = true;
+			takenPowerup = true;
+			playerpowerup = powerupPrefab.GetComponent<PowerupScript>().Powerup();
+			if (hasPowerup && playerpowerup != Game.Powerups.None) 
+				powerupDisplay.GetComponent<CenterPowerupDisplay>().changeSprite(playerpowerup);
 	}
 
 	/// <summary>
@@ -281,7 +301,8 @@ public class Player : MonoBehaviour, PeakListener {
 	public void onPeakTrigger(int channel, int intensity) {
 		if (!glowAnimOut && !glowAnimIn) glowAnimOut = true;
 	}
-
+		
+	
 	public void setLoudFlag(int flag) { }
 	
 	public static void playGetHitSound() {

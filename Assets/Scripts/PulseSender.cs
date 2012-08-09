@@ -16,7 +16,7 @@ public class PulseSender : MonoBehaviour {
 	private int segments = 80;                      // The nr of segments the pulse has. Fewer means less "smooth".
 	private LineRenderer line;                      // The line renderer that creates the pulse
 	private SphereCollider sphereColl;              // The collider attatched to the pulse
-	private bool held;                              // Flag for whether the player is keeping his pulse "active"
+	public bool held;                              // Flag for whether the player is keeping his pulse "active"
 	private Color finalColor = Color.clear;         // The final color of the pulse once the player releases his finger
 	private float pulseMax;                         // Maximum range of the pulse
 	private float timer = 0;                        // Timer for energy cost when retracting the pulse
@@ -24,12 +24,15 @@ public class PulseSender : MonoBehaviour {
 	float flashTimer = 1f;
 	float flashTimerMax = 1f;
 	bool isFlashingScreen;
+	
+	private bool tutorialScene;
 
 	void Awake() {
 		SuperPulseCamera = GameObject.Find("3DCamera").camera;
 	}
 
 	void Start() {
+		if(Game.GameMode == Game.Mode.Tutorial) tutorialScene = true;
 		held = true;
 		Radius = .4f;
 		line = gameObject.GetComponent<LineRenderer>();
@@ -52,7 +55,6 @@ public class PulseSender : MonoBehaviour {
 	void Update() {
 		if(gameObject.transform.position!= new Vector3(0,0,0)) ChainPulse ();
 		else MainPulse ();
-
 	}
 	
 	void ChainPulse() {
@@ -62,27 +64,20 @@ public class PulseSender : MonoBehaviour {
 		sphereColl.radius = Radius + 0.1f;
 
 		//If too big, destroy itself
-		if (Radius > 1.5f || CurrentHealth == 0)
+		if (Radius > 2f || CurrentHealth == 0)
 			Destroy(gameObject);
 	}
 	
 	void MainPulse() {
-		//If holding the second finger, increase timer and decrease energy
-		if (Input.GetMouseButton(1) && held && CurrentColor != Color.white) {
-			timer += Time.deltaTime;
-			if (timer > pulseBackEnergyRate) {
-				if (Player.Energy > 1)
-					Player.Energy--;
-				else {
-					held = false;
-					finalColor = Level.chunkyColorSelect(Input.mousePosition);
-				}
-				timer = 0;
-			}
-			Radius = Radius - 3 * Time.deltaTime;
-		} else
-			Radius = Radius + 3 * Time.deltaTime;
-
+		Radius = Radius + 3 * Time.deltaTime;
+		
+		if(Game.GameMode == Game.Mode.Tutorial && Tutorial.sentTutorialPulse) {
+			Tutorial.sentTutorialPulse = false;
+			held = false;
+			finalColor = Level.chunkyColorSelect(Input.mousePosition);
+			CurrentColor = Level.singleColourSelect(Input.mousePosition);
+			SecondaryColor = Level.secondaryColourSelect(Input.mousePosition);
+		}
 		//If you have released the button, and the pulse is the current one, set it to be not held and set the Colour
 		if (Input.GetMouseButtonUp(0) && held) {
 			held = false;

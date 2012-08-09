@@ -111,13 +111,9 @@ public class EnemyScript : MonoBehaviour,PeakListener {
 		// If the enemy collides with the player, reduce health of player, destroy the enemy.
 		if (otherObject.tag == "Player") {
 			if (Game.PowerupActive != Game.Powerups.Invincible) {
-				//				Player.health -= 10 * health;       // Reduces the player health by 10 * the remaining enemy health
 				Player.ReduceMultiplier();
-				//Debug.Log(Level.cameraShakeTimer);
-				//if (Level.cameraShakeTimer == 0) {
 				Camera.mainCamera.animation.Play("CameraShake");
-				//    StartCoroutine(Level.InitiateCameraShakeTimer());
-				//}
+				if(Game.GameMode == Game.Mode.Tutorial) Tutorial.hasBeenHit = true;
 
 			} else {
 				Player.shieldFlash = true;
@@ -262,7 +258,7 @@ public class EnemyScript : MonoBehaviour,PeakListener {
 
 			iTween.Stop(gameObject);
 			
-			if(PowerupScript.CanSpaw) {
+			if(PowerupScript.CanSpawn) {
 				PowerupScript.SpawnPowerup(gameObject.transform.localPosition);	
 			}
 			

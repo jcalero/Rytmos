@@ -29,6 +29,7 @@ public class Tutorial : Level {
 	public static bool superPulseMessage;
 	public static bool increasedSpawnersMessage;
 	public static bool chainPulseMessage;
+	public static bool hasBeenHitMessage;
 	
 	public static bool firstSpawn;
 	public static bool secondSpawn;
@@ -39,6 +40,8 @@ public class Tutorial : Level {
 	public static bool spawnPowerupsNormal;
 	public static bool secondChain;
 	public static bool showingMessage;
+	public static bool hasBeenHit;
+	public static bool sentTutorialPulse;
 	
 	public static float timeStamp;
 	public static int[] spawnPosStore;
@@ -70,6 +73,7 @@ public class Tutorial : Level {
 		superPulseMessage = false;
 		increasedSpawnersMessage = false;
 		chainPulseMessage = false;
+		hasBeenHitMessage = false;
 		
 		firstSpawn = false;
 		secondSpawn = false;
@@ -82,7 +86,10 @@ public class Tutorial : Level {
 		secondChain = false;
 		sceneNumber = 1;
 		showingMessage = false;
+		hasBeenHit = false;
 		
+		sentTutorialPulse = false;
+
 		Game.GameState = Game.State.Playing;
 		base.Start();
 		Player.maxEnergy = 100;
@@ -124,6 +131,7 @@ public class Tutorial : Level {
 			AudioPlayer.seekTo(155);
 			audioTimer = 155;
 		}
+		
 		
 		//First enemy spawn message
 		if(firstSpawn && !firstEnemyMessage && !showingMessage) 
@@ -173,6 +181,12 @@ public class Tutorial : Level {
 			showMessage(10, ref chainPulseMessage);
 			powerupScript.GetComponent<PowerupScript>().spawnPowerupOnScreen(2, new Vector3(2.4f,1f,0));
 		}
+		
+		if(hasBeenHit && !hasBeenHitMessage) {
+			Debug.Log("Is this trigered");
+			showMessage(11, ref hasBeenHitMessage);	
+		}
+		
 		
 		if(!secondChain && audioTimer >=159 && !showingMessage) {
 			powerupScript.GetComponent<PowerupScript>().spawnPowerupOnScreen(2, new Vector3(3,-2,0));

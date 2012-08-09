@@ -8,19 +8,26 @@ using System.Collections;
 public class TutorialMenu : MonoBehaviour {
 	#region Fields
 	public UIPanel[] PopupPanels;
+	public UIPanel[] PausePanels;
+	public GameObject powerup;
+	public GameObject player;
 
 	private static TutorialMenu instance;
 	private static bool disableButtons;
 	private float timer;
 	private bool buttonsDisabled;
+	
+	private static bool hasPushedFirst;
 	#endregion
 
 	#region Functions
 	void Awake() {
 		timer = 0f;
 		buttonsDisabled = false;
+		hasPushedFirst = false;
 		instance = this;
-		foreach(UIPanel p in instance.PopupPanels) UITools.SetActiveState (p, false);	
+		foreach(UIPanel p in instance.PopupPanels) UITools.SetActiveState (p, false);
+		foreach(UIPanel p in instance.PausePanels) UITools.SetActiveState(p, false);
 	}
 	
 	void Update() {
@@ -32,10 +39,8 @@ public class TutorialMenu : MonoBehaviour {
 				foreach(UIButton b in instance.PopupPanels[Tutorial.sceneNumber-1].GetComponentsInChildren<UIButton>()) b.isEnabled = false;
 				buttonsDisabled = true;
 				timer = Time.realtimeSinceStartup;
-				Debug.Log("here");
 			}
 			else if(Time.realtimeSinceStartup-timer > 0.1f) {
-				Debug.Log("here2");
 				timer = 0f;
 				disableButtons = false;
 				buttonsDisabled = false;
@@ -46,21 +51,59 @@ public class TutorialMenu : MonoBehaviour {
 
 	public static void Show() {
 		UITools.SetActiveState (instance.PopupPanels[Tutorial.sceneNumber-1], true);
+		if(Tutorial.sceneNumber == 9) 
+			hasPushedFirst = false;
+		
 		disableButtons = true;
 	}
 
 	public static void Hide() {
 		Tutorial.showingMessage = false;
 		UITools.SetActiveState (instance.PopupPanels[Tutorial.sceneNumber-1], false);
+		UITools.SetActiveState (instance.PausePanels[Tutorial.sceneNumber-1], false);
+	}
+	
+	public static void HideContinue() {
+		UITools.SetActiveState(instance.PopupPanels[Tutorial.sceneNumber-1], false);
+		UITools.SetActiveState(instance.PausePanels[Tutorial.sceneNumber-1], true);
 	}
 
 	/// <summary>
 	/// Button handler for "Resume" button
 	/// </summary>
 	void OnResumeClicked() {
+		if(Tutorial.sceneNumber == 1 || Tutorial.sceneNumber == 2 
+		|| Tutorial.sceneNumber == 3 || Tutorial.sceneNumber == 7) {
+			HideContinue();
+		} else {
+			Game.Resume(true);	
+		}
+	}
+	
+	void OnProceedClicked() {
+		
+		
+		if(Tutorial.sceneNumber == 1 || Tutorial.sceneNumber == 2 || Tutorial.sceneNumber == 3) {
+			Tutorial.sentTutorialPulse = true;
+			player.GetComponent<Player>().sendPulse(true);
+		}
 		Game.Resume(true);
 	}
-
+	
+	void OnSelectPowerup() {
+		player.GetComponent<Player>().changePowerup();
+		hasPushedFirst = true;
+		powerup.GetComponent<PowerupScript>().spawnPowerupOnScreen(1, new Vector3(20, 20, 0));
+		Tutorial.SetUpParticlesFeedback(4, new Vector3(20,20,0));
+	}
+	
+	void OnSelectMiddle() {
+		if(hasPushedFirst) {
+			player.GetComponent<Player>().activatePowerup();
+			Game.Resume(true);
+		}
+	}
+	
 	/// <summary>
 	/// Button handler for "Main Menu" button
 	/// </summary>
@@ -88,3 +131,4 @@ public class TutorialMenu : MonoBehaviour {
 	}
 	#endregion
 }
+	

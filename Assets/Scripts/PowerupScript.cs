@@ -233,7 +233,7 @@ public class PowerupScript : MonoBehaviour {
 		}
 	}
 	
-	public static bool CanSpaw {
+	public static bool CanSpawn {
 		get {return canTriggerSpawn;}
 	}
 	
