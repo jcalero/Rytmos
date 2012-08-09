@@ -40,7 +40,7 @@ public class PeakTriggerManager : MonoBehaviour
 	/// </summary>
 	void Update ()
 	{
-		if(AudioPlayer.isPlaying) {
+		if(AudioPlayer.isPlaying || TutorialAudioPlayer.isPlaying) {
 			timer += Time.deltaTime;
 			
 			/* Update the flags for loud parts of a song */

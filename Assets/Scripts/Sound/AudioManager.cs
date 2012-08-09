@@ -68,6 +68,9 @@ public static class AudioManager
 			peaks = TutorialRytData.getPeaks();
 			loudPartTimeStamps = TutorialRytData.getLoudFlags();
 			variationFactor = TutorialRytData.getVariationFactor();
+			audioLength = 213.883f;
+			frequency = 44100;
+			channels = 2;
 			songLoaded = true;
 			currentlyLoadedSong = "xXBACKgroundMUSICXx";
 			tagDataSet = true;

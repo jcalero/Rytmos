@@ -312,10 +312,6 @@ public class MainMenu : MonoBehaviour {
 		AudioManager.artist = "Luke Stark";
 		AudioManager.title = "The Price Of Victory";
 		Game.GameMode = Game.Mode.Tutorial;
-
-		StartCoroutine(AudioManager.initMusic(""));
-		while (!AudioManager.isSongLoaded()) { }
-
 		Application.LoadLevel("LoadScreen");
 	}
 	#endregion

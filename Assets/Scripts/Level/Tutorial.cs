@@ -120,7 +120,7 @@ public class Tutorial : Level {
 	}
 	
 	void Update() {
-		if(AudioPlayer.isPlaying)
+		if(TutorialAudioPlayer.isPlaying)
 			audioTimer += Time.deltaTime;
 		
 		if(Input.GetKeyDown(KeyCode.Alpha2)) 
@@ -128,7 +128,6 @@ public class Tutorial : Level {
 		
 		if(Input.GetKeyDown(KeyCode.Alpha5)) {
 			PeakTriggerManager.seekTo(155);
-			AudioPlayer.seekTo(155);
 			audioTimer = 155;
 		}
 		
@@ -197,7 +196,6 @@ public class Tutorial : Level {
 	
 	public static void SkipTo(float seconds) {
 		PeakTriggerManager.seekTo(seconds);
-		AudioPlayer.seekTo(seconds);
 		audioTimer = seconds;
 	}
 

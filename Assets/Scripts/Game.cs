@@ -97,7 +97,10 @@ public class Game : MonoBehaviour
 	{
 		if(disablePause) return;
 		if (GameState == State.Playing) {
-			AudioPlayer.pause ();
+			if(Game.GameMode == Game.Mode.Tutorial)
+				TutorialAudioPlayer.pause();
+			else
+				AudioPlayer.pause ();
 			PauseMenu.Show();
 		}
 		Time.timeScale = 0f;                        // Stop game time
@@ -109,7 +112,7 @@ public class Game : MonoBehaviour
 		if(isTutorial) {
 			if (GameState == State.Playing) {
 				disablePause = true;
-				AudioPlayer.pause();
+				TutorialAudioPlayer.pause();
 				TutorialMenu.Show();
 			}
 			Time.timeScale = 0f;                        // Stop game time
@@ -121,7 +124,7 @@ public class Game : MonoBehaviour
 		if(isTutorial) {
 			if (GameState == State.Playing) {
 				disablePause = false;
-				AudioPlayer.resume();	
+				TutorialAudioPlayer.resume();	
 				TutorialMenu.Hide();
 			}
 			Time.timeScale = 1f;                        // Restores game time
@@ -133,7 +136,10 @@ public class Game : MonoBehaviour
 	{
 		if(disablePause) return;
 		if (GameState == State.Playing) {
-			AudioPlayer.resume ();
+			if(Game.GameMode == Game.Mode.Tutorial)
+				TutorialAudioPlayer.resume();
+			else
+				AudioPlayer.resume ();
 			PauseMenu.Hide ();
 		}
 		Time.timeScale = 1f;                        // Restores game time
