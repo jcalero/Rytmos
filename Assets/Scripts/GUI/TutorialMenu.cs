@@ -10,16 +10,43 @@ public class TutorialMenu : MonoBehaviour {
 	public UIPanel[] PopupPanels;
 
 	private static TutorialMenu instance;
+	private static bool disableButtons;
+	private float timer;
+	private bool buttonsDisabled;
 	#endregion
 
 	#region Functions
 	void Awake() {
+		timer = 0f;
+		buttonsDisabled = false;
 		instance = this;
-		foreach(UIPanel p in PopupPanels) UITools.SetActiveState (p, false);	
+		foreach(UIPanel p in instance.PopupPanels) UITools.SetActiveState (p, false);	
+	}
+	
+	void Update() {
+		
+		// This bit of code disables the "continue/retry" buttons for the tutorial popup for 100ms to eliminate accidental buttonpresses.
+		// (This "hack" has to be used because starting a coroutine in a static method like Show() is really really annoying)
+		if(disableButtons) {
+			if(!buttonsDisabled) {
+				foreach(UIButton b in instance.PopupPanels[Tutorial.sceneNumber-1].GetComponentsInChildren<UIButton>()) b.isEnabled = false;
+				buttonsDisabled = true;
+				timer = Time.realtimeSinceStartup;
+				Debug.Log("here");
+			}
+			else if(Time.realtimeSinceStartup-timer > 0.1f) {
+				Debug.Log("here2");
+				timer = 0f;
+				disableButtons = false;
+				buttonsDisabled = false;
+				foreach(UIButton b in instance.PopupPanels[Tutorial.sceneNumber-1].GetComponentsInChildren<UIButton>()) b.isEnabled = true;
+			}
+		}
 	}
 
 	public static void Show() {
 		UITools.SetActiveState (instance.PopupPanels[Tutorial.sceneNumber-1], true);
+		disableButtons = true;
 	}
 
 	public static void Hide() {
@@ -58,12 +85,6 @@ public class TutorialMenu : MonoBehaviour {
 	/// </summary>
 	void OnQuitClicked() {
 		Application.Quit();
-	}
-	
-	private IEnumerator DelayButton(UIButton button, float time) {
-		button.isEnabled = false;
-		yield return new WaitForSeconds(time);
-		button.isEnabled = true;
 	}
 	#endregion
 }
