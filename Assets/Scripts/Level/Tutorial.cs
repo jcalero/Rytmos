@@ -120,7 +120,7 @@ public class Tutorial : Level {
 	}
 	
 	void Update() {
-		if(TutorialAudioPlayer.isPlaying)
+		if(AudioPlayer.isPlaying)
 			audioTimer += Time.deltaTime;
 		
 		if(Input.GetKeyDown(KeyCode.Alpha2)) 

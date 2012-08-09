@@ -23,9 +23,14 @@ public class AudioPlayer : MonoBehaviour
 	void Awake ()
 	{
 #if UNITY_ANDROID && !UNITY_EDITOR
+		if(Game.GameMode != Game.Mode.Tutorial) {
 			androidPlayer = new AndroidJavaObject("android.media.MediaPlayer",new object[]{});
 			androidPlayer.Call("setDataSource",new object[]{Game.Song});
 			androidPlayer.Call("prepare",new object[]{});
+		}
+		else {
+			audioSource = gameObject.GetComponentInChildren<AudioSource> (); // get references to audiosources
+		}
 #elif UNITY_WEBPLAYER
 		AudioSource[] audioSources = gameObject.GetComponentsInChildren<AudioSource> (); // get references to audiosources
 		if(Game.Song == "Jazz-Fog") audioSource = audioSources[1];
@@ -55,8 +60,14 @@ public class AudioPlayer : MonoBehaviour
 	void Start ()
 	{
 #if UNITY_ANDROID && !UNITY_EDITOR
+		if(Game.GameMode != Game.Mode.Tutorial) {
 			androidPlayer.Call ("setVolume", new object[]{Game.MusicVolume,Game.MusicVolume});
 			androidPlayer.Call ("start", new object[]{});
+		}
+		else {
+			audioSource.volume = Game.MusicVolume;
+			audioSource.Play ();
+		}
 #else
 			audioSource.volume = Game.MusicVolume;
 			audioSource.Play ();
@@ -70,7 +81,9 @@ public class AudioPlayer : MonoBehaviour
 	{
 		
 #if UNITY_ANDROID && !UNITY_EDITOR
-		if(!isPlaying && androidPlayer.Call<int>("getCurrentPosition") > 171)
+		if(!isPlaying && Game.GameMode != Game.Mode.Tutorial && androidPlayer.Call<int>("getCurrentPosition") > 171)
+			isPlaying = true;
+		else if(!isPlaying && audioSource.timeSamples > 0)
 			isPlaying = true;
 #else
 		if(!isPlaying && audioSource.timeSamples > 0)
@@ -80,8 +93,11 @@ public class AudioPlayer : MonoBehaviour
 		if (!Game.Paused) {
 			if (timer >= AudioManager.audioLength) {
 #if UNITY_ANDROID && !UNITY_EDITOR
-					androidPlayer.Call ("stop", new object[]{});
-					Debug.Log("timer made audio stop");
+		if(Game.GameMode != Game.Mode.Tutorial) {		
+			androidPlayer.Call ("stop", new object[]{});
+			Debug.Log("timer made audio stop");
+		}
+		else audioSource.Stop ();
 #else
 					audioSource.Stop ();
 #endif
@@ -111,7 +127,10 @@ public class AudioPlayer : MonoBehaviour
 	public static void pause ()
 	{
 #if UNITY_ANDROID && !UNITY_EDITOR
+		if(Game.GameMode != Game.Mode.Tutorial)
 			androidPlayer.Call ("pause", new object[]{});
+		else if (audioSource != null && audioSource.isPlaying)
+			audioSource.Pause ();
 #else
 			if (audioSource != null && audioSource.isPlaying)
 						audioSource.Pause ();
@@ -124,37 +143,31 @@ public class AudioPlayer : MonoBehaviour
 	public static void resume ()
 	{
 #if UNITY_ANDROID && !UNITY_EDITOR
+		if(Game.GameMode != Game.Mode.Tutorial)
 			androidPlayer.Call ("start", new object[]{});
+		else if (audioSource != null && !audioSource .isPlaying)
+			audioSource .Play ();
 #else
 			if (audioSource != null && !audioSource .isPlaying)
 						audioSource .Play ();
 #endif
 	}
 	
-	public static void seekTo(float timeInSeconds) {
-#if UNITY_ANDROID && !UNITY_EDITOR
-		int androidSeekTime = (int)(timeInSeconds * 1000f);
-		androidPlayer.Call("seekTo",new object[]{androidSeekTime});
-#else
-		if(audioSource != null) {
-			audioSource.time = timeInSeconds;
-		}
-#endif		
-	}
-	
 	void OnDisable ()
 	{
 #if UNITY_ANDROID && !UNITY_EDITOR
+		if(Game.GameMode != Game.Mode.Tutorial) {
 			androidPlayer.Call ("stop", new object[]{});
 			androidPlayer.Call ("reset", new object[]{});
 			androidPlayer.Call ("release", new object[]{});
 			androidPlayer.Dispose();
 			androidPlayer = null;
+		}
 #endif
 	}
 	
 	void OnApplicationQuit() {
-		if(Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WindowsEditor) {
+		if(Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WindowsEditor || Game.GameMode == Game.Mode.Tutorial) {
 			AudioManager.clear ();
 		}
 	}
