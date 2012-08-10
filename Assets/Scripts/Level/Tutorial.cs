@@ -21,13 +21,10 @@ public class Tutorial : Level {
 	public static bool firstEnemyMessage;
 	public static bool secondEnemyMessage;
 	public static bool thirdEnemyMessage;
-	public static bool comboMessage;
 	public static bool shieldPowerupMessage;
-	public static bool useShieldMessage;
-	public static bool demoShieldMessage;
+	public static bool comboMessage;
 	public static bool slideMessage;
 	public static bool superPulseMessage;
-	public static bool increasedSpawnersMessage;
 	public static bool chainPulseMessage;
 	public static bool hasBeenHitMessage;
 	public static bool energyWarningMessage;
@@ -36,29 +33,16 @@ public class Tutorial : Level {
 	public static bool secondSpawn;
 	public static bool thirdSpawn;
 	public static bool done;
-	public static bool selectedPowerup;
-	public static bool activatedPowerup;
 	public static bool spawnPowerupsNormal;
 	public static bool secondChain;
 	public static bool showingMessage;
 	public static bool hasBeenHit;
-	public static bool sentTutorialPulse;
-	
-	public static float timeStamp;
-	public static int[] spawnPosStore;
-	public static int colorStore;
+	public static bool sentTutorialPulse;	
 	public static int sceneNumber;
-	public static bool numSpawners;
-	public static int storeRotation;
-	
-	public UILabel SurviveLabel;
-	public UILabel invincibility;	
 	#endregion
 
 	#region Functions
 	protected override void Awake() {
-		// Local static reference to this class.
-		//Instance = this;
 		base.Awake();
 	}
 
@@ -68,11 +52,8 @@ public class Tutorial : Level {
 		thirdEnemyMessage = false;
 		comboMessage = false;
 		shieldPowerupMessage = false;
-		useShieldMessage = false;
-		demoShieldMessage = false;
 		slideMessage = false;
 		superPulseMessage = false;
-		increasedSpawnersMessage = false;
 		chainPulseMessage = false;
 		hasBeenHitMessage = false;
 		energyWarningMessage = false;
@@ -81,15 +62,12 @@ public class Tutorial : Level {
 		secondSpawn = false;
 		thirdSpawn = false;
 		done = false;
-		selectedPowerup = false;
 		spawnPowerupsNormal = false;
 		activatedTime = 1000000;
-		activatedPowerup = false;
 		secondChain = false;
 		sceneNumber = 1;
 		showingMessage = false;
 		hasBeenHit = false;
-		
 		sentTutorialPulse = false;
 
 		Game.GameState = Game.State.Playing;
@@ -110,7 +88,10 @@ public class Tutorial : Level {
 			sceneNumber = scene;
 			waitTimer = 0;
 			message = true;
-			Game.Pause(true);
+			Game.CommonPauseOperation();
+			Game.disablePause = true;
+			TutorialMenu.Show();
+			
 		}
 	}
 	
@@ -118,21 +99,14 @@ public class Tutorial : Level {
 		sceneNumber = scene;
 		showingMessage = true;
 		message = true;
-		Game.Pause (true);
+		Game.CommonPauseOperation();
+		Game.disablePause = true;
+		TutorialMenu.Show();
 	}
 	
 	void Update() {
 		if(AudioPlayer.isPlaying)
-			audioTimer += Time.deltaTime;
-		
-		if(Input.GetKeyDown(KeyCode.Alpha2)) 
-			Debug.Log ("Time at chain pulse: "+audioTimer);
-		
-		if(Input.GetKeyDown(KeyCode.Alpha5)) {
-			PeakTriggerManager.seekTo(155);
-			audioTimer = 155;
-		}
-		
+			audioTimer += Time.deltaTime;		
 		
 		//First enemy spawn message
 		if(firstSpawn && Level.EnemiesDespawned < 2 && !firstEnemyMessage && !showingMessage) 
@@ -195,14 +169,6 @@ public class Tutorial : Level {
 	public static void SkipTo(float seconds) {
 		PeakTriggerManager.seekTo(seconds);
 		audioTimer = seconds;
-	}
-
-	IEnumerator DelayLabel() {
-		float delayTime = Time.realtimeSinceStartup + 5f;
-		while (Time.realtimeSinceStartup < delayTime) {
-			yield return 0;
-		}
-		SurviveLabel.text = "";
 	}
 	#endregion
 

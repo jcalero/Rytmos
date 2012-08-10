@@ -43,7 +43,7 @@ public class Game : MonoBehaviour
 	private static bool lowGraphicsModeDefault = false;
 	private static bool rememberLogin;
 	private static bool rememberLoginDefault = false;
-	private static bool disablePause = false;
+	public static bool disablePause = false;
 	#endregion
 
 	#region Functions
@@ -96,25 +96,17 @@ public class Game : MonoBehaviour
 	public static void Pause ()
 	{
 		if(disablePause) return;
-		if (GameState == State.Playing) {
-			AudioPlayer.pause ();
+		if (GameState == State.Playing) 
 			PauseMenu.Show();
-		}
-		Time.timeScale = 0f;                        // Stop game time
-		paused = true;
+		CommonPauseOperation();
 		Debug.Log (">> Game paused.");
 	}
 	
-	public static void Pause(bool isTutorial) {
-		if(isTutorial) {
-			if (GameState == State.Playing) {
-				disablePause = true;
-				AudioPlayer.pause();
-				TutorialMenu.Show();
-			}
-			Time.timeScale = 0f;                        // Stop game time
-			paused = true;
-		}
+	public static void CommonPauseOperation() {
+		Time.timeScale = 0f;                        // Stop game time
+		paused = true;
+		if (GameState == State.Playing) 
+			AudioPlayer.pause ();
 	}
 	
 	public static void Resume(bool isTutorial) {
@@ -128,16 +120,21 @@ public class Game : MonoBehaviour
 			paused = false;
 		}
 	}
+	
+	public static void CommonResumeOperation() {
+		Time.timeScale = 1f;
+		paused = false;
+		if(GameState == State.Playing) 
+			AudioPlayer.resume ();
+	}
 
 	public static void Resume ()
 	{
 		if(disablePause) return;
-		if (GameState == State.Playing) {
-			AudioPlayer.resume ();
+		if (GameState == State.Playing) 
 			PauseMenu.Hide ();
-		}
-		Time.timeScale = 1f;                        // Restores game time
-		paused = false;
+		CommonResumeOperation();
+		
 		Debug.Log (">> Game resumed.");
 	}
 

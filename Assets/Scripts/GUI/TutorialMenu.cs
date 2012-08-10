@@ -8,7 +8,6 @@ using System.Collections;
 public class TutorialMenu : MonoBehaviour {
 	#region Fields
 	public UIPanel[] PopupPanels;
-//	public UIPanel[] PausePanels;
 	public GameObject powerup;
 	public GameObject player;
 
@@ -27,7 +26,6 @@ public class TutorialMenu : MonoBehaviour {
 		hasPushedFirst = false;
 		instance = this;
 		foreach(UIPanel p in instance.PopupPanels) UITools.SetActiveState (p, false);
-//		foreach(UIPanel p in instance.PausePanels) UITools.SetActiveState(p, false);
 	}
 	
 	void Update() {
@@ -60,34 +58,21 @@ public class TutorialMenu : MonoBehaviour {
 	public static void Hide() {
 		Tutorial.showingMessage = false;
 		UITools.SetActiveState (instance.PopupPanels[Tutorial.sceneNumber-1], false);
-//		UITools.SetActiveState (instance.PausePanels[Tutorial.sceneNumber-1], false);
-	}
-	
-	public static void HideContinue() {
-		UITools.SetActiveState(instance.PopupPanels[Tutorial.sceneNumber-1], false);
-//		UITools.SetActiveState(instance.PausePanels[Tutorial.sceneNumber-1], true);
 	}
 
 	/// <summary>
 	/// Button handler for "Resume" button
 	/// </summary>
 	void OnResumeClicked() {
-		if(Tutorial.sceneNumber == 1 || Tutorial.sceneNumber == 2 
-		|| Tutorial.sceneNumber == 3 || Tutorial.sceneNumber == 7) {
-			HideContinue();
-		} else {
-			Game.Resume(true);	
-		}
+		TutorialResume();
 	}
 	
 	void OnProceedClicked() {
-		
-		
 		if(Tutorial.sceneNumber == 1 || Tutorial.sceneNumber == 2 || Tutorial.sceneNumber == 3) {
 			Tutorial.sentTutorialPulse = true;
-			player.GetComponent<Player>().sendPulse(true);
+			player.GetComponent<Player>().sendPulse();
 		}
-		Game.Resume(true);
+		TutorialResume();
 	}
 	
 	void OnSelectPowerup() {
@@ -100,13 +85,19 @@ public class TutorialMenu : MonoBehaviour {
 	void OnSelectMiddle() {
 		if(hasPushedFirst) {
 			player.GetComponent<Player>().activatePowerup();
-			Game.Resume(true);
+			TutorialResume();		
 		}
 	}
 	
 	void OnSlideProceedClicked() {
-		player.GetComponent<Player>().sendPulse(true);
-		Game.Resume(true);
+		player.GetComponent<Player>().sendPulse();
+		TutorialResume();
+	}
+	
+	void TutorialResume() {
+		Game.disablePause = false;
+		Game.CommonResumeOperation();
+		Hide ();
 	}
 	
 	/// <summary>
@@ -117,15 +108,12 @@ public class TutorialMenu : MonoBehaviour {
 	}
 
 	void OnRestartSongClicked() {
-		
 		Application.LoadLevel("LoadScreen");
 	}
 	
 	void OnRetryClicked() {
-		// Call revert to start functionality
-		Game.Resume(true);
+		TutorialResume();
 		Application.LoadLevel("LoadScreen");
-		
 	}
 
 	/// <summary>

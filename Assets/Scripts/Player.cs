@@ -158,7 +158,7 @@ public class Player : MonoBehaviour, PeakListener {
 	}
 	
 	// Create a pulse and trigger animation
-	public void sendPulse(bool disable) {
+	public void sendPulse() {
 		Instantiate(pulsePrefab, Vector3.zero, pulsePrefab.transform.localRotation);
 		sentPulse = true;
 		resetGlowTimers();
@@ -167,10 +167,7 @@ public class Player : MonoBehaviour, PeakListener {
 	public void activatePowerup() {
 		Game.PowerupActive = playerpowerup;
 		powerupDisplay.GetComponent<CenterPowerupDisplay>().hideSprite();
-		hasPowerup = false;
-		if(Game.GameMode == Game.Mode.Tutorial && !Tutorial.demoShieldMessage) 
-			Tutorial.activatedPowerup = true;
-			
+		hasPowerup = false;			
 		if (playerpowerup == Game.Powerups.MassivePulse) {
 			Instantiate(superPulsePrefab, Vector3.zero, superPulsePrefab.transform.localRotation);
 			superPulseCount = 0;
