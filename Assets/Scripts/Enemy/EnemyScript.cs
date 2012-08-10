@@ -46,7 +46,7 @@ public class EnemyScript : MonoBehaviour,PeakListener {
 	private int fixPos;                 // Random value for moving the enemy off the screen
 	private float baseSpeed;			// Base speed on the enemy, varies depending on the game mode.
 
-	public static int energyReturn = 2;			// The amount of energy to return to the player when an enemy dies.
+	public static int energyReturn = 1;			// The amount of energy to return to the player when an enemy dies.
 
 	#endregion
 

@@ -1,9 +1,9 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\PulseSender.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\GUI\TutorialMenu.cs">
     <Files>
-      <File FileName="Assets\Scripts\FloatingScorePool.cs" Line="36" Column="1" />
-      <File FileName="Assets\Scripts\PulseSender.cs" Line="160" Column="8" />
+      <File FileName="Assets\Scripts\Level\Tutorial.cs" Line="84" Column="13" />
+      <File FileName="Assets\Scripts\GUI\TutorialMenu.cs" Line="15" Column="24" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

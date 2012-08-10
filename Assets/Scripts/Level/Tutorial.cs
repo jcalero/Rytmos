@@ -30,6 +30,7 @@ public class Tutorial : Level {
 	public static bool increasedSpawnersMessage;
 	public static bool chainPulseMessage;
 	public static bool hasBeenHitMessage;
+	public static bool energyWarningMessage;
 	
 	public static bool firstSpawn;
 	public static bool secondSpawn;
@@ -74,6 +75,7 @@ public class Tutorial : Level {
 		increasedSpawnersMessage = false;
 		chainPulseMessage = false;
 		hasBeenHitMessage = false;
+		energyWarningMessage = false;
 		
 		firstSpawn = false;
 		secondSpawn = false;
@@ -133,65 +135,61 @@ public class Tutorial : Level {
 		
 		
 		//First enemy spawn message
-		if(firstSpawn && !firstEnemyMessage && !showingMessage) 
+		if(firstSpawn && Level.EnemiesDespawned < 2 && !firstEnemyMessage && !showingMessage) 
 			showMessage(1, .75f, ref firstEnemyMessage);
 		
 		//Second enemy spawn message
-		else if(secondSpawn && !secondEnemyMessage && !showingMessage) 
+		else if(secondSpawn && Level.EnemiesDespawned < 4 && !secondEnemyMessage && !showingMessage) 
 			showMessage (2, .85f, ref secondEnemyMessage);
 		
 		//Third enemy spawn message
-		else if(thirdSpawn && !thirdEnemyMessage && !showingMessage) 
+		else if(thirdSpawn && Level.EnemiesDespawned < 6 && !thirdEnemyMessage && !showingMessage) 
 			showMessage (3, .75f, ref thirdEnemyMessage);
 		
 		//PLayer multiplier has increased
-		if(Player.multiplier >= 2 && !comboMessage && !showingMessage) 
+		if(Player.multiplier >= 7 && !comboMessage && !showingMessage) 
 			showMessage (4, .2f, ref comboMessage);
 		
 		//Advanced play message
 		if(EnemySpawnScript.spawnCount/2 >= 5 && !slideMessage && !showingMessage)
 			showMessage (5, ref slideMessage);
 		
-		//INcreased spawners message
-		if(EnemySpawnScript.spawnerCounter >= 3 && !increasedSpawnersMessage && !showingMessage) 
-			showMessage(6, .2f, ref increasedSpawnersMessage);
-		
 		//Spawn powerup
 		if(audioTimer > 78f && !shieldPowerupMessage && !showingMessage) {
-			showMessage (7, ref shieldPowerupMessage);
+			showMessage (6, ref shieldPowerupMessage);
+			activatedTime = audioTimer;
 			powerupScript.GetComponent<PowerupScript>().spawnPowerupOnScreen(1, new Vector3(3,3,0));
 		}
 		
-		//Shield powerup demo
-		if(activatedPowerup && !demoShieldMessage && !showingMessage) {
-			activatedTime = audioTimer;
-			showMessage(8, .2f, ref demoShieldMessage);
-		}
-		
 		//Spawn a superPulse, with the intention to help the player through the difficult part
-		if(!superPulseMessage && audioTimer >=activatedTime + 8.5f && !showingMessage) {
-			showMessage(9, ref superPulseMessage);
+		if(!superPulseMessage && audioTimer >=activatedTime + 9f && !showingMessage) {
+			showMessage(7, ref superPulseMessage);
 			powerupScript.GetComponent<PowerupScript>().spawnPowerupOnScreen(0, new Vector3(-4,3,0));
 
 		}
 		
 		//Spawn a chainPulse, to help the player through a difficult part
 		if(!chainPulseMessage && audioTimer >=138 && !showingMessage) {
-			showMessage(10, ref chainPulseMessage);
+			showMessage(8, ref chainPulseMessage);
 			powerupScript.GetComponent<PowerupScript>().spawnPowerupOnScreen(2, new Vector3(2.4f,1f,0));
 		}
 		
-		if(hasBeenHit && !hasBeenHitMessage) {
-			Debug.Log("Is this trigered");
-			showMessage(11, ref hasBeenHitMessage);	
+		//Energy Level Popup
+		if(Player.Energy < 0.25f*Player.maxEnergy && !energyWarningMessage && !showingMessage) {
+			showMessage(10, ref energyWarningMessage);
 		}
 		
+		//Player has been hit popup
+		if(hasBeenHit && !hasBeenHitMessage) {
+			Debug.Log("Is this trigered");
+			showMessage(9, ref hasBeenHitMessage);	
+		}
 		
 		if(!secondChain && audioTimer >=159 && !showingMessage) {
 			powerupScript.GetComponent<PowerupScript>().spawnPowerupOnScreen(2, new Vector3(3,-2,0));
 			secondChain = true;
 			spawnPowerupsNormal = true;
-		}		
+		}	
 	}
 	
 	public static void SkipTo(float seconds) {

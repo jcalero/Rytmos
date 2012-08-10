@@ -71,6 +71,11 @@ public class Player : MonoBehaviour, PeakListener {
 		}
 		PeakTriggerManager.addSelfToListenerList(this);
 		ResetStats();
+		
+		if(Game.GameMode == Game.Mode.Casual || Game.GameMode == Game.Mode.Tutorial)
+			energyRegenRate = 0.05f;
+		else
+			energyRegenRate = 0.1f;
 	}
 
 	void Update() {
@@ -353,7 +358,7 @@ public class Player : MonoBehaviour, PeakListener {
 	}
 	
 	public static void ReduceMultiplier() {		
-		multiplier -= 5;
+		multiplier -= 1;
 		
 		if(multiplier < 1) {
 			multiplier = 1;
