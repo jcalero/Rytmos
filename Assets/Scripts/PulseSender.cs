@@ -19,20 +19,15 @@ public class PulseSender : MonoBehaviour {
 	public bool held;                              // Flag for whether the player is keeping his pulse "active"
 	private Color finalColor = Color.clear;         // The final color of the pulse once the player releases his finger
 	private float pulseMax;                         // Maximum range of the pulse
-	private float timer = 0;                        // Timer for energy cost when retracting the pulse
-	private float pulseBackEnergyRate = 0.1f;       // The rate at which the pulse retraction reduces energy. Lower = higher rate.
 	float flashTimer = 1f;
 	float flashTimerMax = 1f;
 	bool isFlashingScreen;
-	
-	private bool tutorialScene;
 
 	void Awake() {
 		SuperPulseCamera = GameObject.Find("3DCamera").camera;
 	}
 
 	void Start() {
-		if(Game.GameMode == Game.Mode.Tutorial) tutorialScene = true;
 		held = true;
 		Radius = .4f;
 		line = gameObject.GetComponent<LineRenderer>();

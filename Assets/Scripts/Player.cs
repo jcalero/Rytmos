@@ -159,7 +159,7 @@ public class Player : MonoBehaviour, PeakListener {
 	
 	// Create a pulse and trigger animation
 	public void sendPulse(bool disable) {
-		GameObject instance = (GameObject) Instantiate(pulsePrefab, Vector3.zero, pulsePrefab.transform.localRotation);
+		Instantiate(pulsePrefab, Vector3.zero, pulsePrefab.transform.localRotation);
 		sentPulse = true;
 		resetGlowTimers();
 	}
