@@ -58,11 +58,11 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 			}
 		}
 		
-		if(Player.multiplier < 3) spawnerCounter = 2;
-		else if(Player.multiplier < 6) spawnerCounter = 3;
-		else if(Player.multiplier < 12) spawnerCounter = 3;
-		else if(Player.multiplier < 17) spawnerCounter = 3;
-		else if(Game.GameMode != Game.Mode.Casual) spawnerCounter = 3;
+//		if(Player.multiplier < 3) spawnerCounter = 2;
+//		else if(Player.multiplier < 6) spawnerCounter = 3;
+//		else if(Player.multiplier < 12) spawnerCounter = 3;
+//		else if(Player.multiplier < 17) spawnerCounter = 3;
+//		else if(Game.GameMode != Game.Mode.Casual) spawnerCounter = 3;
 		
 		updateSpawnPositions();
 	}
@@ -88,7 +88,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		Game.SyncMode = true;
 		//spawnPositions = new int[]{40,90,35,85};
 		spawnPositions = new int[] { 0 };
-		spawnerCounter = 1;
+		spawnerCounter = 3;
 		currentlySelectedEnemy = Random.Range(0,6);
 		spawnCount = 0;
 		rotateDirection = 1;
@@ -272,12 +272,18 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 			else if(rnd < 100) currentlySelectedEnemy = 3;				
 		} else {
 			//You are in six color mode, and check if the colorpowerup is not active
-			if(rnd < 30) currentlySelectedEnemy = 0;
-			else if(rnd < 55) currentlySelectedEnemy = 1;
-			else if(rnd < 75) currentlySelectedEnemy = 2;
-			else if(rnd < 85) currentlySelectedEnemy = 3;
-			else if(rnd < 95) currentlySelectedEnemy = 4;
-			else if(rnd < 101) currentlySelectedEnemy = 5;			
+//			if(rnd < 30) currentlySelectedEnemy = 0;
+//			else if(rnd < 55) currentlySelectedEnemy = 1;
+//			else if(rnd < 75) currentlySelectedEnemy = 2;
+//			else if(rnd < 85) currentlySelectedEnemy = 3;
+//			else if(rnd < 95) currentlySelectedEnemy = 4;
+//			else if(rnd < 101) currentlySelectedEnemy = 5;
+			if(rnd < 17) currentlySelectedEnemy = 0;
+			else if(rnd < 34) currentlySelectedEnemy = 1;
+			else if(rnd < 51) currentlySelectedEnemy = 2;
+			else if(rnd < 68) currentlySelectedEnemy = 3;
+			else if(rnd < 85) currentlySelectedEnemy = 4;
+			else if(rnd < 101) currentlySelectedEnemy = 5;
 		}
 	}
 	

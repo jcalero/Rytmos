@@ -92,6 +92,7 @@ public class MainMenu : MonoBehaviour {
 		if (MainMenuBasePanel.enabled) UITools.SetActiveState(MainMenuBasePanel, false);
 		if (MainMenuPlayPanel.enabled) UITools.SetActiveState(MainMenuPlayPanel, false);
 		if (MainMenuExtrasPanel.enabled) UITools.SetActiveState(MainMenuExtrasPanel, false);
+		if (MainMenuChoicePanel.enabled) UITools.SetActiveState(MainMenuChoicePanel, false);
 	}
 
 	/// <summary>
@@ -163,6 +164,7 @@ public class MainMenu : MonoBehaviour {
 				SongNameLabel.text = GetSongTitleFromFile();
 				CalculateSongLabelSize();
 				UITools.SetActiveState(MainMenuChoicePanel, true);
+				UITools.SetActiveState(MainMenuExtrasPanel, true);
 				foreach(UIButton c in MainMenuChoicePanel.GetComponentsInChildren<UIButton>()) StartCoroutine(DelayButton(c,0.1f));
 				break;
 		}
