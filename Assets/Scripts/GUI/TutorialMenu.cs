@@ -79,7 +79,6 @@ public class TutorialMenu : MonoBehaviour {
 		player.GetComponent<Player>().changePowerup();
 		hasPushedFirst = true;
 		powerup.GetComponent<PowerupScript>().spawnPowerupOnScreen(1, new Vector3(20, 20, 0));
-		Tutorial.SetUpParticlesFeedback(4, new Vector3(20,20,0));
 	}
 	
 	void OnSelectMiddle() {

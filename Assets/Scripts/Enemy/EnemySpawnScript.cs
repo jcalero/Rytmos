@@ -92,7 +92,6 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		currentlySelectedEnemy = Random.Range(0,6);
 		spawnCount = 0;
 		rotateDirection = 1;
-		Level.SetUpParticlesFeedback(spawnPositions.Length, currentlySelectedEnemy);		
 		loudFlag = 0;
 		maxMag = new Vector2(Game.screenTop,Game.screenRight).magnitude;
 		if(Game.GameMode == Game.Mode.Casual) baseSpeed = 1.5f;
@@ -186,7 +185,6 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 					}
 //					moveSpawnersMirrored(3,rotateDirection);
 					if(Game.GameMode == Game.Mode.Tutorial) setupTutorialSpawns(spawnCount, false);
-					Level.SetUpParticlesFeedback(spawnPositions.Length, currentlySelectedEnemy);
 					break;
 				case 2:
 					// These are even more medium ranged frequencies, used to change the direction (for now, again :P )
@@ -200,7 +198,6 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 					// Some higher frequencies to change the currently spawned enemy
 					changeEnemy();
 					if(Game.GameMode == Game.Mode.Tutorial) setupTutorialSpawns(spawnCount, true);
-					Level.SetUpParticlesFeedback(spawnPositions.Length, currentlySelectedEnemy);
 					break;
 				case 4:
 					break;

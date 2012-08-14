@@ -23,7 +23,7 @@ public class Level : MonoBehaviour {
 	public static bool fourColors = false;							// Used for dealing with multiple colors - currently 4 or 6
 	public static int EnemiesDespawned = 0;
 
-	public GameObject[] particlesFeedback = new GameObject[6];      // The six feedback particles. Inspector reference. Location: LevelManager
+//	public GameObject[] particlesFeedback = new GameObject[6];      // The six feedback particles. Inspector reference. Location: LevelManager
 	public GameObject spriteManager;                                // Reference to the SpriteManager. Inspector reference. Location: LevelManager
 	public GameObject bgSpriteManager;                              // Reference to the SpriteManager. Inspector reference. Location: LevelManager
 	public GameObject touchPrefab;                                  // The touch sprite. Inspector reference. Location: LevelManager
@@ -74,28 +74,6 @@ public class Level : MonoBehaviour {
 	/// </summary>
 	private void HideTouchSprite() {
 		touchSprite.hidden = true;
-	}
-
-	/// <summary>
-	/// Positions the particle feedbacks at the correct location of the screen
-	/// </summary>
-	public static void SetUpParticlesFeedback(int numOfSpawns, int enemy) {
-		EnemySpawnScript ess = Instance.enemySpawner.GetComponent<EnemySpawnScript>();
-		for (int i = 0; i < numOfSpawns; i++) {
-			int percentage = ess.spawnPositions[i];
-			Instance.particlesFeedback[i].transform.localPosition = ess.findSpawnPositionVector(percentage);
-			Instance.particlesFeedback[i].GetComponent<ParticleSystem>().startColor = singleColourSelect(enemy);
-		}
-	}
-
-	public static void SetUpParticlesFeedback(int particleNum, Vector3 position) {
-		Instance.particlesFeedback[particleNum].transform.localPosition = position;
-		Instance.particlesFeedback[particleNum].GetComponent<ParticleSystem>().startColor = Color.white;
-	}
-
-	public static void SetUpParticlesFeedback(int particleNum, Vector3 position, Color c) {
-		Instance.particlesFeedback[particleNum].transform.localPosition = position;
-		Instance.particlesFeedback[particleNum].GetComponent<ParticleSystem>().startColor = c;
 	}
 
 	/// <summary>
