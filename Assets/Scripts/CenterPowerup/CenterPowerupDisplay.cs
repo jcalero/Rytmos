@@ -8,27 +8,24 @@ public class CenterPowerupDisplay : MonoBehaviour {
 	public GameObject chaincp;
 	public GameObject shieldcp;
 	
-	protected LinkedSpriteManager spriteManager;
-	protected Sprite chainCP;
-	private Sprite superCP;
-	private Sprite shieldCP;
-	protected string spriteName = "default";
-    protected int left;
-    protected int bottom;
-    protected int width;
-    protected int height;
-    protected float UVHeight = 1f;
-    protected float UVWidth = 1f;
+	private LinkedSpriteManager spriteManager;
+	private string spriteName = "default";
+    private int left;
+    private int bottom;
+    private int width;
+    private int height;
+    private float UVHeight = 1f;
+    private float UVWidth = 1f;
 	
 	void Awake() {
 		spriteManager = smObject.GetComponent<LinkedSpriteManager>();
 		hideSprite();
 		CalculateSprite(SpriteAtlas, "Circles");
-		chainCP = spriteManager.AddSprite(chaincp, UVWidth, UVHeight, left, bottom, width, height, false);
+		spriteManager.AddSprite(chaincp, UVWidth, UVHeight, left, bottom, width, height, false);
 		CalculateSprite(SpriteAtlas, "Atom");
-		superCP = spriteManager.AddSprite(supercp, UVWidth, UVHeight, left, bottom, width, height, false);
+		spriteManager.AddSprite(supercp, UVWidth, UVHeight, left, bottom, width, height, false);
 		CalculateSprite(SpriteAtlas, "shield");
-		shieldCP = spriteManager.AddSprite(shieldcp, UVWidth, UVHeight, left, bottom, width, height, false);
+		spriteManager.AddSprite(shieldcp, UVWidth, UVHeight, left, bottom, width, height, false);
 	}
 	
 	void Update() {

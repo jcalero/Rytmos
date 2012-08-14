@@ -16,20 +16,22 @@ public class PowerupScript : MonoBehaviour {
 	private float UVWidth = 1f;
 	
 	private LinkedSpriteManager spriteManager;
-	private Sprite powerup;
 	private float powerUpTimer;
 	private float totalTimer;
 	private readonly float screenTime = 5f;
 	private float respawnTime = 15f;
 	private bool spawned;
+	private int activePW;
 	
 	private static bool canTriggerSpawn;
 	private static bool canSpawn;
 	private static Vector3 spawnPosition;
 	private ParticleSystem ps;
+	private Vector3 away = new Vector3(20,20,0);
 
 	// Use this for initialization
 	void Awake () {
+		activePW = 0;
 		pw = Game.Powerups.None;
 		spriteManager = powerupManager.GetComponent<LinkedSpriteManager>();
 		ps = gameObject.GetComponent<ParticleSystem>();
@@ -40,28 +42,30 @@ public class PowerupScript : MonoBehaviour {
 		if(Game.GameMode == Game.Mode.Tutorial)
 			totalTimer = respawnTime/2f;
 		else totalTimer = respawnTime;
-		// Checks that the sprite name exists in the atlas, if not falls back to default sprite
-		if (SpriteAtlas.GetSprite(spriteName) == null) {
-			Debug.LogWarning("Sprite " + "\"" + spriteName + "\" " + "not found in atlas " + "\"" + SpriteAtlas + "\"" + ". Using default sprite, \"circle\".");
-			spriteName = "circle";		
-		}
+
 		// Calculate sprite atlas coordinates and add sprite for 
-		CalculateSprite(SpriteAtlas, "");
-		powerup = spriteManager.AddSprite(gameObject, UVWidth, UVHeight, left, bottom, width, height, false);
+		CalculateSprite(SpriteAtlas, "Atom");
+		spriteManager.AddSprite(powerups[0], UVWidth, UVHeight, left, bottom, width, height, false);
+		CalculateSprite (SpriteAtlas, "Circles");
+		spriteManager.AddSprite(powerups[1], UVWidth, UVHeight, left, bottom, width, height, false);
+		CalculateSprite (SpriteAtlas, "shield");
+		spriteManager.AddSprite(powerups[2], UVWidth, UVHeight, left, bottom, width, height, false);
+
 		
 		
 		//Initialize the powerup-sprite to be off the screen
-		moveSprite(new Vector3(20,20,0));
+		moveSprite(away, powerups[0]);
+		moveSprite(away, powerups[1]);
+		moveSprite(away, powerups[2]);
 		// Set audio volume
 		gameObject.audio.volume = Game.EffectsVolume;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		ps.Emit(2);
 		//If the player has selected the powerup, move it from visibility, and restart the timer
 		if(Player.takenPowerup == true) {
-			moveSprite(new Vector3(20,20, 0));
+			moveSprite(away, powerups[activePW]);
 			powerUpTimer = 0;
 			totalTimer = respawnTime;
 			spawned = false;
@@ -81,7 +85,7 @@ public class PowerupScript : MonoBehaviour {
 			if(powerUpTimer > totalTimer) {
 				//If the powerup is spawned (on the screen), remove it
 				if(spawned) {
-					moveSprite(new Vector3(20,20, 0));
+					moveSprite(away, powerups[activePW]);
 					spawned = false;
 				} else {
 					canTriggerSpawn = true;
@@ -118,8 +122,9 @@ public class PowerupScript : MonoBehaviour {
 	private void moveSprite(Vector3 movePos) {
 		gameObject.transform.localPosition = movePos;
 	}
-
-	private void moveSprite(Vector3 movePos, Color c) {
+	
+	private void moveSprite(Vector3 movePos, GameObject powerup) {
+		powerup.transform.localPosition = movePos;
 		gameObject.transform.localPosition = movePos;
 	}
 
@@ -134,8 +139,7 @@ public class PowerupScript : MonoBehaviour {
 	
 	private void spawnPowerupOnScreen(Vector3 spawnPos) {
 		int choice = Random.Range(0,3);
-		setPowerup(choice);
-		moveSprite(spawnPos);
+		moveSprite(spawnPos, setPowerup(choice));
 		spawned = true;
 		totalTimer = screenTime;
 		gameObject.audio.Play();	
@@ -160,8 +164,6 @@ public class PowerupScript : MonoBehaviour {
 		gameObject.audio.Play();		
 	}
 	
-
-	
 	public bool spawnSprite() {
 		int choice = Random.Range(0,3);
 		return spawnSprite(choice);
@@ -176,33 +178,34 @@ public class PowerupScript : MonoBehaviour {
 	}
 	
 	public bool removeSprite() {
-		moveSprite(new Vector3(20,20, 0));
+		moveSprite(away);
 		spawned = false;
 		return spawned;
 	}
 	
-	private Color setPowerup(int choice) {
-		Color c;
+	private GameObject setPowerup(int choice) {
 		switch(choice) {
 			case 0:
 				pw = Game.Powerups.MassivePulse;
-				c = Color.white;
+				activePW = 0;
+				return powerups[0];
 				break;
 			case 1:
 				pw = Game.Powerups.Invincible;
-				c = Color.magenta;
+				activePW = 2;
+				return powerups[2];
 				break;
 			case 2:
 				pw = Game.Powerups.ChainReaction;
-				c = Color.grey;
+				activePW = 1;
+				return powerups[1];
 				break;
 			default:
-				c = Color.black;
 				pw = Game.Powerups.None;
+				activePW = 0;
+				return powerups[0];
 				break;
 		}
-		ps.startColor = c;
-		return c;
 	}
 	
 	private Vector3 randomPos() {
