@@ -26,10 +26,13 @@ public class PowerupScript : MonoBehaviour {
 	private static bool canTriggerSpawn;
 	private static bool canSpawn;
 	private static Vector3 spawnPosition;
+	private ParticleSystem ps;
+
 	// Use this for initialization
 	void Awake () {
 		pw = Game.Powerups.None;
 		spriteManager = powerupManager.GetComponent<LinkedSpriteManager>();
+		ps = gameObject.GetComponent<ParticleSystem>();
 		spriteName = "Powerup";
 		spawned = true;
 		canTriggerSpawn = false;
@@ -48,15 +51,14 @@ public class PowerupScript : MonoBehaviour {
 		powerup = spriteManager.AddSprite(gameObject, UVWidth, UVHeight, left, bottom, width, height, false);
 		
 		//Initialize the powerup-sprite to be off the screen
-		gameObject.transform.localPosition = new Vector3(20,20,0);
-		Level.SetUpParticlesFeedback(4, new Vector3(20,20,0));
+		moveSprite(new Vector3(20,20,0));
 		// Set audio volume
 		gameObject.audio.volume = Game.EffectsVolume;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		
+		ps.Emit(2);
 		//If the player has selected the powerup, move it from visibility, and restart the timer
 		if(Player.takenPowerup == true) {
 			moveSprite(new Vector3(20,20, 0));
@@ -113,14 +115,14 @@ public class PowerupScript : MonoBehaviour {
 			UVWidth = 1f * widthHeightRatio;        // It's a "tall" sprite
 	}
 	
-	void OnDestroy() {
-		if (powerup != null)
-			spriteManager.RemoveSprite(powerup);
-	}
+//	void OnDestroy() {
+//		if (powerup != null)
+//			spriteManager.RemoveSprite(powerup);
+//	}
 	
 	private void moveSprite(Vector3 movePos) {
 		gameObject.transform.localPosition = movePos;
-		Level.SetUpParticlesFeedback(4, movePos);
+//		Level.SetUpParticlesFeedback(4, movePos);
 	}
 	
 	private void spawnPowerupOnScreen() {
@@ -165,7 +167,7 @@ public class PowerupScript : MonoBehaviour {
 	
 	private void moveSprite(Vector3 movePos, Color c) {
 		gameObject.transform.localPosition = movePos;
-		Level.SetUpParticlesFeedback(4, movePos, c);
+//		Level.SetUpParticlesFeedback(4, movePos, c);
 	}
 	
 	public bool spawnSprite() {
@@ -203,10 +205,11 @@ public class PowerupScript : MonoBehaviour {
 				c = Color.grey;
 				break;
 			default:
-				c = Color.white;
+				c = Color.black;
 				pw = Game.Powerups.None;
 				break;
 		}
+		ps.startColor = c;
 		return c;
 	}
 	
