@@ -45,6 +45,7 @@ public class SpawnerDisplayManager : MonoBehaviour {
 	
 	private void updateSpawnerPosition() {
 		if(oldPositions.Length != EnemySpawnScript.spawnerCounter) oldPositions = new int[EnemySpawnScript.spawnerCounter];
+		if(ess.spawnPositions.Length != EnemySpawnScript.spawnerCounter) return;
 		
 		for (int i = 0; i < activeSpawners.Length; i++) {
 			if(ess.spawnPositions[i] != oldPositions[i]) {
