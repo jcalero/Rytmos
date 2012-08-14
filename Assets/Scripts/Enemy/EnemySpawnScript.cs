@@ -141,6 +141,10 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 				case 0:
 					// This is the bass frequency, used for spawning enemies (for now at least)
 					
+					
+					for (int i = 0; i < spawnPositions.Length; i++) {
+						incrementSpawnPosition(ref spawnPositions[i], 1, rotateDirection);
+					}
 					//Find magnitude of the furthest away
 					if(Game.SyncMode) {
 						foreach (int spawnPosition in spawnPositions) {
@@ -172,9 +176,6 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 //						if(Game.SyncMode) speed *= (spawnDist.magnitude)/maxMag;									
 //						SpawnEnemy(currentlySelectedEnemy,speed,spawnDist);
 //						spawnCount++;
-					}
-					for (int i = 0; i < spawnPositions.Length; i++) {
-						incrementSpawnPosition(ref spawnPositions[i], 1, rotateDirection);
 					}
 //						moveSpawnersMirrored(1,rotateDirection);
 					break;

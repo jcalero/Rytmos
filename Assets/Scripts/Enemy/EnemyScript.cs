@@ -45,6 +45,7 @@ public class EnemyScript : MonoBehaviour,PeakListener {
 	private float x, y, z;              // Position coordinates of the enemy
 	private int fixPos;                 // Random value for moving the enemy off the screen
 	private float baseSpeed;			// Base speed on the enemy, varies depending on the game mode.
+	private bool isMoving;
 
 	public static int energyReturn = 1;			// The amount of energy to return to the player when an enemy dies.
 
@@ -54,6 +55,8 @@ public class EnemyScript : MonoBehaviour,PeakListener {
 
 	protected virtual void Awake() {
 		SpriteAtlas = EnemySpawnScript.EnemyAtlas;
+		
+		isMoving = false;
 		
 		loudFlag = 0;
 		givenDespawn = false;
@@ -70,11 +73,19 @@ public class EnemyScript : MonoBehaviour,PeakListener {
 		// Start moving towards the player
 		PeakTriggerManager.addSelfToListenerList(this);
 		SetColor();
-		iTween.MoveTo(gameObject, iTween.Hash("position", Vector3.zero,
-											  "speed", currentSpeed,
-											  "easetype", "linear"));	
 	}
-
+	
+	private void Update() {
+		
+		if(!isMoving && !gameObject.animation.isPlaying) {
+			iTween.MoveTo(gameObject, iTween.Hash("position", Vector3.zero,
+									  "speed", currentSpeed,
+									  "easetype", "linear"));
+			isMoving = true;
+		}
+		
+	}
+	
 	public void ChangeColor(Color c) {
 		enemyCircle.SetColor(c);
 	}
