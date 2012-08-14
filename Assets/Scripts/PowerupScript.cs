@@ -4,9 +4,9 @@ using System.Collections;
 public class PowerupScript : MonoBehaviour {
 	public UIAtlas SpriteAtlas;
 	public GameObject powerupManager;
+	public GameObject[] powerups;
 	
 	private Game.Powerups pw;
-	
 	private string spriteName = "default";
 	private int left;
 	private int bottom;
@@ -45,10 +45,10 @@ public class PowerupScript : MonoBehaviour {
 			Debug.LogWarning("Sprite " + "\"" + spriteName + "\" " + "not found in atlas " + "\"" + SpriteAtlas + "\"" + ". Using default sprite, \"circle\".");
 			spriteName = "circle";		
 		}
-		// Calculate sprite atlas coordinates
-		CalculateSprite(SpriteAtlas, spriteName);
-		// Add sprite to game object
+		// Calculate sprite atlas coordinates and add sprite for 
+		CalculateSprite(SpriteAtlas, "");
 		powerup = spriteManager.AddSprite(gameObject, UVWidth, UVHeight, left, bottom, width, height, false);
+		
 		
 		//Initialize the powerup-sprite to be off the screen
 		moveSprite(new Vector3(20,20,0));
@@ -115,19 +115,16 @@ public class PowerupScript : MonoBehaviour {
 			UVWidth = 1f * widthHeightRatio;        // It's a "tall" sprite
 	}
 	
-//	void OnDestroy() {
-//		if (powerup != null)
-//			spriteManager.RemoveSprite(powerup);
-//	}
-	
 	private void moveSprite(Vector3 movePos) {
 		gameObject.transform.localPosition = movePos;
-//		Level.SetUpParticlesFeedback(4, movePos);
 	}
-	
+
+	private void moveSprite(Vector3 movePos, Color c) {
+		gameObject.transform.localPosition = movePos;
+	}
+
 	private void spawnPowerupOnScreen() {
 		Vector3 spawnPos = randomPos();
-		//Here, we assign the powerup - this will be moved below once we have graphics
 		int choice = Random.Range(0,3);
 		moveSprite(spawnPos,setPowerup(choice));
 		spawned = true;
@@ -136,9 +133,9 @@ public class PowerupScript : MonoBehaviour {
 	}
 	
 	private void spawnPowerupOnScreen(Vector3 spawnPos) {
-		//Here, we assign the powerup - this will be moved below once we have graphics
 		int choice = Random.Range(0,3);
-		moveSprite(spawnPos,setPowerup(choice));
+		setPowerup(choice);
+		moveSprite(spawnPos);
 		spawned = true;
 		totalTimer = screenTime;
 		gameObject.audio.Play();	
@@ -146,7 +143,6 @@ public class PowerupScript : MonoBehaviour {
 	
 	public void spawnPowerupOnScreen(int choice) {
 		Vector3 spawnPos = randomPos();
-		//Here, we assign the powerup - this will be moved below once we have graphics
 		if(choice > 2 || choice < 0) 
 			choice = 0;
 		moveSprite(spawnPos,setPowerup(choice));
@@ -156,7 +152,6 @@ public class PowerupScript : MonoBehaviour {
 	}
 	
 	public void spawnPowerupOnScreen(int choice, Vector3 spawnPos) {
-		//Here, we assign the powerup - this will be moved below once we have graphics
 		if(choice > 2 || choice < 0) 
 			choice = 0;
 		moveSprite(spawnPos,setPowerup(choice));
@@ -165,10 +160,7 @@ public class PowerupScript : MonoBehaviour {
 		gameObject.audio.Play();		
 	}
 	
-	private void moveSprite(Vector3 movePos, Color c) {
-		gameObject.transform.localPosition = movePos;
-//		Level.SetUpParticlesFeedback(4, movePos, c);
-	}
+
 	
 	public bool spawnSprite() {
 		int choice = Random.Range(0,3);

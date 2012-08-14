@@ -7,16 +7,6 @@ using System.Collections;
 /// inherit from this class.
 /// </summary>
 public class DeathMatch : Level {
-
-	#region Fields
-	private static DeathMatch Instance;                                  // The Instance of this class for self reference
-
-	private float timer;
-
-	public UILabel SurviveLabel;
-	public UILabel invincibility;	
-	#endregion
-
 	#region Functions
 	protected override void Awake() {
 		base.Awake();
@@ -31,13 +21,6 @@ public class DeathMatch : Level {
 		Debug.Log("GameMode: " + Game.GameMode);
 	}
 
-	IEnumerator DelayLabel() {
-		float delayTime = Time.realtimeSinceStartup + 5f;
-		while (Time.realtimeSinceStartup < delayTime) {
-			yield return 0;
-		}
-		SurviveLabel.text = "";
-	}
 	#endregion
 
 }
