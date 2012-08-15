@@ -216,7 +216,13 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 						changeEnemy();
 						if(swapColours) swapColours = false;
 					} else swapColours = true;
-					if(Game.GameMode == Game.Mode.Tutorial) setupTutorialSpawns(spawnCount, true);
+					if(Game.GameMode == Game.Mode.Tutorial) {
+						if(swapColours) {
+							changeEnemy();
+							swapColours = false;
+						}
+						setupTutorialSpawns(spawnCount, true);
+					}
 					break;
 				case 4:
 					break;
