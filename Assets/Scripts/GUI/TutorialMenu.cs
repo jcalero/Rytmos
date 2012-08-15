@@ -51,7 +51,7 @@ public class TutorialMenu : MonoBehaviour {
 		UITools.SetActiveState (instance.PopupPanels[Tutorial.sceneNumber-1], true);
 		if(Tutorial.sceneNumber == 6) 
 			hasPushedFirst = false;
-		if(Tutorial.sceneNumber == 1 || Tutorial.sceneNumber == 2 || Tutorial.sceneNumber == 3) {
+		else if(Tutorial.sceneNumber == 1 || Tutorial.sceneNumber == 2 || Tutorial.sceneNumber == 3) {
 			Vector3 boxLocation;
 			if(Tutorial.sceneNumber == 1)
 				boxLocation = findBoxLocation(GameObject.Find("EnemyCyanPrefab(Clone)").transform.localPosition);
@@ -59,11 +59,14 @@ public class TutorialMenu : MonoBehaviour {
 				boxLocation = findBoxLocation(GameObject.Find("EnemyYellowPrefab(Clone)").transform.localPosition);
 			else 
 				boxLocation = findBoxLocation(GameObject.Find ("EnemyGreenPrefab(Clone)").transform.localPosition);
-			instance.PopupPanels[Tutorial.sceneNumber-1].transform.FindChild("SlicedSprite (TinyBox)")
-				.transform.localPosition = boxLocation;
-		}
-		
+			moveBox("SlicedSprite (TinyBox)", boxLocation, Tutorial.sceneNumber-1);
+		} else if (Tutorial.sceneNumber == 4) 
+			moveBox("SlicedSprite (TinyBox)", GameObject.Find ("MultiplierLabel").transform.localPosition, Tutorial.sceneNumber-1);
 		disableButtons = true;
+	}
+	
+	private static void moveBox(string sprite, Vector3 location, int sceneNumber) {
+		instance.PopupPanels[sceneNumber].transform.FindChild(sprite).transform.localPosition = location;	
 	}
 	
 	private static Vector3 findBoxLocation(Vector3 enemypos) {
