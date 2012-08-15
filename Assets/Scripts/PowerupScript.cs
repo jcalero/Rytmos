@@ -7,7 +7,6 @@ public class PowerupScript : MonoBehaviour {
 	public GameObject[] powerups;
 	
 	private Game.Powerups pw;
-	private string spriteName = "default";
 	private int left;
 	private int bottom;
 	private int width;
@@ -26,7 +25,6 @@ public class PowerupScript : MonoBehaviour {
 	private static bool canTriggerSpawn;
 	private static bool canSpawn;
 	private static Vector3 spawnPosition;
-	private ParticleSystem ps;
 	private Vector3 away = new Vector3(20,20,0);
 
 	// Use this for initialization
@@ -34,8 +32,6 @@ public class PowerupScript : MonoBehaviour {
 		activePW = 0;
 		pw = Game.Powerups.None;
 		spriteManager = powerupManager.GetComponent<LinkedSpriteManager>();
-		ps = gameObject.GetComponent<ParticleSystem>();
-		spriteName = "Powerup";
 		spawned = true;
 		canTriggerSpawn = false;
 		canSpawn = false;
@@ -119,9 +115,7 @@ public class PowerupScript : MonoBehaviour {
 			UVWidth = 1f * widthHeightRatio;        // It's a "tall" sprite
 	}
 	
-	private void moveSprite(Vector3 movePos) {
-		gameObject.transform.localPosition = movePos;
-	}
+
 	
 	private void moveSprite(Vector3 movePos, GameObject powerup) {
 		powerup.transform.localPosition = movePos;
@@ -131,28 +125,17 @@ public class PowerupScript : MonoBehaviour {
 	private void spawnPowerupOnScreen() {
 		Vector3 spawnPos = randomPos();
 		int choice = Random.Range(0,3);
-		moveSprite(spawnPos,setPowerup(choice));
-		spawned = true;
-		totalTimer = screenTime;
-		gameObject.audio.Play();	
+		spawnPowerupOnScreen(choice, spawnPos);
 	}
 	
 	private void spawnPowerupOnScreen(Vector3 spawnPos) {
 		int choice = Random.Range(0,3);
-		moveSprite(spawnPos, setPowerup(choice));
-		spawned = true;
-		totalTimer = screenTime;
-		gameObject.audio.Play();	
+		spawnPowerupOnScreen(choice, spawnPos);	
 	}
 	
 	public void spawnPowerupOnScreen(int choice) {
 		Vector3 spawnPos = randomPos();
-		if(choice > 2 || choice < 0) 
-			choice = 0;
-		moveSprite(spawnPos,setPowerup(choice));
-		spawned = true;
-		totalTimer = screenTime;
-		gameObject.audio.Play();		
+		spawnPowerupOnScreen(choice, spawnPos);		
 	}
 	
 	public void spawnPowerupOnScreen(int choice, Vector3 spawnPos) {
@@ -164,47 +147,24 @@ public class PowerupScript : MonoBehaviour {
 		gameObject.audio.Play();		
 	}
 	
-	public bool spawnSprite() {
-		int choice = Random.Range(0,3);
-		return spawnSprite(choice);
-	}
-	
-	public bool spawnSprite(int i) {
-		Vector3 movePos = randomPos();
-		moveSprite(movePos, setPowerup(i));
-		spawned = true;
-		totalTimer = screenTime;
-		return spawned;
-	}
-	
-	public bool removeSprite() {
-		moveSprite(away);
-		spawned = false;
-		return spawned;
-	}
-	
 	private GameObject setPowerup(int choice) {
 		switch(choice) {
 			case 0:
 				pw = Game.Powerups.MassivePulse;
 				activePW = 0;
 				return powerups[0];
-				break;
 			case 1:
 				pw = Game.Powerups.Invincible;
 				activePW = 2;
 				return powerups[2];
-				break;
 			case 2:
 				pw = Game.Powerups.ChainReaction;
 				activePW = 1;
 				return powerups[1];
-				break;
 			default:
 				pw = Game.Powerups.None;
 				activePW = 0;
 				return powerups[0];
-				break;
 		}
 	}
 	

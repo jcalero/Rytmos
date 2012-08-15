@@ -51,10 +51,25 @@ public class TutorialMenu : MonoBehaviour {
 		UITools.SetActiveState (instance.PopupPanels[Tutorial.sceneNumber-1], true);
 		if(Tutorial.sceneNumber == 6) 
 			hasPushedFirst = false;
+		if(Tutorial.sceneNumber == 1 || Tutorial.sceneNumber == 2 || Tutorial.sceneNumber == 3) {
+			Vector3 boxLocation;
+			if(Tutorial.sceneNumber == 1)
+				boxLocation = findBoxLocation(GameObject.Find("EnemyCyanPrefab(Clone)").transform.localPosition);
+			else if (Tutorial.sceneNumber == 2)
+				boxLocation = findBoxLocation(GameObject.Find("EnemyYellowPrefab(Clone)").transform.localPosition);
+			else 
+				boxLocation = findBoxLocation(GameObject.Find ("EnemyGreenPrefab(Clone)").transform.localPosition);
+			instance.PopupPanels[Tutorial.sceneNumber-1].transform.FindChild("SlicedSprite (TinyBox)")
+				.transform.localPosition = boxLocation;
+		}
 		
 		disableButtons = true;
 	}
-
+	
+	private static Vector3 findBoxLocation(Vector3 enemypos) {
+		return new Vector3(((Screen.width/2)*enemypos.x/Game.screenRight), ((Screen.height/2) * enemypos.y/Game.screenTop), 0);
+	}
+	
 	public static void Hide() {
 		Tutorial.showingMessage = false;
 		UITools.SetActiveState (instance.PopupPanels[Tutorial.sceneNumber-1], false);

@@ -231,7 +231,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	}
 	
 	private void setupTutorialSpawns(int spawn, bool change) {
-		switch(spawnCount/2) {
+		switch(spawnCount/3) {
 			case 0:
 				currentlySelectedEnemy = 1;
 				break;

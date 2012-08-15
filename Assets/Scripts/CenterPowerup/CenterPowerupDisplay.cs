@@ -9,7 +9,6 @@ public class CenterPowerupDisplay : MonoBehaviour {
 	public GameObject shieldcp;
 	
 	private LinkedSpriteManager spriteManager;
-	private string spriteName = "default";
     private int left;
     private int bottom;
     private int width;

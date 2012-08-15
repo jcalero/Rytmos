@@ -109,15 +109,15 @@ public class Tutorial : Level {
 			audioTimer += Time.deltaTime;		
 		
 		//First enemy spawn message
-		if(firstSpawn && Level.EnemiesDespawned < 2 && !firstEnemyMessage && !showingMessage) 
+		if(firstSpawn && Level.EnemiesDespawned < 3 && !firstEnemyMessage && !showingMessage) 
 			showMessage(1, .75f, ref firstEnemyMessage);
 		
 		//Second enemy spawn message
-		else if(secondSpawn && Level.EnemiesDespawned < 4 && !secondEnemyMessage && !showingMessage) 
+		else if(secondSpawn && Level.EnemiesDespawned < 6 && !secondEnemyMessage && !showingMessage) 
 			showMessage (2, .85f, ref secondEnemyMessage);
 		
 		//Third enemy spawn message
-		else if(thirdSpawn && Level.EnemiesDespawned < 6 && !thirdEnemyMessage && !showingMessage) 
+		else if(thirdSpawn && Level.EnemiesDespawned < 9 && !thirdEnemyMessage && !showingMessage) 
 			showMessage (3, .75f, ref thirdEnemyMessage);
 		
 		//PLayer multiplier has increased
@@ -125,7 +125,7 @@ public class Tutorial : Level {
 			showMessage (4, .2f, ref comboMessage);
 		
 		//Advanced play message
-		if(EnemySpawnScript.spawnCount/2 >= 5 && !slideMessage && !showingMessage)
+		if(EnemySpawnScript.spawnCount/3 >= 5 && !slideMessage && !showingMessage)
 			showMessage (5, ref slideMessage);
 		
 		//Spawn powerup
