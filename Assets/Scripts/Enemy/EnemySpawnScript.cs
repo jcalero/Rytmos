@@ -29,10 +29,14 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	private int[] spawnDivisors;
 	private float baseSpeed;
 	
+	private float timeSinceLastSpawn;
+	private readonly float SPAWN_ANIM_TIME = 0.2f;
+	
 	private bool resetColor;
 	private static int rotateDirection;
 	private int loudPartCounter;
 	private float loudFlag;
+	private bool swapColours;
 	
 	private int spawnerNumber;
 	private static EnemySpawnScript instance;
@@ -49,6 +53,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	
 	void Update() {
 		timer += Time.deltaTime;
+		timeSinceLastSpawn += Time.deltaTime;
 		
 		if (timer >= audioLength){
 			if (!AudioManager.songLoaded) Application.LoadLevel("LoadScreen");
@@ -86,6 +91,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		spawnDivisors = new int[]{1,1,8,2,2,2};
 		spawnerNumber = 0;
 		Game.SyncMode = true;
+		timeSinceLastSpawn = 0.2f;
 		//spawnPositions = new int[]{40,90,35,85};
 		spawnPositions = new int[] { 0 };
 		spawnerCounter = 3;
@@ -97,6 +103,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		if(Game.GameMode == Game.Mode.Casual) baseSpeed = 1.5f;
 		else baseSpeed = 2.5f;
 		updateSpawnPositions();
+		swapColours = false;
 
 	}
 	
@@ -146,6 +153,11 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 					for (int i = 0; i < spawnPositions.Length; i++) {
 						incrementSpawnPosition(ref spawnPositions[i], 1, rotateDirection);
 					}
+					
+					if(swapColours) {
+						changeEnemy();
+						swapColours = false;
+					}
 					//Find magnitude of the furthest away
 					if(Game.SyncMode) {
 						foreach (int spawnPosition in spawnPositions) {
@@ -182,8 +194,10 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 					break;
 				case 1:
 					// These are more medium ranged frequencies, used to change the spawn position (for now at least)
-					for (int i = 0; i < spawnPositions.Length; i++) {
-						incrementSpawnPosition(ref spawnPositions[i], 3, rotateDirection);
+					if(timeSinceLastSpawn >= SPAWN_ANIM_TIME) {
+						for (int i = 0; i < spawnPositions.Length; i++) {
+							incrementSpawnPosition(ref spawnPositions[i], 3, rotateDirection);
+						}
 					}
 //					moveSpawnersMirrored(3,rotateDirection);
 					if(Game.GameMode == Game.Mode.Tutorial) setupTutorialSpawns(spawnCount, false);
@@ -198,7 +212,10 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 					break;
 				case 3:
 					// Some higher frequencies to change the currently spawned enemy
-					changeEnemy();
+					if(timeSinceLastSpawn >= SPAWN_ANIM_TIME) {
+						changeEnemy();
+						if(swapColours) swapColours = false;
+					} else swapColours = true;
 					if(Game.GameMode == Game.Mode.Tutorial) setupTutorialSpawns(spawnCount, true);
 					break;
 				case 4:
@@ -333,11 +350,13 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	/// </param>
 	public void SpawnEnemy (int prefab)
 	{
+		timeSinceLastSpawn = 0f;
 		Vector3 position = EnemyPrefabs [prefab].transform.position;
 		Instantiate (EnemyPrefabs [prefab], position, EnemyPrefabs [prefab].transform.localRotation);
 	}
 	
 	public void SpawnEnemy (int prefab, float speed, float xpos, float ypos) {
+		timeSinceLastSpawn = 0f;
 		Vector3 position = EnemyPrefabs [prefab].transform.position;
 		GameObject enemy = (GameObject) Instantiate (EnemyPrefabs [prefab], position, EnemyPrefabs [prefab].transform.localRotation);
 		enemy.GetComponent<EnemyScript>().SetPositionAndSpeed(speed, xpos, ypos);

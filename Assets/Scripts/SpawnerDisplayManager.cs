@@ -5,10 +5,10 @@ public class SpawnerDisplayManager : MonoBehaviour {
 	
 	public GameObject[] spawnerRefs;
 	public GameObject EnemySpawner;
-	public LinkedSpriteManager spriteManager;
-	public UIAtlas SpriteAtlas;
-	
-	private Sprite spawnerSprite;
+//	public LinkedSpriteManager spriteManager;
+//	public UIAtlas SpriteAtlas;
+//	
+//	private Sprite spawnerSprite;
 	private int activeSpawner;
 	private int oldSpawner;
 	private GameObject[][] allSpawners;
@@ -75,28 +75,28 @@ public class SpawnerDisplayManager : MonoBehaviour {
 		}
 	}
 	
-	private void CalculateSprite(UIAtlas atlas, string name) {
-		UIAtlas.Sprite sprite = atlas.GetSprite(name);
-		if (sprite == null) {
-			Debug.LogError("No sprite with that name: " + name);
-			return;
-		}
-		int left = (int)sprite.inner.xMin;
-		int bottom = (int)sprite.inner.yMax;
-		int width = (int)sprite.inner.width;
-		int height = (int)sprite.inner.height;
-		
-		float UVHeight = 1f;
-		float UVWidth = 1f;
-
-		float widthHeightRatio = sprite.inner.width / sprite.inner.height;
-		if (widthHeightRatio > 1)
-			UVHeight = 1f / widthHeightRatio;       // It's a "wide" sprite
-		else if (widthHeightRatio < 1)
-			UVWidth = 1f * widthHeightRatio;        // It's a "tall" sprite
-		
-		spawnerSprite = spriteManager.AddSprite(gameObject, UVWidth, UVHeight, left, bottom, width, height, false);
-	}
+//	private void CalculateSprite(UIAtlas atlas, string name) {
+//		UIAtlas.Sprite sprite = atlas.GetSprite(name);
+//		if (sprite == null) {
+//			Debug.LogError("No sprite with that name: " + name);
+//			return;
+//		}
+//		int left = (int)sprite.inner.xMin;
+//		int bottom = (int)sprite.inner.yMax;
+//		int width = (int)sprite.inner.width;
+//		int height = (int)sprite.inner.height;
+//		
+//		float UVHeight = 1f;
+//		float UVWidth = 1f;
+//
+//		float widthHeightRatio = sprite.inner.width / sprite.inner.height;
+//		if (widthHeightRatio > 1)
+//			UVHeight = 1f / widthHeightRatio;       // It's a "wide" sprite
+//		else if (widthHeightRatio < 1)
+//			UVWidth = 1f * widthHeightRatio;        // It's a "tall" sprite
+//		
+//		spawnerSprite = spriteManager.AddSprite(gameObject, UVWidth, UVHeight, left, bottom, width, height, false);
+//	}
 	
 	private string getNameFromPrefabNumber(int prefab) {
 		switch(prefab) {
