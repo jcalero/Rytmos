@@ -16,7 +16,6 @@ public class SpawnerDisplayManager : MonoBehaviour {
 		activeSpawners = new GameObject[EnemySpawnScript.spawnerCounter];
 		oldPositions = new int[EnemySpawnScript.spawnerCounter];
 		activeSpawner = -1;
-		updateSpawnerPosition();
 	}
 	
 	// Update is called once per frame
@@ -47,6 +46,7 @@ public class SpawnerDisplayManager : MonoBehaviour {
 		for (int i = 0; i < activeSpawners.Length; i++) {
 			if(activeSpawners[i] != null) Destroy(activeSpawners[i]);
 			activeSpawners[i] = (GameObject)Instantiate(spawnerRefs[activeSpawner]);
+			activeSpawners[i].transform.localPosition = ess.findSpawnPositionVector(ess.spawnPositions[i]);
 		}
 	}
 	

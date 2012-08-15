@@ -96,6 +96,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		maxMag = new Vector2(Game.screenTop,Game.screenRight).magnitude;
 		if(Game.GameMode == Game.Mode.Casual) baseSpeed = 1.5f;
 		else baseSpeed = 2.5f;
+		updateSpawnPositions();
 
 	}
 	
