@@ -10,6 +10,7 @@ public class TutorialMenu : MonoBehaviour {
 	public UIPanel[] PopupPanels;
 	public GameObject powerup;
 	public GameObject player;
+	public GameObject[] arrows;
 
 	private static TutorialMenu instance;
 	private static bool disableButtons;
@@ -49,23 +50,57 @@ public class TutorialMenu : MonoBehaviour {
 
 	public static void Show() {
 		UITools.SetActiveState (instance.PopupPanels[Tutorial.sceneNumber-1], true);
-		if(Tutorial.sceneNumber == 6) 
-			hasPushedFirst = false;
-		else if(Tutorial.sceneNumber == 1 || Tutorial.sceneNumber == 2 || Tutorial.sceneNumber == 3) {
-			Vector3 boxLocation;
-			if(Tutorial.sceneNumber == 1)
-				boxLocation = findBoxLocation(GameObject.Find("EnemyCyanPrefab(Clone)").transform.localPosition);
-			else if (Tutorial.sceneNumber == 2)
-				boxLocation = findBoxLocation(GameObject.Find("EnemyYellowPrefab(Clone)").transform.localPosition);
-			else 
-				boxLocation = findBoxLocation(GameObject.Find ("EnemyGreenPrefab(Clone)").transform.localPosition);
-			moveBox("SlicedSprite (TinyBox)", boxLocation, Tutorial.sceneNumber-1);
-		} else if (Tutorial.sceneNumber == 4) 
-			moveBox("SlicedSprite (TinyBox)", GameObject.Find ("MultiplierLabel").transform.localPosition, Tutorial.sceneNumber-1);
 		disableButtons = true;
+		Vector3 boxLocation;
+		switch(Tutorial.sceneNumber) {
+		case 1:
+			boxLocation = findBoxLocation(findPos("EnemyCyanPrefab(Clone)"));
+			break;
+		case 2:
+			boxLocation = findBoxLocation(findPos("EnemyYellowPrefab(Clone)"));
+			break;
+		case 3:
+			boxLocation = findBoxLocation(findPos("EnemyGreenPrefab(Clone)"));
+			break;
+		case 4:
+			boxLocation = GameObject.Find ("MultiplierLabel").transform.localPosition;
+			moveSprite("Sprite (arrow)", new Vector3(boxLocation.x-60, boxLocation.y-60, 0), Tutorial.sceneNumber-1);
+			break;
+		case 5:
+			return;
+		case 6:
+			boxLocation = findBoxLocation(findPos("ShieldPW"));
+			hasPushedFirst = false;
+			moveSprite ("SelectPowerup", boxLocation, Tutorial.sceneNumber-1);
+			instance.arrows[0].GetComponent<TweenPosition>().from = new Vector3(boxLocation.x, boxLocation.y-70, boxLocation.z);
+			break;
+		case 7:
+			boxLocation = findBoxLocation(findPos ("SuperpulsePW"));
+			instance.arrows[1].transform.localPosition = new Vector3(boxLocation.x, boxLocation.y-70, boxLocation.z);
+			moveSprite ("SelectPowerup", boxLocation, Tutorial.sceneNumber-1);
+			hasPushedFirst = false;
+			break;
+		case 8:
+			hasPushedFirst = false;
+			boxLocation = findBoxLocation(findPos ("ChainPW"));
+			moveSprite ("SelectPowerup", boxLocation, Tutorial.sceneNumber-1);
+			break;
+		case 9:
+			return;
+		case 10:
+			return;
+		default:
+			return;
+		}
+		moveSprite("SlicedSprite (TinyBox)", boxLocation, Tutorial.sceneNumber-1);
+		
 	}
 	
-	private static void moveBox(string sprite, Vector3 location, int sceneNumber) {
+	private static Vector3 findPos(string name) {
+		return GameObject.Find (name).transform.localPosition;
+	}
+	
+	private static void moveSprite(string sprite, Vector3 location, int sceneNumber) {
 		instance.PopupPanels[sceneNumber].transform.FindChild(sprite).transform.localPosition = location;	
 	}
 	
@@ -86,17 +121,16 @@ public class TutorialMenu : MonoBehaviour {
 	}
 	
 	void OnProceedClicked() {
-		if(Tutorial.sceneNumber == 1 || Tutorial.sceneNumber == 2 || Tutorial.sceneNumber == 3) {
-			Tutorial.sentTutorialPulse = true;
-			player.GetComponent<Player>().sendPulse();
-		}
+		player.GetComponent<Player>().sendPulse();
 		TutorialResume();
 	}
 	
 	void OnSelectPowerup() {
-		player.GetComponent<Player>().changePowerup();
-		hasPushedFirst = true;
-		powerup.GetComponent<PowerupScript>().spawnPowerupOnScreen(1, new Vector3(20, 20, 0));
+		if(!hasPushedFirst) {
+			player.GetComponent<Player>().changePowerup();
+			//powerup.GetComponent<PowerupScript>().spawnPowerupOnScreen(1, new Vector3(20, 20, 0));
+			hasPushedFirst = true;
+		}
 	}
 	
 	void OnSelectMiddle() {
@@ -104,11 +138,6 @@ public class TutorialMenu : MonoBehaviour {
 			player.GetComponent<Player>().activatePowerup();
 			TutorialResume();		
 		}
-	}
-	
-	void OnSlideProceedClicked() {
-		player.GetComponent<Player>().sendPulse();
-		TutorialResume();
 	}
 	
 	void TutorialResume() {

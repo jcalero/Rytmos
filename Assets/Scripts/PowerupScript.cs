@@ -20,7 +20,7 @@ public class PowerupScript : MonoBehaviour {
 	private readonly float screenTime = 5f;
 	private float respawnTime = 15f;
 	private bool spawned;
-	private int activePW;
+	private static int activePW;
 	
 	private static bool canTriggerSpawn;
 	private static bool canSpawn;

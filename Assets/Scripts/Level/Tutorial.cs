@@ -130,22 +130,22 @@ public class Tutorial : Level {
 		
 		//Spawn powerup
 		if(audioTimer > 78f && !shieldPowerupMessage && !showingMessage) {
-			showMessage (6, ref shieldPowerupMessage);
 			activatedTime = audioTimer;
 			powerupScript.GetComponent<PowerupScript>().spawnPowerupOnScreen(1, new Vector3(3,3,0));
+			showMessage (6, ref shieldPowerupMessage);
+			
 		}
 		
 		//Spawn a superPulse, with the intention to help the player through the difficult part
 		if(!superPulseMessage && audioTimer >=activatedTime + 9f && !showingMessage) {
-			showMessage(7, ref superPulseMessage);
 			powerupScript.GetComponent<PowerupScript>().spawnPowerupOnScreen(0, new Vector3(-4,3,0));
-
+			showMessage(7, ref superPulseMessage);
 		}
 		
 		//Spawn a chainPulse, to help the player through a difficult part
 		if(!chainPulseMessage && audioTimer >=138 && !showingMessage) {
-			showMessage(8, ref chainPulseMessage);
 			powerupScript.GetComponent<PowerupScript>().spawnPowerupOnScreen(2, new Vector3(2.4f,1f,0));
+			showMessage(8, ref chainPulseMessage);
 		}
 		
 		//Energy Level Popup
@@ -155,7 +155,6 @@ public class Tutorial : Level {
 		
 		//Player has been hit popup
 		if(hasBeenHit && !hasBeenHitMessage) {
-			Debug.Log("Is this trigered");
 			showMessage(9, ref hasBeenHitMessage);	
 		}
 		

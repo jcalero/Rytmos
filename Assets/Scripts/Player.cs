@@ -154,7 +154,6 @@ public class Player : MonoBehaviour, PeakListener {
 		Instantiate(superPulsePrefab, Vector3.zero, superPulsePrefab.transform.localRotation);
 		superPulseCount = 0;
 		playerpowerup = Game.Powerups.None;
-		Debug.Log ("Activated super pulse");
 	}
 	
 	// Create a pulse and trigger animation
