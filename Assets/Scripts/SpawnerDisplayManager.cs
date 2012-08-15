@@ -28,6 +28,13 @@ public class SpawnerDisplayManager : MonoBehaviour {
 		}
 		
 		updateSpawnerPosition();
+		
+		foreach(GameObject spawner in activeSpawners) {
+			spawner.transform.localScale = new Vector3(
+				0.15f*Background.PlayerSizeFactor,
+				spawner.transform.localScale.y,
+				0.15f*Background.PlayerSizeFactor);
+		}
 	}
 	
 	private void swapSpawner() {
