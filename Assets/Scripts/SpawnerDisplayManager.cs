@@ -26,16 +26,13 @@ public class SpawnerDisplayManager : MonoBehaviour {
 	void Awake() {
 		// Create pool of spawner instances
 		allSpawners = new GameObject[spawnerRefs.Length][];
-		Debug.Log(spawnerRefs.Length);
 		sm = gameAtlas.GetComponent<LinkedSpriteManager>();
 		for(int i = 0; i < allSpawners.Length; i++) {
 			allSpawners[i] = new GameObject[3];
 			for(int j = 0; j < allSpawners[i].Length; j++) {
 				allSpawners[i][j] = (GameObject)Instantiate(spawnerRefs[i]);
 				CalculateSprite(uiatlas, spawnerRefs[i].name+"1");
-				Debug.Log (spawnerRefs[i].name+"1 - Left: "+left+" Bottom:"+bottom+" Width: "+width+" Height: "+height);
-				sm.AddSprite(allSpawners[i][j], UVWidth, UVHeight, left, bottom, width, height, true);
-				Debug.Log ("Object added to: "+allSpawners[i][j].name);
+				sm.AddSprite(allSpawners[i][j], UVWidth, UVHeight, left, bottom, width, height, false);
 				allSpawners[i][j].transform.localPosition = new Vector3(100f,100f,0f);
 			}
 		}
@@ -60,12 +57,11 @@ public class SpawnerDisplayManager : MonoBehaviour {
 		
 		updateSpawnerPosition();
 		
-		foreach(GameObject spawner in allSpawners[activeSpawner]) {
-			spawner.transform.localScale = new Vector3(
-				0.15f*Background.PlayerSizeFactor,
-				spawner.transform.localScale.y,
-				0.15f*Background.PlayerSizeFactor);
-		}
+//		foreach(GameObject spawner in allSpawners[activeSpawner]) {
+//			spawner.transform.localScale = new Vector3(1.05f*Background.PlayerSizeFactor, 
+//				1.05f*Background.PlayerSizeFactor, 
+//				spawner.transform.localScale.z);
+//		}
 	}
 	
 	private void swapSpawner() {
