@@ -28,6 +28,8 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	private int[] spawnRestrictors;
 	private int[] spawnDivisors;
 	private float baseSpeed;
+	private bool lastTime;
+	private float storeTime;
 	
 	private float timeSinceLastSpawn;
 	private readonly float SPAWN_ANIM_TIME = 0.2f;
@@ -55,12 +57,22 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		timer += Time.deltaTime;
 		timeSinceLastSpawn += Time.deltaTime;
 		
+		
 		if (timer >= audioLength){
 			if (!AudioManager.songLoaded) Application.LoadLevel("LoadScreen");
 			else {
-				if(spawnCount == Level.EnemiesDespawned || timer >= audioLength + 5) 
-					Application.LoadLevel("Win");
+				if(spawnCount == Level.EnemiesDespawned) {
+					if(!lastTime)
+						storeTime = timer;
+					lastTime = true;
+				} else {
+					lastTime = false;
+					storeTime = 0;
+				}
+				if(timer >= audioLength + 7 || (lastTime && storeTime + 1.5f < timer)) 
+					Application.LoadLevel("Win");		
 			}
+			
 		}
 		
 //		if(Player.multiplier < 3) spawnerCounter = 2;
@@ -104,6 +116,8 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		else baseSpeed = 2.5f;
 		updateSpawnPositions();
 		swapColours = false;
+		lastTime = false;
+		storeTime = 0;
 
 	}
 	
