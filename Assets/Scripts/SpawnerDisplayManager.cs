@@ -6,12 +6,14 @@ public class SpawnerDisplayManager : MonoBehaviour {
 	public GameObject[] spawnerRefs;
 	public GameObject EnemySpawner;
 	public GameObject gameAtlas;
+	public GameObject player;
 	public UIAtlas uiatlas;
-
+	
+	private EnemySpawnScript ess;
+	private Player p;
 	private int activeSpawner;
 	private int oldSpawner;
 	private GameObject[][] allSpawners;
-	private EnemySpawnScript ess;
 	private int[] oldPositions;
 	
 	private LinkedSpriteManager sm;
@@ -22,6 +24,7 @@ public class SpawnerDisplayManager : MonoBehaviour {
 	private float UVHeight = 1f;
 	private float UVWidth = 1f;
 	
+	private Vector3 originalSize;
 	
 	void Awake() {
 		// Create pool of spawner instances
@@ -36,6 +39,8 @@ public class SpawnerDisplayManager : MonoBehaviour {
 				allSpawners[i][j].transform.localPosition = new Vector3(100f,100f,0f);
 			}
 		}
+		originalSize = allSpawners[0][0].transform.localScale;
+		p = player.GetComponentInChildren<Player>();
 	}
 	
 	// Use this for initialization
@@ -55,7 +60,7 @@ public class SpawnerDisplayManager : MonoBehaviour {
 			swapSpawner();
 		}
 		
-		updateSpawnerPosition();
+		updateSpawnerPositionAndSize();
 		
 //		foreach(GameObject spawner in allSpawners[activeSpawner]) {
 //			spawner.transform.localScale = new Vector3(1.05f*Background.PlayerSizeFactor, 
@@ -74,12 +79,13 @@ public class SpawnerDisplayManager : MonoBehaviour {
 		}
 	}
 	
-	private void updateSpawnerPosition() {		
+	private void updateSpawnerPositionAndSize() {		
 		for (int i = 0; i < allSpawners[activeSpawner].Length; i++) {
 			if(ess.spawnPositions[i] != oldPositions[i]) {
 				allSpawners[activeSpawner][i].transform.localPosition = ess.findSpawnPositionVector(ess.spawnPositions[i]);
 				oldPositions[i] = ess.spawnPositions[i];
 			}
+			allSpawners[activeSpawner][i].transform.localScale = new Vector3(originalSize.x*p.scaleFactor, originalSize.y*p.scaleFactor, originalSize.z);
 		}
 	}
 	

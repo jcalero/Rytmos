@@ -8,6 +8,9 @@ using System.Collections;
 /// </summary>
 public class Player : MonoBehaviour, PeakListener {
 	#region Fields
+	public float scaleFactor = 1f;			// Externally set variable used for animating the player
+	private Vector3 originalSize;
+	
 	public static int startScore = 0;           // Start score
 	public static int startEnergy = 50;         // Starting energy of the player
 	public static int maxEnergy = 50;           // Maximum energy of the player
@@ -62,6 +65,7 @@ public class Player : MonoBehaviour, PeakListener {
 		instance = this;
 		energyBarSize = (int)energyBar.transform.localScale.x;
 		beatAnim = gameObject.GetComponentInChildren<Animation>();
+		originalSize = gameObject.transform.localScale;
 	}
 
 	void Start() {
@@ -114,6 +118,8 @@ public class Player : MonoBehaviour, PeakListener {
 				meshRenders[2].material.SetColor("_Color", Color.white);
 			} else
 				showAnimRing(Color.white);
+			
+			gameObject.transform.localScale = new Vector3(originalSize.x*scaleFactor,originalSize.y,originalSize.z*scaleFactor);
 		}
 	}
 
