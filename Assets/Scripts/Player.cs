@@ -83,6 +83,7 @@ public class Player : MonoBehaviour, PeakListener {
 			energyRegenRate = 0.05f;
 		else
 			energyRegenRate = 0.1f;
+		
 	}
 
 	void Update() {
@@ -118,8 +119,8 @@ public class Player : MonoBehaviour, PeakListener {
 				meshRenders[2].material.SetColor("_Color", Color.white);
 			} else
 				showAnimRing(Color.white);
-			
-			gameObject.transform.localScale = new Vector3(originalSize.x*scaleFactor,originalSize.y,originalSize.z*scaleFactor);
+			if(!beatAnim.isPlaying) scaleFactor = 1f;
+			gameObject.transform.localScale = new Vector3(originalSize.x * scaleFactor,originalSize.y,originalSize.z * scaleFactor);
 		}
 	}
 
