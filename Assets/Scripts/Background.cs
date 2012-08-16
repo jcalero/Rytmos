@@ -5,23 +5,14 @@ public class Background : MonoBehaviour, PeakListener {
 
 	#region Fields
 	public GameObject BackgroundObject;
-	public GameObject PlayerObject;
 	public ParticleSystem CentreNotes;
 	public UIAtlas GameAtlas;
 	public LinkedSpriteManager BGSpriteManager;
 	public ParticleSystem[] FeedbackStars;
 	public static float PlayerSizeFactor = 1f;
 
-	private bool bgIncrease;
 	private float[] spriteValues = new float[6];
 
-	private float originalPlayerX;
-	private float originalPlayerY;
-	private float enhancedPlayerX;
-	private float enhancedPlayerY;
-	private float maxPlayerX;
-	private float maxPlayerY;
-	
 	private float originalEmissionRate;
 	private float enhancedEmissionRate;
 	private float originalParticleSpeed;
@@ -61,14 +52,6 @@ public class Background : MonoBehaviour, PeakListener {
 		lastTime = Time.realtimeSinceStartup;
 		PeakTriggerManager.addSelfToListenerList(this);
 		
-		originalPlayerX = PlayerObject.transform.localScale.x;
-		originalPlayerY = PlayerObject.transform.localScale.z;
-		enhancedPlayerX = originalPlayerX + (0.1f * originalPlayerX);
-		enhancedPlayerY = originalPlayerY + (0.1f * originalPlayerY);
-		maxPlayerX = 1.75f*originalPlayerX;
-		maxPlayerY = 1.75f*originalPlayerY;
-		bgIncrease = false;
-
 		originalEmissionRate = FeedbackStars[0].emissionRate;
 		originalParticleSpeed = FeedbackStars[0].playbackSpeed;
 		enhancedEmissionRate = originalEmissionRate * 10f;
@@ -185,33 +168,33 @@ public class Background : MonoBehaviour, PeakListener {
 		}
 	}
 
-	private Vector3 calculatePlayerSize() {
-		float y = PlayerObject.transform.localScale.z;
-		float x = PlayerObject.transform.localScale.x;
-
-		if (increase && x < maxPlayerX && y < maxPlayerY) {
-			x *= 1 + (intensity * Time.deltaTime * 1.8f);
-			y *= 1 + (intensity * Time.deltaTime * 1.8f);
-		} else if ((x < enhancedPlayerX || y < enhancedPlayerY) && bgIncrease) {
-			x *= 1 + (intensity * Time.deltaTime * 0.6f);
-			y *= 1 + (intensity * Time.deltaTime * 0.6f);
-		} else if ((x > enhancedPlayerX || y > enhancedPlayerY) && bgIncrease) {
-			x = enhancedPlayerX;
-			y = enhancedPlayerY;
-			bgIncrease = false;
-		} else if (!bgIncrease) {
-			x *= 1 - (intensity * Time.deltaTime * 3.6f);
-			y *= 1 - (intensity * Time.deltaTime * 3.6f);
-		}
-		if (x < originalPlayerX || y < originalPlayerY) {
-			x = originalPlayerX;
-			y = originalPlayerY;
-			bgIncrease = true;
-		}
-		
-		PlayerSizeFactor = (x/originalPlayerX + y/originalPlayerY)/2f;
-		
-		return new UnityEngine.Vector3(x, 0.3f, y);
-	}
+//	private Vector3 calculatePlayerSize() {
+//		float y = PlayerObject.transform.localScale.z;
+//		float x = PlayerObject.transform.localScale.x;
+//
+//		if (increase && x < maxPlayerX && y < maxPlayerY) {
+//			x *= 1 + (intensity * Time.deltaTime * 1.8f);
+//			y *= 1 + (intensity * Time.deltaTime * 1.8f);
+//		} else if ((x < enhancedPlayerX || y < enhancedPlayerY) && bgIncrease) {
+//			x *= 1 + (intensity * Time.deltaTime * 0.6f);
+//			y *= 1 + (intensity * Time.deltaTime * 0.6f);
+//		} else if ((x > enhancedPlayerX || y > enhancedPlayerY) && bgIncrease) {
+//			x = enhancedPlayerX;
+//			y = enhancedPlayerY;
+//			bgIncrease = false;
+//		} else if (!bgIncrease) {
+//			x *= 1 - (intensity * Time.deltaTime * 3.6f);
+//			y *= 1 - (intensity * Time.deltaTime * 3.6f);
+//		}
+//		if (x < originalPlayerX || y < originalPlayerY) {
+//			x = originalPlayerX;
+//			y = originalPlayerY;
+//			bgIncrease = true;
+//		}
+//		
+//		PlayerSizeFactor = (x/originalPlayerX + y/originalPlayerY)/2f;
+//		
+//		return new UnityEngine.Vector3(x, 0.3f, y);
+//	}
 	#endregion
 }
