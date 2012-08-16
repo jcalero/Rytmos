@@ -65,31 +65,32 @@ public class PulseSender : MonoBehaviour {
 	
 	void MainPulse() {
 		Radius = Radius + 3 * Time.deltaTime;
-		
-		if(Game.GameMode == Game.Mode.Tutorial && Tutorial.sentTutorialPulse) {
-			Tutorial.sentTutorialPulse = false;
-			held = false;
-			finalColor = Level.chunkyColorSelect(Input.mousePosition);
-			CurrentColor = Level.singleColourSelect(Input.mousePosition);
-			SecondaryColor = Level.secondaryColourSelect(Input.mousePosition);
-		}
 		//If you have released the button, and the pulse is the current one, set it to be not held and set the Colour
 		if (Input.GetMouseButtonUp(0) && held) {
 			held = false;
+			#if (UNITY_ANDROID || UNITY_IPHONE) && !UNITY_EDITOR
+			finalColor = Level.chunkyColorSelect(Input.GetTouch(0).position);
+			CurrentColor = Level.singleColourSelect(Input.GetTouch(0).position);
+			#else
 			finalColor = Level.chunkyColorSelect(Input.mousePosition);
 			CurrentColor = Level.singleColourSelect(Input.mousePosition);
+			#endif
 			if(Game.PowerupActive==Game.Powerups.MassivePulse) {
 				finalColor = Color.white;
 				CurrentColor = Color.white;
 			}
-			
 		}
 
 		//What the colour should be - this is where the transition has to take place. 
 		Color chosen;
 		if (held) {
+			#if (UNITY_ANDROID || UNITY_IPHONE) && !UNITY_EDITOR
+			chosen = Level.chunkyColorSelect(Input.GetTouch(0).position);
+			CurrentColor = Level.singleColourSelect(Input.GetTouch(0).position);
+			#else
 			chosen = Level.chunkyColorSelect(Input.mousePosition);
 			CurrentColor = Level.singleColourSelect(Input.mousePosition);
+			#endif
 			if(Game.PowerupActive==Game.Powerups.MassivePulse) {
 				chosen = Color.white;
 				CurrentColor = Color.white;
@@ -101,7 +102,11 @@ public class PulseSender : MonoBehaviour {
 		if (Game.PowerupActive == Game.Powerups.MassivePulse && !isFlashingScreen) StartCoroutine(FlashScreen());
 		
 		//Select the secondary color
+		#if (UNITY_ANDROID || UNITY_IPHONE) && !UNITY_EDITOR
+		if(held) SecondaryColor = Level.secondaryColourSelect(Input.GetTouch(0).position);
+		#else
 		if(held) SecondaryColor = Level.secondaryColourSelect(Input.mousePosition);
+		#endif
 		
 		//Create the circle, and set the line material
 		RedrawPoints(chosen);
