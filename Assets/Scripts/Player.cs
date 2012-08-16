@@ -46,6 +46,8 @@ public class Player : MonoBehaviour, PeakListener {
 	private readonly int totalSuperpulses = 1;
 	private int superPulseCount;	// Counter for the amount of invincible pulses
 	private static Game.Powerups playerpowerup;
+	
+	private Animation beatAnim;
 
 	public GameObject[] players = new GameObject[3];
 	private MeshRenderer[] meshRenders = new MeshRenderer[3];
@@ -59,6 +61,7 @@ public class Player : MonoBehaviour, PeakListener {
 	void Awake() {
 		instance = this;
 		energyBarSize = (int)energyBar.transform.localScale.x;
+		beatAnim = gameObject.GetComponentInChildren<Animation>();
 	}
 
 	void Start() {
@@ -80,6 +83,7 @@ public class Player : MonoBehaviour, PeakListener {
 
 	void Update() {
 		if (!Game.Paused) {
+						
 			// If the player clicks, and has enough energy, sends out a pulse
 			if (Input.GetMouseButtonDown(0))
 				clickOnScreen();
@@ -301,6 +305,12 @@ public class Player : MonoBehaviour, PeakListener {
 
 	public void onPeakTrigger(int channel, int intensity) {
 		if (!glowAnimOut && !glowAnimIn) glowAnimOut = true;
+
+		foreach(AnimationState state in beatAnim) {
+			state.speed = intensity/100f;
+		}
+		if(beatAnim.isPlaying) beatAnim.CrossFade("BeatBounce");
+		else beatAnim.Play();
 	}
 		
 	

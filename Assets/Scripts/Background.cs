@@ -91,8 +91,6 @@ public class Background : MonoBehaviour, PeakListener {
 			timer = 0f;
 		}
 		if (intensity < 0.05f) intensity = 0.05f;
-
-		PlayerObject.transform.localScale = calculatePlayerSize();
 	}
 
 	private IEnumerator FlashStars(int enemy, int intensity) {
