@@ -15,7 +15,6 @@ public class FileBrowserEvents : MonoBehaviour {
 	private void OpenFile(string pathToFile) {
 		FileInfo fInf = new FileInfo(pathToFile);
 		if(fInf.Exists){
-			Debug.Log(pathToFile);
 			Game.Song = pathToFile;
 			MainMenu.ChangeMenu(MenuLevel.ConfirmChoice);
 		} else {

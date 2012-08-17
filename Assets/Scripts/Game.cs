@@ -164,9 +164,6 @@ public class Game : MonoBehaviour
 		if((float)Screen.height/(float)Screen.width < 480f/800f) aspectRatioMultiplier = (480f/800f) / ((float)Screen.height/(float)Screen.width);
 		else if((float)Screen.height/(float)Screen.width > 480f/800f) aspectRatioMultiplier =  ((float)Screen.height/(float)Screen.width)/ (480f/800f);
 		
-		Debug.Log(aspectRatioMultiplier);
-		Debug.Log(Screen.width);
-		
 		if(Screen.width >= 800f) {
 			if(800f/Screen.width > 480f/Screen.height)
 				return aspectRatioMultiplier* 800f/Screen.width;
