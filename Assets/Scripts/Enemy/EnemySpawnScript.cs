@@ -42,6 +42,12 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	
 	private int spawnerNumber;
 	private static EnemySpawnScript instance;
+	
+	private float spawnBoundsBottom;
+	private float spawnBoundsTop;
+	private float spawnBoundsLeft;
+	private float spawnBoundsRight;
+	
 	#endregion
 	
 	#region Functions
@@ -118,7 +124,12 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		swapColours = false;
 		lastTime = false;
 		storeTime = 0;
-
+		
+		spawnBoundsRight = Game.screenRight + (0.09f*Game.screenLeft);
+		spawnBoundsLeft = -spawnBoundsRight;
+		spawnBoundsTop = Game.screenTop + (0.16f*Game.screenBottom);
+		spawnBoundsBottom = -spawnBoundsTop;
+		
 	}
 	
 	void updateSpawnPositions() {
@@ -395,17 +406,17 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		float xpos;
 		float ypos;
 		if(percentage <= 25) {
-			xpos = Game.screenRight;
-			ypos = (Game.screenTop*2*percentage/25) + Game.screenBottom;
+			xpos = spawnBoundsRight;
+			ypos = (spawnBoundsTop*2*percentage/25) + spawnBoundsBottom;
 		} else if (percentage <= 50) {
-			xpos = Game.screenRight - (Game.screenRight*2*(percentage-25)/25);
-			ypos = Game.screenTop;
+			xpos = spawnBoundsRight - (spawnBoundsRight*2*(percentage-25)/25);
+			ypos = spawnBoundsTop;
 		} else if (percentage <= 75) {
-			xpos = Game.screenLeft;
-			ypos = Game.screenTop - (Game.screenTop*2*(percentage-50)/25);
+			xpos = spawnBoundsLeft;
+			ypos = spawnBoundsTop - (spawnBoundsTop*2*(percentage-50)/25);
 		} else if (percentage <= 100) {
-			xpos = (Game.screenRight*2*(percentage-75)/25) + Game.screenLeft;
-			ypos = Game.screenBottom;
+			xpos = (spawnBoundsRight*2*(percentage-75)/25) + spawnBoundsLeft;
+			ypos = spawnBoundsBottom;
 		} else {
 			return findSpawnPositionVector (percentage-100);
 		}
