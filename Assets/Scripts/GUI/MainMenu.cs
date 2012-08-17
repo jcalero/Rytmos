@@ -12,8 +12,6 @@ using System.Text.RegularExpressions;
 public class MainMenu : MonoBehaviour {
 
 	#region Fields
-	private GameObject cam;
-	
 	// Menu panels (Inspector instances, location: MainMenuManager)
 	public UIPanel MainMenuBasePanel;
 	public UIPanel MainMenuPlayPanel;
@@ -68,7 +66,7 @@ public class MainMenu : MonoBehaviour {
 	}
 	
 	void Start() {
-		cam = GameObject.Find("Camera");
+		GameObject cam = GameObject.Find("Camera");
 		cam.GetComponentInChildren<Camera>().orthographicSize = Game.cameraScaleFactor;
 		
 	}

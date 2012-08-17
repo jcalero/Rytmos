@@ -25,12 +25,11 @@ public class LoadingUI : MonoBehaviour {
 	private int currentText = 0;
 	private List<int> usedStrings;
 	private bool isConfirming;
-	private GameObject cam;
 
 	// Use this for initialization
 	void Start() {
 		
-		cam = GameObject.Find("Camera");
+		GameObject cam = GameObject.Find("Camera");
 		cam.GetComponentInChildren<Camera>().orthographicSize = Game.cameraScaleFactor;	
 		
 		BSText = new string[] {
