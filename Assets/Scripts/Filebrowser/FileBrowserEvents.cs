@@ -13,8 +13,14 @@ public class FileBrowserEvents : MonoBehaviour {
 	#region Functions
 
 	private void OpenFile(string pathToFile) {
-		Game.Song = pathToFile;
-		MainMenu.ChangeMenu(MenuLevel.ConfirmChoice);
+		FileInfo fInf = new FileInfo(pathToFile);
+		if(fInf.Exists){
+			Debug.Log(pathToFile);
+			Game.Song = pathToFile;
+			MainMenu.ChangeMenu(MenuLevel.ConfirmChoice);
+		} else {
+			MainMenu.ChangeMenu(MenuLevel.SongNotFound);
+		}
 	}
 
 	private void FileWindowClosed() {

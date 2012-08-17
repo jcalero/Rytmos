@@ -24,6 +24,7 @@ public class MainMenu : MonoBehaviour {
 	public UIPanel MainMenuLoggedInBoxPanel;
 	public UIPanel MainMenuLogInPanel;
 	public UIPanel MainMenuChoicePanel;
+	public UIPanel MainMenuSongNotFoundPanel;
 
 	// File browser
 	public GameObject FileBrowser;
@@ -93,6 +94,7 @@ public class MainMenu : MonoBehaviour {
 		if (MainMenuPlayPanel.enabled) UITools.SetActiveState(MainMenuPlayPanel, false);
 		if (MainMenuExtrasPanel.enabled) UITools.SetActiveState(MainMenuExtrasPanel, false);
 		if (MainMenuChoicePanel.enabled) UITools.SetActiveState(MainMenuChoicePanel, false);
+		if (MainMenuSongNotFoundPanel.enabled) UITools.SetActiveState(MainMenuSongNotFoundPanel, false);
 	}
 
 	/// <summary>
@@ -142,6 +144,7 @@ public class MainMenu : MonoBehaviour {
 				break;
 			case MenuLevel.FileBrowser:
 				if (MainMenuChoicePanel.enabled) UITools.SetActiveState(MainMenuChoicePanel, false);
+				if (MainMenuSongNotFoundPanel.enabled) UITools.SetActiveState(MainMenuSongNotFoundPanel, false);
 				if (MainMenuExtrasPanel.enabled) UITools.SetActiveState(MainMenuExtrasPanel, false);
 				UITools.SetActiveState(MainMenuModePanel, false);
 				UITools.SetActiveState(MainMenuBasePanel, false);
@@ -167,6 +170,16 @@ public class MainMenu : MonoBehaviour {
 				UITools.SetActiveState(MainMenuExtrasPanel, true);
 				foreach(UIButton c in MainMenuChoicePanel.GetComponentsInChildren<UIButton>()) StartCoroutine(DelayButton(c,0.1f));
 				break;
+			case MenuLevel.SongNotFound:
+				if (MainMenuBasePanel.enabled) UITools.SetActiveState(MainMenuBasePanel, false);
+				if (MainMenuFileBrowserPanel.enabled) UITools.SetActiveState(MainMenuFileBrowserPanel, false);
+				if (MainMenuModePanel.enabled) UITools.SetActiveState(MainMenuModePanel, false);
+				if (MainMenuExtrasPanel.enabled) UITools.SetActiveState(MainMenuExtrasPanel, false);
+				UITools.SetActiveState(MainMenuSongNotFoundPanel, true);
+				UITools.SetActiveState(MainMenuExtrasPanel, true);
+				foreach(UIButton c in MainMenuChoicePanel.GetComponentsInChildren<UIButton>()) StartCoroutine(DelayButton(c,0.1f));
+				break;
+				
 		}
 	}
 
@@ -440,5 +453,6 @@ public enum MenuLevel {
 	Options,
 	FileBrowser,
 	LogIn,
-	ConfirmChoice
+	ConfirmChoice,
+	SongNotFound
 }

@@ -110,9 +110,13 @@ public class FileBrowserMenu : MonoBehaviour {
 
 			for (int i = 0; i < fileRows.Count; i++) {
 				string song = fileRows[i].Split('|')[0] + " - " + fileRows[i].Split('|')[1];
-				if (song == "Unknown - Unknown") displayName.Add(fileRows[i].Split('|')[0] + " - " + fileRows[i].Split('|')[1] + " (" + new FileInfo(fileRows[i].Split('|')[2]).Name + ")");
-				else displayName.Add(fileRows[i].Split('|')[0] + " - " + fileRows[i].Split('|')[1]);
-				songPath.Add(new FileInfo(fileRows[i].Split('|')[2]));
+				FileInfo fInf = new FileInfo(fileRows[i].Split('|')[2]);
+				
+				if(fInf.Exists) {
+					if (song == "Unknown - Unknown") displayName.Add(fileRows[i].Split('|')[0] + " - " + fileRows[i].Split('|')[1] + " (" + new FileInfo(fileRows[i].Split('|')[2]).Name + ")");
+					else displayName.Add(fileRows[i].Split('|')[0] + " - " + fileRows[i].Split('|')[1]);
+					songPath.Add(fInf);
+				}
 			}
 		} catch (Exception e) {
 			Debug.LogWarning(e.Message + " But don't worry, file will be created once at least one song has been started.");
