@@ -83,7 +83,7 @@ public class AudioPlayer : MonoBehaviour
 #if UNITY_ANDROID && !UNITY_EDITOR
 		if(!isPlaying && Game.GameMode != Game.Mode.Tutorial && androidPlayer.Call<int>("getCurrentPosition") > 171)
 			isPlaying = true;
-		else if(!isPlaying && audioSource.timeSamples > 0)
+		else if(!isPlaying && Game.GameMode == Game.Mode.Tutorial && audioSource.timeSamples > 0)
 			isPlaying = true;
 #else
 		if(!isPlaying && audioSource.timeSamples > 0)
