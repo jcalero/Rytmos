@@ -12,6 +12,8 @@ using System.Text.RegularExpressions;
 public class MainMenu : MonoBehaviour {
 
 	#region Fields
+	private GameObject cam;
+	
 	// Menu panels (Inspector instances, location: MainMenuManager)
 	public UIPanel MainMenuBasePanel;
 	public UIPanel MainMenuPlayPanel;
@@ -57,11 +59,18 @@ public class MainMenu : MonoBehaviour {
 	#region Functions
 
 	void Awake() {
+		
 		Game.GameState = Game.State.Menu;
 		ChangeMenu(MenuLevel.Base);
 #if UNITY_WEBPLAYER
 		Game.Song = "";
 #endif
+	}
+	
+	void Start() {
+		cam = GameObject.Find("Camera");
+		cam.GetComponentInChildren<Camera>().orthographicSize = Game.cameraScaleFactor;
+		
 	}
 
 	void Update() {

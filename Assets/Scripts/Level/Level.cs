@@ -14,6 +14,7 @@ public class Level : MonoBehaviour {
 
 	#region Fields
 	private static Level Instance;                                  // The Instance of this class for self reference
+	private static GameObject cam;
 
 	protected LinkedSpriteManager spriteManagerScript;
 	protected LinkedSpriteManager bgSpriteManagerScript;
@@ -45,6 +46,10 @@ public class Level : MonoBehaviour {
 	}
 
 	protected virtual void Start() {
+		
+		cam = GameObject.Find("UICamera");
+		cam.GetComponentInChildren<Camera>().orthographicSize = Game.GetCameraScaleFactor();
+		
 		Game.Cheated = false;       // Reset cheated value
 
 		if (Game.GameMode != Game.Mode.Tutorial)

@@ -44,6 +44,8 @@ public class Game : MonoBehaviour
 	private static bool rememberLogin;
 	private static bool rememberLoginDefault = false;
 	public static bool disablePause = false;
+	
+	public static float cameraScaleFactor;
 	#endregion
 
 	#region Functions
@@ -59,10 +61,11 @@ public class Game : MonoBehaviour
 		screenRight = -screenLeft;
 		screenTop = -screenBottom;
 		screenMiddle = 0f;
+		cameraScaleFactor = GetCameraScaleFactor();
 	}
 
 	void Start ()
-	{
+	{		
 		if (PlayerPrefs.GetString ("playername") != null)
 			PlayerName = PlayerPrefs.GetString ("playername");
 		IsLoggedIn = RememberLogin;
@@ -70,7 +73,7 @@ public class Game : MonoBehaviour
 	}
 
 	void Update ()
-	{
+	{		
 		// Key input condition for pausing the game
 		if ((Input.GetKeyDown (KeyCode.Home) || Input.GetKeyDown (KeyCode.Escape) ||
 			Input.GetKeyDown ("escape") || Input.GetKeyDown (KeyCode.Space)) && GameState == State.Playing) {
@@ -152,6 +155,31 @@ public class Game : MonoBehaviour
 		}
 		DevMode = false;
 		Debug.Log (">> Current game mode: " + GameMode);
+	}
+	
+	public static float GetCameraScaleFactor() {
+
+		// Magic starts here
+		float aspectRatioMultiplier = 1f;
+		if((float)Screen.height/(float)Screen.width < 480f/800f) aspectRatioMultiplier = (480f/800f) / ((float)Screen.height/(float)Screen.width);
+		else if((float)Screen.height/(float)Screen.width > 480f/800f) aspectRatioMultiplier =  ((float)Screen.height/(float)Screen.width)/ (480f/800f);
+		
+		Debug.Log(aspectRatioMultiplier);
+		Debug.Log(Screen.width);
+		
+		if(Screen.width >= 800f) {
+			if(800f/Screen.width > 480f/Screen.height)
+				return aspectRatioMultiplier* 800f/Screen.width;
+			else
+				return aspectRatioMultiplier* 480f/Screen.height;
+		}
+		else {
+			if(800f/Screen.width < 480f/Screen.height)
+				return aspectRatioMultiplier* 800f/Screen.width;
+			else
+				return aspectRatioMultiplier* 480f/Screen.height;
+		}
+		// Magic ends here
 	}
 
 	/// <summary>
