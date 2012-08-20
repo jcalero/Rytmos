@@ -83,7 +83,9 @@ public class FileBrowserMenu : MonoBehaviour {
 		string file = "";
 
 		// Set the file path to save the song info to
-		if (Application.platform == RuntimePlatform.Android)
+		if (Application.platform == RuntimePlatform.Android
+			|| Application.platform == RuntimePlatform.OSXEditor
+			|| Application.platform == RuntimePlatform.IPhonePlayer)
 			file = (Application.persistentDataPath + "/recentlist.r");
 		else if (Application.platform == RuntimePlatform.WindowsPlayer
 			|| Application.platform == RuntimePlatform.WindowsEditor)

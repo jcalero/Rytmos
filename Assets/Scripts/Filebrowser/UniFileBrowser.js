@@ -226,7 +226,8 @@ function SetDefaultPath () {
     resetPath = false;
     switch (Application.platform) {
         case RuntimePlatform.OSXEditor:
-            filePath = filePath.Substring(0, filePath.LastIndexOf(pathChar)) + pathChar;
+            if (filePath.Length < 1) { filePath = Application.dataPath; };
+            else filePath = filePath.Substring(0, filePath.LastIndexOf(pathChar)) + pathChar;
             cmdKey1 = KeyCode.LeftApple; cmdKey2 = KeyCode.RightApple;
             break;
         case RuntimePlatform.WindowsEditor:
