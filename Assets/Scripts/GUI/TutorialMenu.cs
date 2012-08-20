@@ -66,8 +66,6 @@ public class TutorialMenu : MonoBehaviour {
 			boxLocation = GameObject.Find ("MultiplierLabel").transform.localPosition;
 			moveSprite("Sprite (arrow)", new Vector3(boxLocation.x-60, boxLocation.y-60, 0), Tutorial.sceneNumber-1);
 			break;
-		case 5:
-			return;
 		case 6:
 			boxLocation = findBoxLocation(findPos("ShieldPW"));
 			hasPushedFirst = false;
@@ -85,10 +83,6 @@ public class TutorialMenu : MonoBehaviour {
 			boxLocation = findBoxLocation(findPos ("ChainPW"));
 			moveSprite ("SelectPowerup", boxLocation, Tutorial.sceneNumber-1);
 			break;
-		case 9:
-			return;
-		case 10:
-			return;
 		default:
 			return;
 		}

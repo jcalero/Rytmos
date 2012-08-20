@@ -13,6 +13,7 @@ public class HUD : MonoBehaviour {
 	public UILabel MultiplierLabel;
 	public UILabel FPSLabel;
 	public UIPanel DevModePanel;
+	public UISprite EnergyBar;
 	public Camera HUDCamera;
 
 	// The Game HUD camera coordinates
@@ -48,6 +49,8 @@ public class HUD : MonoBehaviour {
 		// Position the HUD relative to the screen
 		ScoreValueLabel.transform.localPosition = new Vector2(screenCentre, screenTop + topMargin);
 		ScoreValueLabel.MakePixelPerfect();
+		EnergyBar.transform.localPosition = new Vector2(screenCentre, screenBottom + bottomMargin);
+		EnergyBar.MakePixelPerfect();
 		MultiplierLabel.transform.localPosition = new Vector2(screenRight + rightMargin, screenTop + topMargin);
 		MultiplierLabel.MakePixelPerfect();
 		FPSLabel.transform.localPosition = new Vector2(screenRight + (rightMargin / 5), screenBottom + bottomMargin);

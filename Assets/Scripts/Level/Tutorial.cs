@@ -114,7 +114,7 @@ public class Tutorial : Level {
 		
 		//Second enemy spawn message
 		else if(secondSpawn && Level.EnemiesDespawned < 6 && !secondEnemyMessage && !showingMessage) 
-			showMessage (2, .85f, ref secondEnemyMessage);
+			showMessage (2, 1f, ref secondEnemyMessage);
 		
 		//Third enemy spawn message
 		else if(thirdSpawn && Level.EnemiesDespawned < 9 && !thirdEnemyMessage && !showingMessage) 
