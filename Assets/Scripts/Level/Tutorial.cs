@@ -10,6 +10,7 @@ public class Tutorial : Level {
 
 	#region Fields
 	public GameObject powerupScript;
+	public Camera cameraSize;
 
 	
 	private static DeathMatch Instance;                                  // The Instance of this class for self reference
@@ -47,6 +48,7 @@ public class Tutorial : Level {
 	}
 
 	protected override void Start() {
+		cameraSize.orthographicSize = Game.GetCameraScaleFactor();
 		firstEnemyMessage = false;
 		secondEnemyMessage = false;
 		thirdEnemyMessage = false;

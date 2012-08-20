@@ -52,6 +52,9 @@ public class MainMenu : MonoBehaviour {
 
 	// Confirm Message Objects
 	public UILabel SongNameLabel;
+	
+	// Camera - For Setting Camera Size
+	public Camera cameraSize;
 	#endregion
 
 	#region Functions
@@ -60,15 +63,14 @@ public class MainMenu : MonoBehaviour {
 		
 		Game.GameState = Game.State.Menu;
 		ChangeMenu(MenuLevel.Base);
+		
 #if UNITY_WEBPLAYER
 		Game.Song = "";
 #endif
 	}
 	
 	void Start() {
-		GameObject cam = GameObject.Find("Camera");
-		cam.GetComponentInChildren<Camera>().orthographicSize = Game.cameraScaleFactor;
-		
+		cameraSize.orthographicSize = Game.GetCameraScaleFactor();
 	}
 
 	void Update() {

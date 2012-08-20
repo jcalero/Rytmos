@@ -37,6 +37,8 @@ public class HSController : MonoBehaviour {
 	public UIButton PrevSongButton;
 	public UIButton NextModeButton;
 	public UIButton PrevModeButton;
+	
+	public Camera cameraSize;
 
 	public static string FetchError;
 
@@ -44,7 +46,7 @@ public class HSController : MonoBehaviour {
 
 	void Awake() {
 		instance = this;
-
+		cameraSize.orthographicSize = Game.cameraScaleFactor;
 		for (int i = 0; i < hsTimeAttack.Length; i++)
 			hsTimeAttack[i] = new string[2];
 		for (int i = 0; i < hsSurvival.Length; i++)

@@ -11,6 +11,7 @@ public class TutorialMenu : MonoBehaviour {
 	public GameObject powerup;
 	public GameObject player;
 	public GameObject[] arrows;
+//	public Camera deactivateCam;
 
 	private static TutorialMenu instance;
 	private static bool disableButtons;
@@ -55,25 +56,31 @@ public class TutorialMenu : MonoBehaviour {
 		switch(Tutorial.sceneNumber) {
 		case 1:
 			boxLocation = findBoxLocation(findPos("EnemyCyanPrefab(Clone)"));
+			boxLocation *= Game.GetCameraScaleFactor();
 			break;
 		case 2:
 			boxLocation = findBoxLocation(findPos("EnemyYellowPrefab(Clone)"));
+			boxLocation *= Game.GetCameraScaleFactor();
 			break;
 		case 3:
 			boxLocation = findBoxLocation(findPos("EnemyGreenPrefab(Clone)"));
+			boxLocation *= Game.GetCameraScaleFactor();
 			break;
 		case 4:
 			boxLocation = GameObject.Find ("MultiplierLabel").transform.localPosition;
+			boxLocation *= Game.GetCameraScaleFactor();
 			moveSprite("Sprite (arrow)", new Vector3(boxLocation.x-60, boxLocation.y-60, 0), Tutorial.sceneNumber-1);
 			break;
 		case 6:
 			boxLocation = findBoxLocation(findPos("ShieldPW"));
+			boxLocation *= Game.GetCameraScaleFactor();
 			hasPushedFirst = false;
 			moveSprite ("SelectPowerup", boxLocation, Tutorial.sceneNumber-1);
 			instance.arrows[0].GetComponent<TweenPosition>().from = new Vector3(boxLocation.x, boxLocation.y-70, boxLocation.z);
 			break;
 		case 7:
 			boxLocation = findBoxLocation(findPos ("SuperpulsePW"));
+			boxLocation *= Game.GetCameraScaleFactor();
 			instance.arrows[1].transform.localPosition = new Vector3(boxLocation.x, boxLocation.y-70, boxLocation.z);
 			moveSprite ("SelectPowerup", boxLocation, Tutorial.sceneNumber-1);
 			hasPushedFirst = false;
@@ -81,11 +88,13 @@ public class TutorialMenu : MonoBehaviour {
 		case 8:
 			hasPushedFirst = false;
 			boxLocation = findBoxLocation(findPos ("ChainPW"));
+			boxLocation *= Game.GetCameraScaleFactor();
 			moveSprite ("SelectPowerup", boxLocation, Tutorial.sceneNumber-1);
 			break;
 		default:
 			return;
 		}
+		
 		moveSprite("SlicedSprite (TinyBox)", boxLocation, Tutorial.sceneNumber-1);
 		
 	}
