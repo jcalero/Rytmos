@@ -19,10 +19,15 @@ public class FileReader : DecoderInterface {
 	private float audioLength;
 	private int[][] rytData;
 	private int[] loudTriggers;
-	private MP3 mp3Reader;
 	private int channels;
 	private int mp3FrameSize;
 	private float variationFactor;
+	
+#if UNITY_ANDROID || UNITY_EDITOR
+	private MP3 mp3Reader;
+#elif UNITY_IPHONE
+	private IPhoneReader reader;
+#endif
 
 	// Supported Audio Formats.. not all of them are in yet!!
 	public enum FileFormat { WAV, OGG, MPEG, RYT, ERROR };
@@ -51,6 +56,8 @@ public class FileReader : DecoderInterface {
 	/// </summary>
 	public ReadStatus read() {
 		this.reading = true;
+		
+#if UNITY_ANDROID || UNITY_EDITOR
 
 		// Check input
 		if (this.path == null || this.path == "") {
@@ -78,6 +85,19 @@ public class FileReader : DecoderInterface {
 				readRytData();
 				break;
 		}
+		
+#elif UNITY_IPHONE
+		if (this.path == null || this.path == "") {
+			Debug.LogError("Path not specified!");
+			this.reading = false;
+			return ReadStatus.FAIL;
+		}
+		
+		reader = new IPhoneReader(this.path);
+		this.frequency = reader.getFrequency();
+		this.channels = reader.getChannels();
+#endif
+		
 		this.reading = false;
 		return ReadStatus.SUCCESS;
 
@@ -277,6 +297,8 @@ public class FileReader : DecoderInterface {
 	}
 
 	public int readSamples(ref float[] samples, bool forAnalysis) {
+		
+#if UNITY_ANDROID || UNITY_EDITOR
 		if (this.format == FileFormat.WAV) {
 			int readLength = samples.Length;
 			if (readDataPointer + samples.Length >= data.Length) readLength = samples.Length - ((readDataPointer + samples.Length) - data.Length);
@@ -295,6 +317,9 @@ public class FileReader : DecoderInterface {
 			Debug.Log("UNSUPPORTED AUDIO FORMAT");
 			return 0;
 		}
+#elif UNITY_IPHONE
+		return reader.read(ref samples);	
+#endif
 	}
 
 	public void reset() {
@@ -319,7 +344,129 @@ public class FileReader : DecoderInterface {
 	private static IEnumerator yieldRoutine(WWW obj) {
 		yield return obj;
 	}
+	
+#if UNITY_IPHONE
+	private class IPhoneReader {
+		
+		#region VARS
+		System.Text.StringBuilder path;
+		
+		float sampleRate;
+		float fChan;
+		int channels;
+		
+		string artist;
+		string title;
+		
+		float[] overFlow;
+		float maxVal;
+		#endregion
+		
+		private IPhoneReader() {}
+		
+		public IPhoneReader(string path) {
+			this.path = new System.Text.StringBuilder(path);
+			Mp3UtilsWrapper.Mp3UtilsImport.MP3P_INIT(this.path);
+			
+			sampleRate = Mp3UtilsWrapper.Mp3UtilsImport.MP3P_GET_SAMPLE_RATE();
+			channels = Mp3UtilsWrapper.Mp3UtilsImport.MP3P_GET_NUM_CHANNELS();
+			fChan = (float)channels;
+			
+			Mp3UtilsWrapper.Mp3UtilsImport.MP3P_CLEANUP();
+			
+			Mp3UtilsWrapper.Mp3UtilsImport.MP3R_INIT(this.path,sampleRate,channels);
+			
+			overFLow = new float[0];
+			maxVal = (float)short.MaxValue;
+			
+		}
+		
+		public int getFrequency() {
+			return (int)sampleRate;	
+		}
+		
+		public int getNumChannels() {
+			return channles;	
+		}
+		
+		public int read(ref float[] outBuff) {
+			
+			// Init Counters for the elements in a buffer
+			int outBuffFillCounter = 0;
+			int overFlowCounter = 0;
 
+			// Check if we have any overflowing bytes from the previous buffer
+			if (overFlow.Length > 0) {
+
+				for (int i = 0; i < overFlow.Length; i += channels * 2) {
+
+					for (int j = 0; j < channels * 2; j += 2) {
+
+						float tempVal = System.BitConverter.ToInt16(overFlow, i + j);
+						outBuff[outBuffFillCounter] += tempVal;
+					}
+					outBuff[outBuffFillCounter] /= fChan;
+					outBuff[outBuffFillCounter] /= maxVal;
+					outBuffFillCounter++;
+
+					// Have we filled the entire output buffer?
+					if (outBuffFillCounter == outBuff.Length) {
+
+						if (i + (channels * 2) < overFlow.Length) {
+							overFlowCounter = i + (channels * 2);
+							break;
+						} else {
+							overFlow = new byte[0];
+							return outBuffFillCounter;
+						}
+					}
+				}
+
+				// If the overflow array holds more samples than we want, we will have to save the overflow again!!
+				if (overFlowCounter > 0) {
+					byte[] tempOverFlow = new byte[overFlow.Length - overFlowCounter];
+					System.Array.Copy(overFlow, overFlowCounter, tempOverFlow, 0, tempOverFlow.Length);
+					overFlow = tempOverFlow;
+					return outBuffFillCounter;
+				}
+			}
+
+			// All overflow should have been passed to outBuff at this point, so we reset the array
+			overFlow = new byte[0];
+
+			// After adding the overflow form last time, get the next buffer
+			while (outBuffFillCounter < outBuff.Length && 0 == Mp3UtilsWrapper.Mp3UtilsImport.MP3R_READ(outBuff.Length - outBuffFillCounter,Buffer)) {
+				for (int i = 0; i < Buffer.Length; i += channels * 2) {
+
+					for (int j = 0; j < channels * 2; j += 2) {
+
+						float tempVal = System.BitConverter.ToInt16(Buffer, i + j);
+						outBuff[outBuffFillCounter] += tempVal;
+
+					}
+
+					outBuff[outBuffFillCounter] /= fChan;
+					outBuff[outBuffFillCounter] /= maxVal;
+					outBuffFillCounter++;
+
+					if (outBuffFillCounter == outBuff.Length) {
+						if (i + (channels * 2) < Buffer.Length) overFlowCounter = i + (channels * 2);
+
+						break;
+					}
+				}
+			}
+
+			// Fill overflow if there is anything to fill
+			if (overFlowCounter > 0) {
+				overFlow = new byte[Buffer.Length - overFlowCounter];
+				System.Array.Copy(Buffer, overFlowCounter, overFlow, 0, overFlow.Length);
+			}
+			return outBuffFillCounter;	
+		}
+	}
+#endif
+		
 	private class MP3 {
 
 		IntPtr handle_mpg = new IntPtr();
