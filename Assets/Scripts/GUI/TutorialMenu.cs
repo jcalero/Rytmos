@@ -31,10 +31,13 @@ public class TutorialMenu : MonoBehaviour {
 	}
 	
 	void Update() {
-		
+		if(Input.GetKeyDown(KeyCode.Backspace)) {
+				TutorialResume();
+		}
 		// This bit of code disables the "continue/retry" buttons for the tutorial popup for 100ms to eliminate accidental buttonpresses.
 		// (This "hack" has to be used because starting a coroutine in a static method like Show() is really really annoying)
 		if(disableButtons) {
+
 			if(!buttonsDisabled) {
 				foreach(UIButton b in instance.PopupPanels[Tutorial.sceneNumber-1].GetComponentsInChildren<UIButton>()) b.isEnabled = false;
 				buttonsDisabled = true;

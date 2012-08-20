@@ -46,9 +46,6 @@ public class Level : MonoBehaviour {
 
 	protected virtual void Start() {
 		
-//		GameObject cam = GameObject.Find("UICamera");
-//		cam.GetComponentInChildren<Camera>().orthographicSize = Game.GetCameraScaleFactor();
-		
 		Game.Cheated = false;       // Reset cheated value
 
 		if (Game.GameMode != Game.Mode.Tutorial)
