@@ -17,11 +17,11 @@ public class HUD : MonoBehaviour {
 	public Camera HUDCamera;
 
 	// The Game HUD camera coordinates
-	private float screenLeft;
-	private float screenTop;
-	private float screenCentre;
-	private float screenRight;
-	private float screenBottom;
+	//private float screenLeft;
+	//private float screenTop;
+	//private float screenCentre;
+	//private float screenRight;
+	//private float screenBottom;
 
 	// Label offset values
 	private float topMargin = -30f;
@@ -41,24 +41,24 @@ public class HUD : MonoBehaviour {
 		//Debug.Log(HUDCamera.pixelWidth);
 
 		// Assign HUD camera coordinates
-		screenLeft = -HUDCamera.pixelWidth / 2;
-		screenTop = HUDCamera.pixelHeight / 2;
-		screenCentre = 0;
-		screenRight = -screenLeft;
-		screenBottom = -screenTop;
+		//screenLeft = -HUDCamera.pixelWidth / 2;
+		//screenTop = HUDCamera.pixelHeight / 2;
+		//screenCentre = 0;
+		//screenRight = -screenLeft;
+		//screenBottom = -screenTop;
 	}
 
 	void Start() {
 		// Position the HUD relative to the screen
-		ScoreValueLabel.transform.localPosition = new Vector2(screenCentre, screenTop + topMargin);
-		ScoreValueLabel.MakePixelPerfect();
-		EnergyBar.transform.localPosition = new Vector2(screenCentre, screenBottom + bottomMargin);
-		EnergyBar.MakePixelPerfect();
-		MultiplierLabel.transform.localPosition = new Vector2(screenRight + rightMargin, screenTop + topMargin);
-		MultiplierLabel.MakePixelPerfect();
-		FPSLabel.transform.localPosition = new Vector2(screenRight + (rightMargin / 5), screenBottom + bottomMargin);
-		FPSLabel.MakePixelPerfect();
-		FPSLabel.transform.localScale = new Vector2(20, 20);
+		//ScoreValueLabel.transform.localPosition = new Vector2(screenCentre, screenTop + topMargin);
+		//ScoreValueLabel.MakePixelPerfect();
+		//EnergyBar.transform.localPosition = new Vector2(screenCentre, screenBottom + bottomMargin);
+		//EnergyBar.MakePixelPerfect();
+		//MultiplierLabel.transform.localPosition = new Vector2(screenRight + rightMargin, screenTop + topMargin);
+		//MultiplierLabel.MakePixelPerfect();
+		//FPSLabel.transform.localPosition = new Vector2(screenRight + (rightMargin / 5), screenBottom + bottomMargin);
+		//FPSLabel.MakePixelPerfect();
+		//FPSLabel.transform.localScale = new Vector2(20, 20);
 
 		// Initialise display values
 		UpdateScore();
