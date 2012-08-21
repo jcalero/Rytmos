@@ -24,9 +24,9 @@ public class HUD : MonoBehaviour {
 	//private float screenBottom;
 
 	// Label offset values
-	private float topMargin = -30f;
-	private float rightMargin = -60f;
-	private float bottomMargin = 20f;
+	//private float topMargin = -30f;
+	//private float rightMargin = -60f;
+	//private float bottomMargin = 20f;
 
 	// Static self instance
 	private static HUD instance;
