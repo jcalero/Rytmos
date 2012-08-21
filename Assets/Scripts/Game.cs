@@ -61,7 +61,7 @@ public class Game : MonoBehaviour
 		screenRight = -screenLeft;
 		screenTop = -screenBottom;
 		screenMiddle = 0f;
-		cameraScaleFactor = GetCameraScaleFactor();
+		//cameraScaleFactor = GetCameraScaleFactor();
 	}
 
 	void Start ()
@@ -158,25 +158,25 @@ public class Game : MonoBehaviour
 	}
 	
 	public static float GetCameraScaleFactor() {
-
-		// Magic starts here
-		float aspectRatioMultiplier = 1f;
-		if((float)Screen.height/(float)Screen.width < 480f/800f) aspectRatioMultiplier = (480f/800f) / ((float)Screen.height/(float)Screen.width);
-		else if((float)Screen.height/(float)Screen.width > 480f/800f) aspectRatioMultiplier =  ((float)Screen.height/(float)Screen.width)/ (480f/800f);
+		return 1f;
+		//// Magic starts here
+		//float aspectRatioMultiplier = 1f;
+		//if((float)Screen.height/(float)Screen.width < 480f/800f) aspectRatioMultiplier = (480f/800f) / ((float)Screen.height/(float)Screen.width);
+		//else if((float)Screen.height/(float)Screen.width > 480f/800f) aspectRatioMultiplier =  ((float)Screen.height/(float)Screen.width)/ (480f/800f);
 		
-		if(Screen.width >= 800f) {
-			if(800f/Screen.width > 480f/Screen.height)
-				return aspectRatioMultiplier* 800f/Screen.width;
-			else
-				return aspectRatioMultiplier* 480f/Screen.height;
-		}
-		else {
-			if(800f/Screen.width < 480f/Screen.height)
-				return aspectRatioMultiplier* 800f/Screen.width;
-			else
-				return aspectRatioMultiplier* 480f/Screen.height;
-		}
-		// Magic ends here
+		//if(Screen.width >= 800f) {
+		//    if(800f/Screen.width > 480f/Screen.height)
+		//        return aspectRatioMultiplier* 800f/Screen.width;
+		//    else
+		//        return aspectRatioMultiplier* 480f/Screen.height;
+		//}
+		//else {
+		//    if(800f/Screen.width < 480f/Screen.height)
+		//        return aspectRatioMultiplier* 800f/Screen.width;
+		//    else
+		//        return aspectRatioMultiplier* 480f/Screen.height;
+		//}
+		//// Magic ends here
 	}
 
 	/// <summary>

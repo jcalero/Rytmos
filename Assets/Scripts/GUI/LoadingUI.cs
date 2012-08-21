@@ -29,8 +29,8 @@ public class LoadingUI : MonoBehaviour {
 	// Use this for initialization
 	void Start() {
 		
-		GameObject cam = GameObject.Find("Camera");
-		cam.GetComponentInChildren<Camera>().orthographicSize = Game.cameraScaleFactor;	
+		//GameObject cam = GameObject.Find("Camera");
+		//cam.GetComponentInChildren<Camera>().orthographicSize = Game.cameraScaleFactor;	
 		
 		BSText = new string[] {
 			"Splitting Channels",

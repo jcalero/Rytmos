@@ -36,6 +36,9 @@ public class HUD : MonoBehaviour {
 
 	void Awake() {
 		instance = this;
+		//Debug.Log(HUDCamera.pixelHeight);
+		//HUDCamera.orthographicSize = Game.cameraScaleFactor;
+		//Debug.Log(HUDCamera.pixelWidth);
 
 		// Assign HUD camera coordinates
 		screenLeft = -HUDCamera.pixelWidth / 2;

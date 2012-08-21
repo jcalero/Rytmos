@@ -70,7 +70,7 @@ public class MainMenu : MonoBehaviour {
 	}
 	
 	void Start() {
-		cameraSize.orthographicSize = Game.GetCameraScaleFactor();
+		//cameraSize.orthographicSize = Game.GetCameraScaleFactor();
 	}
 
 	void Update() {
