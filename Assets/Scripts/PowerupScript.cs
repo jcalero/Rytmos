@@ -103,6 +103,7 @@ public class PowerupScript : MonoBehaviour {
 			Debug.LogError("No sprite with that name: " + name);
 			return;
 		}
+		
 		left = (int)sprite.inner.xMin;
 		bottom = (int)sprite.inner.yMax;
 		width = (int)sprite.inner.width;
@@ -111,8 +112,12 @@ public class PowerupScript : MonoBehaviour {
 		float widthHeightRatio = sprite.inner.width / sprite.inner.height;
 		if (widthHeightRatio > 1)
 			UVHeight = 1f / widthHeightRatio;       // It's a "wide" sprite
-		else if (widthHeightRatio < 1)
+		else 
+			UVHeight = 1f;
+		if (widthHeightRatio < 1)
 			UVWidth = 1f * widthHeightRatio;        // It's a "tall" sprite
+		else 
+			UVWidth = 1f;
 	}
 	
 
