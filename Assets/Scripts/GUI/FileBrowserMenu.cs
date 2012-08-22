@@ -28,13 +28,13 @@ public class FileBrowserMenu : MonoBehaviour {
 	#region Functions
 
 	private void Awake() {
-		if(Application.platform == RuntimePlatform.Android) {
-			UnityClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-			UnityJavaContext = UnityClass.GetStatic<AndroidJavaObject>("currentActivity");
-			AndroidMediaAccess = new AndroidJavaClass("com.bitera.rytmos.MediaAccessActivity");
-			
-			AndroidMediaAccess.CallStatic("initContext",UnityJavaContext);
-		}
+//		if(Application.platform == RuntimePlatform.Android) {
+//			UnityClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+//			UnityJavaContext = UnityClass.GetStatic<AndroidJavaObject>("currentActivity");
+//			AndroidMediaAccess = new AndroidJavaClass("com.bitera.rytmos.MediaAccessActivity");
+//			
+//			AndroidMediaAccess.CallStatic("initContext",UnityJavaContext);
+//		}
 		
 		SendRecentSongList();
 		if (recentlyPlayedActive) {
@@ -85,7 +85,7 @@ public class FileBrowserMenu : MonoBehaviour {
 		//Debug.Log("Filebrowser tab clicked");
 		if (!fileBrowserActive) {
 		
-			if(Application.platform == RuntimePlatform.WindowsEditor) {
+//			if(Application.platform == RuntimePlatform.WindowsEditor) {
 
 				//Debug.Log("Filebrowser tab activated");
 				recentlyPlayedActive = false;
@@ -94,16 +94,20 @@ public class FileBrowserMenu : MonoBehaviour {
 				if (!string.IsNullOrEmpty(Game.Path)) FileBrowser.SendMessage("OpenFileWindow", PlayerPrefs.GetString("filePath"));
 				else FileBrowser.SendMessage("OpenFileWindow", "");
 				
-			}
-			else if(Application.platform == RuntimePlatform.Android) {
-				
-			
-			}
+//			}
+//			else if(Application.platform == RuntimePlatform.Android) {
+//				
+//				recentlyPlayedActive = false;
+//				fileBrowserActive = true;
+//				SendArtistList();
+//			
+//			}
 		}
 	}
 	
 	private void SendArtistList() {
 		// FileBrowser.SendMessage("DisplayArtists", artists);
+		FileBrowser.SendMessage("DisplayArtists",GetArtistList());
 	}
 	
 

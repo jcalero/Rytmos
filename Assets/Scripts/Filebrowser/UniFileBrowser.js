@@ -35,6 +35,7 @@ var folderIcon : Texture;
 var fileIcon : Texture;
 
 enum FileType {Open, Save, Folder}
+enum MenuLevels {Artist,Album,Song}
 
 private var scrollPos : Vector2;
 private var selectedFileNumber = -1;
@@ -87,11 +88,22 @@ private var recentFilesDisplayNames : List.<String>;
 private var recentFileInfos : List.<FileInfo>;
 private var recentFileSelectedFile : int;
 
+private var artistsDisplayNames : List.<String>;
+private var albumsDisplayNames : List.<String>;
+private var songsDisplayNames : List.<String>;
+private var songsFileInfos : List.<FileInfo>;
+
+private var currentMenuLevel : MenuLevels;
+
 function Awake () {
     if (!guiSkin) {
         Debug.LogError("GUI skin missing");
         enabled = false;
         return;
+    }
+    
+    if(Application.platform == RuntimePlatform.Android) {
+    	currentMenuLevel = MenuLevels.Artist;
     }
 
     SetDefaultPath();
@@ -595,6 +607,24 @@ private function BuildPathList (pathEntry : int) {
     GetCurrentFileInfo();
 }
 
+protected function DisplayArtists(artists : List.<String>) {
+	artistsDisplayNames = new List.<String>();
+	artistsDisplayNames = artists;
+}
+
+protected function DisplayAlbums(albums : List.<String>) {
+	albumsDisplayNames = new List.<String>();
+	albumsDisplayNames = albums;
+}
+
+protected function DisplaySongs(songs : List.<String>, fileInfos : List.<FileInfo>) {
+	songsDisplayNames = new List.<String>();
+	songsDisplayNames = songs;
+	
+	songsFileInfos = new List.<FileInfo>();
+	songsFileInfos = fileInfos;
+}
+
 protected function FetchRecentFilesNames (displayNames : List.<String>) {
     recentFilesDisplayNames = new List.<String>();
     recentFilesDisplayNames = displayNames;
@@ -626,6 +656,7 @@ private function GetCurrentFileInfo () {
         selectedFileNumber = oldSelectedFileNumber = -1;
         scrollPos = Vector2.zero;
     } else {
+//    if (Application.platform == RuntimePlatform.WindowsEditor)
         var info = new DirectoryInfo(filePath);
         if (!info.Exists) {
             resetPath = true;
@@ -739,7 +770,37 @@ private function GetCurrentFileInfo () {
             fileName = "";
         }
         UpdateDirectoryLabel();
-    }
+    } 
+//    else if (Application.platform == RuntimePlatform.Android) {
+//    	
+//    	if(currentMenuLevel == MenuLevels.Artist && showFiles && artistsDisplayNames.Count > 0) {
+//	        fileDisplayList = new GUIContent[artistsDisplayNames.Count];
+//    		for (var l = 0; l < artistsDisplayNames.Count; l++) {
+//            	fileDisplayList[l] = new GUIContent(artistsDisplayNames[l], fileIcon);
+//        	}
+//    	}
+//    	else if(currentMenuLevel == MenuLevels.Album && showFiles && albumsDisplayNames.Count > 0) {
+//    		fileDisplayList = new GUIContent[albumsDisplayNames.Count];
+//    		for (var k = 0; k < albumsDisplayNames.Count; k++) {
+//            	fileDisplayList[k] = new GUIContent(albumsDisplayNames[k], fileIcon);
+//        	}
+//    	}
+//    	else if(currentMenuLevel == MenuLevels.Song && showFiles && songsDisplayNames.Count > 0) {
+//            
+//            for (var r = 0; r < songsFileInfos.Count; r++) {
+//                fileList.Add(songsFileInfos[j].Name);
+//            }
+//    	
+//    		fileDisplayList = new GUIContent[songsDisplayNames.Count];
+//    		for (var h = 0; h < songsDisplayNames.Count; h++) {
+//            	fileDisplayList[h] = new GUIContent(songsDisplayNames[h], fileIcon);
+//        	}
+//    	}
+//    	// else... wut? empty list somewhere?
+//
+//        selectedFileNumber = oldSelectedFileNumber = -1;
+//        scrollPos = Vector2.zero;
+//    }
 }
 
 private function HandleAccessError (errorMessage : String) {
