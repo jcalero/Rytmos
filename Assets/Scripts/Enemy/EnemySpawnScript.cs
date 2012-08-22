@@ -118,8 +118,9 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		rotateDirection = 1;
 		loudFlag = 0;
 		maxMag = new Vector2(Game.screenTop,Game.screenRight).magnitude;
-		if(Game.GameMode == Game.Mode.Casual) baseSpeed = 1.5f;
-		else baseSpeed = 2.5f;
+//		if(Game.GameMode == Game.Mode.Casual) baseSpeed = 1.5f;
+//		else 
+		baseSpeed = 2.5f;
 		updateSpawnPositions();
 		swapColours = false;
 		lastTime = false;
@@ -273,7 +274,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		float speed = baseSpeed + (loudFlag - 2.5f)*AudioManager.variationFactor;
 		if(speed < 1) speed = 1f;
 		else if(speed > 4.5 && Game.GameMode != Game.Mode.Casual) speed = 4.5f;
-		else if(speed > 3.5 && Game.GameMode == Game.Mode.Casual) speed = 3.5f;
+		else if(speed > 3.5 && Game.GameMode == Game.Mode.Casual) speed = 4f;
 	
 		return speed;
 		
