@@ -41,7 +41,7 @@ public class LoadingUI : MonoBehaviour {
 
 		// Set up the loading bar and waveform for different aspect ratios
 		// Aspect ratio: 1.333..
-		if (aspect == 640.0f / 480.0f) {
+		if (aspect <= 640.0f / 480.0f) {
 			ProgressBarBackground.transform.localScale = new Vector2(600, ProgressBarBackground.transform.localScale.y);
 			ProgressBar.transform.localPosition = new Vector2(-300, ProgressBar.transform.localPosition.y);
 			WaveFormBorder.transform.localScale = new Vector2(520, WaveFormBorder.transform.localScale.y);

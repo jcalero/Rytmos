@@ -32,8 +32,13 @@ public class MainMenu : MonoBehaviour {
 	// Current state of the menu.
 	public MenuLevel CurrentMenuLevel;
 
+	// Play menu objects
+	public UIButton OptionsButton;
+	public UILabel FPSLabel;
+
 	// Options menu objects
 	public UILabel LoggedOutLabel;
+	public UIButton OptionsBackButton;
 
 	// Options menu settable objects
 	public UISlider EffectsVolumeSlider;
@@ -44,11 +49,27 @@ public class MainMenu : MonoBehaviour {
 	// LoggedInBox menu objects
 	public UILabel UsernameLabel;
 
+	// Mode menu objects
+	public UIButton ModeBackButton;
+
 	// Login Menu Objects
+	public UIButton LoginBackButton;
 	public UIInput UserNameInput;
 	public UILabel ErrorLabel;
 	public UICheckbox RememberMeCheckbox;
 	private Regex nameRegEx = new Regex("^[a-zA-Z0-9]*$");
+
+	// Scores menu objects
+	public UIButton ScoresBackButton;
+	public UIButton NextSongButton;
+	public UIButton PrevSongButton;
+	public GameObject VerticalDivider;
+	public GameObject HorizontalDivider;
+	public GameObject TSNames;
+	public GameObject YSScores;
+	public UILabel TopScoresLabel;
+	public UILabel ScoresSongNameLabel;
+	public UILabel ScoresSongModeLabel;
 
 	// Confirm Message Objects
 	public UILabel SongNameLabel;
@@ -71,6 +92,123 @@ public class MainMenu : MonoBehaviour {
 	
 	void Start() {
 		//cameraSize.orthographicSize = Game.GetCameraScaleFactor();
+
+		float aspect = Camera.mainCamera.aspect;
+		Debug.Log(aspect);
+
+		// Set up the menu for different aspect ratios
+		// Aspect ratio: 1.333..
+		if (aspect <= 640.0f / 480.0f) {
+			Debug.Log("Setting up for aspect: " + aspect);
+			// Play menu
+			OptionsButton.transform.localPosition = new Vector2(OptionsButton.transform.localPosition.x + 80,
+				OptionsButton.transform.localPosition.y);
+			FPSLabel.transform.localPosition = new Vector2(FPSLabel.transform.localPosition.x - 85,
+				FPSLabel.transform.localPosition.y);
+			// Options menu
+			OptionsBackButton.transform.localPosition = new Vector2(OptionsBackButton.transform.localPosition.x + 80,
+				OptionsBackButton.transform.localPosition.y);
+			// Mode menu
+			ModeBackButton.transform.localPosition = new Vector2(ModeBackButton.transform.localPosition.x + 80,
+				ModeBackButton.transform.localPosition.y);
+			// Login menu
+			LoginBackButton.transform.localPosition = new Vector2(-210, 154);
+			// Scores menu
+			ScoresSongNameLabel.lineWidth = 460;
+			ScoresSongModeLabel.transform.localPosition = new Vector2(ScoresSongModeLabel.transform.localPosition.x,
+				ScoresSongModeLabel.transform.localPosition.y + 60);
+			ScoresSongNameLabel.transform.localPosition = new Vector2(ScoresSongNameLabel.transform.localPosition.x,
+				ScoresSongNameLabel.transform.localPosition.y - 60);
+			ScoresBackButton.transform.localPosition = new Vector2(ScoresBackButton.transform.localPosition.x + 70,
+				ScoresBackButton.transform.localPosition.y);
+			PrevSongButton.transform.localPosition = new Vector2(PrevSongButton.transform.localPosition.x + 30,
+				PrevSongButton.transform.localPosition.y - 60);
+			NextSongButton.transform.localPosition = new Vector2(NextSongButton.transform.localPosition.x - 30,
+				NextSongButton.transform.localPosition.y - 60);
+			TSNames.transform.localPosition = new Vector2(TSNames.transform.localPosition.x + 70,
+				TSNames.transform.localPosition.y);
+			YSScores.transform.localPosition = new Vector2(YSScores.transform.localPosition.x - 70,
+				YSScores.transform.localPosition.y);
+			HorizontalDivider.transform.localScale = new Vector2(HorizontalDivider.transform.localScale.x - 140,
+				HorizontalDivider.transform.localScale.y);
+			TopScoresLabel.transform.localPosition = new Vector2(TopScoresLabel.transform.localPosition.x + 60,
+				TopScoresLabel.transform.localPosition.y);
+		}
+			// Aspect ratio: 1.5
+		else if (aspect == (480.0f / 320.0f)) {
+			Debug.Log("Setting up for aspect: " + aspect);
+			// Play menu
+			OptionsButton.transform.localPosition = new Vector2(OptionsButton.transform.localPosition.x + 45,
+				OptionsButton.transform.localPosition.y);
+			FPSLabel.transform.localPosition = new Vector2(FPSLabel.transform.localPosition.x - 40,
+				FPSLabel.transform.localPosition.y);
+			// Options menu
+			OptionsBackButton.transform.localPosition = new Vector2(OptionsBackButton.transform.localPosition.x + 45,
+				OptionsBackButton.transform.localPosition.y);
+			// Mode menu
+			ModeBackButton.transform.localPosition = new Vector2(ModeBackButton.transform.localPosition.x + 45,
+				ModeBackButton.transform.localPosition.y);
+			// Login menu
+			LoginBackButton.transform.localPosition = new Vector2(LoginBackButton.transform.localPosition.x + 35,
+				LoginBackButton.transform.localPosition.y);
+			// Scores menu
+			ScoresSongNameLabel.lineWidth = 460;
+			ScoresBackButton.transform.localPosition = new Vector2(ScoresBackButton.transform.localPosition.x + 30,
+				ScoresBackButton.transform.localPosition.y);
+			PrevSongButton.transform.localPosition = new Vector2(PrevSongButton.transform.localPosition.x + 25,
+				PrevSongButton.transform.localPosition.y);
+			NextSongButton.transform.localPosition = new Vector2(NextSongButton.transform.localPosition.x - 25,
+				NextSongButton.transform.localPosition.y);
+			TSNames.transform.localPosition = new Vector2(TSNames.transform.localPosition.x + 30,
+				TSNames.transform.localPosition.y);
+			YSScores.transform.localPosition = new Vector2(YSScores.transform.localPosition.x - 30,
+				YSScores.transform.localPosition.y);
+			HorizontalDivider.transform.localScale = new Vector2(HorizontalDivider.transform.localScale.x - 60,
+				HorizontalDivider.transform.localScale.y);
+			TopScoresLabel.transform.localPosition = new Vector2(TopScoresLabel.transform.localPosition.x + 20,
+				TopScoresLabel.transform.localPosition.y);
+		}
+			// Aspect ratio: 1.6
+		else if (aspect == (1280.0f / 800.0f)) {
+			Debug.Log("Setting up for aspect: " + aspect);
+			// Play menu
+			OptionsButton.transform.localPosition = new Vector2(OptionsButton.transform.localPosition.x + 20,
+				OptionsButton.transform.localPosition.y);
+			FPSLabel.transform.localPosition = new Vector2(FPSLabel.transform.localPosition.x - 15,
+				FPSLabel.transform.localPosition.y);
+			// Options menu
+			OptionsBackButton.transform.localPosition = new Vector2(OptionsBackButton.transform.localPosition.x + 20,
+				OptionsBackButton.transform.localPosition.y);
+			// Mode menu
+			ModeBackButton.transform.localPosition = new Vector2(ModeBackButton.transform.localPosition.x + 20,
+				ModeBackButton.transform.localPosition.y);
+			// Login menu
+			LoginBackButton.transform.localPosition = new Vector2(LoginBackButton.transform.localPosition.x + 10,
+				LoginBackButton.transform.localPosition.y);
+			// Scores menu
+			ScoresBackButton.transform.localPosition = new Vector2(ScoresBackButton.transform.localPosition.x + 10,
+				ScoresBackButton.transform.localPosition.y);
+			TSNames.transform.localPosition = new Vector2(TSNames.transform.localPosition.x + 10,
+				TSNames.transform.localPosition.y);
+			YSScores.transform.localPosition = new Vector2(YSScores.transform.localPosition.x - 10,
+				YSScores.transform.localPosition.y);
+		}
+			// Aspect ratio: 1.666.. (Default android)
+		else if (aspect == (800.0f / 480.0f)) {
+			// Default. Doesn't need to change.
+		}
+			// Aspect ratio: 1.7066..
+		else if (aspect == (1024.0f / 600.0f)) {
+			// Using the same as 1.666.. (Default)
+		}
+			// Aspect ratio: 1.779166..
+		else if (aspect == (854.0f / 480.0f)) {
+			// Using the same as 1.666.. (Default)
+		}
+			// Aspect ratio: 1.8
+		else if (aspect == (432.0f / 240.0f)) {
+			// Using the same as 1.666.. (Default)
+		}
 	}
 
 	void Update() {

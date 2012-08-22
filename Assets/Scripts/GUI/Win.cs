@@ -73,7 +73,7 @@ public class Win : MonoBehaviour {
 		float aspect = Camera.mainCamera.aspect;
 		//Debug.Log(aspect);
 
-		// Set up the loading bar and waveform for different aspect ratios
+		// Set up the menu for different aspect ratios
 		// Aspect ratio: 1.333..
 		if (aspect <= 640.0f / 480.0f) {
 			//Debug.Log("Setting up for aspect: " + aspect);
