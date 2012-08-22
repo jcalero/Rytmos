@@ -28,11 +28,13 @@ public class FileBrowserMenu : MonoBehaviour {
 	#region Functions
 
 	private void Awake() {
-		UnityClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-		UnityJavaContext = UnityClass.GetStatic<AndroidJavaObject>("currentActivity");
-		AndroidMediaAccess = new AndroidJavaClass("com.bitera.rytmos.MediaAccessActivity");
-		
-		AndroidMediaAccess.CallStatic("initContext",UnityJavaContext);
+		if(Application.platform == RuntimePlatform.Android) {
+			UnityClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+			UnityJavaContext = UnityClass.GetStatic<AndroidJavaObject>("currentActivity");
+			AndroidMediaAccess = new AndroidJavaClass("com.bitera.rytmos.MediaAccessActivity");
+			
+			AndroidMediaAccess.CallStatic("initContext",UnityJavaContext);
+		}
 		
 		SendRecentSongList();
 		if (recentlyPlayedActive) {
@@ -82,14 +84,28 @@ public class FileBrowserMenu : MonoBehaviour {
 	private void FileBrowserTabClicked() {
 		//Debug.Log("Filebrowser tab clicked");
 		if (!fileBrowserActive) {
-			//Debug.Log("Filebrowser tab activated");
-			recentlyPlayedActive = false;
-			fileBrowserActive = true;
-			FileBrowser.SendMessage("CloseRecentFilesWindowTab");
-			if (!string.IsNullOrEmpty(Game.Path)) FileBrowser.SendMessage("OpenFileWindow", PlayerPrefs.GetString("filePath"));
-			else FileBrowser.SendMessage("OpenFileWindow", "");
+		
+			if(Application.platform == RuntimePlatform.WindowsEditor) {
+
+				//Debug.Log("Filebrowser tab activated");
+				recentlyPlayedActive = false;
+				fileBrowserActive = true;
+				FileBrowser.SendMessage("CloseRecentFilesWindowTab");
+				if (!string.IsNullOrEmpty(Game.Path)) FileBrowser.SendMessage("OpenFileWindow", PlayerPrefs.GetString("filePath"));
+				else FileBrowser.SendMessage("OpenFileWindow", "");
+				
+			}
+			else if(Application.platform == RuntimePlatform.Android) {
+				
+			
+			}
 		}
 	}
+	
+	private void SendArtistList() {
+		// FileBrowser.SendMessage("DisplayArtists", artists);
+	}
+	
 
 	private void SendRecentSongList() {
 		string file = "";
