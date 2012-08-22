@@ -17,11 +17,23 @@ public class FileBrowserMenu : MonoBehaviour {
 
 	private static bool recentlyPlayedActive = true;
 	private static bool fileBrowserActive = false;
+	
+	private AndroidJavaClass UnityClass;
+	private AndroidJavaObject UnityJavaContext;
+	private AndroidJavaObject AndroidMediaAccess;
+	
+	private List<string> artists;
 	#endregion
 
 	#region Functions
 
 	private void Awake() {
+		UnityClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+		UnityJavaContext = UnityClass.GetStatic<AndroidJavaObject>("currentActivity");
+		AndroidMediaAccess = new AndroidJavaClass("com.bitera.rytmos.MediaAccessActivity");
+		
+		AndroidMediaAccess.CallStatic("initContext",UnityJavaContext);
+		
 		SendRecentSongList();
 		if (recentlyPlayedActive) {
 			PathLabel.text = "";
@@ -127,6 +139,58 @@ public class FileBrowserMenu : MonoBehaviour {
 		FileBrowser.SendMessage("FetchRecentFilesNames", displayName);
 		FileBrowser.SendMessage("FetchRecentFilesInfos", songPath);
 
+	}
+	
+	private List<string> GetArtistList() {
+		
+		if(this.artists == null) {
+			AndroidMediaAccess.CallStatic("initArtist");
+			
+			System.Collections.Generic.List<string> tempArtists = new System.Collections.Generic.List<string>();
+			string artist = "";
+			
+			while((artist = AndroidMediaAccess.CallStatic<string>("fetchMoveArtist")) != "") {
+				tempArtists.Add(artist);
+			}
+			
+			this.artists = tempArtists;
+			
+			AndroidMediaAccess.CallStatic("closeArtist");
+		}
+		
+		return this.artists;
+	}
+	
+	private List<string> GetAlbumsForArtist(string artist) {
+		
+		AndroidMediaAccess.CallStatic("initAlbum",artist);
+		
+		string album = "";
+		System.Collections.Generic.List<string> albums = new System.Collections.Generic.List<string>();
+		
+		while((album = AndroidMediaAccess.CallStatic<string>("fetchMoveAlbum")) != "") {
+			albums.Add(album);
+		}
+		
+		AndroidMediaAccess.CallStatic("closeAlbum");
+		
+		return albums;
+	}
+	
+	private List<string[]> GetSongsForAlbum(string artist, string album) {
+		
+		AndroidMediaAccess.CallStatic("initSong",artist,album);
+					
+		string[] song = new string[0];
+		System.Collections.Generic.List<string[]> songs = new System.Collections.Generic.List<string[]>();
+		
+		while((song = AndroidMediaAccess.CallStatic<string[]>("fetchMoveSong"))[0] != "") {
+			songs.Add((string[])song.Clone());
+		}
+		
+		AndroidMediaAccess.CallStatic("closeSong");
+		
+		return songs;
 	}
 
 	public static bool RecentlyPlayedActive {
