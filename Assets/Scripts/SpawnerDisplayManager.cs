@@ -31,7 +31,12 @@ public class SpawnerDisplayManager : MonoBehaviour {
 		allSpawners = new GameObject[spawnerRefs.Length][];
 		sm = gameAtlas.GetComponent<LinkedSpriteManager>();
 		for(int i = 0; i < allSpawners.Length; i++) {
-			allSpawners[i] = new GameObject[3];
+			
+			if(Game.GameMode == Game.Mode.Casual)
+				allSpawners[i] = new GameObject[2];
+			else
+				allSpawners[i] = new GameObject[3];
+			
 			for(int j = 0; j < allSpawners[i].Length; j++) {
 				allSpawners[i][j] = (GameObject)Instantiate(spawnerRefs[i]);
 				CalculateSprite(uiatlas, spawnerRefs[i].name+"1");

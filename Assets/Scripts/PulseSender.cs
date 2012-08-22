@@ -34,7 +34,10 @@ public class PulseSender : MonoBehaviour {
 		line.SetVertexCount(segments + 1);
 		line.useWorldSpace = false;
 		line.material.color = finalColor;
-		CurrentHealth = EnemySpawnScript.spawnerCounter+1;
+		if(Game.GameMode == Game.Mode.Casual)
+			CurrentHealth = EnemySpawnScript.spawnerCounter;
+		else
+			CurrentHealth = EnemySpawnScript.spawnerCounter+1;
 		CurrentColor = Color.clear;
 		float lineWidth = CurrentHealth / 10;
 		line.SetWidth(lineWidth, lineWidth);

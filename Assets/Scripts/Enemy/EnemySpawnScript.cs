@@ -112,7 +112,12 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		timeSinceLastSpawn = 0.2f;
 		//spawnPositions = new int[]{40,90,35,85};
 		spawnPositions = new int[] { 0 };
-		spawnerCounter = 3;
+		
+		if(Game.GameMode == Game.Mode.Casual)
+			spawnerCounter = 2;
+		else
+			spawnerCounter = 3;
+		
 		currentlySelectedEnemy = Random.Range(0,6);
 		spawnCount = 0;
 		rotateDirection = 1;
