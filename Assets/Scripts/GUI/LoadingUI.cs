@@ -38,12 +38,10 @@ public class LoadingUI : MonoBehaviour {
 	void Start() {
 
 		float aspect = Camera.mainCamera.aspect;
-		Debug.Log(aspect);
 
 		// Set up the loading bar and waveform for different aspect ratios
 		// Aspect ratio: 1.333..
 		if (aspect == 640.0f / 480.0f) {
-			Debug.Log("Setting up UI for aspect ratio: " + aspect);
 			ProgressBarBackground.transform.localScale = new Vector2(600, ProgressBarBackground.transform.localScale.y);
 			ProgressBar.transform.localPosition = new Vector2(-300, ProgressBar.transform.localPosition.y);
 			WaveFormBorder.transform.localScale = new Vector2(520, WaveFormBorder.transform.localScale.y);
@@ -55,7 +53,6 @@ public class LoadingUI : MonoBehaviour {
 		}
 			// Aspect ratio: 1.5
 		else if (aspect == (480.0f / 320.0f)) {
-			Debug.Log("Setting up UI for aspect ratio: " + aspect);
 			ProgressBarBackground.transform.localScale = new Vector2(650, ProgressBarBackground.transform.localScale.y);
 			ProgressBar.transform.localPosition = new Vector2(-325, ProgressBar.transform.localPosition.y);
 			WaveFormBorder.transform.localScale = new Vector2(650, WaveFormBorder.transform.localScale.y);
@@ -66,7 +63,6 @@ public class LoadingUI : MonoBehaviour {
 		}
 			// Aspect ratio: 1.6
 		else if (aspect == (1280.0f / 800.0f)) {
-			Debug.Log("Setting up UI for aspect ratio: " + aspect);
 			ProgressBarBackground.transform.localScale = new Vector2(650, ProgressBarBackground.transform.localScale.y);
 			ProgressBar.transform.localPosition = new Vector2(-325, ProgressBar.transform.localPosition.y);
 			WaveFormBorder.transform.localScale = new Vector2(650, WaveFormBorder.transform.localScale.y);
@@ -77,7 +73,6 @@ public class LoadingUI : MonoBehaviour {
 		}
 			// Aspect ratio: 1.666.. (Default android)
 		else if (aspect == (800.0f / 480.0f)) {
-			Debug.Log("Setting up UI for aspect ratio: " + aspect);
 			ProgressBarBackground.transform.localScale = new Vector2(750, ProgressBarBackground.transform.localScale.y);
 			ProgressBar.transform.localPosition = new Vector2(-375, ProgressBar.transform.localPosition.y);
 		}

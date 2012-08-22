@@ -29,15 +29,29 @@ public class Win : MonoBehaviour {
 	public UILabel ScoreValueLabel;
 	public UILabel RankValueLabel;
 	public UIButton HighscoreButton;
+	public UIButton ReplaySongButton;
+	public UIButton MainMenuButton;
 	// Login Menu Objects
 	public UIInput UserNameInput;
 	public UILabel ErrorLabel;
 	public UICheckbox RememberMeCheckbox;
+	public UIButton LoginBackButton;
 	// Create Menu Objects
 	// ??
 	// Scores Menu Objects
 	public UILabel SongNameLabel;
 	public UILabel SongModeLabel;
+	public UILabel TopScoreLabel;
+	public UILabel YourScoreLabel;
+	public UIButton ScoresMainMenuButton;
+	public UIButton ScoresReplayButton;
+	public GameObject YSNames;
+	public GameObject TSNames;
+	public GameObject YSScores;
+	public GameObject TSScores;
+	public GameObject VerticalDivider;
+	public GameObject HorizontalDivider;
+	public GameObject TopYoursDivider;
 	// Scores Loading Objects
 	public UILabel SubmittingScoreLabel;
 
@@ -55,6 +69,109 @@ public class Win : MonoBehaviour {
 
 	void Start() {
 		instance = this;
+
+		float aspect = Camera.mainCamera.aspect;
+		//Debug.Log(aspect);
+
+		// Set up the loading bar and waveform for different aspect ratios
+		// Aspect ratio: 1.333..
+		if (aspect <= 640.0f / 480.0f) {
+			//Debug.Log("Setting up for aspect: " + aspect);
+			// Base menu
+			HighscoreButton.transform.localScale = new Vector2(0.7f, 0.7f);
+			MainMenuButton.transform.localScale = new Vector2(0.9f, 0.9f);
+			ReplaySongButton.transform.localScale = new Vector2(0.9f, 0.9f);
+			MainMenuButton.transform.localPosition = new Vector2(MainMenuButton.transform.localPosition.x + 80,
+																 MainMenuButton.transform.localPosition.y);
+			ReplaySongButton.transform.localPosition = new Vector2(ReplaySongButton.transform.localPosition.x - 80,
+																 ReplaySongButton.transform.localPosition.y);
+			SongLabel.lineWidth = 600;
+			// Login menu
+			LoginBackButton.transform.localPosition = new Vector2(-209, 154);
+			// Scores menu
+			SongNameLabel.lineWidth = 520;
+			TSNames.transform.localPosition = new Vector2(30, 0);
+			YSNames.transform.localPosition = new Vector2(30, 0);
+			TSScores.transform.localPosition = new Vector2(-30, 0);
+			YSScores.transform.localPosition = new Vector2(-30, 0);
+			VerticalDivider.transform.localPosition = new Vector3(VerticalDivider.transform.localPosition.x + 30,
+				VerticalDivider.transform.localPosition.y);
+			HorizontalDivider.transform.localScale = new Vector2(HorizontalDivider.transform.localScale.x - 60,
+				HorizontalDivider.transform.localScale.y);
+			TopYoursDivider.transform.localScale = new Vector2(TopYoursDivider.transform.localScale.x - 60,
+				TopYoursDivider.transform.localScale.y);
+			TopScoreLabel.transform.localPosition = new Vector2(-204, 55);
+			YourScoreLabel.transform.localPosition = new Vector2(-204, 7);
+			TopScoreLabel.transform.localScale = new Vector2(22, 24);
+			YourScoreLabel.transform.localScale = new Vector2(22, 24);
+			ScoresMainMenuButton.transform.localScale = new Vector2(0.8f, 0.8f);
+			ScoresMainMenuButton.transform.localPosition = new Vector2(ScoresMainMenuButton.transform.localPosition.x + 60,
+				ScoresMainMenuButton.transform.localPosition.y);
+			ScoresReplayButton.transform.localScale = new Vector2(0.8f, 0.8f);
+			ScoresReplayButton.transform.localPosition = new Vector2(ScoresReplayButton.transform.localPosition.x - 60,
+				ScoresReplayButton.transform.localPosition.y);
+		}
+			// Aspect ratio: 1.5
+		else if (aspect == (480.0f / 320.0f)) {
+			//Debug.Log("Setting up for aspect: " + aspect);
+			// Base menu
+			HighscoreButton.transform.localScale = new Vector2(0.8f, 0.8f);
+			MainMenuButton.transform.localPosition = new Vector2(MainMenuButton.transform.localPosition.x + 40,
+																 MainMenuButton.transform.localPosition.y);
+			ReplaySongButton.transform.localPosition = new Vector2(ReplaySongButton.transform.localPosition.x - 40,
+																 ReplaySongButton.transform.localPosition.y);
+			SongLabel.lineWidth = 650;
+			// Login menu
+			LoginBackButton.transform.localPosition = new Vector2(LoginBackButton.transform.localPosition.x + 35,
+																  LoginBackButton.transform.localPosition.y);
+			// Scores menu
+			SongNameLabel.lineWidth = 600;
+			TopScoreLabel.transform.localScale = new Vector2(24, 24);
+			YourScoreLabel.transform.localScale = new Vector2(24, 24);
+			ScoresMainMenuButton.transform.localScale = new Vector2(0.9f, 0.9f);
+			ScoresMainMenuButton.transform.localPosition = new Vector2(ScoresMainMenuButton.transform.localPosition.x + 25,
+				ScoresMainMenuButton.transform.localPosition.y);
+			ScoresReplayButton.transform.localScale = new Vector2(0.9f, 0.9f);
+			ScoresReplayButton.transform.localPosition = new Vector2(ScoresReplayButton.transform.localPosition.x - 25,
+				ScoresReplayButton.transform.localPosition.y);
+		}
+			// Aspect ratio: 1.6
+		else if (aspect == (1280.0f / 800.0f)) {
+			//Debug.Log("Setting up for aspect: " + aspect);
+			// Base menu
+			HighscoreButton.transform.localScale = new Vector2(0.9f, 0.9f);
+			MainMenuButton.transform.localPosition = new Vector2(MainMenuButton.transform.localPosition.x + 25,
+																 MainMenuButton.transform.localPosition.y);
+			ReplaySongButton.transform.localPosition = new Vector2(ReplaySongButton.transform.localPosition.x - 25,
+																 ReplaySongButton.transform.localPosition.y);
+			// Login menu
+			LoginBackButton.transform.localPosition = new Vector2(LoginBackButton.transform.localPosition.x + 25,
+																  LoginBackButton.transform.localPosition.y);
+			// Scores menu
+			ScoresMainMenuButton.transform.localScale = new Vector2(0.9f, 0.9f);
+			ScoresMainMenuButton.transform.localPosition = new Vector2(ScoresMainMenuButton.transform.localPosition.x + 10,
+				ScoresMainMenuButton.transform.localPosition.y);
+			ScoresReplayButton.transform.localScale = new Vector2(0.9f, 0.9f);
+			ScoresReplayButton.transform.localPosition = new Vector2(ScoresReplayButton.transform.localPosition.x - 10,
+				ScoresReplayButton.transform.localPosition.y);
+		}
+			// Aspect ratio: 1.666.. (Default android)
+		else if (aspect == (800.0f / 480.0f)) {
+			// Default. Doesn't need to change.
+		}
+			// Aspect ratio: 1.7066..
+		else if (aspect == (1024.0f / 600.0f)) {
+			// Using the same as 1.666.. (Default)
+		}
+			// Aspect ratio: 1.779166..
+		else if (aspect == (854.0f / 480.0f)) {
+			// Using the same as 1.666.. (Default)
+		}
+			// Aspect ratio: 1.8
+		else if (aspect == (432.0f / 240.0f)) {
+			// Using the same as 1.666.. (Default)
+		}
+
 		SongLabel.text = AudioManager.artist + " - " + AudioManager.title;
 		CalculateSongLabelSize();
 		HitsValueLabel.text = Player.TotalKills.ToString();
@@ -191,7 +308,7 @@ public class Win : MonoBehaviour {
 		Game.IsLoggedIn = true;
 		ChangeMenu(WinMenuLevel.LoadingScores);
 		StartCoroutine(SubmitScores(playerName));
-		
+
 	}
 	#endregion
 
