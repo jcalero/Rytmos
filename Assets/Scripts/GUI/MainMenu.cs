@@ -73,6 +73,17 @@ public class MainMenu : MonoBehaviour {
 
 	// Confirm Message Objects
 	public UILabel SongNameLabel;
+
+	// File browser menu objects
+	public UIButton FileBrowserBackButton;
+	public UILabel PathLabel;
+	public UILabel RecentlyPlayedLabel;
+	public UILabel SongFromPhoneLabel;
+	public UISlicedSprite BrowserBox;
+	public UISlicedSprite PathBox;
+	public UIButton RecentlyPlayedTab;
+	public UIButton SongFromPhoneTab;
+	public UIButton UpButton;
 	
 	// Camera - For Setting Camera Size
 	public Camera cameraSize;
@@ -133,6 +144,27 @@ public class MainMenu : MonoBehaviour {
 				HorizontalDivider.transform.localScale.y);
 			TopScoresLabel.transform.localPosition = new Vector2(TopScoresLabel.transform.localPosition.x + 60,
 				TopScoresLabel.transform.localPosition.y);
+			// File browser menu
+			FileBrowserBackButton.transform.localPosition = new Vector2(FileBrowserBackButton.transform.localPosition.x + 80,
+				FileBrowserBackButton.transform.localPosition.y);
+			BrowserBox.transform.localScale = new Vector2(BrowserBox.transform.localScale.x - 160,
+				BrowserBox.transform.localScale.y);
+			PathBox.transform.localScale = new Vector2(PathBox.transform.localScale.x - 160,
+				PathBox.transform.localScale.y);
+			BrowserBox.transform.localPosition = new Vector2(BrowserBox.transform.localPosition.x + 80,
+				BrowserBox.transform.localPosition.y);
+			PathBox.transform.localPosition = new Vector2(PathBox.transform.localPosition.x + 80,
+				PathBox.transform.localPosition.y);
+			PathLabel.transform.localPosition = new Vector2(PathLabel.transform.localPosition.x + 80,
+				PathLabel.transform.localPosition.y);
+			RecentlyPlayedTab.transform.localPosition = new Vector2(RecentlyPlayedTab.transform.localPosition.x - 20,
+				RecentlyPlayedTab.transform.localPosition.y - 3);
+			SongFromPhoneTab.transform.localPosition = new Vector2(SongFromPhoneTab.transform.localPosition.x - 47,
+				SongFromPhoneTab.transform.localPosition.y - 3);
+			RecentlyPlayedTab.transform.localScale = new Vector2(0.9f, 0.9f);
+			SongFromPhoneTab.transform.localScale = new Vector2(0.9f, 0.9f);
+			UpButton.transform.localScale = new Vector2(0.9f, 0.9f);
+			UpButton.transform.localPosition = new Vector2(UpButton.transform.localPosition.x, UpButton.transform.localPosition.y - 3);
 		}
 			// Aspect ratio: 1.5
 		else if (aspect == (480.0f / 320.0f)) {
@@ -167,6 +199,23 @@ public class MainMenu : MonoBehaviour {
 				HorizontalDivider.transform.localScale.y);
 			TopScoresLabel.transform.localPosition = new Vector2(TopScoresLabel.transform.localPosition.x + 20,
 				TopScoresLabel.transform.localPosition.y);
+			// File browser menu
+			FileBrowserBackButton.transform.localPosition = new Vector2(FileBrowserBackButton.transform.localPosition.x + 40,
+				FileBrowserBackButton.transform.localPosition.y);
+			BrowserBox.transform.localScale = new Vector2(BrowserBox.transform.localScale.x - 80,
+				BrowserBox.transform.localScale.y);
+			PathBox.transform.localScale = new Vector2(PathBox.transform.localScale.x - 80,
+				PathBox.transform.localScale.y);
+			BrowserBox.transform.localPosition = new Vector2(BrowserBox.transform.localPosition.x + 40,
+				BrowserBox.transform.localPosition.y);
+			PathBox.transform.localPosition = new Vector2(PathBox.transform.localPosition.x + 40,
+				PathBox.transform.localPosition.y);
+			PathLabel.transform.localPosition = new Vector2(PathLabel.transform.localPosition.x + 40,
+				PathLabel.transform.localPosition.y);
+			RecentlyPlayedTab.transform.localPosition = new Vector2(RecentlyPlayedTab.transform.localPosition.x - 25,
+				RecentlyPlayedTab.transform.localPosition.y);
+			SongFromPhoneTab.transform.localPosition = new Vector2(SongFromPhoneTab.transform.localPosition.x - 25,
+				SongFromPhoneTab.transform.localPosition.y);
 		}
 			// Aspect ratio: 1.6
 		else if (aspect == (1280.0f / 800.0f)) {
@@ -192,6 +241,19 @@ public class MainMenu : MonoBehaviour {
 				TSNames.transform.localPosition.y);
 			YSScores.transform.localPosition = new Vector2(YSScores.transform.localPosition.x - 10,
 				YSScores.transform.localPosition.y);
+			// File browser menu
+			FileBrowserBackButton.transform.localPosition = new Vector2(FileBrowserBackButton.transform.localPosition.x + 20,
+				FileBrowserBackButton.transform.localPosition.y);
+			BrowserBox.transform.localScale = new Vector2(BrowserBox.transform.localScale.x - 40,
+				BrowserBox.transform.localScale.y);
+			PathBox.transform.localScale = new Vector2(PathBox.transform.localScale.x - 40,
+				PathBox.transform.localScale.y);
+			BrowserBox.transform.localPosition = new Vector2(BrowserBox.transform.localPosition.x + 20,
+				BrowserBox.transform.localPosition.y);
+			PathBox.transform.localPosition = new Vector2(PathBox.transform.localPosition.x + 20,
+				PathBox.transform.localPosition.y);
+			PathLabel.transform.localPosition = new Vector2(PathLabel.transform.localPosition.x + 20,
+				PathLabel.transform.localPosition.y);
 		}
 			// Aspect ratio: 1.666.. (Default android)
 		else if (aspect == (800.0f / 480.0f)) {
