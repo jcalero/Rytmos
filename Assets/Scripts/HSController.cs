@@ -10,11 +10,13 @@ using System.Collections.Generic;
 public class HSController : MonoBehaviour {
 	private string secretKey = "goldenck";   // Edit this value and make sure it's the same as the one stored on the server
 	//private bool highscoresLoaded = false;   // Sets to true if the highscores were loaded once.
+	private string userSecretKey = "r2d2imahorse";
 
 	private string addScoreURL = "http://rytmos-game.com/addscorenew.php?"; //be sure to add a ? to your url
 	private string top5URL = "http://rytmos-game.com/displaytop5.php?";
 	private string close5URL = "http://rytmos-game.com/displayclose5.php?";
-
+	private string addUserURL = "http://rytmos-game.com/adduser.php?";
+	private string checkUserURL = "http://rytmos-game.com/checkuser.php?";
 
 	public string[][] hsTimeAttack = new string[10][];
 	public string[][] hsSurvival = new string[10][];
@@ -269,6 +271,67 @@ public class HSController : MonoBehaviour {
 			}
 		} else {
 			close5names[0].text = FetchError;
+		}
+	}
+
+	public static IEnumerator AddUser(string user, string password) {
+		string hashedPassword = MD5Utils.MD5FromString(password + instance.userSecretKey);
+		string cheatHash = MD5Utils.MD5FromString(user + hashedPassword + instance.userSecretKey);
+
+		string post_url = instance.addUserURL + "name=" + WWW.EscapeURL(user) + "&password=" + hashedPassword + "&hash=" + cheatHash;
+
+		MainMenu.SetCreateButtonLabel("Submitting...");
+		// Post the URL to the site and create a download object to get the result.
+		WWW hs_post = new WWW(post_url);
+		yield return hs_post; // Wait until the upload is done
+
+		if (hs_post.error != null) {
+			Debug.LogWarning("There was an error adding the user: " + hs_post.error);
+			MainMenu.SetCreateErrorLabel("Error. Please try again");
+			MainMenu.SetCreateButtonLabel("Create");
+		} else if (hs_post.text.StartsWith("Table exists, adding user...<br>ERROR: Username already exists.")) {
+			Debug.Log(hs_post.text);
+			MainMenu.SetCreateErrorLabel("Error. Username already exists");
+			MainMenu.SetCreateButtonLabel("Create");
+			MainMenu.UserExists = true;
+		} else {
+			Debug.Log(hs_post.text);
+			Debug.Log("User created: " + user);
+			MainMenu.SetCreateErrorLabel("[44DD44]User created: " + user);
+			MainMenu.SetCreateButtonLabel("Create");
+			MainMenu.UserCreated = true;
+		}
+	}
+
+	public static IEnumerator CheckUser(string user, string password) {
+		string hashedPassword = MD5Utils.MD5FromString(password + instance.userSecretKey);
+		string cheatHash = MD5Utils.MD5FromString(user + hashedPassword + instance.userSecretKey);
+
+		string get_url = instance.checkUserURL + "name=" + WWW.EscapeURL(user) + "&password=" + hashedPassword + "&hash=" + cheatHash;
+
+		//MainMenu.SetCreateButtonLabel("Submitting...");
+		// Post the URL to the site and create a download object to get the result.
+		WWW hs_get = new WWW(get_url);
+		yield return hs_get; // Wait until the check is done
+
+		if (hs_get.error != null) {
+			Debug.LogWarning("There was an error logging in: " + hs_get.error);
+		} else if (hs_get.text.StartsWith("ERROR: No user")) {
+			Debug.Log(hs_get.text);
+			MainMenu.SetLoginErrorLabel("[F87431]Username not found. Create an account?");
+		} else if (hs_get.text.StartsWith("ERROR: Wrong")) {
+			Debug.Log(hs_get.text);
+			MainMenu.SetLoginErrorLabel("[F87431]Wrong password, try again");
+		} else if (hs_get.text.StartsWith("SUCCESS")) {
+			Debug.Log(hs_get.text);
+			MainMenu.SetLoginErrorLabel("");
+			MainMenu.LoginSuccess = true;
+		} else if (hs_get.text.StartsWith("Query failed: Table")) {
+			MainMenu.SetLoginErrorLabel("[F87431]Username not found. Create an account?");
+			Debug.Log(hs_get.text);
+		} else {
+			MainMenu.SetLoginErrorLabel("[F87431]Error. Please try again");
+			Debug.Log(hs_get.text);
 		}
 	}
 

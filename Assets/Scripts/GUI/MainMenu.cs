@@ -23,6 +23,7 @@ public class MainMenu : MonoBehaviour {
 	public UIPanel MainMenuFileBrowserPanel;
 	public UIPanel MainMenuLoggedInBoxPanel;
 	public UIPanel MainMenuLogInPanel;
+	public UIPanel MainMenuCreatePanel;
 	public UIPanel MainMenuChoicePanel;
 	public UIPanel MainMenuSongNotFoundPanel;
 
@@ -55,9 +56,21 @@ public class MainMenu : MonoBehaviour {
 	// Login Menu Objects
 	public UIButton LoginBackButton;
 	public UIInput UserNameInput;
+	public UIInput LoginPassInput;
 	public UILabel ErrorLabel;
 	public UICheckbox RememberMeCheckbox;
 	private Regex nameRegEx = new Regex("^[a-zA-Z0-9]*$");
+	public static bool LoginSuccess;
+
+	// Create menu objects
+	public UILabel CreateErrorLabel;
+	public UILabel CreateButtonLabel;
+	public UIInput CreateNameInput;
+	public UIInput CreatePassInput;
+	public UIInput CreatePass2Input;
+	private string passHashKey = "r2d2imahorse";
+	public static bool UserCreated;
+	public static bool UserExists;
 
 	// Scores menu objects
 	public UIButton ScoresBackButton;
@@ -84,23 +97,26 @@ public class MainMenu : MonoBehaviour {
 	public UIButton RecentlyPlayedTab;
 	public UIButton SongFromPhoneTab;
 	public UIButton UpButton;
-	
+
 	// Camera - For Setting Camera Size
 	public Camera cameraSize;
+
+	public static MainMenu instance;
 	#endregion
 
 	#region Functions
 
 	void Awake() {
-		
+		instance = this;
+
 		Game.GameState = Game.State.Menu;
 		ChangeMenu(MenuLevel.Base);
-		
+
 #if UNITY_WEBPLAYER
 		Game.Song = "";
 #endif
 	}
-	
+
 	void Start() {
 		//cameraSize.orthographicSize = Game.GetCameraScaleFactor();
 
@@ -303,6 +319,7 @@ public class MainMenu : MonoBehaviour {
 		if (MainMenuExtrasPanel.enabled) UITools.SetActiveState(MainMenuExtrasPanel, false);
 		if (MainMenuChoicePanel.enabled) UITools.SetActiveState(MainMenuChoicePanel, false);
 		if (MainMenuSongNotFoundPanel.enabled) UITools.SetActiveState(MainMenuSongNotFoundPanel, false);
+		if (MainMenuCreatePanel.enabled) UITools.SetActiveState(MainMenuCreatePanel, false);
 	}
 
 	/// <summary>
@@ -321,6 +338,7 @@ public class MainMenu : MonoBehaviour {
 				if (MainMenuLogInPanel.enabled) UITools.SetActiveState(MainMenuLogInPanel, false);
 				if (MainMenuFileBrowserPanel.enabled) UITools.SetActiveState(MainMenuFileBrowserPanel, false);
 				if (MainMenuChoicePanel.enabled) UITools.SetActiveState(MainMenuChoicePanel, false);
+				if (MainMenuCreatePanel.enabled) UITools.SetActiveState(MainMenuCreatePanel, false);
 				UITools.SetActiveState(MainMenuExtrasPanel, true);
 				UITools.SetActiveState(MainMenuBasePanel, true);
 				UITools.SetActiveState(MainMenuPlayPanel, true);
@@ -359,13 +377,15 @@ public class MainMenu : MonoBehaviour {
 				UITools.SetActiveState(MainMenuFileBrowserPanel, true);
 				break;
 			case MenuLevel.LogIn:
+				UITools.SetActiveState(MainMenuCreatePanel, false);
 				UITools.SetActiveState(MainMenuPlayPanel, false);
 				UITools.SetActiveState(MainMenuBasePanel, false);
 				UITools.SetActiveState(MainMenuLogInPanel, true);
 				if (PlayerPrefs.GetString("playername") != null)
 					UserNameInput.text = PlayerPrefs.GetString("playername");
 				RememberMeCheckbox.isChecked = Game.RememberLogin;
-				ErrorLabel.text = "";                                   // Clear error text if any
+				if (ErrorLabel.text != "[44DD44]User created, please log in!") ErrorLabel.text = ""; // Clear error text if any
+				LoginPassInput.text = ""; // Clear password field
 				break;
 			case MenuLevel.ConfirmChoice:
 				if (MainMenuBasePanel.enabled) UITools.SetActiveState(MainMenuBasePanel, false);
@@ -376,7 +396,7 @@ public class MainMenu : MonoBehaviour {
 				CalculateSongLabelSize();
 				UITools.SetActiveState(MainMenuChoicePanel, true);
 				UITools.SetActiveState(MainMenuExtrasPanel, true);
-				foreach(UIButton c in MainMenuChoicePanel.GetComponentsInChildren<UIButton>()) StartCoroutine(DelayButton(c,0.1f));
+				foreach (UIButton c in MainMenuChoicePanel.GetComponentsInChildren<UIButton>()) StartCoroutine(DelayButton(c, 0.1f));
 				break;
 			case MenuLevel.SongNotFound:
 				if (MainMenuBasePanel.enabled) UITools.SetActiveState(MainMenuBasePanel, false);
@@ -385,9 +405,13 @@ public class MainMenu : MonoBehaviour {
 				if (MainMenuExtrasPanel.enabled) UITools.SetActiveState(MainMenuExtrasPanel, false);
 				UITools.SetActiveState(MainMenuSongNotFoundPanel, true);
 				UITools.SetActiveState(MainMenuExtrasPanel, true);
-				foreach(UIButton c in MainMenuChoicePanel.GetComponentsInChildren<UIButton>()) StartCoroutine(DelayButton(c,0.1f));
+				foreach (UIButton c in MainMenuChoicePanel.GetComponentsInChildren<UIButton>()) StartCoroutine(DelayButton(c, 0.1f));
 				break;
-				
+			case MenuLevel.Create:
+				UITools.SetActiveState(MainMenuLogInPanel, false);
+				UITools.SetActiveState(MainMenuCreatePanel, true);
+				CreateErrorLabel.text = "";
+				break;
 		}
 	}
 
@@ -580,7 +604,7 @@ public class MainMenu : MonoBehaviour {
 		yield return new WaitForSeconds(time);
 		label.text = "";
 	}
-	
+
 	private IEnumerator DelayButton(UIButton button, float time) {
 		button.isEnabled = false;
 		yield return new WaitForSeconds(time);
@@ -594,21 +618,95 @@ public class MainMenu : MonoBehaviour {
 	}
 	void OnLoginClicked() {
 		string playerName = UserNameInput.text;
+		string password = LoginPassInput.text;
 		if (playerName.Length < 2) {                            // Error if input text is too short
 			UserNameInput.text = "";
-			ErrorLabel.text = "[F87431]Too short. Try again";
+			ErrorLabel.text = "[F87431]Name too short. Try again";
 			return;
 		}
-		if (!nameRegEx.IsMatch(playerName)) {
+		else if (!nameRegEx.IsMatch(playerName)) {
 			UserNameInput.text = "";
 			ErrorLabel.text = "[F87431]Invalid. Only letters & numbers allowed.";
 			return;
 		}
-		Game.IsLoggedIn = true;
-		// Store the new player name
-		PlayerPrefs.SetString("playername", playerName);
-		// Change the menu
-		ChangeMenu(MenuLevel.Scores);
+		if (password.Length < 5) {
+			LoginPassInput.text = "";
+			ErrorLabel.text = "[F87431]Password too short. Try again";
+			return;
+		}
+		password = MD5Utils.MD5FromString(password + passHashKey);
+		StartCoroutine(startLogin(playerName, password));
+	}
+	void OnLoginCreateClicked() {
+		ChangeMenu(MenuLevel.Create);
+	}
+	#endregion
+
+	#region Login menu functions
+	IEnumerator startLogin(string user, string password) {
+		yield return StartCoroutine(HSController.CheckUser(user, password));
+		if (LoginSuccess) {
+			Game.IsLoggedIn = true;
+			// Store the new player name
+			PlayerPrefs.SetString("playername", user);
+			// Change the menu
+			ChangeMenu(MenuLevel.Scores);
+			LoginSuccess = false;
+		}
+	}
+
+	public static void SetLoginErrorLabel(string text) {
+		instance.ErrorLabel.text = text;
+	}
+	#endregion
+
+	#region Create Menu Buttons
+	void OnCreateClicked() {
+		string name = CreateNameInput.text;
+		string password = CreatePassInput.text;
+		if (name.Length < 2) {
+			CreateNameInput.text = "";
+			CreateErrorLabel.text = "Username too short";
+			return;
+		} else if (!nameRegEx.IsMatch(name)){
+			CreateNameInput.text = "";
+			CreateErrorLabel.text = "Invalid username, use letters & numbers!";
+			return;
+		} else if (CreatePassInput.text != CreatePass2Input.text) {
+			CreatePassInput.text = "";
+			CreatePass2Input.text = "";
+			CreateErrorLabel.text = "Passwords don't match";
+			return;
+		} else if (CreatePassInput.text.Length < 5){
+			CreatePassInput.text = "";
+			CreatePass2Input.text = "";
+			CreateErrorLabel.text = "Password is too short!";
+			return;
+		} else {
+			password = MD5Utils.MD5FromString(password + passHashKey);	// Encrypt password
+			StartCoroutine(addNewUser(name, password));	// Add user
+		}
+	}
+	void OnCreateBackClicked() {
+		ChangeMenu(MenuLevel.LogIn);
+	}
+	#endregion
+
+	#region Create menu functions
+	IEnumerator addNewUser(string name, string password) {
+		yield return StartCoroutine(HSController.AddUser(name, password));
+		if (UserCreated) {
+			PlayerPrefs.SetString("playername", name);
+			ErrorLabel.text = "[44DD44]User created, please log in!";
+			ChangeMenu(MenuLevel.LogIn);
+			UserCreated = false;
+		}
+	}
+	public static void SetCreateErrorLabel(string text) {
+		instance.CreateErrorLabel.text = text;
+	}
+	public static void SetCreateButtonLabel(string text) {
+		instance.CreateButtonLabel.text = text;
 	}
 	#endregion
 
@@ -670,5 +768,6 @@ public enum MenuLevel {
 	FileBrowser,
 	LogIn,
 	ConfirmChoice,
-	SongNotFound
+	SongNotFound,
+	Create
 }
