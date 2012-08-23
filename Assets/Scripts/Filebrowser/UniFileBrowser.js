@@ -106,6 +106,8 @@ function Awake () {
     	currentMenuLevel = MenuLevels.Artist;
     }
 
+    AdjustForScreenAspect();
+
     SetDefaultPath();
         
     // Set up file window position
@@ -136,6 +138,65 @@ function Awake () {
     
     linePixelHeight = scrollViewStyle.CalcHeight(GUIContent(" ", folderIcon), 1.0);
     enabled = false;
+}
+
+function AdjustForScreenAspect () { 
+    var cam = Camera.mainCamera;
+    var aspect = Camera.mainCamera.aspect;
+    // Set up the file browser for different resolutions
+    // 320x240
+	if (Screen.width == 320.0f && Screen.height == 240.0f) {
+		Debug.Log("Setting up file browser for resolution: 320x240");
+        defaultFileWindowRect = Rect(-26, -62, 366, 373);
+	}
+    // 400x240
+	else if (Screen.width == 400.0f && Screen.height == 240.0f) {
+		Debug.Log("Setting up file browser for resolution: 400x240");
+        defaultFileWindowRect = Rect(-26, -62, 447, 373);
+	}
+    // 432x240
+	else if (Screen.width == 432.0f && Screen.height == 240.0f) {
+		Debug.Log("Setting up file browser for resolution: 432x240");
+        defaultFileWindowRect = Rect(-10, -62, 447, 373);
+	}
+	// 480x320
+	else if (Screen.width == 480.0f && Screen.height == 320.0f) {
+		Debug.Log("Setting up file browser for resolution: 480x320");
+        defaultFileWindowRect = Rect(-26, -37, 526, 427);
+	}
+    // 640x480
+	else if (Screen.width == 640.0f && Screen.height == 480.0f) {
+		Debug.Log("Setting up file browser for resolution: 640x480");
+        defaultFileWindowRect = Rect(-24, 15, 682, 535);
+	}
+    // 854x480
+	else if (Screen.width == 854.0f && Screen.height == 480.0f) {
+        Debug.Log("Setting up file browser for resolution: 854x480");
+		defaultFileWindowRect = Rect(3, 15, 842, 535);
+	}
+	// 960x640
+	else if (Screen.width == 960.0f && Screen.height == 640.0f) {
+		Debug.Log("Setting up file browser for resolution: 960x640");
+        defaultFileWindowRect = Rect(-22, 66, 997, 640);
+	}
+    // 1024x600
+	else if (Screen.width == 1024.0f && Screen.height == 600.0f) {
+		Debug.Log("Setting up file browser for resolution: 1024x600");
+		defaultFileWindowRect = Rect(-8, 53, 1034, 615);
+	}
+    // 1024x768
+    else if (Screen.width == 1024.0f && Screen.height == 768.0f) {
+		Debug.Log("Setting up file browser for resolution: 1024x768");
+        defaultFileWindowRect = Rect(-20, 107, 1057, 725);
+	}
+    // 1280x768
+    else if (Screen.width == 1280.0f && Screen.height == 768.0f) {
+		Debug.Log("Setting up file browser for resolution: 1280x768");
+        defaultFileWindowRect = Rect(-20, 107, 1312, 725);
+	}
+    else {
+        Debug.LogError("Resolution not supported! (" + Screen.width + "x" + Screen.height + ") File browser will not work properly.");
+    }
 }
 
 // Internal variables for managing touches and drags
