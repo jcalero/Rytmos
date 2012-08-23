@@ -98,6 +98,7 @@ public class FileBrowserEvents : MonoBehaviour {
 	
 	private void GetArtistsForLetter(string letter) {
 		if(letter != currentLetter) {
+			currentLetter = letter;
 			currentArtistsForLetter = new List<string>();
 			foreach	(string artist in currentArtists) {
 				if(artist.Substring(0,1).ToUpper() == letter || artist == letter) {
