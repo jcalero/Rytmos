@@ -111,7 +111,7 @@ public class TutorialMenu : MonoBehaviour {
 	}
 	
 	private static Vector3 findBoxLocation(Vector3 enemypos) {
-		return new Vector3(((Screen.width/2)*enemypos.x/Game.screenRight), ((Screen.height/2) * enemypos.y/Game.screenTop), 0);
+		return new Vector3(((480/2*Camera.mainCamera.aspect)*(enemypos.x/Game.screenRight)), ((480/2) * (enemypos.y/Game.screenTop)), 0);
 	}
 	
 	public static void Hide() {
