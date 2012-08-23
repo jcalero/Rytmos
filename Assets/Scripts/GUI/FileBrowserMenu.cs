@@ -6,7 +6,7 @@ using System;
 
 public class FileBrowserMenu : MonoBehaviour {
 
-	#region Fields
+	#region Fields	
 	public GameObject FileBrowserActiveTabBG;
 	public GameObject RecentlyPlayedActiveTabBG;
 	public GameObject FileBrowser;
@@ -17,25 +17,11 @@ public class FileBrowserMenu : MonoBehaviour {
 
 	private static bool recentlyPlayedActive = true;
 	private static bool fileBrowserActive = false;
-	
-	private AndroidJavaClass UnityClass;
-	private AndroidJavaObject UnityJavaContext;
-	private AndroidJavaObject AndroidMediaAccess;
-	
-	private List<string> artists;
 	#endregion
 
 	#region Functions
 
 	private void Awake() {
-//		if(Application.platform == RuntimePlatform.Android) {
-//			UnityClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-//			UnityJavaContext = UnityClass.GetStatic<AndroidJavaObject>("currentActivity");
-//			AndroidMediaAccess = new AndroidJavaClass("com.bitera.rytmos.MediaAccessActivity");
-//			
-//			AndroidMediaAccess.CallStatic("initContext",UnityJavaContext);
-//		}
-		
 		SendRecentSongList();
 		if (recentlyPlayedActive) {
 			PathLabel.text = "";
@@ -82,10 +68,10 @@ public class FileBrowserMenu : MonoBehaviour {
 	}
 
 	private void FileBrowserTabClicked() {
-		//Debug.Log("Filebrowser tab clicked");
+//		Debug.Log("Filebrowser tab clicked");
 		if (!fileBrowserActive) {
 		
-//			if(Application.platform == RuntimePlatform.WindowsEditor) {
+			if(Application.platform == RuntimePlatform.WindowsEditor) {
 
 				//Debug.Log("Filebrowser tab activated");
 				recentlyPlayedActive = false;
@@ -94,20 +80,15 @@ public class FileBrowserMenu : MonoBehaviour {
 				if (!string.IsNullOrEmpty(Game.Path)) FileBrowser.SendMessage("OpenFileWindow", PlayerPrefs.GetString("filePath"));
 				else FileBrowser.SendMessage("OpenFileWindow", "");
 				
-//			}
-//			else if(Application.platform == RuntimePlatform.Android) {
-//				
-//				recentlyPlayedActive = false;
-//				fileBrowserActive = true;
-//				SendArtistList();
-//			
-//			}
+			}
+			else if(Application.platform == RuntimePlatform.Android) {
+				
+				recentlyPlayedActive = false;
+				fileBrowserActive = true;
+				FileBrowser.SendMessage("FetchArtists");
+			
+			}
 		}
-	}
-	
-	private void SendArtistList() {
-		// FileBrowser.SendMessage("DisplayArtists", artists);
-		FileBrowser.SendMessage("DisplayArtists",GetArtistList());
 	}
 	
 
@@ -159,58 +140,6 @@ public class FileBrowserMenu : MonoBehaviour {
 		FileBrowser.SendMessage("FetchRecentFilesNames", displayName);
 		FileBrowser.SendMessage("FetchRecentFilesInfos", songPath);
 
-	}
-	
-	private List<string> GetArtistList() {
-		
-		if(this.artists == null) {
-			AndroidMediaAccess.CallStatic("initArtist");
-			
-			System.Collections.Generic.List<string> tempArtists = new System.Collections.Generic.List<string>();
-			string artist = "";
-			
-			while((artist = AndroidMediaAccess.CallStatic<string>("fetchMoveArtist")) != "") {
-				tempArtists.Add(artist);
-			}
-			
-			this.artists = tempArtists;
-			
-			AndroidMediaAccess.CallStatic("closeArtist");
-		}
-		
-		return this.artists;
-	}
-	
-	private List<string> GetAlbumsForArtist(string artist) {
-		
-		AndroidMediaAccess.CallStatic("initAlbum",artist);
-		
-		string album = "";
-		System.Collections.Generic.List<string> albums = new System.Collections.Generic.List<string>();
-		
-		while((album = AndroidMediaAccess.CallStatic<string>("fetchMoveAlbum")) != "") {
-			albums.Add(album);
-		}
-		
-		AndroidMediaAccess.CallStatic("closeAlbum");
-		
-		return albums;
-	}
-	
-	private List<string[]> GetSongsForAlbum(string artist, string album) {
-		
-		AndroidMediaAccess.CallStatic("initSong",artist,album);
-					
-		string[] song = new string[0];
-		System.Collections.Generic.List<string[]> songs = new System.Collections.Generic.List<string[]>();
-		
-		while((song = AndroidMediaAccess.CallStatic<string[]>("fetchMoveSong"))[0] != "") {
-			songs.Add((string[])song.Clone());
-		}
-		
-		AndroidMediaAccess.CallStatic("closeSong");
-		
-		return songs;
 	}
 
 	public static bool RecentlyPlayedActive {

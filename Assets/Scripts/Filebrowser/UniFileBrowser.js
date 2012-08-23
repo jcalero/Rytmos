@@ -91,9 +91,11 @@ private var recentFileSelectedFile : int;
 private var artistsDisplayNames : List.<String>;
 private var albumsDisplayNames : List.<String>;
 private var songsDisplayNames : List.<String>;
-private var songsFileInfos : List.<FileInfo>;
+private var songsPaths : List.<String>;
 
 private var currentMenuLevel : MenuLevels;
+private var currentArtist : String;
+private var currentAlbum : String;
 
 function Awake () {
     if (!guiSkin) {
@@ -104,6 +106,8 @@ function Awake () {
     
     if(Application.platform == RuntimePlatform.Android) {
     	currentMenuLevel = MenuLevels.Artist;
+    	currentArtist = "";
+    	currentAlbum = "";
     }
 
     AdjustForScreenAspect();
@@ -675,6 +679,8 @@ private function BuildPathList (pathEntry : int) {
 protected function DisplayArtists(artists : List.<String>) {
 	artistsDisplayNames = new List.<String>();
 	artistsDisplayNames = artists;
+	isRecentFiles = false;
+	GetCurrentFileInfo();
 }
 
 protected function DisplayAlbums(albums : List.<String>) {
@@ -682,12 +688,12 @@ protected function DisplayAlbums(albums : List.<String>) {
 	albumsDisplayNames = albums;
 }
 
-protected function DisplaySongs(songs : List.<String>, fileInfos : List.<FileInfo>) {
+protected function DisplaySongs(songs : List.<String>[]) {
 	songsDisplayNames = new List.<String>();
-	songsDisplayNames = songs;
+	songsDisplayNames = songs[0];
 	
-	songsFileInfos = new List.<FileInfo>();
-	songsFileInfos = fileInfos;
+	songsPaths = new List.<String>();
+	songsPaths = songs[1];
 }
 
 protected function FetchRecentFilesNames (displayNames : List.<String>) {
@@ -720,8 +726,7 @@ private function GetCurrentFileInfo () {
         // Reset stuff so no filenames are selected and the scrollbar is always at the top
         selectedFileNumber = oldSelectedFileNumber = -1;
         scrollPos = Vector2.zero;
-    } else {
-//    if (Application.platform == RuntimePlatform.WindowsEditor)
+    } else if (Application.platform == RuntimePlatform.WindowsEditor){
         var info = new DirectoryInfo(filePath);
         if (!info.Exists) {
             resetPath = true;
@@ -836,36 +841,36 @@ private function GetCurrentFileInfo () {
         }
         UpdateDirectoryLabel();
     } 
-//    else if (Application.platform == RuntimePlatform.Android) {
-//    	
-//    	if(currentMenuLevel == MenuLevels.Artist && showFiles && artistsDisplayNames.Count > 0) {
-//	        fileDisplayList = new GUIContent[artistsDisplayNames.Count];
-//    		for (var l = 0; l < artistsDisplayNames.Count; l++) {
-//            	fileDisplayList[l] = new GUIContent(artistsDisplayNames[l], fileIcon);
-//        	}
-//    	}
-//    	else if(currentMenuLevel == MenuLevels.Album && showFiles && albumsDisplayNames.Count > 0) {
-//    		fileDisplayList = new GUIContent[albumsDisplayNames.Count];
-//    		for (var k = 0; k < albumsDisplayNames.Count; k++) {
-//            	fileDisplayList[k] = new GUIContent(albumsDisplayNames[k], fileIcon);
-//        	}
-//    	}
-//    	else if(currentMenuLevel == MenuLevels.Song && showFiles && songsDisplayNames.Count > 0) {
-//            
-//            for (var r = 0; r < songsFileInfos.Count; r++) {
-//                fileList.Add(songsFileInfos[j].Name);
-//            }
-//    	
-//    		fileDisplayList = new GUIContent[songsDisplayNames.Count];
-//    		for (var h = 0; h < songsDisplayNames.Count; h++) {
-//            	fileDisplayList[h] = new GUIContent(songsDisplayNames[h], fileIcon);
-//        	}
-//    	}
-//    	// else... wut? empty list somewhere?
-//
-//        selectedFileNumber = oldSelectedFileNumber = -1;
-//        scrollPos = Vector2.zero;
-//    }
+    else if (Application.platform == RuntimePlatform.Android) {
+    	
+    	if(currentMenuLevel == MenuLevels.Artist && artistsDisplayNames.Count > 0) {
+	        fileDisplayList = new GUIContent[artistsDisplayNames.Count];
+    		for (var l = 0; l < artistsDisplayNames.Count; l++) {
+            	fileDisplayList[l] = new GUIContent(artistsDisplayNames[l], fileIcon);
+        	}
+    	}
+    	else if(currentMenuLevel == MenuLevels.Album && albumsDisplayNames.Count > 0) {
+    		fileDisplayList = new GUIContent[albumsDisplayNames.Count];
+    		for (var k = 0; k < albumsDisplayNames.Count; k++) {
+            	fileDisplayList[k] = new GUIContent(albumsDisplayNames[k], fileIcon);
+        	}
+    	}
+    	else if(currentMenuLevel == MenuLevels.Song && songsDisplayNames.Count > 0) {
+            
+            for (var r = 0; r < songsPaths.Count; r++) {
+                fileList.Add(songsPaths[r]);
+            }
+    	
+    		fileDisplayList = new GUIContent[songsDisplayNames.Count];
+    		for (var h = 0; h < songsDisplayNames.Count; h++) {
+            	fileDisplayList[h] = new GUIContent(songsDisplayNames[h], fileIcon);
+        	}
+    	}
+    	// else... wut? empty list somewhere?
+		UpdateDirectoryLabel();
+        selectedFileNumber = oldSelectedFileNumber = -1;
+        scrollPos = Vector2.zero;
+    }
 }
 
 private function HandleAccessError (errorMessage : String) {
@@ -1021,111 +1026,161 @@ private function DeleteFile () : IEnumerator {
 private function SelectFile () : IEnumerator {
     if (showMessageWindow || selectFileInProgress) return;
 
-    // If user opened a folder, change directories
-    if (selectedFileNumber >= 0 && selectedFileNumber < dirList.Count) {
-        filePath += dirList[selectedFileNumber] + pathChar;
-        if (showVolumes && selectedFileNumber < numberOfVolumes) {
-            if (!windowsSystem) {
-                filePath = "/Volumes/" + dirList[selectedFileNumber] + pathChar;
-            }
-            else {
-                filePath = dirList[selectedFileNumber] + pathChar + pathChar;
-            }
-        }
-        GetCurrentFileInfo();
-        return;
+	if (Application.platform == RuntimePlatform.WindowsEditor) {
+	    // If user opened a folder, change directories
+	    if (selectedFileNumber >= 0 && selectedFileNumber < dirList.Count) {
+	        filePath += dirList[selectedFileNumber] + pathChar;
+	        if (showVolumes && selectedFileNumber < numberOfVolumes) {
+	            if (!windowsSystem) {
+	                filePath = "/Volumes/" + dirList[selectedFileNumber] + pathChar;
+	            }
+	            else {
+	                filePath = dirList[selectedFileNumber] + pathChar + pathChar;
+	            }
+	        }
+	        GetCurrentFileInfo();
+	        return;
+	    }
+	    
+	    // Do nothing if there's no file name, or if saving and no real filename has been supplied
+	    if (fileName == "" || (fileType == FileType.Save && autoAddExtension && fileName == addedExtension)) return;
+	    
+	    selectFileInProgress = true;
+	    var thisFileName = fileName;	// Make sure to keep the file name as it was when selected, since it can change later
+	    // Check for duplicate file name when saving
+	    if (fileType == FileType.Save) {
+	        if (autoAddExtension && !thisFileName.EndsWith(addedExtension)) {
+	            thisFileName += addedExtension;
+	        }
+	        for (var i = 0; i < fileList.Count; i++) {
+	            var file = fileList[i];
+	            if (file == thisFileName) {
+	                ShowConfirmMessage ("Warning", "A file with that name already exists. Are you sure you want to replace it?", "Cancel", "Replace");
+	                while (showMessageWindow) {
+	                    fileName = thisFileName;
+	                    yield;
+	                }
+	                if (!confirm) {
+	                    selectFileInProgress = false;
+	                    return;
+	                }
+	            }
+	        }
+	    }
+	
+	    if (objectToSendTo == null) {
+	        objectToSendTo = gameObject;
+	    }
+	
+	    // If user selected a name, load/save that file
+	    if (fileType == FileType.Open) {
+	        CloseFileWindow();
+	        if (isRecentFiles) {
+	//            Debug.Log(recentFileSelectedFile);
+	            objectToSendTo.SendMessage ("OpenFile", recentFileInfos[recentFileSelectedFile].FullName);
+	        } else {
+	            objectToSendTo.SendMessage ("OpenFile", filePath + thisFileName);
+	        }
+	    }
+	    else if (fileType == FileType.Save) {
+	        CloseFileWindow();
+	        objectToSendTo.SendMessage ("SaveFile", filePath + thisFileName);
+	        GetCurrentFileInfo();	// Refresh with new file in case of error
+	    }
+	    
+	    selectFileInProgress = false;
     }
-    
-    // Do nothing if there's no file name, or if saving and no real filename has been supplied
-    if (fileName == "" || (fileType == FileType.Save && autoAddExtension && fileName == addedExtension)) return;
-    
-    selectFileInProgress = true;
-    var thisFileName = fileName;	// Make sure to keep the file name as it was when selected, since it can change later
-    // Check for duplicate file name when saving
-    if (fileType == FileType.Save) {
-        if (autoAddExtension && !thisFileName.EndsWith(addedExtension)) {
-            thisFileName += addedExtension;
-        }
-        for (var i = 0; i < fileList.Count; i++) {
-            var file = fileList[i];
-            if (file == thisFileName) {
-                ShowConfirmMessage ("Warning", "A file with that name already exists. Are you sure you want to replace it?", "Cancel", "Replace");
-                while (showMessageWindow) {
-                    fileName = thisFileName;
-                    yield;
-                }
-                if (!confirm) {
-                    selectFileInProgress = false;
-                    return;
-                }
-            }
-        }
+    else if (Application.platform == RuntimePlatform.Android) {
+    	if(currentMenuLevel == MenuLevels.Artist) {
+    		currentMenuLevel = MenuLevels.Album;
+    		currentAlbum = "";
+    		currentArtist = artistsDisplayNames[selectedFileNumber];
+    		gameObject.SendMessage("FetchAlbumsForArtist",artistsDisplayNames[selectedFileNumber]);
+    		GetCurrentFileInfo();
+    	} else if (currentMenuLevel == MenuLevels.Album) {
+    		currentMenuLevel = MenuLevels.Song;
+    		currentAlbum = albumsDisplayNames[selectedFileNumber];
+    		var args : String[] = new String[2];
+    		args[0] = currentArtist;
+    		args[1] = albumsDisplayNames[selectedFileNumber];
+    		gameObject.SendMessage("FetchSongs",args);
+    		GetCurrentFileInfo();
+    	} else if (currentMenuLevel == MenuLevels.Song) {
+    		var tempFileNumber = selectedFileNumber;
+    		CloseFileWindow();
+    		gameObject.SendMessage("OpenFile",songsPaths[tempFileNumber]);
+    	}
     }
-
-    if (objectToSendTo == null) {
-        objectToSendTo = gameObject;
-    }
-
-    // If user selected a name, load/save that file
-    if (fileType == FileType.Open) {
-        CloseFileWindow();
-        if (isRecentFiles) {
-//            Debug.Log(recentFileSelectedFile);
-            objectToSendTo.SendMessage ("OpenFile", recentFileInfos[recentFileSelectedFile].FullName);
-        } else {
-            objectToSendTo.SendMessage ("OpenFile", filePath + thisFileName);
-        }
-    }
-    else if (fileType == FileType.Save) {
-        CloseFileWindow();
-        objectToSendTo.SendMessage ("SaveFile", filePath + thisFileName);
-        GetCurrentFileInfo();	// Refresh with new file in case of error
-    }
-    
-    selectFileInProgress = false;
 }
 
 // Button handler for the file browser up button, needs to be protected or the compiler thinks the method is never used.
 protected function FolderUp () {
-	if (pathList.Length > 1) {
-		BuildPathList(1);
-		UpdateDirectoryLabel();
+	if(Application.platform == RuntimePlatform.WindowsEditor) {
+		if (pathList.Length > 1) {
+			BuildPathList(1);
+			UpdateDirectoryLabel();
+		}
+	} else if(Application.platform == RuntimePlatform.Android) {
+		if (currentMenuLevel == MenuLevels.Song) {
+			currentMenuLevel = MenuLevels.Album;
+			currentAlbum = "";
+			gameObject.SendMessage("FetchAlbumsForArtist",currentArtist);
+    		GetCurrentFileInfo();
+		} else if (currentMenuLevel == MenuLevels.Album) {
+			currentMenuLevel = MenuLevels.Artist;
+			currentAlbum = "";
+			currentArtist = "";
+			gameObject.SendMessage("FetchArtists");
+		}
 	}
+
 }
 
 private function UpdateDirectoryLabel() {
-	var directoryStructure : String[];
-	var directoryPath : String;
-	var maxPathLength : int = 55;
-	var remPathLength : int;
-	var numFoldersInPath : int = 1;
+	if(Application.platform == RuntimePlatform.WindowsEditor) {
+		var directoryStructure : String[];
+		var directoryPath : String;
+		var maxPathLength : int = 55;
+		var remPathLength : int;
+		var numFoldersInPath : int = 1;
+		
+	    directoryStructure = filePath.Split(pathChar);
 	
-    directoryStructure = filePath.Split(pathChar);
-
-    remPathLength = maxPathLength - directoryStructure[directoryStructure.Length - 1].Length;
-    
-    for (var cnt = directoryStructure.Length - 2; cnt > -1; cnt--) {
-        if (directoryStructure[cnt].Length < remPathLength) {
-            directoryPath = pathChar + directoryStructure[cnt] + directoryPath;
-            remPathLength -= directoryStructure[cnt].Length + 1;
-            numFoldersInPath++;
-        } else {
-            cnt = 0; // Terminate for-loop -> stop adding folders to path
-        }
-    }
-    if (numFoldersInPath < directoryStructure.Length - 1) {
-        directoryPath = "..." + directoryPath;
-    } else {
-    	directoryPath = directoryPath.Substring(1);
-    	if (directoryStructure.Length == 2) { directoryPath = directoryPath + pathChar;}
-    }
-    if (directoryPath.Length > maxPathLength + 6) {
-        directoryPath = directoryPath.Substring(0, maxPathLength) + "...";
-    }
-	
-	if (objectToSendTo == null) {
-        objectToSendTo = gameObject;
-    }
-   	objectToSendTo.SendMessage ("UpdateDirLabel", directoryPath);
+	    remPathLength = maxPathLength - directoryStructure[directoryStructure.Length - 1].Length;
+	    
+	    for (var cnt = directoryStructure.Length - 2; cnt > -1; cnt--) {
+	        if (directoryStructure[cnt].Length < remPathLength) {
+	            directoryPath = pathChar + directoryStructure[cnt] + directoryPath;
+	            remPathLength -= directoryStructure[cnt].Length + 1;
+	            numFoldersInPath++;
+	        } else {
+	            cnt = 0; // Terminate for-loop -> stop adding folders to path
+	        }
+	    }
+	    if (numFoldersInPath < directoryStructure.Length - 1) {
+	        directoryPath = "..." + directoryPath;
+	    } else {
+	    	directoryPath = directoryPath.Substring(1);
+	    	if (directoryStructure.Length == 2) { directoryPath = directoryPath + pathChar;}
+	    }
+	    if (directoryPath.Length > maxPathLength + 6) {
+	        directoryPath = directoryPath.Substring(0, maxPathLength) + "...";
+	    }
+		
+		if (objectToSendTo == null) {
+	        objectToSendTo = gameObject;
+	    }
+	   	objectToSendTo.SendMessage ("UpdateDirLabel", directoryPath);
+   	} else if(Application.platform == RuntimePlatform.Android) {
+   		if(currentMenuLevel == MenuLevels.Artist) {
+	   		gameObject.SendMessage("UpdateDirLabel","Select Artist");
+   		}
+   		else if(currentMenuLevel == MenuLevels.Album) {
+	   		gameObject.SendMessage("UpdateDirLabel","Select album by artist " + currentArtist);
+   		}
+   		else if(currentMenuLevel == MenuLevels.Song) {
+   			gameObject.SendMessage("UpdateDirLabel","Select song from album " + currentAlbum + " by artist " + currentArtist);
+   		}
+   	}
 }
 #endif
