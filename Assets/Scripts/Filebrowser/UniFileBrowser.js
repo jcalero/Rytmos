@@ -35,7 +35,7 @@ var folderIcon : Texture;
 var fileIcon : Texture;
 
 enum FileType {Open, Save, Folder}
-enum MenuLevels {Artist,Album,Song}
+enum MenuLevels {Letters,Artist,Album,Song}
 
 private var scrollPos : Vector2;
 private var selectedFileNumber = -1;
@@ -88,12 +88,14 @@ private var recentFilesDisplayNames : List.<String>;
 private var recentFileInfos : List.<FileInfo>;
 private var recentFileSelectedFile : int;
 
+private var lettersDisplayNames : List.<String>;
 private var artistsDisplayNames : List.<String>;
 private var albumsDisplayNames : List.<String>;
 private var songsDisplayNames : List.<String>;
 private var songsPaths : List.<String>;
 
 private var currentMenuLevel : MenuLevels;
+private var currentLetter : String;
 private var currentArtist : String;
 private var currentAlbum : String;
 
@@ -105,7 +107,8 @@ function Awake () {
     }
     
     if(Application.platform == RuntimePlatform.Android) {
-    	currentMenuLevel = MenuLevels.Artist;
+    	currentMenuLevel = MenuLevels.Letters;
+    	currentLetter = "";
     	currentArtist = "";
     	currentAlbum = "";
     }
@@ -676,13 +679,18 @@ private function BuildPathList (pathEntry : int) {
     GetCurrentFileInfo();
 }
 
-protected function DisplayArtists(artists : List.<String>) {
-	artistsDisplayNames = new List.<String>();
-	artistsDisplayNames = artists;
-	currentMenuLevel = MenuLevels.Artist;
+protected function DisplayLetters(letters : List.<String>) {
+	lettersDisplayNames = new List.<String>();
+	lettersDisplayNames = letters;
+	currentMenuLevel = MenuLevels.Letters;
 	isRecentFiles = false;
 	GetCurrentFileInfo();
 	ShowFileWindow();
+}
+
+protected function DisplayArtists(artists : List.<String>) {
+	artistsDisplayNames = new List.<String>();
+	artistsDisplayNames = artists;
 }
 
 protected function DisplayAlbums(albums : List.<String>) {
@@ -845,7 +853,14 @@ private function GetCurrentFileInfo () {
     } 
     else if (Application.platform == RuntimePlatform.Android) {
     	
-    	if(currentMenuLevel == MenuLevels.Artist && artistsDisplayNames.Count > 0) {
+    	
+    	if(currentMenuLevel == MenuLevels.Letters && lettersDisplayNames.Count > 0) {
+    		fileDisplayList = new GUIContent[lettersDisplayNames.Count];
+    		for (var t = 0; t < lettersDisplayNames.Count; t++) {
+            	fileDisplayList[t] = new GUIContent(lettersDisplayNames[t], fileIcon);
+        	}
+    	}
+    	else if(currentMenuLevel == MenuLevels.Artist && artistsDisplayNames.Count > 0) {
 	        fileDisplayList = new GUIContent[artistsDisplayNames.Count];
     		for (var l = 0; l < artistsDisplayNames.Count; l++) {
             	fileDisplayList[l] = new GUIContent(artistsDisplayNames[l], fileIcon);
@@ -1098,6 +1113,13 @@ private function SelectFile () : IEnumerator {
     		CloseFileWindow();
 	    	gameObject.SendMessage ("OpenFile", recentFileInfos[tempFileNumber].FullName);
 	    }
+    	else if(currentMenuLevel == MenuLevels.Letters) {
+    		currentMenuLevel = MenuLevels.Artist;
+    		currentLetter = lettersDisplayNames[selectedFileNumber];
+    		currentArtist = "";
+    		gameObject.SendMessage("FetchArtistsForLetter",lettersDisplayNames[selectedFileNumber]);
+    		GetCurrentFileInfo();
+    	}
     	else if(currentMenuLevel == MenuLevels.Artist) {
     		currentMenuLevel = MenuLevels.Album;
     		currentAlbum = "";
@@ -1133,11 +1155,20 @@ protected function FolderUp () {
 			currentAlbum = "";
 			gameObject.SendMessage("FetchAlbumsForArtist",currentArtist);
     		GetCurrentFileInfo();
-		} else if (currentMenuLevel == MenuLevels.Album) {
+		}
+		else if (currentMenuLevel == MenuLevels.Album) {
 			currentMenuLevel = MenuLevels.Artist;
 			currentAlbum = "";
 			currentArtist = "";
-			gameObject.SendMessage("FetchArtists");
+			gameObject.SendMessage("FetchArtistsForLetter",currentLetter);
+    		GetCurrentFileInfo();
+		}
+		else if (currentMenuLevel == MenuLevels.Artist) {
+			currentMenuLevel = MenuLevels.Letters;
+			currentAlbum = "";
+			currentArtist = "";
+			currentLetter = "";
+			gameObject.SendMessage("FetchLetters");
 		}
 	}
 
@@ -1179,7 +1210,10 @@ private function UpdateDirectoryLabel() {
 	    }
 	   	objectToSendTo.SendMessage ("UpdateDirLabel", directoryPath);
    	} else if(Application.platform == RuntimePlatform.Android) {
-   		if(currentMenuLevel == MenuLevels.Artist) {
+   		if(currentMenuLevel == MenuLevels.Letters) {
+   			gameObject.SendMessage("UpdateDirLabel","Select artists by alphabetical order");
+   		}
+   		else if(currentMenuLevel == MenuLevels.Artist) {
 	   		gameObject.SendMessage("UpdateDirLabel","Select Artist");
    		}
    		else if(currentMenuLevel == MenuLevels.Album) {

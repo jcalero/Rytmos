@@ -13,11 +13,14 @@ public class FileBrowserEvents : MonoBehaviour {
 	private AndroidJavaObject UnityJavaContext;
 	private AndroidJavaObject AndroidMediaAccess;
 	
+	private List<string> currentLetters;
 	private List<string> currentArtists;
+	private List<string> currentArtistsForLetter;
 	private List<string> currentAlbums;
 	private List<string> currentSongNames;
 	private List<string> currentSongPaths;
 	
+	private string currentLetter;
 	private string currentArtist;
 	private string currentAlbum;
 	//public GameObject FileBrowser;
@@ -57,9 +60,14 @@ public class FileBrowserEvents : MonoBehaviour {
 		if (!FileBrowserMenu.RecentlyPlayedActive) gameObject.SendMessage("FolderUp");
 	}
 	
-	private void FetchArtists() {
-		GetArtistList();
-		gameObject.SendMessage("DisplayArtists",currentArtists);
+	private void FetchLetters() {
+		GetFirstLetters();
+		gameObject.SendMessage("DisplayLetters",currentLetters);
+	}
+	
+	private void FetchArtistsForLetter(string letter) {
+		GetArtistsForLetter(letter);
+		gameObject.SendMessage("DisplayArtists",currentArtistsForLetter);
 	}
 	
 	private void FetchAlbumsForArtist(string artist) {
@@ -73,6 +81,31 @@ public class FileBrowserEvents : MonoBehaviour {
 		gameObject.SendMessage("DisplaySongs",new List<string>[] {currentSongNames,currentSongPaths});
 	}
 	
+	private void GetFirstLetters() {
+		GetArtistList();
+		
+		if(currentLetters == null) {
+			currentLetters = new List<string>();
+			foreach(string artist in currentArtists) {
+				if(!currentLetters.Contains(artist.Substring(0,1).ToUpper())) {
+					if(artist == "<unknown>") currentLetters.Add(artist);
+					else currentLetters.Add(artist.Substring(0,1).ToUpper());
+				}
+			}
+		}
+	}
+	
+	
+	private void GetArtistsForLetter(string letter) {
+		if(letter != currentLetter) {
+			currentArtistsForLetter = new List<string>();
+			foreach	(string artist in currentArtists) {
+				if(artist.Substring(0,1).ToUpper() == letter || artist == letter) {
+					currentArtistsForLetter.Add(artist);
+				}
+			}
+		}
+	}
 	
 	private void GetArtistList() {
 		

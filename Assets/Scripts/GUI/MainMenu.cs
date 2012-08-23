@@ -492,7 +492,7 @@ public class MainMenu : MonoBehaviour {
 				if (!string.IsNullOrEmpty(Game.Path)) FileBrowser.SendMessage("OpenFileWindow", PlayerPrefs.GetString("filePath"));
 				else FileBrowser.SendMessage("OpenFileWindow", "");
 			} else if (Application.platform == RuntimePlatform.Android) {
-				FileBrowser.SendMessage("FetchArtists");
+				FileBrowser.SendMessage("FetchLetters");
 			}
 		} else {
 			FileBrowser.SendMessage("OpenRecentFilesWindow");
@@ -522,7 +522,7 @@ public class MainMenu : MonoBehaviour {
 				if (!string.IsNullOrEmpty(Game.Path)) FileBrowser.SendMessage("OpenFileWindow", PlayerPrefs.GetString("filePath"));
 				else FileBrowser.SendMessage("OpenFileWindow", "");
 			} else if (Application.platform == RuntimePlatform.Android) {
-				FileBrowser.SendMessage("FetchArtists");
+				FileBrowser.SendMessage("FetchLetters");
 			}
 		} else {
 			FileBrowser.SendMessage("OpenRecentFilesWindow");
