@@ -207,7 +207,16 @@ public class HSController : MonoBehaviour {
 		if (song.Length > 1) songDisplay = char.ToUpper(song[0]) + song.Substring(1);
 
 		ScoresSongLabel.text = artistDisplay + " - " + songDisplay;
-		ScoresModeLabel.text = gameMode.ToString();
+		string color = "[7783DF]";
+		if (gameMode == Game.Mode.Arcade)
+			color = "[7783DF]";
+		else if (gameMode == Game.Mode.Casual)
+			color = "[65FAFF]";
+		else if (gameMode == Game.Mode.Tutorial)
+			color = "[DAFE3D]";
+		else
+			color = "";
+		ScoresModeLabel.text = color + gameMode.ToString();
 		top5names[0].text = "Loading Top Scores...";
 		close5names[0].text = "Loading Close Scores...";
 		top5scores[0].text = "";

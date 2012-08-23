@@ -105,7 +105,6 @@ public class MainMenu : MonoBehaviour {
 		//cameraSize.orthographicSize = Game.GetCameraScaleFactor();
 
 		float aspect = Camera.mainCamera.aspect;
-		Debug.Log(aspect);
 
 		// Set up the menu for different aspect ratios
 		// Aspect ratio: 1.333..
