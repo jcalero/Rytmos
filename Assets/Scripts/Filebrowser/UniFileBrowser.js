@@ -679,8 +679,10 @@ private function BuildPathList (pathEntry : int) {
 protected function DisplayArtists(artists : List.<String>) {
 	artistsDisplayNames = new List.<String>();
 	artistsDisplayNames = artists;
+	currentMenuLevel = MenuLevels.Artist;
 	isRecentFiles = false;
 	GetCurrentFileInfo();
+	ShowFileWindow();
 }
 
 protected function DisplayAlbums(albums : List.<String>) {
@@ -1091,7 +1093,12 @@ private function SelectFile () : IEnumerator {
 	    selectFileInProgress = false;
     }
     else if (Application.platform == RuntimePlatform.Android) {
-    	if(currentMenuLevel == MenuLevels.Artist) {
+    	if (isRecentFiles) {
+    		var tempFileNumber = selectedFileNumber;
+    		CloseFileWindow();
+	    	gameObject.SendMessage ("OpenFile", recentFileInfos[tempFileNumber].FullName);
+	    }
+    	else if(currentMenuLevel == MenuLevels.Artist) {
     		currentMenuLevel = MenuLevels.Album;
     		currentAlbum = "";
     		currentArtist = artistsDisplayNames[selectedFileNumber];
@@ -1106,7 +1113,7 @@ private function SelectFile () : IEnumerator {
     		gameObject.SendMessage("FetchSongs",args);
     		GetCurrentFileInfo();
     	} else if (currentMenuLevel == MenuLevels.Song) {
-    		var tempFileNumber = selectedFileNumber;
+    		tempFileNumber = selectedFileNumber;
     		CloseFileWindow();
     		gameObject.SendMessage("OpenFile",songsPaths[tempFileNumber]);
     	}

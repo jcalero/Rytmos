@@ -36,7 +36,6 @@ public class FileBrowserEvents : MonoBehaviour {
 	}
 
 	private void OpenFile(string pathToFile) {
-		Debug.Log("open file called"); 
 		FileInfo fInf = new FileInfo(pathToFile);
 		if(fInf.Exists){
 			Game.Song = pathToFile;
@@ -77,7 +76,7 @@ public class FileBrowserEvents : MonoBehaviour {
 	
 	private void GetArtistList() {
 		
-		if(this.currentArtists == null) {
+		if(currentArtists == null) {
 			AndroidMediaAccess.CallStatic("initArtist");
 			
 			List<string> tempArtists = new List<string>();

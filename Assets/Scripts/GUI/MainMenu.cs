@@ -488,8 +488,12 @@ public class MainMenu : MonoBehaviour {
 		Game.GameMode = Game.Mode.Arcade;
 		ChangeMenu(MenuLevel.FileBrowser);
 		if (!FileBrowserMenu.RecentlyPlayedActive) {
-			if (!string.IsNullOrEmpty(Game.Path)) FileBrowser.SendMessage("OpenFileWindow", PlayerPrefs.GetString("filePath"));
-			else FileBrowser.SendMessage("OpenFileWindow", "");
+			if (Application.platform == RuntimePlatform.WindowsEditor) {
+				if (!string.IsNullOrEmpty(Game.Path)) FileBrowser.SendMessage("OpenFileWindow", PlayerPrefs.GetString("filePath"));
+				else FileBrowser.SendMessage("OpenFileWindow", "");
+			} else if (Application.platform == RuntimePlatform.Android) {
+				FileBrowser.SendMessage("FetchArtists");
+			}
 		} else {
 			FileBrowser.SendMessage("OpenRecentFilesWindow");
 		}
@@ -514,8 +518,12 @@ public class MainMenu : MonoBehaviour {
 		FadeOutMenu();
 		ChangeMenu(MenuLevel.FileBrowser);
 		if (!FileBrowserMenu.RecentlyPlayedActive) {
-			if (!string.IsNullOrEmpty(Game.Path)) FileBrowser.SendMessage("OpenFileWindow", PlayerPrefs.GetString("filePath"));
-			else FileBrowser.SendMessage("OpenFileWindow", "");
+			if (Application.platform == RuntimePlatform.WindowsEditor) {
+				if (!string.IsNullOrEmpty(Game.Path)) FileBrowser.SendMessage("OpenFileWindow", PlayerPrefs.GetString("filePath"));
+				else FileBrowser.SendMessage("OpenFileWindow", "");
+			} else if (Application.platform == RuntimePlatform.Android) {
+				FileBrowser.SendMessage("FetchArtists");
+			}
 		} else {
 			FileBrowser.SendMessage("OpenRecentFilesWindow");
 		}
