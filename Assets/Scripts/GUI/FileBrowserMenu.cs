@@ -44,7 +44,7 @@ public class FileBrowserMenu : MonoBehaviour {
 			}
 		} else {
 			if (!FileBrowserActiveTabBG.active) {
-				FileBrowser.SendMessage("FetchArtists");
+				if(Application.platform == RuntimePlatform.Android) FileBrowser.SendMessage("FetchArtists");
 				FileBrowserActiveTabBG.SetActiveRecursively(true);
 				UpButton.enabled = true;
 				//if (!string.IsNullOrEmpty(Game.Path)) FileBrowser.SendMessage("OpenFileWindow", PlayerPrefs.GetString("filePath"));
@@ -93,7 +93,6 @@ public class FileBrowserMenu : MonoBehaviour {
 			}
 		}
 	}
-	
 
 	private void SendRecentSongList() {
 		string file = "";
@@ -144,6 +143,7 @@ public class FileBrowserMenu : MonoBehaviour {
 		FileBrowser.SendMessage("FetchRecentFilesInfos", songPath);
 
 	}
+	
 
 	public static bool RecentlyPlayedActive {
 		get { return recentlyPlayedActive; }

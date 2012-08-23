@@ -129,7 +129,7 @@ public class FileBrowserEvents : MonoBehaviour {
 				songFilePaths.Add(song[1]);
 			}
 			
-//			AndroidMediaAccess.CallStatic("closeSong");
+			AndroidMediaAccess.CallStatic("closeSongs");
 			
 			currentSongNames = songTitles;
 			currentSongPaths = songFilePaths;
