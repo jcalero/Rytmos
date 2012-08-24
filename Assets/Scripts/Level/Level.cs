@@ -142,9 +142,9 @@ public class Level : MonoBehaviour {
 			return Color.red;
 		} else if (currAngle >= 60 && currAngle < 70) {
 			return Level.purple;
-		} else if ((currAngle > -45 && currAngle <= -35) || (currAngle > -155 && currAngle <= -145)) {
+		} else if ((currAngle > -45 && currAngle <= -35) || (currAngle > -130 && currAngle <= -120)) {
 			return Color.cyan;
-		} else if (currAngle > -145 && currAngle <= -135) {
+		} else if (currAngle > -120 && currAngle <= -110) {
 			return Color.green;
 		} else if (currAngle > -55 && currAngle <= -45) {
 			return Color.blue;
@@ -176,6 +176,31 @@ public class Level : MonoBehaviour {
 			} else {
 				return new Color((128 - ((angle + 180) / 45) * 128) / 255, 1, 0, 1);
 			}
+		}
+	}
+	
+	public static Color secondaryColourSelect(Vector2 xy, int bandsize) {
+		float currAngle = mouseAngle(xy);
+		if (Mathf.Abs(currAngle) >= 180-(bandsize/2)) {
+			if (currAngle > 0) return Color.green;
+			else return Color.yellow;
+		} else if (Mathf.Abs(currAngle) <= (bandsize/2)) {
+			if (currAngle > 0) return Color.blue;
+			else return Level.purple;
+		} else if (currAngle > 120-(bandsize/2) && currAngle <= 120) {
+			return Color.yellow;
+		} else if ((currAngle > 120 && currAngle <= 120+(bandsize/2)) || (currAngle > 60-(bandsize/2) && currAngle <= 60)) {
+			return Color.red;
+		} else if (currAngle >= 60 && currAngle < 60+(bandsize/2)) {
+			return Level.purple;
+		} else if ((currAngle > -45 && currAngle <= -45 + (bandsize/2)) || (currAngle > -120 - (bandsize/2) && currAngle <= -120)) {
+			return Color.cyan;
+		} else if (currAngle > -120 && currAngle <= -120 + (bandsize/2)) {
+			return Color.green;
+		} else if (currAngle > -45 - (bandsize/2) && currAngle <= -45) {
+			return Color.blue;
+		} else {
+			return Color.clear;
 		}
 	}
 
@@ -219,10 +244,61 @@ public class Level : MonoBehaviour {
 				return Color.blue;
 			} else if (angle <= -((totalsize / 3) - (bandsize / 2) - cyanAdjust) && angle > -(((totalsize / 3) + (bandsize / 2)) - cyanAdjust)) {
 				return new Color(0, 1 - ((((totalsize / 3) + (bandsize / 2) - cyanAdjust) + angle) / bandsize), 1, 1);
-			} else if (angle <= -(((totalsize / 3) + (bandsize / 2)) - cyanAdjust) && angle > -(((2 * totalsize / 3) - (bandsize / 2)) + cyanAdjust)) {
+			} else if (angle <= -(((totalsize / 3) + (bandsize / 2)) - cyanAdjust) && angle > -(((2 * totalsize / 3) - (bandsize / 2)))) {
 				return Color.cyan;
-			} else if (angle <= -(((2 * totalsize / 3) - (bandsize / 2)) + cyanAdjust) && angle > -((2 * totalsize / 3) + (bandsize / 2) + cyanAdjust)) {
-				return new Color(0, 1, ((((2 * totalsize / 3) + (bandsize / 2) + cyanAdjust) + angle) / (bandsize)), 1);
+			} else if (angle <= -(((2 * totalsize / 3) - (bandsize / 2))) && angle > -((2 * totalsize / 3) + (bandsize / 2))) {
+				return new Color(0, 1, ((((2 * totalsize / 3) + (bandsize / 2)) + angle) / (bandsize)), 1);
+			} else if (angle <= -((2 * totalsize / 3) + (bandsize / 2) + cyanAdjust) && angle > -(totalsize - (bandsize / 2))) {
+				return Color.green;
+			} else {
+				return new Color(.5f - (.5f * ((totalsize + angle) / (bandsize / 2))), 1, 0, 1);
+			}
+		}
+	}
+	
+	public static Color chunkyColorSelect(Vector2 xy, int bandsize) {
+		float angle = mouseAngle(xy);	//Angle of the mouse
+		int totalsize = 180; 			//Size of half the circle - should not change
+		int cyanAdjust = 25;			//Size that cyan has been increased to match the visuals
+		/*
+		 * (cyan should be 120-60, but with cyanAdjust = 25, its 145-35 (transition occurs within those bounds)
+		 * Color reference chart:
+		 * Yellow : Color.yellow - 1, 1, 0, 1
+		 * Red : Color.red - 1, 0, 0, 1
+		 * Purple : Level.purple - .5f, 0, .5f, 1
+		 * Blue : Color.blue - 0, 0, 1, 1
+		 * Cyan : Color.cyan - 0, 1, 1, 1
+		 * Green : Color.green - 0, 1, 0, 1
+		 * Fractions below transition between these values
+		 */
+		if (angle > 0) {
+			if (angle < (bandsize / 2)) {
+				return new Color(.5f - (.25f * (((bandsize / 2) - angle) / (bandsize / 2))), 0, .5f + (.25f * (((bandsize / 2) - angle) / (bandsize / 2))), 1);
+			} else if (angle >= (bandsize / 2) && angle < (totalsize / 3) - (bandsize / 2)) {
+				return purple;
+			} else if (angle >= (totalsize / 3) - (bandsize / 2) && angle < (totalsize / 3) + (bandsize / 2)) {
+				return new Color(1 - (.5f * ((((totalsize / 3) + (bandsize / 2)) - angle) / bandsize)), 0, .5f * ((((totalsize / 3) + (bandsize / 2)) - angle) / bandsize), 1);
+			} else if (angle >= (totalsize / 3) + (bandsize / 2) && angle < (2 * totalsize / 3) - (bandsize / 2)) {
+				return Color.red;
+			} else if (angle >= (2 * totalsize / 3) - (bandsize / 2) && angle < (2 * totalsize / 3) + (bandsize / 2)) {
+				return new Color(1, 1 - ((((2 * totalsize / 3) + (bandsize / 2)) - angle) / bandsize), 0, 1);
+			} else if (angle >= (2 * totalsize / 3) + (bandsize / 2) && angle < totalsize - (bandsize / 2)) {
+				return Color.yellow;
+			} else {
+				return new Color(.5f + (.5f * ((totalsize - angle) / (bandsize / 2))), 1, 0, 1);
+			}
+		} else {
+
+			if (angle > -(bandsize / 2)) {
+				return new Color(.25f * (((bandsize / 2) + angle) / (bandsize / 2)), 0, 1 - (.25f * (((bandsize / 2) + angle) / (bandsize / 2))), 1);
+			} else if (angle <= -(bandsize / 2) && angle > -((totalsize / 3) - (bandsize / 2) - cyanAdjust)) {
+				return Color.blue;
+			} else if (angle <= -((totalsize / 3) - (bandsize / 2) - cyanAdjust) && angle > -(((totalsize / 3) + (bandsize / 2)) - cyanAdjust)) {
+				return new Color(0, 1 - ((((totalsize / 3) + (bandsize / 2) - cyanAdjust) + angle) / bandsize), 1, 1);
+			} else if (angle <= -(((totalsize / 3) + (bandsize / 2)) - cyanAdjust) && angle > -(((2 * totalsize / 3) - (bandsize / 2)))) {
+				return Color.cyan;
+			} else if (angle <= -(((2 * totalsize / 3) - (bandsize / 2))) && angle > -((2 * totalsize / 3) + (bandsize / 2))) {
+				return new Color(0, 1, ((((2 * totalsize / 3) + (bandsize / 2)) + angle) / (bandsize)), 1);
 			} else if (angle <= -((2 * totalsize / 3) + (bandsize / 2) + cyanAdjust) && angle > -(totalsize - (bandsize / 2))) {
 				return Color.green;
 			} else {

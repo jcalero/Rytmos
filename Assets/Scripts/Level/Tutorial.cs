@@ -127,8 +127,9 @@ public class Tutorial : Level {
 			showMessage (4, .2f, ref comboMessage);
 		
 		//Advanced play message
-		if(EnemySpawnScript.spawnCount/3 >= 5 && !slideMessage && !showingMessage)
+		if(audioTimer > 32.8f && !slideMessage && !showingMessage) 
 			showMessage (5, ref slideMessage);
+		
 		
 		//Spawn powerup
 		if(audioTimer > 78f && !shieldPowerupMessage && !showingMessage) {
