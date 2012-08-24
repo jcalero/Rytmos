@@ -72,8 +72,13 @@ public class PulseSender : MonoBehaviour {
 		if (Input.GetMouseButtonUp(0) && held) {
 			held = false;
 			#if (UNITY_ANDROID || UNITY_IPHONE) && !UNITY_EDITOR
-			finalColor = Level.chunkyColorSelect(Input.GetTouch(0).position);
-			CurrentColor = Level.singleColourSelect(Input.GetTouch(0).position);
+			if(Game.PowerupActive==Game.Powerups.MassivePulse) {
+				finalColor = Color.white;
+				CurrentColor = Color.white;
+			} else {
+				finalColor = Level.chunkyColorSelect(Input.GetTouch(0).position);
+				CurrentColor = Level.singleColourSelect(Input.GetTouch(0).position);
+			}
 			#else
 			finalColor = Level.chunkyColorSelect(Input.mousePosition);
 			CurrentColor = Level.singleColourSelect(Input.mousePosition);
@@ -112,7 +117,9 @@ public class PulseSender : MonoBehaviour {
 		
 		//Select the secondary color
 		#if (UNITY_ANDROID || UNITY_IPHONE) && !UNITY_EDITOR
-		if(held) SecondaryColor = Level.secondaryColourSelect(Input.GetTouch(0).position);
+		if(Game.PowerupActive==Game.Powerups.MassivePulse) 
+			SecondaryColor = Color.white;
+		else if(held) SecondaryColor = Level.secondaryColourSelect(Input.GetTouch(0).position);
 		#else
 		if(held) SecondaryColor = Level.secondaryColourSelect(Input.mousePosition);
 		#endif
