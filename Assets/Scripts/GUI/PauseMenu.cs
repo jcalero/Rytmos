@@ -12,14 +12,25 @@ public class PauseMenu : MonoBehaviour {
 	
 	public UISlider MusicVolumeSlider;
 	public UISlider EffectsVolumeSlider;
-
+	
+	private static bool inOptions;
 	private static PauseMenu instance;
 	#endregion
 
 	#region Functions
 	void Awake() {
 		instance = this;
-		UITools.SetActiveState(PausePanel, false);
+		inOptions = false;
+		UITools.SetActiveState(instance.PausePanel, false);
+		UITools.SetActiveState(instance.OptionsPanel,false);
+	}
+	
+	public static bool InOptions {
+		get {return inOptions;}		
+	}
+	
+	public static void LeaveOptions() {
+		instance.OnBackClicked();	
 	}
 
 	public static void Show() {
@@ -57,8 +68,9 @@ public class PauseMenu : MonoBehaviour {
 	}
 	
 	void OnOptionsClicked() {
-		UITools.SetActiveState(instance.PausePanel,false);
+		inOptions = true;
 		UITools.SetActiveState(instance.OptionsPanel,true);
+		UITools.SetActiveState(instance.PausePanel,false);
 	}
 
 	/// <summary>
@@ -69,12 +81,13 @@ public class PauseMenu : MonoBehaviour {
 	}
 	
 	void OnBackClicked() {
-		UITools.SetActiveState(instance.OptionsPanel,false);
 		UITools.SetActiveState(instance.PausePanel,true);
+		UITools.SetActiveState(instance.OptionsPanel,false);
 		
 		// Now that the volume levels have been set, update them everywhere!
 		AudioPlayer.changeVolume();
 		Player.ChangeVolume();
+		inOptions = false;
 	}
 	#endregion
 }

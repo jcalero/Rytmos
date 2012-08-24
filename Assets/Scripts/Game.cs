@@ -79,6 +79,8 @@ public class Game : MonoBehaviour
 			Input.GetKeyDown ("escape") || Input.GetKeyDown (KeyCode.Space)) && GameState == State.Playing) {
 			if (!paused)
 				Pause ();
+			else if(PauseMenu.InOptions)
+				PauseMenu.LeaveOptions();
 			else
 				Resume ();
 			return;
