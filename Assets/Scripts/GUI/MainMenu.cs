@@ -762,6 +762,7 @@ public class MainMenu : MonoBehaviour {
 
 	#region Credit menu functions
 	void StartCredits() {
+		StopCoroutine("PageTimer");
 		creditsCurrentPage = 1;
 		for (int i = 0; i < PageAnimations.Length; i++)
 			PageAnimations[i].Blend("Page" + (i + 1) + "-Float");
