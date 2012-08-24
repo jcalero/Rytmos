@@ -397,5 +397,10 @@ public class Player : MonoBehaviour, PeakListener {
 	public static int MultiplierKillDivisor {
 		get { return multiplierKillDivisor; }
 	}
+	
+	
+	public static void ChangeVolume() {
+		foreach(AudioSource AS in audioSources) AS.volume = Game.EffectsVolume;	
+	}
 	#endregion
 }

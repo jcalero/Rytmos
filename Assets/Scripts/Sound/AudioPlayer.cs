@@ -93,13 +93,13 @@ public class AudioPlayer : MonoBehaviour
 		if (!Game.Paused) {
 			if (timer >= AudioManager.audioLength) {
 #if UNITY_ANDROID && !UNITY_EDITOR
-		if(Game.GameMode != Game.Mode.Tutorial) {		
-			androidPlayer.Call ("stop", new object[]{});
-			Debug.Log("timer made audio stop");
-		}
-		else audioSource.Stop ();
+				if(Game.GameMode != Game.Mode.Tutorial) {		
+					androidPlayer.Call ("stop", new object[]{});
+					Debug.Log("timer made audio stop");
+				}
+				else audioSource.Stop ();
 #else
-					audioSource.Stop ();
+				audioSource.Stop ();
 #endif
 			}
 		}
@@ -150,6 +150,17 @@ public class AudioPlayer : MonoBehaviour
 #else
 			if (audioSource != null && !audioSource .isPlaying)
 						audioSource .Play ();
+#endif
+	}
+	
+	public static void changeVolume () {
+#if UNITY_ANDROID && !UNITY_EDITOR
+		if(Game.GameMode != Game.Mode.Tutorial)
+			androidPlayer.Call ("setVolume", new object[]{Game.MusicVolume,Game.MusicVolume});
+		else
+			audioSource.volume = Game.MusicVolume;
+#else
+		audioSource.volume = Game.MusicVolume;
 #endif
 	}
 	

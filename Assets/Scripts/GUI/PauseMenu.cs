@@ -8,6 +8,10 @@ using System.Collections;
 public class PauseMenu : MonoBehaviour {
 	#region Fields
 	public UIPanel PausePanel;
+	public UIPanel OptionsPanel;
+	
+	public UISlider MusicVolumeSlider;
+	public UISlider EffectsVolumeSlider;
 
 	private static PauseMenu instance;
 	#endregion
@@ -43,12 +47,34 @@ public class PauseMenu : MonoBehaviour {
 	void OnRestartSongClicked() {
 		Application.LoadLevel("LoadScreen");
 	}
+	
+	private void OnEffectsSliderChange() {
+		Game.EffectsVolume = EffectsVolumeSlider.sliderValue;
+	}
+
+	private void OnMusicSliderChange() {
+		Game.MusicVolume = MusicVolumeSlider.sliderValue;
+	}
+	
+	void OnOptionsClicked() {
+		UITools.SetActiveState(instance.PausePanel,false);
+		UITools.SetActiveState(instance.OptionsPanel,true);
+	}
 
 	/// <summary>
 	/// Button handler for "Quit Game" button
 	/// </summary>
 	void OnQuitClicked() {
 		Application.Quit();
+	}
+	
+	void OnBackClicked() {
+		UITools.SetActiveState(instance.OptionsPanel,false);
+		UITools.SetActiveState(instance.PausePanel,true);
+		
+		// Now that the volume levels have been set, update them everywhere!
+		AudioPlayer.changeVolume();
+		Player.ChangeVolume();
 	}
 	#endregion
 }
