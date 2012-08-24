@@ -88,16 +88,22 @@ public class PulseSender : MonoBehaviour {
 		Color chosen;
 		if (held) {
 			#if (UNITY_ANDROID || UNITY_IPHONE) && !UNITY_EDITOR
-			chosen = Level.chunkyColorSelect(Input.GetTouch(0).position);
-			CurrentColor = Level.singleColourSelect(Input.GetTouch(0).position);
+			if(Game.PowerupActive==Game.Powerups.MassivePulse) {
+				chosen = Color.white;
+				CurrentColor = Color.white;
+			} else {
+				chosen = Level.chunkyColorSelect(Input.GetTouch(0).position);
+				CurrentColor = Level.singleColourSelect(Input.GetTouch(0).position);
+			}
 			#else
 			chosen = Level.chunkyColorSelect(Input.mousePosition);
 			CurrentColor = Level.singleColourSelect(Input.mousePosition);
-			#endif
 			if(Game.PowerupActive==Game.Powerups.MassivePulse) {
 				chosen = Color.white;
 				CurrentColor = Color.white;
 			}
+			#endif
+			
 		} else 
 			chosen = finalColor;
 		

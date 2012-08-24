@@ -116,7 +116,7 @@ public class Level : MonoBehaviour {
 					//Blue - Bottom right
 					return Color.blue;
 				} else {
-					if (angle < -145) {
+					if (angle < -120) {
 						//Green - bottom left
 						return Color.green;
 					} else {
