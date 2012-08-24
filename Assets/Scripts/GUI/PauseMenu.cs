@@ -9,6 +9,7 @@ public class PauseMenu : MonoBehaviour {
 	#region Fields
 	public UIPanel PausePanel;
 	public UIPanel OptionsPanel;
+	public UIPanel BackgroundPanel;
 	
 	public UISlider MusicVolumeSlider;
 	public UISlider EffectsVolumeSlider;
@@ -23,6 +24,7 @@ public class PauseMenu : MonoBehaviour {
 		inOptions = false;
 		UITools.SetActiveState(instance.PausePanel, false);
 		UITools.SetActiveState(instance.OptionsPanel,false);
+		UITools.SetActiveState(instance.BackgroundPanel,false);
 	}
 	
 	public static bool InOptions {
@@ -35,9 +37,11 @@ public class PauseMenu : MonoBehaviour {
 
 	public static void Show() {
 		UITools.SetActiveState(instance.PausePanel, true);
+		UITools.SetActiveState(instance.BackgroundPanel,true);
 	}
 
 	public static void Hide() {
+		UITools.SetActiveState(instance.BackgroundPanel,false);
 		UITools.SetActiveState(instance.PausePanel, false);
 	}
 
@@ -60,15 +64,17 @@ public class PauseMenu : MonoBehaviour {
 	}
 	
 	private void OnEffectsSliderChange() {
-		Game.EffectsVolume = EffectsVolumeSlider.sliderValue;
+		Game.EffectsVolume = instance.EffectsVolumeSlider.sliderValue;
 	}
 
 	private void OnMusicSliderChange() {
-		Game.MusicVolume = MusicVolumeSlider.sliderValue;
+		Game.MusicVolume = instance.MusicVolumeSlider.sliderValue;
 	}
 	
 	void OnOptionsClicked() {
 		inOptions = true;
+		instance.MusicVolumeSlider.sliderValue = Game.MusicVolume;
+		instance.EffectsVolumeSlider.sliderValue = Game.EffectsVolume;
 		UITools.SetActiveState(instance.OptionsPanel,true);
 		UITools.SetActiveState(instance.PausePanel,false);
 	}
