@@ -301,6 +301,7 @@ public class MainMenu : MonoBehaviour {
 		if (Input.GetKeyDown(KeyCode.Escape)) {
 			if (CurrentMenuLevel == MenuLevel.Base) ChangeMenu(MenuLevel.Quit);
 			else if (CurrentMenuLevel == MenuLevel.FileBrowser && !FileBrowserMenu.RecentlyPlayedActive) FileBrowser.SendMessage("OnUpClicked");
+			else if (CurrentMenuLevel == MenuLevel.Credits) OnCreditsBackClicked();
 			else OnBackClicked();
 		}
 		gameObject.audio.volume = Game.MusicVolume;
