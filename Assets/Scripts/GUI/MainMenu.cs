@@ -26,6 +26,8 @@ public class MainMenu : MonoBehaviour {
 	public UIPanel MainMenuCreatePanel;
 	public UIPanel MainMenuChoicePanel;
 	public UIPanel MainMenuSongNotFoundPanel;
+	public UIPanel MainMenuCreditsPanel;
+	public UIPanel MainMenuCredits3DPanel;
 
 	// File browser
 	public GameObject FileBrowser;
@@ -97,6 +99,11 @@ public class MainMenu : MonoBehaviour {
 	public UIButton RecentlyPlayedTab;
 	public UIButton SongFromPhoneTab;
 	public UIButton UpButton;
+
+	// Credits menu objects
+	public Animation SliderAnimation;
+	public Animation[] PageAnimations;
+	private int creditsCurrentPage;
 
 	// Camera - For Setting Camera Size
 	public Camera cameraSize;
@@ -320,6 +327,8 @@ public class MainMenu : MonoBehaviour {
 		if (MainMenuChoicePanel.enabled) UITools.SetActiveState(MainMenuChoicePanel, false);
 		if (MainMenuSongNotFoundPanel.enabled) UITools.SetActiveState(MainMenuSongNotFoundPanel, false);
 		if (MainMenuCreatePanel.enabled) UITools.SetActiveState(MainMenuCreatePanel, false);
+		if (MainMenuCreditsPanel.enabled) UITools.SetActiveState(MainMenuCreditsPanel, false);
+		if (MainMenuCredits3DPanel.enabled) UITools.SetActiveState(MainMenuCredits3DPanel, false);
 	}
 
 	/// <summary>
@@ -339,6 +348,8 @@ public class MainMenu : MonoBehaviour {
 				if (MainMenuFileBrowserPanel.enabled) UITools.SetActiveState(MainMenuFileBrowserPanel, false);
 				if (MainMenuChoicePanel.enabled) UITools.SetActiveState(MainMenuChoicePanel, false);
 				if (MainMenuCreatePanel.enabled) UITools.SetActiveState(MainMenuCreatePanel, false);
+				if (MainMenuCreditsPanel.enabled) UITools.SetActiveState(MainMenuCreditsPanel, false);
+				if (MainMenuCredits3DPanel.enabled) UITools.SetActiveState(MainMenuCredits3DPanel, false);
 				UITools.SetActiveState(MainMenuExtrasPanel, true);
 				UITools.SetActiveState(MainMenuBasePanel, true);
 				UITools.SetActiveState(MainMenuPlayPanel, true);
@@ -412,6 +423,12 @@ public class MainMenu : MonoBehaviour {
 				UITools.SetActiveState(MainMenuCreatePanel, true);
 				CreateErrorLabel.text = "";
 				break;
+			case MenuLevel.Credits:
+				UITools.SetActiveState(MainMenuPlayPanel, false);
+				UITools.SetActiveState(MainMenuCreditsPanel, true);
+				UITools.SetActiveState(MainMenuCredits3DPanel, true);
+				StartCredits();
+				break;
 		}
 	}
 
@@ -440,6 +457,10 @@ public class MainMenu : MonoBehaviour {
 	void OnOptionsClicked() {
 		ChangeMenu(MenuLevel.Options);
 		LoadOptions();
+	}
+
+	void OnCreditsClicked() {
+		ChangeMenu(MenuLevel.Credits);
 	}
 	#endregion
 
@@ -623,8 +644,7 @@ public class MainMenu : MonoBehaviour {
 			UserNameInput.text = "";
 			ErrorLabel.text = "[F87431]Name too short. Try again";
 			return;
-		}
-		else if (!nameRegEx.IsMatch(playerName)) {
+		} else if (!nameRegEx.IsMatch(playerName)) {
 			UserNameInput.text = "";
 			ErrorLabel.text = "[F87431]Invalid. Only letters & numbers allowed.";
 			return;
@@ -668,7 +688,7 @@ public class MainMenu : MonoBehaviour {
 			CreateNameInput.text = "";
 			CreateErrorLabel.text = "Username too short";
 			return;
-		} else if (!nameRegEx.IsMatch(name)){
+		} else if (!nameRegEx.IsMatch(name)) {
 			CreateNameInput.text = "";
 			CreateErrorLabel.text = "Invalid username, use letters & numbers!";
 			return;
@@ -677,7 +697,7 @@ public class MainMenu : MonoBehaviour {
 			CreatePass2Input.text = "";
 			CreateErrorLabel.text = "Passwords don't match";
 			return;
-		} else if (CreatePassInput.text.Length < 5){
+		} else if (CreatePassInput.text.Length < 5) {
 			CreatePassInput.text = "";
 			CreatePass2Input.text = "";
 			CreateErrorLabel.text = "Password is too short!";
@@ -728,6 +748,62 @@ public class MainMenu : MonoBehaviour {
 	}
 	#endregion
 
+	#region Credit menu buttons
+	void OnCreditsBackClicked() {
+		StopCredits();
+		ChangeMenu(MenuLevel.Base);
+	}
+	void OnCreditsScreenClicked() {
+		StopCoroutine("PageTimer");
+		ChangeCreditsPage(((creditsCurrentPage) % 5) + 1);
+	}
+	#endregion
+
+	#region Credit menu functions
+	void StartCredits() {
+		creditsCurrentPage = 1;
+		for (int i = 0; i < PageAnimations.Length; i++)
+			PageAnimations[i].Blend("Page" + (i + 1) + "-Float");
+		StartCoroutine("PageTimer");
+	}
+	void StopCredits() {
+		StopCoroutine("PageTimer");
+		SliderAnimation.gameObject.transform.localPosition = Vector3.zero;
+		for (int i = 0; i < PageAnimations.Length; i++)
+			PageAnimations[i].Stop("Page" + (i + 1) + "-Float");
+	}
+	IEnumerator PageTimer() {
+		yield return new WaitForSeconds(5f);
+		switch (creditsCurrentPage) {
+			case 1:
+				ChangeCreditsPage(2);
+				break;
+			case 2:
+				ChangeCreditsPage(3);
+				break;
+			case 3:
+				ChangeCreditsPage(4);
+				break;
+			case 4:
+				ChangeCreditsPage(5);
+				break;
+			case 5:
+				ChangeCreditsPage(1);
+				break;
+			default:
+				break;
+		}
+	}
+	void ChangeCreditsPage(int pageNr) {
+		if (pageNr > 1 && pageNr < 6) {
+			SliderAnimation.Blend("Slide" + (pageNr - 1) + "-" + pageNr);
+		} else if (pageNr == 1)
+			SliderAnimation.Blend("Slide5-1");
+		creditsCurrentPage = pageNr;
+		StartCoroutine("PageTimer");
+	}
+	#endregion
+
 	#region Utilities
 	/// <summary>
 	/// Loads the specified level after a certain amount of time
@@ -769,5 +845,6 @@ public enum MenuLevel {
 	LogIn,
 	ConfirmChoice,
 	SongNotFound,
-	Create
+	Create,
+	Credits
 }
