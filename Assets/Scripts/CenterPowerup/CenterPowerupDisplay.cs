@@ -19,11 +19,11 @@ public class CenterPowerupDisplay : MonoBehaviour {
 	void Awake() {
 		spriteManager = smObject.GetComponent<LinkedSpriteManager>();
 		hideSprite();
-		CalculateSprite(SpriteAtlas, "Circles");
+		CalculateSprite(SpriteAtlas, "CirclesCenter");
 		spriteManager.AddSprite(chaincp, UVWidth, UVHeight, left, bottom, width, height, false);
-		CalculateSprite(SpriteAtlas, "Atom");
+		CalculateSprite(SpriteAtlas, "AtomCenter");
 		spriteManager.AddSprite(supercp, UVWidth, UVHeight, left, bottom, width, height, false);
-		CalculateSprite(SpriteAtlas, "shield");
+		CalculateSprite(SpriteAtlas, "ShieldCenter");
 		spriteManager.AddSprite(shieldcp, UVWidth, UVHeight, left, bottom, width, height, false);
 	}
 	
