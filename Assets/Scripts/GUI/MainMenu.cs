@@ -28,6 +28,8 @@ public class MainMenu : MonoBehaviour {
 	public UIPanel MainMenuSongNotFoundPanel;
 	public UIPanel MainMenuCreditsPanel;
 	public UIPanel MainMenuCredits3DPanel;
+	public UIPanel MainMenuForgotPanel;
+	public UIPanel MainMenuForgotMessagePanel;
 
 	// File browser
 	public GameObject FileBrowser;
@@ -70,9 +72,19 @@ public class MainMenu : MonoBehaviour {
 	public UIInput CreateNameInput;
 	public UIInput CreatePassInput;
 	public UIInput CreatePass2Input;
+	public UIInput CreateEmailInput;
 	private string passHashKey = "r2d2imahorse";
 	public static bool UserCreated;
 	public static bool UserExists;
+
+	// Forgot menu objects
+	public UILabel ForgotErrorLabel;
+	public UIInput ForgotNameInput;
+	public UIInput ForgotEmailInput;
+	public UILabel ForgotMessageLabel;
+	public static bool CorrectEmail;
+	public static bool EmailSent;
+	private string globalEmail;
 
 	// Scores menu objects
 	public UIButton ScoresBackButton;
@@ -115,7 +127,6 @@ public class MainMenu : MonoBehaviour {
 
 	void Awake() {
 		instance = this;
-
 		Game.GameState = Game.State.Menu;
 		ChangeMenu(MenuLevel.Base);
 
@@ -330,6 +341,8 @@ public class MainMenu : MonoBehaviour {
 		if (MainMenuCreatePanel.enabled) UITools.SetActiveState(MainMenuCreatePanel, false);
 		if (MainMenuCreditsPanel.enabled) UITools.SetActiveState(MainMenuCreditsPanel, false);
 		if (MainMenuCredits3DPanel.enabled) UITools.SetActiveState(MainMenuCredits3DPanel, false);
+		if (MainMenuForgotPanel.enabled) UITools.SetActiveState(MainMenuForgotPanel, false);
+		if (MainMenuForgotMessagePanel.enabled) UITools.SetActiveState(MainMenuForgotMessagePanel, false);
 	}
 
 	/// <summary>
@@ -351,6 +364,8 @@ public class MainMenu : MonoBehaviour {
 				if (MainMenuCreatePanel.enabled) UITools.SetActiveState(MainMenuCreatePanel, false);
 				if (MainMenuCreditsPanel.enabled) UITools.SetActiveState(MainMenuCreditsPanel, false);
 				if (MainMenuCredits3DPanel.enabled) UITools.SetActiveState(MainMenuCredits3DPanel, false);
+				if (MainMenuForgotPanel.enabled) UITools.SetActiveState(MainMenuForgotPanel, false);
+				if (MainMenuForgotMessagePanel.enabled) UITools.SetActiveState(MainMenuForgotMessagePanel, false);
 				UITools.SetActiveState(MainMenuExtrasPanel, true);
 				UITools.SetActiveState(MainMenuBasePanel, true);
 				UITools.SetActiveState(MainMenuPlayPanel, true);
@@ -392,6 +407,7 @@ public class MainMenu : MonoBehaviour {
 				UITools.SetActiveState(MainMenuCreatePanel, false);
 				UITools.SetActiveState(MainMenuPlayPanel, false);
 				UITools.SetActiveState(MainMenuBasePanel, false);
+				UITools.SetActiveState(MainMenuForgotPanel, false);
 				UITools.SetActiveState(MainMenuLogInPanel, true);
 				if (PlayerPrefs.GetString("playername") != null)
 					UserNameInput.text = PlayerPrefs.GetString("playername");
@@ -429,6 +445,16 @@ public class MainMenu : MonoBehaviour {
 				UITools.SetActiveState(MainMenuCreditsPanel, true);
 				UITools.SetActiveState(MainMenuCredits3DPanel, true);
 				StartCredits();
+				break;
+			case MenuLevel.Forgot:
+				UITools.SetActiveState(MainMenuLogInPanel, false);
+				UITools.SetActiveState(MainMenuForgotPanel, true);
+				ForgotErrorLabel.text = "";
+				break;
+			case MenuLevel.ForgotMessage:
+				UITools.SetActiveState(MainMenuForgotPanel, false);
+				UITools.SetActiveState(MainMenuForgotMessagePanel, true);
+				ForgotMessageLabel.text = "An email was sent to [44CCBB]" + globalEmail + " [FFFFFF]with instructions on how to reset your password!";
 				break;
 		}
 	}
@@ -661,6 +687,9 @@ public class MainMenu : MonoBehaviour {
 	void OnLoginCreateClicked() {
 		ChangeMenu(MenuLevel.Create);
 	}
+	void OnLoginForgotClicked() {
+		ChangeMenu(MenuLevel.Forgot);
+	}
 	#endregion
 
 	#region Login menu functions
@@ -681,10 +710,55 @@ public class MainMenu : MonoBehaviour {
 	}
 	#endregion
 
+	#region Forgot Pass buttons
+	void OnForgotBackClicked() {
+		ChangeMenu(MenuLevel.LogIn);
+	}
+	void OnForgotSubmitClicked() {
+		string name = ForgotNameInput.text;
+		string email = ForgotEmailInput.text;
+		if (name.Length < 2) {
+			ForgotNameInput.text = "";
+			ForgotErrorLabel.text = "Username too short";
+		} else if (email.Length < 1) {
+			ForgotEmailInput.text = "";
+			ForgotErrorLabel.text = "Email field can't be empty";
+		} else {
+			StartCoroutine(forgotPasswordCheck(name, email));
+		}
+	}
+	void OnForgotOkClicked() {
+		ChangeMenu(MenuLevel.Base);
+	}
+	#endregion
+
+	#region Forgot Pass menu functions
+	IEnumerator forgotPasswordCheck(string name, string email) {
+		yield return StartCoroutine(HSController.CheckEmail(name, email));
+		if (CorrectEmail) {
+			CorrectEmail = false;
+			Debug.Log("Correct email");
+			yield return StartCoroutine(HSController.SendEmail(name));
+		} else {
+			Debug.Log("Wrong email");
+		}
+		if (EmailSent) {
+			globalEmail = email;
+			ChangeMenu(MenuLevel.ForgotMessage);
+		} else {
+			Debug.Log("Error sending email");
+		}
+	}
+	public static void SetForgotErrorLabel(string text) {
+		instance.ForgotErrorLabel.text = text;
+	}
+	#endregion
+
 	#region Create Menu Buttons
 	void OnCreateClicked() {
 		string name = CreateNameInput.text;
 		string password = CreatePassInput.text;
+		string email = CreateEmailInput.text;
 		if (name.Length < 2) {
 			CreateNameInput.text = "";
 			CreateErrorLabel.text = "Username too short";
@@ -703,9 +777,12 @@ public class MainMenu : MonoBehaviour {
 			CreatePass2Input.text = "";
 			CreateErrorLabel.text = "Password is too short!";
 			return;
+		} else if (CreateEmailInput.text.Length < 1) {
+			CreateEmailInput.text = "";
+			CreateErrorLabel.text = "Insert e-mail for password recovery!";
 		} else {
 			password = MD5Utils.MD5FromString(password + passHashKey);	// Encrypt password
-			StartCoroutine(addNewUser(name, password));	// Add user
+			StartCoroutine(addNewUser(name, password, email));	// Add user
 		}
 	}
 	void OnCreateBackClicked() {
@@ -714,8 +791,8 @@ public class MainMenu : MonoBehaviour {
 	#endregion
 
 	#region Create menu functions
-	IEnumerator addNewUser(string name, string password) {
-		yield return StartCoroutine(HSController.AddUser(name, password));
+	IEnumerator addNewUser(string name, string password, string email) {
+		yield return StartCoroutine(HSController.AddUser(name, password, email));
 		if (UserCreated) {
 			PlayerPrefs.SetString("playername", name);
 			ErrorLabel.text = "[44DD44]User created, please log in!";
@@ -848,5 +925,7 @@ public enum MenuLevel {
 	ConfirmChoice,
 	SongNotFound,
 	Create,
-	Credits
+	Credits,
+	Forgot,
+	ForgotMessage
 }
