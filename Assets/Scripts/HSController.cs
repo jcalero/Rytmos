@@ -371,7 +371,6 @@ public class HSController : MonoBehaviour {
 
 	public static IEnumerator SendEmail(string user) {
 		string key = MD5Utils.MD5FromString(user + DateTime.Now.ToString()).Substring(0,10);
-		Debug.Log("Key: " + key);
 		string cheatHash = MD5Utils.MD5FromString(user + key + instance.emailSecretKey);
 
 		string get_url = instance.sendEmailURL + "user=" + WWW.EscapeURL(user) + "&key=" + key + "&hash=" + cheatHash;

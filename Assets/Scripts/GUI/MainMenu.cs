@@ -82,6 +82,8 @@ public class MainMenu : MonoBehaviour {
 	public UIInput ForgotNameInput;
 	public UIInput ForgotEmailInput;
 	public UILabel ForgotMessageLabel;
+	public UILabel ForgotButtonLabel;
+	public UIButton ForgotButton;
 	public static bool CorrectEmail;
 	public static bool EmailSent;
 	private string globalEmail;
@@ -724,6 +726,8 @@ public class MainMenu : MonoBehaviour {
 			ForgotEmailInput.text = "";
 			ForgotErrorLabel.text = "Email field can't be empty";
 		} else {
+			ForgotButton.isEnabled = false;
+			ForgotButtonLabel.text = "Loading...";
 			StartCoroutine(forgotPasswordCheck(name, email));
 		}
 	}
@@ -737,12 +741,16 @@ public class MainMenu : MonoBehaviour {
 		yield return StartCoroutine(HSController.CheckEmail(name, email));
 		if (CorrectEmail) {
 			CorrectEmail = false;
-			Debug.Log("Correct email");
 			yield return StartCoroutine(HSController.SendEmail(name));
 		} else {
+			ForgotButton.isEnabled = true;
+			ForgotButtonLabel.text = "Request new password";
 			Debug.Log("Wrong email");
 		}
+		ForgotButton.isEnabled = true;
+		ForgotButtonLabel.text = "Request new password";
 		if (EmailSent) {
+			EmailSent = false;
 			globalEmail = email;
 			ChangeMenu(MenuLevel.ForgotMessage);
 		} else {
