@@ -13,7 +13,6 @@ public class EnemyScript : MonoBehaviour,PeakListener {
 	public GameObject ExplosionParticles;
 	public ParticleSystem TrailParticles;
 	public GameObject PulsePrefab;		// Inspector reference. Location: Enemy[Type]Prefab.
-	public GameObject SecondPulseColl;		// Inspector reference. Location: Enemy[Type]Prefab.
 	public LinkedSpriteManager spriteManager;
 
 	// Protected values with access from its descendants
@@ -274,7 +273,6 @@ public class EnemyScript : MonoBehaviour,PeakListener {
 			}
 			
 			collider.enabled = false;
-			SecondPulseColl.collider.enabled = false;
 			TrailParticles.Stop();
 			spriteManager.HideSprite(enemyCircle);
 			yield return new WaitForSeconds(1f);
