@@ -44,7 +44,7 @@ public class PowerupScript : MonoBehaviour {
 		spriteManager.AddSprite(powerups[0], UVWidth, UVHeight, left, bottom, width, height, false);
 		CalculateSprite (SpriteAtlas, "Circles");
 		spriteManager.AddSprite(powerups[1], UVWidth, UVHeight, left, bottom, width, height, false);
-		CalculateSprite (SpriteAtlas, "shield");
+		CalculateSprite (SpriteAtlas, "Shield");
 		spriteManager.AddSprite(powerups[2], UVWidth, UVHeight, left, bottom, width, height, false);
 
 		
@@ -68,6 +68,11 @@ public class PowerupScript : MonoBehaviour {
 			Player.takenPowerup = false;
 		}
 		
+		//Spin the atom and the circles about their center
+		powerups[0].transform.localEulerAngles = new Vector3(0,0,powerups[0].transform.localEulerAngles.z + (Time.deltaTime*50f)); 
+		powerups[1].transform.localEulerAngles = new Vector3(0,0,powerups[1].transform.localEulerAngles.z + (Time.deltaTime*50f)); 
+		
+		//Debug mode spawn powerups for testing
 		if(DevScript.devModeAccess) {
 			if(Input.GetKeyDown(KeyCode.Z))
 				spawnPowerupOnScreen(0);
@@ -83,9 +88,9 @@ public class PowerupScript : MonoBehaviour {
 				if(spawned) {
 					moveSprite(away, powerups[activePW]);
 					spawned = false;
-				} else {
+				} else 
 					canTriggerSpawn = true;
-				}
+				
 				powerUpTimer = 0;
 			}
 			else if(canSpawn) {
