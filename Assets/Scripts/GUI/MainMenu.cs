@@ -30,6 +30,7 @@ public class MainMenu : MonoBehaviour {
 	public UIPanel MainMenuCredits3DPanel;
 	public UIPanel MainMenuForgotPanel;
 	public UIPanel MainMenuForgotMessagePanel;
+	public UIPanel MainMenuFirstPlayPanel;
 
 	// File browser
 	public GameObject FileBrowser;
@@ -415,6 +416,10 @@ public class MainMenu : MonoBehaviour {
 				UITools.SetActiveState(MainMenuPlayPanel, true);
 				break;
 			case MenuLevel.Mode:
+				if(PlayerPrefs.HasKey("FirstPlay")) {
+					if(PlayerPrefs.GetInt("FirstPlay") == 1) 
+						UITools.SetActiveState(MainMenuFirstPlayPanel, true);
+				}
 				if (MainMenuFileBrowserPanel.enabled) UITools.SetActiveState(MainMenuFileBrowserPanel, false);
 				if (MainMenuPlayPanel.enabled) UITools.SetActiveState(MainMenuPlayPanel, false);
 				if (MainMenuChoicePanel.enabled) UITools.SetActiveState(MainMenuChoicePanel, false);
@@ -751,6 +756,19 @@ public class MainMenu : MonoBehaviour {
 
 	public static void SetLoginErrorLabel(string text) {
 		instance.ErrorLabel.text = text;
+	}
+	#endregion
+	
+	#region FirstPlay buttons
+	void OnFirstYesClicked() {
+		PlayerPrefs.SetInt("FirstPlay", 0);
+		OnTutorialButtonClicked();
+		UITools.SetActiveState(MainMenuFirstPlayPanel, false);
+	}
+	
+	void OnFirstNoClicked() {
+		UITools.SetActiveState(MainMenuFirstPlayPanel, false);
+		PlayerPrefs.SetInt("FirstPlay", 0);
 	}
 	#endregion
 
