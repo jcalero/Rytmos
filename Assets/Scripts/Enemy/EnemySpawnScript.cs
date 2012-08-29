@@ -31,6 +31,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	private bool lastTime;
 	private float storeTime;
 	
+	private float timeSinceLastEnemySwap;
 	private float timeSinceLastSpawn;
 	private readonly float SPAWN_ANIM_TIME = 0.2f;
 	
@@ -62,6 +63,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	void Update() {
 		timer += Time.deltaTime;
 		timeSinceLastSpawn += Time.deltaTime;
+		timeSinceLastEnemySwap += Time.deltaTime;
 		
 		
 		if (timer >= audioLength){
@@ -79,6 +81,10 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 					Application.LoadLevel("Win");		
 			}
 			
+		}
+		
+		if(timeSinceLastEnemySwap > 10f) {
+			changeEnemy();	
 		}
 		
 //		if(Player.multiplier < 3) spawnerCounter = 2;
@@ -110,6 +116,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		spawnerNumber = 0;
 		Game.SyncMode = true;
 		timeSinceLastSpawn = 0.2f;
+		timeSinceLastEnemySwap = 0f;
 		//spawnPositions = new int[]{40,90,35,85};
 		spawnPositions = new int[] { 0 };
 		
@@ -315,7 +322,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	}
 	
 	
-	private static void changeEnemy() {
+	private void changeEnemy() {
 		int rnd = Random.Range(0,101);
 		//Check if you are only using four colors, 
 		if(Level.fourColors) {
@@ -338,6 +345,8 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 			else if(rnd < 85) currentlySelectedEnemy = 4;
 			else if(rnd < 101) currentlySelectedEnemy = 5;
 		}
+		
+		timeSinceLastEnemySwap = 0f;
 	}
 	
 	private void moveSpawnersMirrored(int increment,int rotateDirection) {
