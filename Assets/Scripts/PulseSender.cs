@@ -29,7 +29,7 @@ public class PulseSender : MonoBehaviour {
 
 	void Start() {
 		held = true;
-		Radius = .4f;
+		Radius = 1f;
 		line = gameObject.GetComponent<LineRenderer>();
 		line.SetVertexCount(segments + 1);
 		line.useWorldSpace = false;
