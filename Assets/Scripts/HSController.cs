@@ -115,6 +115,10 @@ public class HSController : MonoBehaviour {
 		if (hs_get.error != null) {
 			Debug.LogWarning("There was an error getting the high score: " + hs_get.error);
 			FetchError = hs_get.error;
+			string errorText = "Error fetching the scores!";
+			Top5List = new string[1][];
+			Top5List[0] = new string[errorText.Length];
+			Top5List[0][0] = errorText;
 		} else if (hs_get.text.ToLower().StartsWith("query failed")) {
 			Debug.LogWarning("There was an error getting the high score: " + hs_get.text);
 			FetchError = hs_get.text;
@@ -245,7 +249,10 @@ public class HSController : MonoBehaviour {
 				//Debug.Log(HSController.ScoresList[cnt][0] + " :: " + HSController.ScoresList[cnt][1]);
 			}
 		} else {
-			top5names[0].text = FetchError;
+			top5names[0].text = "";
+			top5names[1].text = "Error fetching scores.";
+			top5names[2].text = "Please try again later.";
+			FetchError = null;
 		}
 
 		yield return StartCoroutine(GetClose5Scores(artist, song, gameMode, topScore));
@@ -273,7 +280,8 @@ public class HSController : MonoBehaviour {
 				//Debug.Log(HSController.ScoresList[cnt][0] + " :: " + HSController.ScoresList[cnt][1]);
 			}
 		} else {
-			close5names[0].text = FetchError;
+			close5names[0].text = "";
+			FetchError = null;
 		}
 	}
 
@@ -346,6 +354,7 @@ public class HSController : MonoBehaviour {
 		yield return hs_get; // Wait until the check is done
 
 		if (hs_get.error != null) {
+			MainMenu.SetLoginErrorLabel("[F87431]Error. Please try again");
 			Debug.LogWarning("There was an error logging in: " + hs_get.error);
 		} else if (hs_get.text.StartsWith("ERROR: No user")) {
 			Debug.Log(hs_get.text);
@@ -378,6 +387,7 @@ public class HSController : MonoBehaviour {
 		yield return hs_get; // Wait until the check is done
 
 		if (hs_get.error != null) {
+			Win.SetLoginErrorLabel("[F87431]Error. Please try again");
 			Debug.LogWarning("There was an error logging in: " + hs_get.error);
 		} else if (hs_get.text.StartsWith("ERROR: No user")) {
 			Debug.Log(hs_get.text);
@@ -409,6 +419,7 @@ public class HSController : MonoBehaviour {
 		yield return hs_get; // Wait until the check is done
 
 		if (hs_get.error != null) {
+			MainMenu.SetForgotErrorLabel("[F87431]Error. Please try again");
 			Debug.LogWarning("There was an error checking email: " + hs_get.error);
 		} else if (hs_get.text.StartsWith("ERROR: No user")) {
 			Debug.Log(hs_get.text);
@@ -440,6 +451,7 @@ public class HSController : MonoBehaviour {
 		yield return hs_get; // Wait until the check is done
 
 		if (hs_get.error != null) {
+			Win.SetForgotErrorLabel("[F87431]Error. Please try again");
 			Debug.LogWarning("There was an error checking email: " + hs_get.error);
 		} else if (hs_get.text.StartsWith("ERROR: No user")) {
 			Debug.Log(hs_get.text);
@@ -472,6 +484,7 @@ public class HSController : MonoBehaviour {
 		yield return hs_get; // Wait until the check is done
 
 		if (hs_get.error != null) {
+			MainMenu.SetForgotErrorLabel("[F87431]Error. Please try again");
 			Debug.LogWarning("There was an error checking email: " + hs_get.error);
 		} else if (hs_get.text.StartsWith("ERROR: No user")) {
 			Debug.Log(hs_get.text);
@@ -504,6 +517,7 @@ public class HSController : MonoBehaviour {
 		yield return hs_get; // Wait until the check is done
 
 		if (hs_get.error != null) {
+			Win.SetForgotErrorLabel("[F87431]Error. Please try again");
 			Debug.LogWarning("There was an error checking email: " + hs_get.error);
 		} else if (hs_get.text.StartsWith("ERROR: No user")) {
 			Debug.Log(hs_get.text);
