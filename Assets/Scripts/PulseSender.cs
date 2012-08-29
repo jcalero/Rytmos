@@ -57,13 +57,19 @@ public class PulseSender : MonoBehaviour {
 	}
 	
 	void ChainPulse() {
-		Radius += 3 * Time.deltaTime;
+		if(Game.GameMode == Game.Mode.Casual)
+			Radius += 2 * Time.deltaTime;
+		else
+			Radius += 3 * Time.deltaTime;
+		
 		RedrawPoints(finalColor);
 		line.material.color = finalColor;
 		sphereColl.radius = Radius + 0.1f;
 
 		//If too big, destroy itself
-		if (Radius > 2f || CurrentHealth == 0)
+		if(Game.GameMode == Game.Mode.Casual && (Radius > 3f || CurrentHealth == 0))
+			Destroy(gameObject);
+		else if (Game.GameMode != Game.Mode.Casual && (Radius > 2f || CurrentHealth == 0))
 			Destroy(gameObject);
 	}
 	
