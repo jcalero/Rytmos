@@ -306,6 +306,34 @@ public class HSController : MonoBehaviour {
 		}
 	}
 
+	public static IEnumerator AddUserWin(string user, string password, string email) {
+		string hashedPassword = MD5Utils.MD5FromString(password + instance.userSecretKey);
+		string cheatHash = MD5Utils.MD5FromString(user + hashedPassword + instance.userSecretKey);
+
+		string post_url = instance.addUserURL + "name=" + WWW.EscapeURL(user) + "&password=" + hashedPassword + "&email=" + email + "&hash=" + cheatHash;
+
+		Win.SetCreateButtonLabel("Submitting...");
+		// Post the URL to the site and create a download object to get the result.
+		WWW hs_post = new WWW(post_url);
+		yield return hs_post; // Wait until the upload is done
+
+		if (hs_post.error != null) {
+			Debug.LogWarning("There was an error adding the user: " + hs_post.error);
+			Win.SetCreateErrorLabel("Error. Please try again");
+			Win.SetCreateButtonLabel("Create");
+		} else if (hs_post.text.StartsWith("Table exists, adding user...<br>ERROR: Username already exists.")) {
+			Debug.Log(hs_post.text);
+			Win.SetCreateErrorLabel("Error. Username already exists");
+			Win.SetCreateButtonLabel("Create");
+		} else {
+			Debug.Log(hs_post.text);
+			Debug.Log("User created: " + user);
+			Win.SetCreateErrorLabel("[44DD44]User created: " + user);
+			Win.SetCreateButtonLabel("Create");
+			Win.UserCreated = true;
+		}
+	}
+
 	public static IEnumerator CheckUser(string user, string password) {
 		string hashedPassword = MD5Utils.MD5FromString(password + instance.userSecretKey);
 		string cheatHash = MD5Utils.MD5FromString(user + hashedPassword + instance.userSecretKey);
@@ -334,6 +362,38 @@ public class HSController : MonoBehaviour {
 			Debug.Log(hs_get.text);
 		} else {
 			MainMenu.SetLoginErrorLabel("[F87431]Error. Please try again");
+			Debug.Log(hs_get.text);
+		}
+	}
+
+	public static IEnumerator CheckUserWin(string user, string password) {
+		string hashedPassword = MD5Utils.MD5FromString(password + instance.userSecretKey);
+		string cheatHash = MD5Utils.MD5FromString(user + hashedPassword + instance.userSecretKey);
+
+		string get_url = instance.checkUserURL + "name=" + WWW.EscapeURL(user) + "&password=" + hashedPassword + "&hash=" + cheatHash;
+
+		//MainMenu.SetCreateButtonLabel("Submitting...");
+		// Post the URL to the site and create a download object to get the result.
+		WWW hs_get = new WWW(get_url);
+		yield return hs_get; // Wait until the check is done
+
+		if (hs_get.error != null) {
+			Debug.LogWarning("There was an error logging in: " + hs_get.error);
+		} else if (hs_get.text.StartsWith("ERROR: No user")) {
+			Debug.Log(hs_get.text);
+			Win.SetLoginErrorLabel("[F87431]Username not found. Create an account?");
+		} else if (hs_get.text.StartsWith("ERROR: Wrong")) {
+			Debug.Log(hs_get.text);
+			Win.SetLoginErrorLabel("[F87431]Wrong password, try again");
+		} else if (hs_get.text.StartsWith("SUCCESS")) {
+			Debug.Log(hs_get.text);
+			Win.SetLoginErrorLabel("");
+			Win.LoginSuccess = true;
+		} else if (hs_get.text.StartsWith("Query failed: Table")) {
+			Win.SetLoginErrorLabel("[F87431]Username not found. Create an account?");
+			Debug.Log(hs_get.text);
+		} else {
+			Win.SetLoginErrorLabel("[F87431]Error. Please try again");
 			Debug.Log(hs_get.text);
 		}
 	}
@@ -369,6 +429,37 @@ public class HSController : MonoBehaviour {
 		}
 	}
 
+	public static IEnumerator CheckEmailWin(string name, string email) {
+		string cheatHash = MD5Utils.MD5FromString(name + email + instance.emailSecretKey);
+
+		string get_url = instance.checkEmailURL + "user=" + WWW.EscapeURL(name) + "&email=" + email + "&hash=" + cheatHash;
+
+		//MainMenu.SetCreateButtonLabel("Submitting...");
+		// Post the URL to the site and create a download object to get the result.
+		WWW hs_get = new WWW(get_url);
+		yield return hs_get; // Wait until the check is done
+
+		if (hs_get.error != null) {
+			Debug.LogWarning("There was an error checking email: " + hs_get.error);
+		} else if (hs_get.text.StartsWith("ERROR: No user")) {
+			Debug.Log(hs_get.text);
+			Win.SetForgotErrorLabel("[F87431]Username not found. Try again.");
+		} else if (hs_get.text.StartsWith("ERROR: Wrong")) {
+			Debug.Log(hs_get.text);
+			Win.SetForgotErrorLabel("[F87431]Email not registered with username.");
+		} else if (hs_get.text.StartsWith("SUCCESS")) {
+			Debug.Log(hs_get.text);
+			Win.SetForgotErrorLabel("");
+			Win.CorrectEmail = true;
+		} else if (hs_get.text.StartsWith("Query failed: Table")) {
+			Win.SetForgotErrorLabel("[F87431]Username not found. Try again.");
+			Debug.Log(hs_get.text);
+		} else {
+			Win.SetForgotErrorLabel("[F87431]Error. Please try again");
+			Debug.Log(hs_get.text);
+		}
+	}
+
 	public static IEnumerator SendEmail(string user) {
 		string key = MD5Utils.MD5FromString(user + DateTime.Now.ToString()).Substring(0,10);
 		string cheatHash = MD5Utils.MD5FromString(user + key + instance.emailSecretKey);
@@ -397,6 +488,38 @@ public class HSController : MonoBehaviour {
 			Debug.Log(hs_get.text);
 		} else {
 			MainMenu.SetForgotErrorLabel("[F87431]Error. Please try again");
+			Debug.Log(hs_get.text);
+		}
+	}
+
+	public static IEnumerator SendEmailWin(string user) {
+		string key = MD5Utils.MD5FromString(user + DateTime.Now.ToString()).Substring(0, 10);
+		string cheatHash = MD5Utils.MD5FromString(user + key + instance.emailSecretKey);
+
+		string get_url = instance.sendEmailURL + "user=" + WWW.EscapeURL(user) + "&key=" + key + "&hash=" + cheatHash;
+
+		//MainMenu.SetCreateButtonLabel("Submitting...");
+		// Post the URL to the site and create a download object to get the result.
+		WWW hs_get = new WWW(get_url);
+		yield return hs_get; // Wait until the check is done
+
+		if (hs_get.error != null) {
+			Debug.LogWarning("There was an error checking email: " + hs_get.error);
+		} else if (hs_get.text.StartsWith("ERROR: No user")) {
+			Debug.Log(hs_get.text);
+			Win.SetForgotErrorLabel("[F87431]Username not found. Try again.");
+		} else if (hs_get.text.StartsWith("ERROR: Wrong")) {
+			Debug.Log(hs_get.text);
+			Win.SetForgotErrorLabel("[F87431]Email not registered with username.");
+		} else if (hs_get.text.StartsWith("<p>Message sent")) {
+			Debug.Log(hs_get.text);
+			Win.SetForgotErrorLabel("");
+			Win.EmailSent = true;
+		} else if (hs_get.text.StartsWith("Query failed: Table")) {
+			Win.SetForgotErrorLabel("[F87431]Username not found. Try again.");
+			Debug.Log(hs_get.text);
+		} else {
+			Win.SetForgotErrorLabel("[F87431]Error. Please try again");
 			Debug.Log(hs_get.text);
 		}
 	}

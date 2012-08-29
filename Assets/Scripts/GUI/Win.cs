@@ -22,6 +22,8 @@ public class Win : MonoBehaviour {
 	public UIPanel CreatePanel;
 	public UIPanel ScoresPanel;
 	public UIPanel ScoresTitlePanel;
+	public UIPanel ForgotPassPanel;
+	public UIPanel ForgotPassMessagePanel;
 	// Base Menu Objects
 	public UILabel SongLabel;
 	public UILabel HitsValueLabel;
@@ -33,11 +35,32 @@ public class Win : MonoBehaviour {
 	public UIButton MainMenuButton;
 	// Login Menu Objects
 	public UIInput UserNameInput;
+	public UIInput PasswordInput;
 	public UILabel ErrorLabel;
 	public UICheckbox RememberMeCheckbox;
 	public UIButton LoginBackButton;
+	private string passHashKey = "r2d2imahorse";
+	public static bool LoginSuccess;
 	// Create Menu Objects
-	// ??
+	public UILabel CreateErrorLabel;
+	public UILabel CreateButtonLabel;
+	public UIButton CreateBackButton;
+	public UIInput CreateNameInput;
+	public UIInput CreatePass1Input;
+	public UIInput CreatePass2Input;
+	public UIInput CreateEmailInput;
+	public static bool UserCreated;
+	// Forgot menu objects
+	public UILabel ForgotErrorLabel;
+	public UIInput ForgotNameInput;
+	public UIInput ForgotEmailInput;
+	public UILabel ForgotMessageLabel;
+	public UILabel ForgotButtonLabel;
+	public UIButton ForgotButton;
+	public UIButton ForgotBackButton;
+	public static bool CorrectEmail;
+	public static bool EmailSent;
+	private string globalEmail;
 	// Scores Menu Objects
 	public UILabel SongNameLabel;
 	public UILabel SongModeLabel;
@@ -88,6 +111,11 @@ public class Win : MonoBehaviour {
 			SongLabel.lineWidth = 600;
 			// Login menu
 			LoginBackButton.transform.localPosition = new Vector2(-209, 154);
+			// Create menu
+			CreateBackButton.transform.localPosition = new Vector2(-209, 184);
+			// Forgot password menu
+			ForgotBackButton.transform.localPosition = new Vector2(-220, 154);
+			ForgotBackButton.transform.localScale = new Vector2(0.8f, 0.8f);
 			// Scores menu
 			SongNameLabel.lineWidth = 520;
 			TSNames.transform.localPosition = new Vector2(30, 0);
@@ -124,6 +152,12 @@ public class Win : MonoBehaviour {
 			// Login menu
 			LoginBackButton.transform.localPosition = new Vector2(LoginBackButton.transform.localPosition.x + 35,
 																  LoginBackButton.transform.localPosition.y);
+			// Create menu
+			CreateBackButton.transform.localPosition = new Vector2(CreateBackButton.transform.localPosition.x + 35,
+																  CreateBackButton.transform.localPosition.y);
+			// Forgot pass menu
+			ForgotBackButton.transform.localPosition = new Vector2(ForgotBackButton.transform.localPosition.x + 35,
+				ForgotBackButton.transform.localPosition.y);
 			// Scores menu
 			SongNameLabel.lineWidth = 600;
 			TopScoreLabel.transform.localScale = new Vector2(24, 24);
@@ -147,6 +181,12 @@ public class Win : MonoBehaviour {
 			// Login menu
 			LoginBackButton.transform.localPosition = new Vector2(LoginBackButton.transform.localPosition.x + 25,
 																  LoginBackButton.transform.localPosition.y);
+			// Create menu
+			CreateBackButton.transform.localPosition = new Vector2(CreateBackButton.transform.localPosition.x + 25,
+																  CreateBackButton.transform.localPosition.y);
+			// Forgot back menu
+			ForgotBackButton.transform.localPosition = new Vector2(ForgotBackButton.transform.localPosition.x + 25,
+				ForgotBackButton.transform.localPosition.y);
 			// Scores menu
 			ScoresMainMenuButton.transform.localScale = new Vector2(0.9f, 0.9f);
 			ScoresMainMenuButton.transform.localPosition = new Vector2(ScoresMainMenuButton.transform.localPosition.x + 10,
@@ -223,21 +263,27 @@ public class Win : MonoBehaviour {
 				if (LoginPanel.enabled) UITools.SetActiveState(LoginPanel, false);
 				if (ScoresPanel.enabled) UITools.SetActiveState(ScoresPanel, false);
 				if (ScoresTitlePanel.enabled) UITools.SetActiveState(ScoresTitlePanel, false);
+				if (ForgotPassPanel.enabled) UITools.SetActiveState(ForgotPassPanel, false);
+				if (ForgotPassMessagePanel.enabled) UITools.SetActiveState(ForgotPassMessagePanel, false);
 				UITools.SetActiveState(TitlePanel, true);
 				UITools.SetActiveState(BasePanel, true);
 				break;
 			case WinMenuLevel.Create:
 				UITools.SetActiveState(LoginPanel, false);
 				UITools.SetActiveState(CreatePanel, true);
+				CreateErrorLabel.text = "";
 				break;
 			case WinMenuLevel.Login:
+				UITools.SetActiveState(CreatePanel, false);
 				UITools.SetActiveState(TitlePanel, false);
+				UITools.SetActiveState(ForgotPassPanel, false);
 				UITools.SetActiveState(BasePanel, false);
 				UITools.SetActiveState(LoginPanel, true);
 				if (PlayerPrefs.GetString("playername") != null)
 					UserNameInput.text = PlayerPrefs.GetString("playername");
 				RememberMeCheckbox.isChecked = Game.RememberLogin;
-				ErrorLabel.text = "";                                   // Clear error text if any
+				if (ErrorLabel.text != "[44DD44]User created, please log in!") ErrorLabel.text = ""; // Clear error text any
+				PasswordInput.text = ""; // Clear password field
 				break;
 			case WinMenuLevel.Scores:
 				if (BasePanel.enabled) UITools.SetActiveState(BasePanel, false);
@@ -254,6 +300,16 @@ public class Win : MonoBehaviour {
 				SongNameLabel.text = AudioManager.artist + " - " + AudioManager.title;
 				SongModeLabel.text = Game.GameMode.ToString();
 				UITools.SetActiveState(ScoresTitlePanel, true);
+				break;
+			case WinMenuLevel.Forgot:
+				UITools.SetActiveState(LoginPanel, false);
+				UITools.SetActiveState(ForgotPassPanel, true);
+				ForgotErrorLabel.text = "";
+				break;
+			case WinMenuLevel.ForgotMessage:
+				UITools.SetActiveState(ForgotPassPanel, false);
+				UITools.SetActiveState(ForgotPassMessagePanel, true);
+				ForgotMessageLabel.text = "An email was sent to [44CCBB]" + globalEmail + " [FFFFFF]with instructions on how to reset your password!";
 				break;
 		}
 	}
@@ -294,21 +350,156 @@ public class Win : MonoBehaviour {
 	/// Button and input text handler for submitting highscore.
 	/// </summary>
 	void OnLoginSubmit() {
-		string playerName = UserNameInput.text;                     // Set input box text to playerName
+		string playerName = UserNameInput.text;
+		string password = PasswordInput.text;
 		if (playerName.Length < 2) {                            // Error if input text is too short
 			UserNameInput.text = "";
-			ErrorLabel.text = "[F87431]Too short. Try again";
+			ErrorLabel.text = "[F87431]Name too short. Try again";
 			return;
-		}
-		if (!nameRegEx.IsMatch(playerName)) {
+		} else if (!nameRegEx.IsMatch(playerName)) {
 			UserNameInput.text = "";
 			ErrorLabel.text = "[F87431]Invalid. Only letters & numbers allowed.";
 			return;
 		}
-		Game.IsLoggedIn = true;
-		ChangeMenu(WinMenuLevel.LoadingScores);
-		StartCoroutine(SubmitScores(playerName));
+		if (password.Length < 5) {
+			PasswordInput.text = "";
+			ErrorLabel.text = "[F87431]Password too short. Try again";
+			return;
+		}
+		password = MD5Utils.MD5FromString(password + passHashKey);
+		StartCoroutine(startLogin(playerName, password));
+	}
 
+	void OnCreateClicked() {
+		ChangeMenu(WinMenuLevel.Create);
+	}
+
+	void OnLoginForgotClicked() {
+		ChangeMenu(WinMenuLevel.Forgot);
+	}
+	#endregion
+
+	#region Login Menu functions
+	IEnumerator startLogin(string user, string password) {
+		yield return StartCoroutine(HSController.CheckUserWin(user, password));
+		if (LoginSuccess) {
+			Game.IsLoggedIn = true;
+			// Store the new player name
+			PlayerPrefs.SetString("playername", user);
+			// Change the menu
+			ChangeMenu(WinMenuLevel.LoadingScores);
+			// Submit and load the scores
+			StartCoroutine(SubmitScores(user));
+			LoginSuccess = false;
+		}
+	}
+
+	public static void SetLoginErrorLabel(string text) {
+		instance.ErrorLabel.text = text;
+	}
+	#endregion
+
+	#region Create Menu Buttons
+	void OnCreateSubmit() {
+		string name = CreateNameInput.text;
+		string password = CreatePass1Input.text;
+		string email = CreateEmailInput.text;
+		if (name.Length < 2) {
+			CreateNameInput.text = "";
+			CreateErrorLabel.text = "Username too short";
+			return;
+		} else if (!nameRegEx.IsMatch(name)) {
+			CreateNameInput.text = "";
+			CreateErrorLabel.text = "Invalid username, use letters & numbers!";
+			return;
+		} else if (CreatePass1Input.text != CreatePass2Input.text) {
+			CreatePass1Input.text = "";
+			CreatePass2Input.text = "";
+			CreateErrorLabel.text = "Passwords don't match";
+			return;
+		} else if (CreatePass1Input.text.Length < 5) {
+			CreatePass1Input.text = "";
+			CreatePass2Input.text = "";
+			CreateErrorLabel.text = "Password is too short!";
+			return;
+		} else if (CreateEmailInput.text.Length < 1) {
+			CreateEmailInput.text = "";
+			CreateErrorLabel.text = "Insert e-mail for password recovery!";
+		} else {
+			password = MD5Utils.MD5FromString(password + passHashKey);	// Encrypt password
+			StartCoroutine(addNewUser(name, password, email));	// Add user
+		}
+	}
+	void OnCreateBackClicked() {
+		ChangeMenu(WinMenuLevel.Login);
+	}
+	#endregion
+
+	#region Create menu functions
+	IEnumerator addNewUser(string name, string password, string email) {
+		yield return StartCoroutine(HSController.AddUserWin(name, password, email));
+		if (UserCreated) {
+			PlayerPrefs.SetString("playername", name);
+			ErrorLabel.text = "[44DD44]User created, please log in!";
+			ChangeMenu(WinMenuLevel.Login);
+			UserCreated = false;
+		}
+	}
+	public static void SetCreateErrorLabel(string text) {
+		instance.CreateErrorLabel.text = text;
+	}
+	public static void SetCreateButtonLabel(string text) {
+		instance.CreateButtonLabel.text = text;
+	}
+	#endregion
+
+	#region Forgot Pass buttons
+	void OnForgotBackClicked() {
+		ChangeMenu(WinMenuLevel.Login);
+	}
+	void OnForgotSubmitClicked() {
+		string name = ForgotNameInput.text;
+		string email = ForgotEmailInput.text;
+		if (name.Length < 2) {
+			ForgotNameInput.text = "";
+			ForgotErrorLabel.text = "Username too short";
+		} else if (email.Length < 1) {
+			ForgotEmailInput.text = "";
+			ForgotErrorLabel.text = "Email field can't be empty";
+		} else {
+			ForgotButton.isEnabled = false;
+			ForgotButtonLabel.text = "Loading...";
+			StartCoroutine(forgotPasswordCheck(name, email));
+		}
+	}
+	void OnForgotOkClicked() {
+		ChangeMenu(WinMenuLevel.Base);
+	}
+	#endregion
+
+	#region Forgot Pass menu functions
+	IEnumerator forgotPasswordCheck(string name, string email) {
+		yield return StartCoroutine(HSController.CheckEmailWin(name, email));
+		if (CorrectEmail) {
+			CorrectEmail = false;
+			yield return StartCoroutine(HSController.SendEmailWin(name));
+		} else {
+			ForgotButton.isEnabled = true;
+			ForgotButtonLabel.text = "Request new password";
+			Debug.Log("Wrong email");
+		}
+		ForgotButton.isEnabled = true;
+		ForgotButtonLabel.text = "Request new password";
+		if (EmailSent) {
+			EmailSent = false;
+			globalEmail = email;
+			ChangeMenu(WinMenuLevel.ForgotMessage);
+		} else {
+			Debug.Log("Error sending email");
+		}
+	}
+	public static void SetForgotErrorLabel(string text) {
+		instance.ForgotErrorLabel.text = text;
 	}
 	#endregion
 
@@ -420,5 +611,7 @@ public enum WinMenuLevel {
 	Login,
 	Create,
 	LoadingScores,
-	Scores
+	Scores,
+	Forgot,
+	ForgotMessage
 }
