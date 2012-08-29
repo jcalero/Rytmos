@@ -85,7 +85,7 @@ public class Player : MonoBehaviour, PeakListener {
 		ResetStats();
 		
 		if(Game.GameMode == Game.Mode.Casual || Game.GameMode == Game.Mode.Tutorial)
-			energyRegenRate = 0.01f;
+			energyRegenRate = 0.02f;
 		else
 			energyRegenRate = 0.03f;
 		
@@ -132,7 +132,7 @@ public class Player : MonoBehaviour, PeakListener {
 			if(!beatAnim.isPlaying) scaleFactor = 1f;
 			gameObject.transform.localScale = new Vector3(originalSize.x * scaleFactor,originalSize.y,originalSize.z * scaleFactor);
 			
-			if(sendingPulseAnimTimer < 0.2f) {
+			if(sendingPulseAnimTimer < sendingPulseAnimTime) {
 				meshRenders[0].material.SetColor("_Color",new Color(sendingPulseAnimColor.r,sendingPulseAnimColor.g,sendingPulseAnimColor.b,meshRenders[0].material.color.a));
 				meshRenders[1].material.SetColor("_Color",new Color(sendingPulseAnimColor.r,sendingPulseAnimColor.g,sendingPulseAnimColor.b,meshRenders[1].material.color.a));
 				meshRenders[2].material.SetColor("_Color",new Color(sendingPulseAnimColor.r,sendingPulseAnimColor.g,sendingPulseAnimColor.b,meshRenders[2].material.color.a));
@@ -159,7 +159,7 @@ public class Player : MonoBehaviour, PeakListener {
 			 else if (Game.DevMode && Game.sendSuper)
 				triggerMassivePulse();
 			
-			 else if (energy - pulseCost >= 0 ||  Game.GameMode == Game.Mode.Casual) {
+			 else if (energy - pulseCost >= 0) {
 				// Show the touch sprite at the mouse location.
 				sendPulse(ray.origin.x, ray.origin.y);
 				// Reduce the player energy if not a superpulse
