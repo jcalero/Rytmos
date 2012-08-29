@@ -40,6 +40,13 @@ public class MainMenu : MonoBehaviour {
 	// Play menu objects
 	public UIButton OptionsButton;
 	public UILabel FPSLabel;
+	public UIButton CreditsButton;
+
+	// Credits menu objects
+	public UIButton CreditsBackButton;
+	public GameObject CreditsPage1;
+	public UILabel CreditsTestersTitleLabel;
+	public UILabel CreditsTestersLabel;
 
 	// Options menu objects
 	public UILabel LoggedOutLabel;
@@ -84,6 +91,7 @@ public class MainMenu : MonoBehaviour {
 	public UILabel ForgotMessageLabel;
 	public UILabel ForgotButtonLabel;
 	public UIButton ForgotButton;
+	public UIButton ForgotBackButton;
 	public static bool CorrectEmail;
 	public static bool EmailSent;
 	private string globalEmail;
@@ -151,6 +159,17 @@ public class MainMenu : MonoBehaviour {
 				OptionsButton.transform.localPosition.y);
 			FPSLabel.transform.localPosition = new Vector2(FPSLabel.transform.localPosition.x - 85,
 				FPSLabel.transform.localPosition.y);
+			CreditsButton.transform.localPosition = new Vector2(CreditsButton.transform.localPosition.x - 85,
+				CreditsButton.transform.localPosition.y);
+			// Credits menu
+			CreditsBackButton.transform.localPosition = new Vector2(CreditsBackButton.transform.localPosition.x + 80,
+				CreditsBackButton.transform.localPosition.y);
+			CreditsPage1.transform.localScale = new Vector2(0.95f, 0.95f);
+			CreditsTestersTitleLabel.transform.localPosition = new Vector2(CreditsTestersTitleLabel.transform.localPosition.x,
+				CreditsTestersTitleLabel.transform.localPosition.y + 40);
+			CreditsTestersLabel.lineWidth = 900;
+			CreditsTestersLabel.transform.localPosition = new Vector2(CreditsTestersLabel.transform.localPosition.x,
+				CreditsTestersLabel.transform.localPosition.y - 20);
 			// Options menu
 			OptionsBackButton.transform.localPosition = new Vector2(OptionsBackButton.transform.localPosition.x + 80,
 				OptionsBackButton.transform.localPosition.y);
@@ -159,6 +178,9 @@ public class MainMenu : MonoBehaviour {
 				ModeBackButton.transform.localPosition.y);
 			// Login menu
 			LoginBackButton.transform.localPosition = new Vector2(-210, 154);
+			// Forgot password menu
+			ForgotBackButton.transform.localPosition = new Vector2(-220, 154);
+			ForgotBackButton.transform.localScale = new Vector2(0.8f, 0.8f);
 			// Scores menu
 			ScoresSongNameLabel.lineWidth = 460;
 			ScoresSongModeLabel.transform.localPosition = new Vector2(ScoresSongModeLabel.transform.localPosition.x,
@@ -209,6 +231,15 @@ public class MainMenu : MonoBehaviour {
 				OptionsButton.transform.localPosition.y);
 			FPSLabel.transform.localPosition = new Vector2(FPSLabel.transform.localPosition.x - 40,
 				FPSLabel.transform.localPosition.y);
+			CreditsButton.transform.localPosition = new Vector2(CreditsButton.transform.localPosition.x - 40,
+				CreditsButton.transform.localPosition.y);
+			// Credits menu
+			CreditsBackButton.transform.localPosition = new Vector2(CreditsBackButton.transform.localPosition.x + 45,
+				CreditsBackButton.transform.localPosition.y);
+			CreditsPage1.transform.localScale = new Vector2(0.98f, 0.98f);
+			CreditsTestersLabel.lineWidth = 1100;
+			CreditsTestersLabel.transform.localPosition = new Vector2(CreditsTestersLabel.transform.localPosition.x,
+				CreditsTestersLabel.transform.localPosition.y - 20);
 			// Options menu
 			OptionsBackButton.transform.localPosition = new Vector2(OptionsBackButton.transform.localPosition.x + 45,
 				OptionsBackButton.transform.localPosition.y);
@@ -218,6 +249,9 @@ public class MainMenu : MonoBehaviour {
 			// Login menu
 			LoginBackButton.transform.localPosition = new Vector2(LoginBackButton.transform.localPosition.x + 35,
 				LoginBackButton.transform.localPosition.y);
+			// Forgot pass menu
+			ForgotBackButton.transform.localPosition = new Vector2(ForgotBackButton.transform.localPosition.x + 35,
+				ForgotBackButton.transform.localPosition.y);
 			// Scores menu
 			ScoresSongNameLabel.lineWidth = 460;
 			ScoresBackButton.transform.localPosition = new Vector2(ScoresBackButton.transform.localPosition.x + 30,
@@ -260,15 +294,23 @@ public class MainMenu : MonoBehaviour {
 				OptionsButton.transform.localPosition.y);
 			FPSLabel.transform.localPosition = new Vector2(FPSLabel.transform.localPosition.x - 15,
 				FPSLabel.transform.localPosition.y);
+			CreditsButton.transform.localPosition = new Vector2(CreditsButton.transform.localPosition.x - 15,
+				CreditsButton.transform.localPosition.y);
 			// Options menu
 			OptionsBackButton.transform.localPosition = new Vector2(OptionsBackButton.transform.localPosition.x + 20,
 				OptionsBackButton.transform.localPosition.y);
+			// Credits menu
+			CreditsBackButton.transform.localPosition = new Vector2(CreditsBackButton.transform.localPosition.x + 20,
+				CreditsBackButton.transform.localPosition.y);
 			// Mode menu
 			ModeBackButton.transform.localPosition = new Vector2(ModeBackButton.transform.localPosition.x + 20,
 				ModeBackButton.transform.localPosition.y);
 			// Login menu
 			LoginBackButton.transform.localPosition = new Vector2(LoginBackButton.transform.localPosition.x + 10,
 				LoginBackButton.transform.localPosition.y);
+			// Forgot back menu
+			ForgotBackButton.transform.localPosition = new Vector2(ForgotBackButton.transform.localPosition.x + 10,
+				ForgotBackButton.transform.localPosition.y);
 			// Scores menu
 			ScoresBackButton.transform.localPosition = new Vector2(ScoresBackButton.transform.localPosition.x + 10,
 				ScoresBackButton.transform.localPosition.y);
