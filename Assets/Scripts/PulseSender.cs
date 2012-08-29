@@ -47,7 +47,8 @@ public class PulseSender : MonoBehaviour {
 		//Find distance for the maximum radius
 		pulseMax = new Vector2(Game.screenLeft, Game.screenTop).magnitude;
 		gameObject.audio.volume = Game.EffectsVolume;
-
+		
+		Player.StartColorAnim(this.GetHashCode());
 	}
 
 	void Update() {
@@ -134,6 +135,8 @@ public class PulseSender : MonoBehaviour {
 			SuperPulseCamera.backgroundColor = Color.black;
 			Destroy(gameObject);
 		}
+		
+		Player.SetColorForAnim(CurrentColor,this.GetHashCode());
 	}
 
 	IEnumerator FlashScreen() {

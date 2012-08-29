@@ -43,6 +43,11 @@ public class Player : MonoBehaviour, PeakListener {
 	private float[] glowTimers = new float[3];	// Timers for each ring
 	private bool sentPulse = false;				// Flag for if you have sent a pulse
 	private bool sentPulseTwo = false;			// Second half of the pulse animation
+	
+	private static Color sendingPulseAnimColor;
+	private static float sendingPulseAnimTimer;
+	private static int sendingPulseAnimRefHash;
+	private static readonly float sendingPulseAnimTime = 0.2f;
 
 	private int pulseCost = 35;                 // Cost of a pulse
 	private float energyRegenRate = 0.03f;       // The rate at which the energy regenerates. Lower is faster.
@@ -84,9 +89,14 @@ public class Player : MonoBehaviour, PeakListener {
 		else
 			energyRegenRate = 0.03f;
 		
+		sendingPulseAnimTimer = 1f;
+		sendingPulseAnimColor = Color.white;
+		sendingPulseAnimRefHash = -1;
+		
 	}
 
 	void Update() {
+		sendingPulseAnimTimer += Time.deltaTime;
 		if (!Game.Paused) {
 						
 			// If the player clicks, and has enough energy, sends out a pulse
@@ -121,6 +131,12 @@ public class Player : MonoBehaviour, PeakListener {
 				showAnimRing(Color.white);
 			if(!beatAnim.isPlaying) scaleFactor = 1f;
 			gameObject.transform.localScale = new Vector3(originalSize.x * scaleFactor,originalSize.y,originalSize.z * scaleFactor);
+			
+			if(sendingPulseAnimTimer < 0.2f) {
+				meshRenders[0].material.SetColor("_Color",new Color(sendingPulseAnimColor.r,sendingPulseAnimColor.g,sendingPulseAnimColor.b,meshRenders[0].material.color.a));
+				meshRenders[1].material.SetColor("_Color",new Color(sendingPulseAnimColor.r,sendingPulseAnimColor.g,sendingPulseAnimColor.b,meshRenders[1].material.color.a));
+				meshRenders[2].material.SetColor("_Color",new Color(sendingPulseAnimColor.r,sendingPulseAnimColor.g,sendingPulseAnimColor.b,meshRenders[2].material.color.a));
+			}
 		}
 	}
 
@@ -401,6 +417,24 @@ public class Player : MonoBehaviour, PeakListener {
 	
 	public static void ChangeVolume() {
 		foreach(AudioSource AS in audioSources) AS.volume = Game.EffectsVolume;	
+	}
+	
+	public static void StartColorAnim(int pulseRefHash) {
+//		if(sendingPulseAnimTimer > sendingPulseAnimTime) {
+			sendingPulseAnimRefHash = pulseRefHash;
+			sendingPulseAnimTimer = 0f;
+			sendingPulseAnimColor = instance.meshRenders[0].material.color;
+//		}
+	}
+	
+	public static void SetColorForAnim(Color c, int pulseRefHash) {
+		if(pulseRefHash == sendingPulseAnimRefHash) {
+			Color x = c + 0.6f*(Color.white - c);
+			sendingPulseAnimColor.r = x.r;
+			sendingPulseAnimColor.g = x.g;
+			sendingPulseAnimColor.b = x.b;
+			sendingPulseAnimColor.a = c.a;
+		}
 	}
 	#endregion
 }
