@@ -31,6 +31,7 @@ public class MainMenu : MonoBehaviour {
 	public UIPanel MainMenuForgotPanel;
 	public UIPanel MainMenuForgotMessagePanel;
 	public UIPanel MainMenuFirstPlayPanel;
+	public UIPanel MainMenuAnalysisNotePanel;
 
 	// File browser
 	public GameObject FileBrowser;
@@ -388,6 +389,8 @@ public class MainMenu : MonoBehaviour {
 		if (MainMenuCredits3DPanel.enabled) UITools.SetActiveState(MainMenuCredits3DPanel, false);
 		if (MainMenuForgotPanel.enabled) UITools.SetActiveState(MainMenuForgotPanel, false);
 		if (MainMenuForgotMessagePanel.enabled) UITools.SetActiveState(MainMenuForgotMessagePanel, false);
+		if (MainMenuAnalysisNotePanel.enabled) UITools.SetActiveState(MainMenuAnalysisNotePanel, false);
+		if (MainMenuFirstPlayPanel.enabled) UITools.SetActiveState(MainMenuFirstPlayPanel, false);
 	}
 
 	/// <summary>
@@ -568,8 +571,18 @@ public class MainMenu : MonoBehaviour {
 
 	#region Confirm Choice Menu
 	void OnChoiceConfirmedClicked() {
-		ClearMenu();
-		Application.LoadLevel("LoadScreen");
+		if(PlayerPrefs.HasKey("FirstNote")) {
+			if(PlayerPrefs.GetInt("FirstNote") == 1) {
+				UITools.SetActiveState(MainMenuChoicePanel, false);
+				UITools.SetActiveState(MainMenuAnalysisNotePanel, true);
+			} else {
+				ClearMenu();
+				Application.LoadLevel("LoadScreen");
+			}
+		} else {
+			ClearMenu();
+			Application.LoadLevel("LoadScreen");
+		}
 	}
 
 	void OnChoiceDeclineClicked() {
@@ -769,6 +782,14 @@ public class MainMenu : MonoBehaviour {
 	void OnFirstNoClicked() {
 		UITools.SetActiveState(MainMenuFirstPlayPanel, false);
 		PlayerPrefs.SetInt("FirstPlay", 0);
+	}
+	#endregion
+	
+	#region AnaylsisNote buttons
+	void OnAnalysisOkayClicked() {
+		PlayerPrefs.SetInt ("FirstNote", 0);
+		ClearMenu();
+		Application.LoadLevel("LoadScreen");
 	}
 	#endregion
 
