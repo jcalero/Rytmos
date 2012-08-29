@@ -94,6 +94,7 @@ public class PowerupScript : MonoBehaviour {
 				powerUpTimer = 0;
 			}
 			else if(canSpawn) {
+				powerUpTimer = 0;
 				spawnPowerupOnScreen(spawnPosition);
 				canSpawn = false;
 			}
