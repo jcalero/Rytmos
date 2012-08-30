@@ -10,7 +10,6 @@ public class SpawnerDisplayManager : MonoBehaviour {
 	public UIAtlas uiatlas;
 	
 	private EnemySpawnScript ess;
-	private Player p;
 	private int activeSpawner;
 	private int oldSpawner;
 	private GameObject[][] allSpawners;
@@ -45,7 +44,6 @@ public class SpawnerDisplayManager : MonoBehaviour {
 			}
 		}
 		originalSize = allSpawners[0][0].transform.localScale;
-		p = player.GetComponentInChildren<Player>();
 	}
 	
 	// Use this for initialization
@@ -90,7 +88,7 @@ public class SpawnerDisplayManager : MonoBehaviour {
 				allSpawners[activeSpawner][i].transform.localPosition = ess.findSpawnPositionVector(ess.spawnPositions[i]);
 				oldPositions[i] = ess.spawnPositions[i];
 			}
-			allSpawners[activeSpawner][i].transform.localScale = new Vector3(originalSize.x*p.scaleFactor, originalSize.y*p.scaleFactor, originalSize.z);
+			allSpawners[activeSpawner][i].transform.localScale = new Vector3(originalSize.x*Player.externScaleFactor, originalSize.y*Player.externScaleFactor, originalSize.z);
 		}
 	}
 	

@@ -26,6 +26,8 @@ public class PowerupScript : MonoBehaviour {
 	private static bool canSpawn;
 	private static Vector3 spawnPosition;
 	private Vector3 away = new Vector3(20,20,0);
+	
+	private Vector3[] origPowerupScales = new Vector3[3];
 
 	// Use this for initialization
 	void Awake () {
@@ -55,6 +57,11 @@ public class PowerupScript : MonoBehaviour {
 		moveSprite(away, powerups[2]);
 		// Set audio volume
 		gameObject.audio.volume = Game.EffectsVolume;
+		
+		
+		origPowerupScales[0] = powerups[0].transform.localScale;
+		origPowerupScales[1] = powerups[1].transform.localScale;
+		origPowerupScales[2] = powerups[2].transform.localScale;
 	}
 	
 	// Update is called once per frame
@@ -70,7 +77,11 @@ public class PowerupScript : MonoBehaviour {
 		
 		//Spin the atom and the circles about their center
 		powerups[0].transform.localEulerAngles = new Vector3(0,0,powerups[0].transform.localEulerAngles.z + (Time.deltaTime*50f)); 
-		powerups[1].transform.localEulerAngles = new Vector3(0,0,powerups[1].transform.localEulerAngles.z + (Time.deltaTime*50f)); 
+		powerups[1].transform.localEulerAngles = new Vector3(0,0,powerups[1].transform.localEulerAngles.z + (Time.deltaTime*50f));
+		
+		powerups[0].transform.localScale = new Vector3(origPowerupScales[0].x * Player.externScaleFactor, origPowerupScales[0].y * Player.externScaleFactor, origPowerupScales[0].z);
+		powerups[1].transform.localScale = new Vector3(origPowerupScales[1].x * Player.externScaleFactor, origPowerupScales[1].y * Player.externScaleFactor, origPowerupScales[1].z);
+		powerups[2].transform.localScale = new Vector3(origPowerupScales[2].x * Player.externScaleFactor, origPowerupScales[2].y * Player.externScaleFactor, origPowerupScales[2].z);
 		
 		//Debug mode spawn powerups for testing
 		if(DevScript.devModeAccess) {
