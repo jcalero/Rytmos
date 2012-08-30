@@ -36,7 +36,9 @@ public class Background : MonoBehaviour, PeakListener {
 	#region Functions
 	void Awake() {
 		// Load the background sprite
-		spriteValues = SpriteTools.CalculateSprite(GameAtlas, "background");
+		if(Game.ColorBlindMode) spriteValues = SpriteTools.CalculateSprite(GameAtlas, "bgColorblind");
+		else spriteValues = SpriteTools.CalculateSprite(GameAtlas, "background");
+
 		BGSpriteManager.AddSprite(BackgroundObject, spriteValues[0], spriteValues[1], (int)spriteValues[2], (int)spriteValues[3], (int)spriteValues[4], (int)spriteValues[5], false);
 
 		channelRestrictors = new int[AudioManager.peaks.Length];
