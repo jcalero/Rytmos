@@ -68,6 +68,9 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		
 		if (timer >= audioLength){
 			if (!AudioManager.songLoaded) Application.LoadLevel("LoadScreen");
+			else if (!Game.isUnlockedVersion) {
+				Application.LoadLevel("Win");
+			}
 			else {
 				if(spawnCount == Level.EnemiesDespawned) {
 					if(!lastTime)
@@ -108,7 +111,7 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		PeakTriggerManager.addSelfToListenerList(this);
 		
 		// Initialize other variables
-		audioLength = AudioManager.audioLength;
+		audioLength = Game.isUnlockedVersion? AudioManager.audioLength : (AudioManager.audioLength < 60? AudioManager.audioLength : 60);
 		timer = 0f;
 		timers = new float[AudioManager.peaks.Length];
 		spawnRestrictors = new int[AudioManager.peaks.Length];

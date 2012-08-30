@@ -46,6 +46,10 @@ public class Game : MonoBehaviour
 	public static bool disablePause = false;
 	
 	public static float cameraScaleFactor;
+	
+	// Trial/Full version related settings
+	private static readonly bool isFullVersion = true;
+	public static bool isUnlockedVersion;
 	#endregion
 
 	#region Functions
@@ -61,6 +65,8 @@ public class Game : MonoBehaviour
 		screenRight = -screenLeft;
 		screenTop = -screenBottom;
 		screenMiddle = 0f;
+		
+		isUnlockedVersion = CheckForUnlockedVersion();
 		//cameraScaleFactor = GetCameraScaleFactor();
 	}
 
@@ -409,7 +415,15 @@ public class Game : MonoBehaviour
 		Invincible
 	}
 
-
+	private static bool CheckForUnlockedVersion() {
+		if(PlayerPrefs.HasKey("unlockedVersion")) {
+			return (PlayerPrefs.GetInt ("unlockedVersion") > 0 ? true : false) || isFullVersion;
+		}
+		else {
+			PlayerPrefs.SetInt("unlockedVersion",0);
+			return false || isFullVersion;
+		}
+	}
 	#endregion
 }
 
