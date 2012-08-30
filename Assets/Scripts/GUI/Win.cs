@@ -21,9 +21,11 @@ public class Win : MonoBehaviour {
 	public UIPanel LoginPanel;
 	public UIPanel CreatePanel;
 	public UIPanel ScoresPanel;
+	public UIPanel ScoresOfflinePanel;
 	public UIPanel ScoresTitlePanel;
 	public UIPanel ForgotPassPanel;
 	public UIPanel ForgotPassMessagePanel;
+	public UIPanel GoOnlinePanel;
 	// Base Menu Objects
 	public UILabel SongLabel;
 	public UILabel HitsValueLabel;
@@ -262,9 +264,11 @@ public class Win : MonoBehaviour {
 				if (CreatePanel.enabled) UITools.SetActiveState(CreatePanel, false);
 				if (LoginPanel.enabled) UITools.SetActiveState(LoginPanel, false);
 				if (ScoresPanel.enabled) UITools.SetActiveState(ScoresPanel, false);
+				if (ScoresOfflinePanel.enabled) UITools.SetActiveState(ScoresOfflinePanel, false);
 				if (ScoresTitlePanel.enabled) UITools.SetActiveState(ScoresTitlePanel, false);
 				if (ForgotPassPanel.enabled) UITools.SetActiveState(ForgotPassPanel, false);
 				if (ForgotPassMessagePanel.enabled) UITools.SetActiveState(ForgotPassMessagePanel, false);
+				if (GoOnlinePanel.enabled) UITools.SetActiveState(GoOnlinePanel, false);
 				UITools.SetActiveState(TitlePanel, true);
 				UITools.SetActiveState(BasePanel, true);
 				break;
@@ -278,6 +282,7 @@ public class Win : MonoBehaviour {
 				UITools.SetActiveState(TitlePanel, false);
 				UITools.SetActiveState(ForgotPassPanel, false);
 				UITools.SetActiveState(BasePanel, false);
+				UITools.SetActiveState(GoOnlinePanel, false);
 				UITools.SetActiveState(LoginPanel, true);
 				if (PlayerPrefs.GetString("playername") != null)
 					UserNameInput.text = PlayerPrefs.GetString("playername");
@@ -290,13 +295,25 @@ public class Win : MonoBehaviour {
 				if (CreatePanel.enabled) UITools.SetActiveState(CreatePanel, false);
 				if (LoginPanel.enabled) UITools.SetActiveState(LoginPanel, false);
 				if (TitlePanel.enabled) UITools.SetActiveState(TitlePanel, false);
+				UITools.SetActiveState(GoOnlinePanel, false);
 				UITools.SetActiveState(ScoresPanel, true);
+				break;
+			case WinMenuLevel.ScoresOffline:
+				if (BasePanel.enabled) UITools.SetActiveState(BasePanel, false);
+				if (CreatePanel.enabled) UITools.SetActiveState(CreatePanel, false);
+				if (TitlePanel.enabled) UITools.SetActiveState(TitlePanel, false);
+				UITools.SetActiveState(GoOnlinePanel, false);
+				SongNameLabel.text = AudioManager.artist + " - " + AudioManager.title;
+				SongModeLabel.text = Game.GameMode.ToString();
+				UITools.SetActiveState(ScoresTitlePanel, true);
+				UITools.SetActiveState(ScoresOfflinePanel, true);
 				break;
 			case WinMenuLevel.LoadingScores:
 				if (BasePanel.enabled) UITools.SetActiveState(BasePanel, false);
 				if (CreatePanel.enabled) UITools.SetActiveState(CreatePanel, false);
 				if (LoginPanel.enabled) UITools.SetActiveState(LoginPanel, false);
 				if (TitlePanel.enabled) UITools.SetActiveState(TitlePanel, false);
+				UITools.SetActiveState(GoOnlinePanel, false);
 				SongNameLabel.text = AudioManager.artist + " - " + AudioManager.title;
 				SongModeLabel.text = Game.GameMode.ToString();
 				UITools.SetActiveState(ScoresTitlePanel, true);
@@ -310,6 +327,12 @@ public class Win : MonoBehaviour {
 				UITools.SetActiveState(ForgotPassPanel, false);
 				UITools.SetActiveState(ForgotPassMessagePanel, true);
 				ForgotMessageLabel.text = "An email was sent to [44CCBB]" + globalEmail + " [FFFFFF]with instructions on how to reset your password!";
+				break;
+			case WinMenuLevel.GoOnlineWindow:
+				HighscoreButton.isEnabled = false;
+				MainMenuButton.isEnabled = false;
+				ReplaySongButton.isEnabled = false;
+				UITools.SetActiveState(GoOnlinePanel, true);
 				break;
 		}
 	}
@@ -330,9 +353,14 @@ public class Win : MonoBehaviour {
 	}
 
 	void OnSubmitHighscoreClicked() {
-		if ((!Game.RememberLogin && !Game.IsLoggedIn) || Game.PlayerName.Length < 1)
+		if (Game.AskOnlineMode)
+			ChangeMenu(WinMenuLevel.GoOnlineWindow);
+		else if (((!Game.RememberLogin && !Game.IsLoggedIn) || Game.PlayerName.Length < 1) && Game.OnlineMode)
 			ChangeMenu(WinMenuLevel.Login);
-		else {
+		else if (!Game.OnlineMode) {
+			ChangeMenu(WinMenuLevel.ScoresOffline);
+			SubmitScoresOffline();
+		} else {
 			ChangeMenu(WinMenuLevel.LoadingScores);
 			StartCoroutine(SubmitScores(Game.PlayerName));
 		}
@@ -503,6 +531,30 @@ public class Win : MonoBehaviour {
 	}
 	#endregion
 
+	#region Go Online Window buttons
+	void OnGoOnlineYesClicked() {
+		Game.OnlineMode = true;
+		HighscoreButton.isEnabled = true;
+		MainMenuButton.isEnabled = true;
+		ReplaySongButton.isEnabled = true;
+		if ((!Game.RememberLogin && !Game.IsLoggedIn) || Game.PlayerName.Length < 1)
+			ChangeMenu(WinMenuLevel.Login);
+		else {
+			ChangeMenu(WinMenuLevel.LoadingScores);
+			StartCoroutine(SubmitScores(Game.PlayerName));
+		}
+	}
+
+	void OnGoOnlineNoClicked() {
+		Game.OnlineMode = false;
+		HighscoreButton.isEnabled = true;
+		MainMenuButton.isEnabled = true;
+		ReplaySongButton.isEnabled = true;
+		ChangeMenu(WinMenuLevel.ScoresOffline);
+		SubmitScoresOffline();
+	}
+	#endregion
+
 	void CalculateSongLabelSize() {
 		if (SongLabel.text.Length > 38) {
 			SongLabel.transform.localScale = new Vector2(38, 38);
@@ -529,6 +581,62 @@ public class Win : MonoBehaviour {
 	public static void SetErrorText(string text) {
 		Debug.LogWarning(text);
 		//instance.errorLabel.text = text;
+	}
+
+	private void SubmitScoresOffline() {
+		// Store the song in song list
+		string songRow = RemovePipeChar(AudioManager.artist).Trim() + "|" + RemovePipeChar(AudioManager.title).Trim() + "|" + Game.GameMode.GetHashCode();
+		string path = "";
+		bool songExists = false;
+		if (Application.platform == RuntimePlatform.Android)
+			path = (Application.persistentDataPath + "/songlist_offline.r");
+		else if (Application.platform == RuntimePlatform.WindowsPlayer
+			|| Application.platform == RuntimePlatform.WindowsEditor)
+			path = (Application.persistentDataPath + "\\songlist_offline.r");
+		else {
+			Debug.Log("PLATFORM NOT SUPPORTED YET");
+			path = "";
+		}
+		string line;
+		try {
+			using (StreamReader sr = new StreamReader(path)) {
+				while ((line = sr.ReadLine()) != null) {
+					string lineClean = HSController.RemoveSpecialCharacters(line).ToLower();
+					string songRowClean = HSController.RemoveSpecialCharacters(songRow).ToLower();
+					if (lineClean == songRowClean)
+						songExists = true;
+				}
+				sr.Close();
+			}
+		} catch (Exception) {
+		}
+		if (!songExists) {
+			StreamWriter sw = new StreamWriter(path, true);
+			sw.WriteLine(songRow);
+			sw.Close();
+		}
+
+		// Add score to file
+		string fileName = "off_" + HSController.CalculateTableName(AudioManager.artist, AudioManager.title, Game.GameMode) + ".rhs";
+		string hspath = "";
+		//bool fileExists = false;
+		if (Application.platform == RuntimePlatform.Android)
+			hspath = (Application.persistentDataPath + "/" + fileName);
+		else if (Application.platform == RuntimePlatform.WindowsPlayer
+			|| Application.platform == RuntimePlatform.WindowsEditor)
+			hspath = (Application.persistentDataPath + "\\" + fileName);
+		else {
+			Debug.Log("PLATFORM NOT SUPPORTED YET");
+			hspath = "";
+		}
+
+		StreamWriter swSong = new StreamWriter(hspath, true);
+		swSong.WriteLine(Player.score);
+		swSong.Close();
+
+		SubmittingScoreLabel.text = "";
+		ChangeMenu(WinMenuLevel.ScoresOffline);
+		HSController.LoadSongOffline(AudioManager.artist, AudioManager.title, Game.GameMode);
 	}
 
 	private IEnumerator SubmitScores(string playerName) {
@@ -612,6 +720,8 @@ public enum WinMenuLevel {
 	Create,
 	LoadingScores,
 	Scores,
+	ScoresOffline,
 	Forgot,
-	ForgotMessage
+	ForgotMessage,
+	GoOnlineWindow
 }

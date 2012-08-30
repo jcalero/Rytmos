@@ -19,6 +19,7 @@ public class MainMenu : MonoBehaviour {
 	public UIPanel MainMenuModePanel;
 	public UIPanel MainMenuOptionsPanel;
 	public UIPanel MainMenuScoresPanel;
+	public UIPanel MainMenuScoresOfflinePanel;
 	public UIPanel MainMenuExtrasPanel;
 	public UIPanel MainMenuFileBrowserPanel;
 	public UIPanel MainMenuLoggedInBoxPanel;
@@ -32,6 +33,7 @@ public class MainMenu : MonoBehaviour {
 	public UIPanel MainMenuForgotMessagePanel;
 	public UIPanel MainMenuFirstPlayPanel;
 	public UIPanel MainMenuAnalysisNotePanel;
+	public UIPanel MainMenuGoOnlinePanel;
 
 	// File browser
 	public GameObject FileBrowser;
@@ -58,7 +60,7 @@ public class MainMenu : MonoBehaviour {
 	public UISlider EffectsVolumeSlider;
 	public UISlider MusicVolumeSlider;
 	public UILabel ColorblindSettingLabel;
-	public UILabel LowGraphicsSettingLabel;
+	public UILabel OnlineModeSettingLabel;
 
 	// LoggedInBox menu objects
 	public UILabel UsernameLabel;
@@ -376,6 +378,7 @@ public class MainMenu : MonoBehaviour {
 		if (MainMenuModePanel.enabled) UITools.SetActiveState(MainMenuModePanel, false);
 		if (MainMenuOptionsPanel.enabled) UITools.SetActiveState(MainMenuOptionsPanel, false);
 		if (MainMenuScoresPanel.enabled) UITools.SetActiveState(MainMenuScoresPanel, false);
+		if (MainMenuScoresOfflinePanel.enabled) UITools.SetActiveState(MainMenuScoresOfflinePanel, false);
 		if (MainMenuLoggedInBoxPanel.enabled) UITools.SetActiveState(MainMenuLoggedInBoxPanel, false);
 		if (MainMenuLogInPanel.enabled) UITools.SetActiveState(MainMenuLogInPanel, false);
 		if (MainMenuFileBrowserPanel.enabled) UITools.SetActiveState(MainMenuFileBrowserPanel, false);
@@ -391,6 +394,7 @@ public class MainMenu : MonoBehaviour {
 		if (MainMenuForgotMessagePanel.enabled) UITools.SetActiveState(MainMenuForgotMessagePanel, false);
 		if (MainMenuAnalysisNotePanel.enabled) UITools.SetActiveState(MainMenuAnalysisNotePanel, false);
 		if (MainMenuFirstPlayPanel.enabled) UITools.SetActiveState(MainMenuFirstPlayPanel, false);
+		if (MainMenuGoOnlinePanel.enabled) UITools.SetActiveState(MainMenuGoOnlinePanel, false);
 	}
 
 	/// <summary>
@@ -405,6 +409,7 @@ public class MainMenu : MonoBehaviour {
 				if (MainMenuModePanel.enabled) UITools.SetActiveState(MainMenuModePanel, false);
 				if (MainMenuOptionsPanel.enabled) UITools.SetActiveState(MainMenuOptionsPanel, false);
 				if (MainMenuScoresPanel.enabled) UITools.SetActiveState(MainMenuScoresPanel, false);
+				if (MainMenuScoresOfflinePanel.enabled) UITools.SetActiveState(MainMenuScoresOfflinePanel, false);
 				if (MainMenuLoggedInBoxPanel.enabled) UITools.SetActiveState(MainMenuLoggedInBoxPanel, false);
 				if (MainMenuLogInPanel.enabled) UITools.SetActiveState(MainMenuLogInPanel, false);
 				if (MainMenuFileBrowserPanel.enabled) UITools.SetActiveState(MainMenuFileBrowserPanel, false);
@@ -414,13 +419,16 @@ public class MainMenu : MonoBehaviour {
 				if (MainMenuCredits3DPanel.enabled) UITools.SetActiveState(MainMenuCredits3DPanel, false);
 				if (MainMenuForgotPanel.enabled) UITools.SetActiveState(MainMenuForgotPanel, false);
 				if (MainMenuForgotMessagePanel.enabled) UITools.SetActiveState(MainMenuForgotMessagePanel, false);
+				if (MainMenuAnalysisNotePanel.enabled) UITools.SetActiveState(MainMenuAnalysisNotePanel, false);
+				if (MainMenuFirstPlayPanel.enabled) UITools.SetActiveState(MainMenuFirstPlayPanel, false);
+				if (MainMenuGoOnlinePanel.enabled) UITools.SetActiveState(MainMenuGoOnlinePanel, false);
 				UITools.SetActiveState(MainMenuExtrasPanel, true);
 				UITools.SetActiveState(MainMenuBasePanel, true);
 				UITools.SetActiveState(MainMenuPlayPanel, true);
 				break;
 			case MenuLevel.Mode:
-				if(PlayerPrefs.HasKey("FirstPlay")) {
-					if(PlayerPrefs.GetInt("FirstPlay") == 1) 
+				if (PlayerPrefs.HasKey("FirstPlay")) {
+					if (PlayerPrefs.GetInt("FirstPlay") == 1)
 						UITools.SetActiveState(MainMenuFirstPlayPanel, true);
 				}
 				if (MainMenuFileBrowserPanel.enabled) UITools.SetActiveState(MainMenuFileBrowserPanel, false);
@@ -433,7 +441,7 @@ public class MainMenu : MonoBehaviour {
 			case MenuLevel.Options:
 				UITools.SetActiveState(MainMenuPlayPanel, false);
 				UITools.SetActiveState(MainMenuOptionsPanel, true);
-				if (Game.IsLoggedIn) UITools.SetActiveState(MainMenuLoggedInBoxPanel, true);
+				if (Game.IsLoggedIn && Game.OnlineMode) UITools.SetActiveState(MainMenuLoggedInBoxPanel, true);
 				UsernameLabel.text = Game.PlayerName;
 				break;
 			case MenuLevel.Quit:
@@ -444,7 +452,15 @@ public class MainMenu : MonoBehaviour {
 				UITools.SetActiveState(MainMenuPlayPanel, false);
 				UITools.SetActiveState(MainMenuBasePanel, false);
 				UITools.SetActiveState(MainMenuLogInPanel, false);
+				UITools.SetActiveState(MainMenuGoOnlinePanel, false);
 				UITools.SetActiveState(MainMenuScoresPanel, true);
+				HSController.InitHSDisplay();
+				break;
+			case MenuLevel.ScoresOffline:
+				UITools.SetActiveState(MainMenuPlayPanel, false);
+				UITools.SetActiveState(MainMenuBasePanel, false);
+				UITools.SetActiveState(MainMenuGoOnlinePanel, false);
+				UITools.SetActiveState(MainMenuScoresOfflinePanel, true);
 				HSController.InitHSDisplay();
 				break;
 			case MenuLevel.FileBrowser:
@@ -460,6 +476,7 @@ public class MainMenu : MonoBehaviour {
 				UITools.SetActiveState(MainMenuPlayPanel, false);
 				UITools.SetActiveState(MainMenuBasePanel, false);
 				UITools.SetActiveState(MainMenuForgotPanel, false);
+				UITools.SetActiveState(MainMenuGoOnlinePanel, false);
 				UITools.SetActiveState(MainMenuLogInPanel, true);
 				if (PlayerPrefs.GetString("playername") != null)
 					UserNameInput.text = PlayerPrefs.GetString("playername");
@@ -508,6 +525,11 @@ public class MainMenu : MonoBehaviour {
 				UITools.SetActiveState(MainMenuForgotMessagePanel, true);
 				ForgotMessageLabel.text = "An email was sent to [44CCBB]" + globalEmail + " [FFFFFF]with instructions on how to reset your password!";
 				break;
+			case MenuLevel.GoOnlineWindow:
+				OptionsButton.isEnabled = false;
+				CreditsButton.isEnabled = false;
+				UITools.SetActiveState(MainMenuGoOnlinePanel, true);
+				break;
 		}
 	}
 
@@ -524,8 +546,12 @@ public class MainMenu : MonoBehaviour {
 	/// </summary>
 	void OnScoresClicked() {
 		//Debug.Log(Game.RememberLogin + " : " + Game.IsLoggedIn);
-		if ((!Game.RememberLogin && !Game.IsLoggedIn) || Game.PlayerName.Length < 1)
+		if (Game.AskOnlineMode)
+			ChangeMenu(MenuLevel.GoOnlineWindow);
+		else if (((!Game.RememberLogin && !Game.IsLoggedIn) || Game.PlayerName.Length < 1) && Game.OnlineMode)
 			ChangeMenu(MenuLevel.LogIn);
+		else if (!Game.OnlineMode)
+			ChangeMenu(MenuLevel.ScoresOffline);
 		else
 			ChangeMenu(MenuLevel.Scores);
 	}
@@ -571,8 +597,8 @@ public class MainMenu : MonoBehaviour {
 
 	#region Confirm Choice Menu
 	void OnChoiceConfirmedClicked() {
-		if(PlayerPrefs.HasKey("FirstNote")) {
-			if(PlayerPrefs.GetInt("FirstNote") == 1) {
+		if (PlayerPrefs.HasKey("FirstNote")) {
+			if (PlayerPrefs.GetInt("FirstNote") == 1) {
 				UITools.SetActiveState(MainMenuChoicePanel, false);
 				UITools.SetActiveState(MainMenuAnalysisNotePanel, true);
 			} else {
@@ -696,11 +722,18 @@ public class MainMenu : MonoBehaviour {
 		ColorblindSettingLabel.text = !tempValue ? "[44ff44]On" : "[FF4444]Off";
 	}
 
-	private void OnLowGraphicsButtonClicked() {
-		bool tempValue = Game.LowGraphicsMode;
-		Game.LowGraphicsMode = !tempValue;
-		LowGraphicsSettingLabel.text = !tempValue ? "[44ff44]On" : "[FF4444]Off";
+	//private void OnLowGraphicsButtonClicked() {
+	//    bool tempValue = Game.LowGraphicsMode;
+	//    Game.LowGraphicsMode = !tempValue;
+	//    LowGraphicsSettingLabel.text = !tempValue ? "[44ff44]On" : "[FF4444]Off";
+	//}
+
+	private void OnOnlineModeButtonClicked() {
+		bool tempValue = Game.OnlineMode;
+		Game.OnlineMode = !tempValue;
+		OnlineModeSettingLabel.text = !tempValue ? "[44ff44]On" : "[FF4444]Off";
 	}
+
 
 	private void OnLogOutClicked() {
 		UITools.SetActiveState(MainMenuLoggedInBoxPanel, false);
@@ -771,23 +804,23 @@ public class MainMenu : MonoBehaviour {
 		instance.ErrorLabel.text = text;
 	}
 	#endregion
-	
+
 	#region FirstPlay buttons
 	void OnFirstYesClicked() {
 		PlayerPrefs.SetInt("FirstPlay", 0);
 		OnTutorialButtonClicked();
 		UITools.SetActiveState(MainMenuFirstPlayPanel, false);
 	}
-	
+
 	void OnFirstNoClicked() {
 		UITools.SetActiveState(MainMenuFirstPlayPanel, false);
 		PlayerPrefs.SetInt("FirstPlay", 0);
 	}
 	#endregion
-	
+
 	#region AnaylsisNote buttons
 	void OnAnalysisOkayClicked() {
-		PlayerPrefs.SetInt ("FirstNote", 0);
+		PlayerPrefs.SetInt("FirstNote", 0);
 		ClearMenu();
 		Application.LoadLevel("LoadScreen");
 	}
@@ -899,11 +932,17 @@ public class MainMenu : MonoBehaviour {
 
 	#region Highscore buttons
 	void OnNextSongClicked() {
-		HSController.LoadNextSong();
+		if (Game.OnlineMode)
+			HSController.LoadNextSong();
+		else
+			HSController.LoadNextSongOffline();
 	}
 
 	void OnPrevSongClicked() {
-		HSController.LoadPrevSong();
+		if (Game.OnlineMode)
+			HSController.LoadPrevSong();
+		else
+			HSController.LoadPrevSongOffline();
 	}
 
 	void OnPrevModeClicked() {
@@ -972,6 +1011,25 @@ public class MainMenu : MonoBehaviour {
 	}
 	#endregion
 
+	#region Go Online Window buttons
+	void OnGoOnlineYesClicked() {
+		Game.OnlineMode = true;
+		OptionsButton.isEnabled = true;
+		CreditsButton.isEnabled = true;
+		if ((!Game.RememberLogin && !Game.IsLoggedIn) || Game.PlayerName.Length < 1)
+			ChangeMenu(MenuLevel.LogIn);
+		else
+			ChangeMenu(MenuLevel.Scores);
+	}
+
+	void OnGoOnlineNoClicked() {
+		OptionsButton.isEnabled = true;
+		CreditsButton.isEnabled = true;
+		Game.OnlineMode = false;
+		ChangeMenu(MenuLevel.ScoresOffline);
+	}
+	#endregion
+
 	#region Utilities
 	/// <summary>
 	/// Loads the specified level after a certain amount of time
@@ -992,7 +1050,7 @@ public class MainMenu : MonoBehaviour {
 		EffectsVolumeSlider.sliderValue = Game.EffectsVolume;
 		MusicVolumeSlider.sliderValue = Game.MusicVolume;
 		ColorblindSettingLabel.text = Game.ColorBlindMode ? "[44ff44]On" : "[FF4444]Off";
-		LowGraphicsSettingLabel.text = Game.LowGraphicsMode ? "[44ff44]On" : "[FF4444]Off";
+		OnlineModeSettingLabel.text = Game.OnlineMode ? "[44ff44]On" : "[FF4444]Off";
 	}
 
 	public static void EnableReloadButton() {
@@ -1008,6 +1066,7 @@ public enum MenuLevel {
 	Mode,
 	Quit,
 	Scores,
+	ScoresOffline,
 	Options,
 	FileBrowser,
 	LogIn,
@@ -1016,5 +1075,6 @@ public enum MenuLevel {
 	Create,
 	Credits,
 	Forgot,
-	ForgotMessage
+	ForgotMessage,
+	GoOnlineWindow
 }

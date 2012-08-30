@@ -44,6 +44,8 @@ public class Game : MonoBehaviour
 	private static bool rememberLogin;
 	private static bool rememberLoginDefault = false;
 	public static bool disablePause = false;
+	private static bool isOnline = false;
+	private static bool askOnlineMode = true;
 	
 	public static float cameraScaleFactor;
 	
@@ -367,6 +369,22 @@ public class Game : MonoBehaviour
 			rememberLogin = value;
 			int tempValue = rememberLogin ? 1 : 0;
 			PlayerPrefs.SetInt ("rememberLogin", tempValue);
+		}
+	}
+
+	public static bool OnlineMode {
+		get {
+			return isOnline;
+		}
+		set {
+			isOnline = value;
+			if (askOnlineMode) askOnlineMode = false;
+		}
+	}
+
+	public static bool AskOnlineMode {
+		get {
+			return askOnlineMode;
 		}
 	}
 

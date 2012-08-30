@@ -30,19 +30,28 @@ public class HSController : MonoBehaviour {
 	private List<string> songList = new List<string>();
 	private string[][] separatedSongList;
 	private static int currentlyShowingHS = 0;
+	private static int currentlyShowingHSOffline = 0;
 	private static bool noSongsLoaded;
 
 	public UILabel[] top5names;
 	public UILabel[] top5scores;
 	public UILabel[] close5names;
 	public UILabel[] close5scores;
+	public UILabel[] offlineTop5names;
+	public UILabel[] offlineTop5scores;
+	public UILabel[] offlineClose5names;
+	public UILabel[] offlineClose5scores;
 	public UILabel ScoresModeLabel;
 	public UILabel ScoresSongLabel;
+	public UILabel OfflineSongModeLabel;
+	public UILabel OfflineScoresSongLabel;
 	public UIButton NextSongButton;
 	public UIButton PrevSongButton;
+	public UIButton OfflineNextSongButton;
+	public UIButton OfflinePrevSongButton;
 	public UIButton NextModeButton;
 	public UIButton PrevModeButton;
-	
+
 	public Camera cameraSize;
 
 	public static string FetchError;
@@ -166,13 +175,13 @@ public class HSController : MonoBehaviour {
 	}
 
 	public static void InitHSDisplay() {
-		if (!instance.LoadSongList()) {
+		if (!instance.LoadSongList() && Game.OnlineMode) {
 			UITools.SetActiveState(instance.NextSongButton, false);
 			UITools.SetActiveState(instance.PrevSongButton, false);
 			UITools.SetActiveState(instance.NextModeButton, false);
 			UITools.SetActiveState(instance.PrevModeButton, false);
 			instance.ScoresSongLabel.maxLineCount = 2;
-			instance.ScoresSongLabel.text = "No songs have been played yet! Play some first.";
+			instance.ScoresSongLabel.text = "No songs have been played online yet! Play some first.";
 			instance.ScoresModeLabel.text = "";
 			int labelcnt = 0;
 			while (labelcnt < 5) {
@@ -182,14 +191,27 @@ public class HSController : MonoBehaviour {
 				instance.close5scores[labelcnt].text = "";
 				labelcnt++;
 			}
-
+		} else if (!instance.LoadSongList() && !Game.OnlineMode) {
+			UITools.SetActiveState(instance.OfflineNextSongButton, false);
+			UITools.SetActiveState(instance.OfflinePrevSongButton, false);
+			instance.OfflineScoresSongLabel.maxLineCount = 2;
+			instance.OfflineScoresSongLabel.text = "No songs have been played offline yet! Play some first.";
+			instance.OfflineSongModeLabel.text = "";
+			int labelcnt = 0;
+			while (labelcnt < 10) {
+				instance.offlineClose5names[labelcnt].text = "";
+				instance.offlineClose5scores[labelcnt].text = "";
+				labelcnt++;
+			}
 		} else {
 			instance.ScoresSongLabel.maxLineCount = 1;
 			string artist = instance.separatedSongList[0][0];
-			string song =   instance.separatedSongList[0][1];
+			string song = instance.separatedSongList[0][1];
 			Game.Mode gameMode = (Game.Mode)Enum.Parse(typeof(Game.Mode), instance.separatedSongList[0][2]);
-
-			instance.StartCoroutine(instance.fetchScores(artist, song, gameMode));
+			if (Game.OnlineMode)
+				instance.StartCoroutine(instance.fetchScores(artist, song, gameMode));
+			else
+				LoadSongOffline(artist, song, gameMode);
 		}
 	}
 
@@ -473,7 +495,7 @@ public class HSController : MonoBehaviour {
 	}
 
 	public static IEnumerator SendEmail(string user) {
-		string key = MD5Utils.MD5FromString(user + DateTime.Now.ToString()).Substring(0,10);
+		string key = MD5Utils.MD5FromString(user + DateTime.Now.ToString()).Substring(0, 10);
 		string cheatHash = MD5Utils.MD5FromString(user + key + instance.emailSecretKey);
 
 		string get_url = instance.sendEmailURL + "user=" + WWW.EscapeURL(user) + "&key=" + key + "&hash=" + cheatHash;
@@ -539,13 +561,16 @@ public class HSController : MonoBehaviour {
 	}
 
 	private bool LoadSongList() {
+		Debug.Log("Loading song list");
+		songList.Clear();
 		// Load song list
+		string filename = Game.OnlineMode ? "songlist.r" : "songlist_offline.r";
 		string path = "";
 		if (Application.platform == RuntimePlatform.Android)
-			path = (Application.persistentDataPath + "/songlist.r");
+			path = (Application.persistentDataPath + "/" + filename);
 		else if (Application.platform == RuntimePlatform.WindowsPlayer
 			|| Application.platform == RuntimePlatform.WindowsEditor)
-			path = (Application.persistentDataPath + "\\songlist.r");
+			path = (Application.persistentDataPath + "\\" + filename);
 		else {
 			Debug.Log("PLATFORM NOT SUPPORTED YET");
 			path = "";
@@ -585,6 +610,17 @@ public class HSController : MonoBehaviour {
 	public static void LoadPrevSong() {
 		currentlyShowingHS = ((currentlyShowingHS - 1) % instance.separatedSongList.Length + instance.separatedSongList.Length) % instance.separatedSongList.Length;
 		instance.StartCoroutine(instance.fetchScores(currentlyShowingHS));
+
+	}
+
+	public static void LoadNextSongOffline() {
+		currentlyShowingHSOffline = (currentlyShowingHSOffline + 1) % instance.separatedSongList.Length;
+		LoadSongOffline(currentlyShowingHSOffline);
+	}
+
+	public static void LoadPrevSongOffline() {
+		currentlyShowingHSOffline = ((currentlyShowingHSOffline - 1) % instance.separatedSongList.Length + instance.separatedSongList.Length) % instance.separatedSongList.Length;
+		LoadSongOffline(currentlyShowingHSOffline);
 	}
 
 	public static void LoadNextMode() {
@@ -597,6 +633,104 @@ public class HSController : MonoBehaviour {
 
 	public static void LoadSong(string artist, string song, Game.Mode mode) {
 		instance.StartCoroutine(instance.fetchScores(artist, song, mode));
+	}
+
+	private static void LoadSongOffline(int songListID) {
+		string artist = instance.separatedSongList[songListID][0];
+		string song = instance.separatedSongList[songListID][1];
+		Game.Mode gameMode = (Game.Mode)Enum.Parse(typeof(Game.Mode), instance.separatedSongList[songListID][2]);
+		LoadSongOffline(artist, song, gameMode);
+	}
+
+	public static void LoadSongOffline(string artist, string song, Game.Mode mode) {
+		// Scores list.
+		List<int> scores = new List<int>();
+
+		// Title for display
+		if (Application.loadedLevelName == "MainMenu") {
+			instance.OfflineScoresSongLabel.text = artist + " - " + song;
+			instance.OfflineSongModeLabel.text = mode.ToString();
+		}
+
+		// Fetch scores from file
+		string fileName = "off_" + HSController.CalculateTableName(artist, song, mode) + ".rhs";
+		string hspath = "";
+		if (Application.platform == RuntimePlatform.Android)
+			hspath = (Application.persistentDataPath + "/" + fileName);
+		else if (Application.platform == RuntimePlatform.WindowsPlayer
+			|| Application.platform == RuntimePlatform.WindowsEditor)
+			hspath = (Application.persistentDataPath + "\\" + fileName);
+		else {
+			Debug.Log("PLATFORM NOT SUPPORTED YET");
+			hspath = "";
+		}
+		string line;
+		try {
+			using (StreamReader sr = new StreamReader(hspath)) {
+				while ((line = sr.ReadLine()) != null) {
+					scores.Add(Int32.Parse(line));
+				}
+				sr.Close();
+			}
+		} catch (Exception) {
+		}
+
+		// Sort scores
+		scores.Sort();
+		scores.Reverse();
+
+		int topScore = scores[0];
+		int yourScoreIndex = 0;
+		bool yourScoreIndexFound = false;
+		for (int i = 0; i < scores.Count; i++) {
+			if (scores[i] == Player.score && !yourScoreIndexFound) {
+				yourScoreIndex = i;
+				yourScoreIndexFound = true;
+			}
+			Debug.Log(scores[i]);
+		}
+
+		// Show top score
+		if (Application.loadedLevelName == "Win") {
+			instance.offlineTop5names[0].text = "1.";
+			instance.offlineTop5scores[0].text = topScore.ToString();
+			if (topScore == Player.score) {
+				instance.offlineTop5names[0].text = "[FDD017]" + instance.offlineTop5names[0].text;
+				instance.offlineTop5names[0].transform.localScale = new Vector2(29, 29);
+				instance.offlineTop5scores[0].text = "[FDD017]" + instance.offlineTop5scores[0].text;
+				instance.offlineTop5scores[0].transform.localScale = new Vector2(29, 29);
+				instance.offlineTop5scores[0].GetComponent<TweenScale>().enabled = true;
+			}
+		}
+
+		// Show close 5 scores
+		int scoresToShow = Application.loadedLevelName == "Win" ? 5 : 10;
+		int scoresAfter = (scores.Count - 1) - yourScoreIndex;
+		Debug.Log("scoresAfter: " + scoresAfter);
+		int yourIndex = 0;
+		if (scores.Count < scoresToShow) yourIndex = yourScoreIndex;
+		Debug.Log("yourScoreIndex " + yourScoreIndex);
+		Debug.Log("yourIndex " + yourIndex);
+		Debug.Log("scores count: " + scores.Count);
+		for (int i = 0; i < scoresToShow; i++) {
+			if (i > scores.Count - 1) {
+				instance.offlineClose5names[i].text = "";
+				instance.offlineClose5scores[i].text = "";
+			} else {
+				instance.offlineClose5names[i].text = (yourScoreIndex + i - yourIndex + 1).ToString() + ".";
+				instance.offlineClose5scores[i].text = scores[yourScoreIndex + i - yourIndex].ToString();
+			}
+			if (i == yourIndex && Application.loadedLevelName == "Win") {
+				instance.offlineClose5names[yourIndex].text = "[FDD017]" + instance.offlineClose5names[yourIndex].text;
+				instance.offlineClose5names[yourIndex].transform.localScale = new Vector2(29, 29);
+				instance.offlineClose5scores[yourIndex].text = "[FDD017]" + instance.offlineClose5scores[yourIndex].text;
+				instance.offlineClose5scores[yourIndex].transform.localScale = new Vector2(29, 29);
+				instance.offlineClose5scores[yourIndex].GetComponent<TweenScale>().enabled = true;
+			}
+		}
+
+		Debug.Log("Top: " + topScore);
+		Debug.Log("Your: " + scores[yourScoreIndex] + " (" + yourScoreIndex + ")");
 	}
 
 	private static void Sort<T>(T[][] data, int col) {
