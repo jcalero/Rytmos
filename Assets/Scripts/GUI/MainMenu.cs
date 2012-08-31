@@ -191,6 +191,8 @@ public class MainMenu : MonoBehaviour {
 			// Options menu
 			OptionsBackButton.transform.localPosition = new Vector2(OptionsBackButton.transform.localPosition.x + 80,
 				OptionsBackButton.transform.localPosition.y);
+			RedeemCodeButton.transform.localPosition = new Vector2(RedeemCodeButton.transform.localPosition.x - 62,
+				RedeemCodeButton.transform.localPosition.y + 15);
 			// Mode menu
 			ModeBackButton.transform.localPosition = new Vector2(ModeBackButton.transform.localPosition.x + 80,
 				ModeBackButton.transform.localPosition.y);
@@ -261,6 +263,8 @@ public class MainMenu : MonoBehaviour {
 			// Options menu
 			OptionsBackButton.transform.localPosition = new Vector2(OptionsBackButton.transform.localPosition.x + 45,
 				OptionsBackButton.transform.localPosition.y);
+			RedeemCodeButton.transform.localPosition = new Vector2(RedeemCodeButton.transform.localPosition.x - 28,
+				RedeemCodeButton.transform.localPosition.y + 5);
 			// Mode menu
 			ModeBackButton.transform.localPosition = new Vector2(ModeBackButton.transform.localPosition.x + 45,
 				ModeBackButton.transform.localPosition.y);
@@ -317,6 +321,8 @@ public class MainMenu : MonoBehaviour {
 			// Options menu
 			OptionsBackButton.transform.localPosition = new Vector2(OptionsBackButton.transform.localPosition.x + 20,
 				OptionsBackButton.transform.localPosition.y);
+			RedeemCodeButton.transform.localPosition = new Vector2(RedeemCodeButton.transform.localPosition.x - 7,
+				RedeemCodeButton.transform.localPosition.y + 5);
 			// Credits menu
 			CreditsBackButton.transform.localPosition = new Vector2(CreditsBackButton.transform.localPosition.x + 20,
 				CreditsBackButton.transform.localPosition.y);
