@@ -522,8 +522,6 @@ public class FileReader : DecoderInterface {
 			txtChannels = _channels.ToString();
 			txtEnc = _encoding.ToString();
 			
-			Debug.Log("This gets rid of warnings: " + txtRate + " " + txtChannels + " " + txtEnc + " " + errorCheck + " " + id3v2 + " " + len + " " + done + " " + txtArtist + " " + txtTitle);
-
 			MPGImport.mpg123_id3(handle_mpg, out id3v1, out id3v2);
 			MPGImport.mpg123_id3v1 MP3Data = new MPGImport.mpg123_id3v1();
 			MPGImport.mpg123_id3v2 MP3v2Data = new MPGImport.mpg123_id3v2();
@@ -717,6 +715,11 @@ public class FileReader : DecoderInterface {
 			MPGImport.mpg123_close(handle_mpg);
 			MPGImport.mpg123_delete(handle_mpg);
 			MPGImport.mpg123_exit();
+		}
+		
+		private void warningRemove() {
+			//This function removes the warnings that certain variables are not used
+			Debug.Log("This gets rid of warnings: " + txtRate + " " + txtChannels + " " + txtEnc + " " + errorCheck + " " + id3v2 + " " + len + " " + done + " " + txtArtist + " " + txtTitle);
 		}
 	}
 }
