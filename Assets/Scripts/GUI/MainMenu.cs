@@ -73,7 +73,7 @@ public class MainMenu : MonoBehaviour {
 	public UILabel RedeemErrorLabel;
 	public UILabel RedeemTitleLabel;
 	public UILabel RedeemMessageLabel;
-	private static bool VerifiedSuccess = false;
+	public static bool VerifiedSuccess = false;
 
 	// LoggedInBox menu objects
 	public UILabel UsernameLabel;
@@ -839,10 +839,15 @@ public class MainMenu : MonoBehaviour {
 		yield return StartCoroutine(KeyCodeController.CheckCode(code));
 		if (VerifiedSuccess) {
 			RedeemCodeInputBG.alpha = 0;
-			RedeemSubmitLabel.text = "[55FFAA]Success!";
+			RedeemTitleLabel.text = "[55FFAA]Success!";
 			RedeemMessageLabel.text = "Your game is now upgraded to the full version! Thank you for playing Rytmos!";
 			RedeemErrorLabel.text = "";
 			RedeemSubmitLabel.text = "OK";
+			RedeemCodeInput.text = "";
+			RedeemSubmitButton.isEnabled = true;
+			UITools.SetActiveState(MainMenuRedeemCodeButtonPanel, false);
+			Game.isUnlockedVersion = true;
+			PlayerPrefs.SetInt("unlockedVersion", 1);
 		} else {
 			RedeemCodeInput.enabled = true;
 			RedeemCodeInputBG.color = Color.white;

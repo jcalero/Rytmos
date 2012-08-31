@@ -25,12 +25,16 @@ public class KeyCodeController : MonoBehaviour {
 		if (hs_post.error != null) {
 			Debug.LogWarning("There was an error verifying the code: " + hs_post.error);
 			MainMenu.SetRedeemErrorText("Error submitting, please try again.");
-		} else {
+		} else if (hs_post.text.StartsWith("ERROR: Expired")) {
 			Debug.Log(hs_post.text);
-			MainMenu.SetRedeemErrorText("");
+			MainMenu.SetRedeemErrorText("Error: Code has expired or active on a different device.");
+		} else if (hs_post.text.StartsWith("ERROR: Invalid")) {
+			Debug.Log(hs_post.text);
+			MainMenu.SetRedeemErrorText("Error: Invalid code");
+		} else if (hs_post.text.StartsWith("SUCCESS: ")) {
+			Debug.Log(hs_post.text);
+			MainMenu.VerifiedSuccess = true;
 		}
-
-
 	}
 	#endregion
 }
