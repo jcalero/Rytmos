@@ -12,11 +12,9 @@ public class KeyCodeController : MonoBehaviour {
 
 	public static IEnumerator CheckCode(int code) {
 		string deviceID = SystemInfo.deviceUniqueIdentifier;
-		Debug.Log("device ID: " + deviceID);
 		string cheatHash = MD5Utils.MD5FromString(deviceID + code + secretKey);
 
 		string post_url = checkCodeURL + "code=" + code + "&device=" + deviceID + "&hash=" + cheatHash;
-		Debug.Log(post_url);
 
 		// Initialise web connection
 		WWW hs_post = new WWW(post_url);

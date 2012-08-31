@@ -311,7 +311,6 @@ public class HSController : MonoBehaviour {
 		string cheatHash = MD5Utils.MD5FromString(user + hashedPassword + instance.userSecretKey);
 
 		string post_url = instance.addUserURL + "name=" + WWW.EscapeURL(user) + "&password=" + hashedPassword + "&email=" + email + "&hash=" + cheatHash;
-
 		MainMenu.SetCreateButtonLabel("Submitting...");
 		// Post the URL to the site and create a download object to get the result.
 		WWW hs_post = new WWW(post_url);
@@ -703,7 +702,7 @@ public class HSController : MonoBehaviour {
 
 		// Show close 5 scores
 		int scoresToShow = Application.loadedLevelName == "Win" ? 5 : 10;
-		int scoresAfter = (scores.Count - 1) - yourScoreIndex;
+		//int scoresAfter = (scores.Count - 1) - yourScoreIndex;
 		int yourIndex = 0;
 		if (scores.Count < scoresToShow) yourIndex = yourScoreIndex;
 		for (int i = 0; i < scoresToShow; i++) {
