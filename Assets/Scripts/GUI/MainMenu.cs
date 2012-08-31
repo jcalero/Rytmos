@@ -43,6 +43,9 @@ public class MainMenu : MonoBehaviour {
 
 	// Current state of the menu.
 	public MenuLevel CurrentMenuLevel;
+	
+	// Base panel objects
+	public UILabel TrialVersionLabel;
 
 	// Play menu objects
 	public UIButton OptionsButton;
@@ -165,7 +168,6 @@ public class MainMenu : MonoBehaviour {
 
 	void Start() {
 		//cameraSize.orthographicSize = Game.GetCameraScaleFactor();
-
 		float aspect = Camera.mainCamera.aspect;
 
 		// Set up the menu for different aspect ratios
@@ -385,6 +387,8 @@ public class MainMenu : MonoBehaviour {
 			else OnBackClicked();
 		}
 		gameObject.audio.volume = Game.MusicVolume;
+		
+		if (TrialVersionLabel.enabled && Game.isUnlockedVersion) UITools.SetActiveState(TrialVersionLabel, false);
 	}
 
 	/// <summary>
