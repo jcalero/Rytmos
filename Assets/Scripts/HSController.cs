@@ -87,21 +87,13 @@ public class HSController : MonoBehaviour {
 		string post_url = instance.addScoreURL + "name=" + WWW.EscapeURL(name) + "&score=" + score + "&table=" + table + "&hash=" + cheatHash
 			+ "&artist=" + RemoveSpecialCharacters(artist).ToLower() + "&song=" + RemoveSpecialCharacters(song).ToLower() + "&mode=" + gameMode.GetHashCode();
 
-		Win.SetSubmitText("Submitting...");
-		//instance.submittedLabel.text = "Submitting...";
 		// Post the URL to the site and create a download object to get the result.
 		WWW hs_post = new WWW(post_url);
 		yield return hs_post; // Wait until the download is done
 
 		if (hs_post.error != null) {
 			Debug.LogWarning("There was an error posting the high score: " + hs_post.error);
-			//instance.submittedLabel.text = "";
-			Win.SetSubmitText("");
-			//instance.errorLabel.text = "[FF2222]Error submitting, please try again.";
-			Win.SetErrorText("[FF2222]Error submitting, please try again.");
-		} else {
-			//instance.submittedLabel.text = "Highscore submitted";
-			Win.SetSubmitText("Highscore submitted");
+			Win.OpenErrorPanel();
 		}
 	}
 
@@ -271,9 +263,7 @@ public class HSController : MonoBehaviour {
 				//Debug.Log(HSController.ScoresList[cnt][0] + " :: " + HSController.ScoresList[cnt][1]);
 			}
 		} else {
-			top5names[0].text = "";
-			top5names[1].text = "Error fetching scores.";
-			top5names[2].text = "Please try again later.";
+			Win.OpenErrorPanel();
 			FetchError = null;
 		}
 
@@ -302,7 +292,7 @@ public class HSController : MonoBehaviour {
 				//Debug.Log(HSController.ScoresList[cnt][0] + " :: " + HSController.ScoresList[cnt][1]);
 			}
 		} else {
-			close5names[0].text = "";
+			Win.OpenErrorPanel();
 			FetchError = null;
 		}
 	}

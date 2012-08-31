@@ -26,6 +26,7 @@ public class Win : MonoBehaviour {
 	public UIPanel ForgotPassPanel;
 	public UIPanel ForgotPassMessagePanel;
 	public UIPanel GoOnlinePanel;
+	public UIPanel RetrySubmitPanel;
 	// Base Menu Objects
 	public UILabel SongLabel;
 	public UILabel HitsValueLabel;
@@ -35,6 +36,12 @@ public class Win : MonoBehaviour {
 	public UIButton HighscoreButton;
 	public UIButton ReplaySongButton;
 	public UIButton MainMenuButton;
+	// Retry Menu Objects
+	public UILabel RetryScoreValueLabel;
+	public UILabel RetryRankValueLabel;
+//	public UIButton RetryHighscoreButton;
+//	public UIButton RetryReplaySongButton;
+//	public UIButton RetryMainMenuButton;
 	// Login Menu Objects
 	public UIInput UserNameInput;
 	public UIInput PasswordInput;
@@ -213,17 +220,20 @@ public class Win : MonoBehaviour {
 		else if (aspect == (432.0f / 240.0f)) {
 			// Using the same as 1.666.. (Default)
 		}
-
+		
 		SongLabel.text = AudioManager.artist + " - " + AudioManager.title;
 		CalculateSongLabelSize();
 		HitsValueLabel.text = Player.TotalKills.ToString();
 		MissesValueLabel.text = (EnemySpawnScript.spawnCount - Player.TotalKills).ToString();
 		ScoreValueLabel.text = Player.score.ToString();
+		RetryScoreValueLabel.text = ScoreValueLabel.text;
 		RankValueLabel.text = CalculatedRank;
+		RetryRankValueLabel.text = RankValueLabel.text;
 		if (Game.Cheated) {
 			HighscoreButton.enabled = false;
 			HighscoreButton.GetComponentInChildren<UILabel>().text = "[FF2222]You cheater!";
 		}
+		UITools.SetActiveState(RetrySubmitPanel, false);
 	}
 	/// <summary>
 	/// Returns the final calculated score after the end of the game.
@@ -270,6 +280,7 @@ public class Win : MonoBehaviour {
 		currentMenuLevel = menuLevel;
 		switch (currentMenuLevel) {
 			case WinMenuLevel.Base:
+				if (RetrySubmitPanel.enabled) UITools.SetActiveState(RetrySubmitPanel, false);
 				if (CreatePanel.enabled) UITools.SetActiveState(CreatePanel, false);
 				if (LoginPanel.enabled) UITools.SetActiveState(LoginPanel, false);
 				if (ScoresPanel.enabled) UITools.SetActiveState(ScoresPanel, false);
@@ -282,11 +293,13 @@ public class Win : MonoBehaviour {
 				UITools.SetActiveState(BasePanel, true);
 				break;
 			case WinMenuLevel.Create:
+				if(RetrySubmitPanel.enabled) UITools.SetActiveState(RetrySubmitPanel, false);
 				UITools.SetActiveState(LoginPanel, false);
 				UITools.SetActiveState(CreatePanel, true);
 				CreateErrorLabel.text = "";
 				break;
 			case WinMenuLevel.Login:
+				if(RetrySubmitPanel.enabled) UITools.SetActiveState(RetrySubmitPanel, false);
 				UITools.SetActiveState(CreatePanel, false);
 				UITools.SetActiveState(TitlePanel, false);
 				UITools.SetActiveState(ForgotPassPanel, false);
@@ -300,6 +313,7 @@ public class Win : MonoBehaviour {
 				PasswordInput.text = ""; // Clear password field
 				break;
 			case WinMenuLevel.Scores:
+				if(RetrySubmitPanel.enabled) UITools.SetActiveState(RetrySubmitPanel, false);
 				if (BasePanel.enabled) UITools.SetActiveState(BasePanel, false);
 				if (CreatePanel.enabled) UITools.SetActiveState(CreatePanel, false);
 				if (LoginPanel.enabled) UITools.SetActiveState(LoginPanel, false);
@@ -308,6 +322,7 @@ public class Win : MonoBehaviour {
 				UITools.SetActiveState(ScoresPanel, true);
 				break;
 			case WinMenuLevel.ScoresOffline:
+				if(RetrySubmitPanel.enabled) UITools.SetActiveState(RetrySubmitPanel, false);
 				if (BasePanel.enabled) UITools.SetActiveState(BasePanel, false);
 				if (CreatePanel.enabled) UITools.SetActiveState(CreatePanel, false);
 				if (TitlePanel.enabled) UITools.SetActiveState(TitlePanel, false);
@@ -318,6 +333,7 @@ public class Win : MonoBehaviour {
 				UITools.SetActiveState(ScoresOfflinePanel, true);
 				break;
 			case WinMenuLevel.LoadingScores:
+				if(RetrySubmitPanel.enabled) UITools.SetActiveState(RetrySubmitPanel, false);
 				if (BasePanel.enabled) UITools.SetActiveState(BasePanel, false);
 				if (CreatePanel.enabled) UITools.SetActiveState(CreatePanel, false);
 				if (LoginPanel.enabled) UITools.SetActiveState(LoginPanel, false);
@@ -327,23 +343,42 @@ public class Win : MonoBehaviour {
 				SongModeLabel.text = Game.GameMode.ToString();
 				UITools.SetActiveState(ScoresTitlePanel, true);
 				break;
-			case WinMenuLevel.Forgot:
+			case WinMenuLevel.Forgot:				
+				if(RetrySubmitPanel.enabled) UITools.SetActiveState(RetrySubmitPanel, false);
 				UITools.SetActiveState(LoginPanel, false);
 				UITools.SetActiveState(ForgotPassPanel, true);
 				ForgotErrorLabel.text = "";
 				break;
 			case WinMenuLevel.ForgotMessage:
+				if(RetrySubmitPanel.enabled) UITools.SetActiveState(RetrySubmitPanel, false);
 				UITools.SetActiveState(ForgotPassPanel, false);
 				UITools.SetActiveState(ForgotPassMessagePanel, true);
 				ForgotMessageLabel.text = "An email was sent to [44CCBB]" + globalEmail + " [FFFFFF]with instructions on how to reset your password!";
 				break;
 			case WinMenuLevel.GoOnlineWindow:
+				if(RetrySubmitPanel.enabled) UITools.SetActiveState(RetrySubmitPanel, false);
 				HighscoreButton.isEnabled = false;
 				MainMenuButton.isEnabled = false;
 				ReplaySongButton.isEnabled = false;
 				UITools.SetActiveState(GoOnlinePanel, true);
 				break;
+			case WinMenuLevel.SubmitError:
+				if (CreatePanel.enabled) UITools.SetActiveState(CreatePanel, false);
+				if (LoginPanel.enabled) UITools.SetActiveState(LoginPanel, false);
+				if (ScoresPanel.enabled) UITools.SetActiveState(ScoresPanel, false);
+				if (ScoresOfflinePanel.enabled) UITools.SetActiveState(ScoresOfflinePanel, false);
+				if (ScoresTitlePanel.enabled) UITools.SetActiveState(ScoresTitlePanel, false);
+				if (ForgotPassPanel.enabled) UITools.SetActiveState(ForgotPassPanel, false);
+				if (ForgotPassMessagePanel.enabled) UITools.SetActiveState(ForgotPassMessagePanel, false);
+				if (GoOnlinePanel.enabled) UITools.SetActiveState(GoOnlinePanel, false);
+				UITools.SetActiveState(TitlePanel, true);
+				UITools.SetActiveState(RetrySubmitPanel, true);
+				break;
 		}
+	}
+	
+	public static void OpenErrorPanel() {
+		instance.ChangeMenu(WinMenuLevel.SubmitError);	
 	}
 
 	#region Base Menu Buttons
@@ -572,26 +607,6 @@ public class Win : MonoBehaviour {
 		}
 	}
 
-	/// <summary>
-	/// Sets the text of the information box while submitting to a specified
-	/// string.
-	/// </summary>
-	/// <param name="text">The string to set the text to</param>
-	public static void SetSubmitText(string text) {
-		Debug.LogWarning(text);
-		//instance.submittedLabel.text = text;
-	}
-
-	/// <summary>
-	/// Sets the text of the error box while submitting to a specified
-	/// string.
-	/// </summary>
-	/// <param name="text">The string to set the text to</param>
-	public static void SetErrorText(string text) {
-		Debug.LogWarning(text);
-		//instance.errorLabel.text = text;
-	}
-
 	private void SubmitScoresOffline() {
 		// Store the song in song list
 		string songRow = RemovePipeChar(AudioManager.artist).Trim() + "|" + RemovePipeChar(AudioManager.title).Trim() + "|" + Game.GameMode.GetHashCode();
@@ -732,5 +747,6 @@ public enum WinMenuLevel {
 	ScoresOffline,
 	Forgot,
 	ForgotMessage,
-	GoOnlineWindow
+	GoOnlineWindow,
+	SubmitError
 }
