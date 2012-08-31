@@ -94,9 +94,9 @@ public class Game : MonoBehaviour
 			return;
 		}
 		// Key input position for DevMode, only works in the "Game" level
-		if (Input.GetKeyDown (KeyCode.BackQuote) && GameState == State.Playing) {
-			DevMode = !DevMode;
-		}
+//		if (Input.GetKeyDown (KeyCode.BackQuote) && GameState == State.Playing) {
+//			DevMode = !DevMode;
+//		}
 	}
 
 	void OnApplicationPause ()
