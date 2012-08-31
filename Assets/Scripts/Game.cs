@@ -50,7 +50,7 @@ public class Game : MonoBehaviour
 	public static float cameraScaleFactor;
 	
 	// Trial/Full version related settings
-	private static readonly bool isFullVersion = true;
+	private static readonly bool isFullVersion = false;
 	public static bool isUnlockedVersion;
 	#endregion
 

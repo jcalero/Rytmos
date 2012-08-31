@@ -69,7 +69,8 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		if (timer >= audioLength){
 			if (!AudioManager.songLoaded) Application.LoadLevel("LoadScreen");
 			else if (!Game.isUnlockedVersion) {
-				Application.LoadLevel("Win");
+				Game.CommonPauseOperation();
+				PauseMenu.ShowTrialMessage();
 			}
 			else {
 				if(spawnCount == Level.EnemiesDespawned) {

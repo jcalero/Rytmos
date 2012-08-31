@@ -686,7 +686,6 @@ public class HSController : MonoBehaviour {
 				yourScoreIndex = i;
 				yourScoreIndexFound = true;
 			}
-			Debug.Log(scores[i]);
 		}
 
 		// Show top score
@@ -705,12 +704,8 @@ public class HSController : MonoBehaviour {
 		// Show close 5 scores
 		int scoresToShow = Application.loadedLevelName == "Win" ? 5 : 10;
 		int scoresAfter = (scores.Count - 1) - yourScoreIndex;
-		Debug.Log("scoresAfter: " + scoresAfter);
 		int yourIndex = 0;
 		if (scores.Count < scoresToShow) yourIndex = yourScoreIndex;
-		Debug.Log("yourScoreIndex " + yourScoreIndex);
-		Debug.Log("yourIndex " + yourIndex);
-		Debug.Log("scores count: " + scores.Count);
 		for (int i = 0; i < scoresToShow; i++) {
 			if (i > scores.Count - 1) {
 				instance.offlineClose5names[i].text = "";
@@ -727,9 +722,6 @@ public class HSController : MonoBehaviour {
 				instance.offlineClose5scores[yourIndex].GetComponent<TweenScale>().enabled = true;
 			}
 		}
-
-		Debug.Log("Top: " + topScore);
-		Debug.Log("Your: " + scores[yourScoreIndex] + " (" + yourScoreIndex + ")");
 	}
 
 	private static void Sort<T>(T[][] data, int col) {

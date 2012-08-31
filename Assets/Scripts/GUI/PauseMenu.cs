@@ -10,6 +10,7 @@ public class PauseMenu : MonoBehaviour {
 	public UIPanel PausePanel;
 	public UIPanel OptionsPanel;
 	public UIPanel BackgroundPanel;
+	public UIPanel TrialMessagePanel;
 	
 	public UISlider MusicVolumeSlider;
 	public UISlider EffectsVolumeSlider;
@@ -25,6 +26,7 @@ public class PauseMenu : MonoBehaviour {
 		UITools.SetActiveState(instance.PausePanel, false);
 		UITools.SetActiveState(instance.OptionsPanel,false);
 		UITools.SetActiveState(instance.BackgroundPanel,false);
+		UITools.SetActiveState(TrialMessagePanel, false);
 	}
 	
 	public static bool InOptions {
@@ -94,6 +96,16 @@ public class PauseMenu : MonoBehaviour {
 		AudioPlayer.changeVolume();
 		Player.ChangeVolume();
 		inOptions = false;
+	}
+	
+	// Trial message stuff
+	void OnContinueClicked() {
+		Game.CommonResumeOperation();
+		Application.LoadLevel("Win");
+	}
+
+	public static void ShowTrialMessage() {
+		UITools.SetActiveState(instance.TrialMessagePanel, true);
 	}
 	#endregion
 }
