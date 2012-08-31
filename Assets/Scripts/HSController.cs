@@ -137,10 +137,10 @@ public class HSController : MonoBehaviour {
 		//instance.highscoresLoaded = true;
 	}
 
-	public static IEnumerator GetClose5Scores(string artist, string song, Game.Mode gameMode, int score) {
+	public static IEnumerator GetClose5Scores(string artist, string song, string username, Game.Mode gameMode, int score) {
 
 		string table = CalculateTableName(artist, song, gameMode);
-		string hs_url = instance.close5URL + "table=" + table + "&score=" + score;
+		string hs_url = instance.close5URL + "table=" + table + "&score=" + score + "&username=" + username;
 		WWW hs_get = new WWW(hs_url);
 		yield return hs_get;
 		if (hs_get.error != null) {
@@ -272,8 +272,8 @@ public class HSController : MonoBehaviour {
 				MainMenu.OpenErrorFetchingScoresPanel();
 			FetchError = null;
 		}
-
-		yield return StartCoroutine(GetClose5Scores(artist, song, gameMode, topScore));
+		if(Application.loadedLevelName == "Win") topScore = Player.score;		
+		yield return StartCoroutine(GetClose5Scores(artist, song, Game.PlayerName, gameMode, topScore));
 		if (FetchError == null) {
 			bool formattedOwnRow = false;
 			Sort<string>(Close5List, 2);
