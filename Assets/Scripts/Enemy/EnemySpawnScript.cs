@@ -49,6 +49,8 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 	private float spawnBoundsLeft;
 	private float spawnBoundsRight;
 	
+	private float trialFadeOutTimer;
+	
 	#endregion
 	
 	#region Functions
@@ -68,7 +70,11 @@ public class EnemySpawnScript : MonoBehaviour,PeakListener {
 		
 		if (timer >= audioLength){
 			if (!AudioManager.songLoaded) Application.LoadLevel("LoadScreen");
-			else if (!Game.isUnlockedVersion) {
+			else if (!Game.isUnlockedVersion && trialFadeOutTimer < 2f) {
+				trialFadeOutTimer += Time.deltaTime;
+				AudioPlayer.changeVolume(Game.MusicVolume - (Game.MusicVolume * trialFadeOutTimer/2f));
+			}
+			else if (!Game.isUnlockedVersion && trialFadeOutTimer >= 2f) {
 				Game.CommonPauseOperation();
 				PauseMenu.ShowTrialMessage();
 			}

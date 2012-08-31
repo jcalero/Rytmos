@@ -164,6 +164,17 @@ public class AudioPlayer : MonoBehaviour
 #endif
 	}
 	
+	public static void changeVolume (float newVolume) {
+#if UNITY_ANDROID && !UNITY_EDITOR
+		if(Game.GameMode != Game.Mode.Tutorial)
+			androidPlayer.Call ("setVolume", new object[]{newVolume,newVolume});
+		else
+			audioSource.volume = newVolume;
+#else
+		audioSource.volume = newVolume;
+#endif
+	}
+	
 	void OnDisable ()
 	{
 #if UNITY_ANDROID && !UNITY_EDITOR
