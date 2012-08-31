@@ -93,7 +93,8 @@ public class HSController : MonoBehaviour {
 
 		if (hs_post.error != null) {
 			Debug.LogWarning("There was an error posting the high score: " + hs_post.error);
-			Win.OpenErrorPanel();
+			if(Application.loadedLevelName == "Win")
+				Win.OpenErrorPanel();
 		}
 	}
 
@@ -263,7 +264,8 @@ public class HSController : MonoBehaviour {
 				//Debug.Log(HSController.ScoresList[cnt][0] + " :: " + HSController.ScoresList[cnt][1]);
 			}
 		} else {
-			Win.OpenErrorPanel();
+			if(Application.loadedLevelName == "Win")
+				Win.OpenErrorPanel();
 			FetchError = null;
 		}
 
@@ -292,7 +294,8 @@ public class HSController : MonoBehaviour {
 				//Debug.Log(HSController.ScoresList[cnt][0] + " :: " + HSController.ScoresList[cnt][1]);
 			}
 		} else {
-			Win.OpenErrorPanel();
+			if(Application.loadedLevelName == "Win")
+				Win.OpenErrorPanel();
 			FetchError = null;
 		}
 	}
