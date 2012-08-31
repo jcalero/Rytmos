@@ -36,7 +36,8 @@ public class MainMenu : MonoBehaviour {
 	public UIPanel MainMenuGoOnlinePanel;
 	public UIPanel MainMenuRedeemCodeButtonPanel;
 	public UIPanel MainMenuRedeemCodePanel;
-
+	public UIPanel MainMenuErrorFetchScoresPanel;
+	
 	// File browser
 	public GameObject FileBrowser;
 
@@ -411,6 +412,7 @@ public class MainMenu : MonoBehaviour {
 		if (MainMenuGoOnlinePanel.enabled) UITools.SetActiveState(MainMenuGoOnlinePanel, false);
 		if (MainMenuRedeemCodePanel.enabled) UITools.SetActiveState(MainMenuRedeemCodePanel, false);
 		if (MainMenuRedeemCodeButtonPanel.enabled) UITools.SetActiveState(MainMenuRedeemCodeButtonPanel, false);
+		if (MainMenuErrorFetchScoresPanel.enabled) UITools.SetActiveState(MainMenuErrorFetchScoresPanel, false);
 	}
 
 	/// <summary>
@@ -421,6 +423,7 @@ public class MainMenu : MonoBehaviour {
 		CurrentMenuLevel = menu;
 		switch (CurrentMenuLevel) {
 			case MenuLevel.Base:
+				if (MainMenuErrorFetchScoresPanel.enabled) UITools.SetActiveState(MainMenuErrorFetchScoresPanel,false);
 				if (MainMenuQuitPanel.enabled) UITools.SetActiveState(MainMenuQuitPanel, false);
 				if (MainMenuModePanel.enabled) UITools.SetActiveState(MainMenuModePanel, false);
 				if (MainMenuOptionsPanel.enabled) UITools.SetActiveState(MainMenuOptionsPanel, false);
@@ -451,6 +454,7 @@ public class MainMenu : MonoBehaviour {
 					if (PlayerPrefs.GetInt("FirstPlay") == 1)
 						UITools.SetActiveState(MainMenuFirstPlayPanel, true);
 				}
+				if (MainMenuErrorFetchScoresPanel.enabled) UITools.SetActiveState(MainMenuErrorFetchScoresPanel,false);
 				if (MainMenuFileBrowserPanel.enabled) UITools.SetActiveState(MainMenuFileBrowserPanel, false);
 				if (MainMenuPlayPanel.enabled) UITools.SetActiveState(MainMenuPlayPanel, false);
 				if (MainMenuChoicePanel.enabled) UITools.SetActiveState(MainMenuChoicePanel, false);
@@ -474,6 +478,7 @@ public class MainMenu : MonoBehaviour {
 				UITools.SetActiveState(MainMenuQuitPanel, true);
 				break;
 			case MenuLevel.Scores:
+				if (MainMenuErrorFetchScoresPanel.enabled) UITools.SetActiveState(MainMenuErrorFetchScoresPanel,false);
 				UITools.SetActiveState(MainMenuPlayPanel, false);
 				UITools.SetActiveState(MainMenuBasePanel, false);
 				UITools.SetActiveState(MainMenuLogInPanel, false);
@@ -482,6 +487,7 @@ public class MainMenu : MonoBehaviour {
 				HSController.InitHSDisplay();
 				break;
 			case MenuLevel.ScoresOffline:
+				if (MainMenuErrorFetchScoresPanel.enabled) UITools.SetActiveState(MainMenuErrorFetchScoresPanel,false);
 				UITools.SetActiveState(MainMenuPlayPanel, false);
 				UITools.SetActiveState(MainMenuBasePanel, false);
 				UITools.SetActiveState(MainMenuGoOnlinePanel, false);
@@ -489,6 +495,7 @@ public class MainMenu : MonoBehaviour {
 				HSController.InitHSDisplay();
 				break;
 			case MenuLevel.FileBrowser:
+				if (MainMenuErrorFetchScoresPanel.enabled) UITools.SetActiveState(MainMenuErrorFetchScoresPanel,false);
 				if (MainMenuChoicePanel.enabled) UITools.SetActiveState(MainMenuChoicePanel, false);
 				if (MainMenuSongNotFoundPanel.enabled) UITools.SetActiveState(MainMenuSongNotFoundPanel, false);
 				if (MainMenuExtrasPanel.enabled) UITools.SetActiveState(MainMenuExtrasPanel, false);
@@ -497,6 +504,7 @@ public class MainMenu : MonoBehaviour {
 				UITools.SetActiveState(MainMenuFileBrowserPanel, true);
 				break;
 			case MenuLevel.LogIn:
+				if (MainMenuErrorFetchScoresPanel.enabled) UITools.SetActiveState(MainMenuErrorFetchScoresPanel,false);
 				UITools.SetActiveState(MainMenuCreatePanel, false);
 				UITools.SetActiveState(MainMenuPlayPanel, false);
 				UITools.SetActiveState(MainMenuBasePanel, false);
@@ -551,6 +559,7 @@ public class MainMenu : MonoBehaviour {
 				ForgotMessageLabel.text = "An email was sent to [44CCBB]" + globalEmail + " [FFFFFF]with instructions on how to reset your password!";
 				break;
 			case MenuLevel.GoOnlineWindow:
+				if (MainMenuErrorFetchScoresPanel.enabled) UITools.SetActiveState(MainMenuErrorFetchScoresPanel,false);
 				OptionsButton.isEnabled = false;
 				CreditsButton.isEnabled = false;
 				UITools.SetActiveState(MainMenuGoOnlinePanel, true);
@@ -565,6 +574,11 @@ public class MainMenu : MonoBehaviour {
 				RedeemErrorLabel.text = "";
 				UITools.SetActiveState(MainMenuExtrasPanel, false);
 				UITools.SetActiveState(MainMenuRedeemCodePanel, true);
+				break;
+			case MenuLevel.ErrorFetchScores:			
+				if (MainMenuScoresPanel.enabled) UITools.SetActiveState(MainMenuScoresPanel, false);
+				UITools.SetActiveState(MainMenuErrorFetchScoresPanel,true);
+				UITools.SetActiveState(MainMenuBasePanel, true);
 				break;
 		}
 	}
@@ -1062,6 +1076,11 @@ public class MainMenu : MonoBehaviour {
 	void OnNextModeClicked() {
 		HSController.LoadNextMode();
 	}
+	
+	public static void OpenErrorFetchingScoresPanel() {
+		if (instance.CurrentMenuLevel == MenuLevel.Scores)
+			instance.ChangeMenu(MenuLevel.ErrorFetchScores);
+	}
 	#endregion
 
 	#region Credit menu buttons
@@ -1187,5 +1206,6 @@ public enum MenuLevel {
 	Forgot,
 	ForgotMessage,
 	GoOnlineWindow,
-	RedeemCodeWindow
+	RedeemCodeWindow,
+	ErrorFetchScores
 }
