@@ -257,6 +257,15 @@ public class Win : MonoBehaviour {
 		}
 	}
 
+	void Update() {
+		// When the player presses "Escape" or "Back" on Android, returns to main menu screen
+		// or goes to the quit menu if on the main menu already.
+		if (Input.GetKeyDown(KeyCode.Escape)) {
+			if (currentMenuLevel == WinMenuLevel.GoOnlineWindow) ChangeMenu(WinMenuLevel.Base);
+			else OnMainMenuClicked();
+		}
+	}
+
 	private void ChangeMenu(WinMenuLevel menuLevel) {
 		currentMenuLevel = menuLevel;
 		switch (currentMenuLevel) {

@@ -34,6 +34,8 @@ public class MainMenu : MonoBehaviour {
 	public UIPanel MainMenuFirstPlayPanel;
 	public UIPanel MainMenuAnalysisNotePanel;
 	public UIPanel MainMenuGoOnlinePanel;
+	public UIPanel MainMenuRedeemCodeButtonPanel;
+	public UIPanel MainMenuRedeemCodePanel;
 
 	// File browser
 	public GameObject FileBrowser;
@@ -55,12 +57,23 @@ public class MainMenu : MonoBehaviour {
 	// Options menu objects
 	public UILabel LoggedOutLabel;
 	public UIButton OptionsBackButton;
+	public UIButton RedeemCodeButton;
 
 	// Options menu settable objects
 	public UISlider EffectsVolumeSlider;
 	public UISlider MusicVolumeSlider;
 	public UILabel ColorblindSettingLabel;
 	public UILabel OnlineModeSettingLabel;
+
+	// Redeem code menu objects
+	public UIInput RedeemCodeInput;
+	public UISlicedSprite RedeemCodeInputBG;
+	public UILabel RedeemSubmitLabel;
+	public UIButton RedeemSubmitButton;
+	public UILabel RedeemErrorLabel;
+	public UILabel RedeemTitleLabel;
+	public UILabel RedeemMessageLabel;
+	private static bool VerifiedSuccess = false;
 
 	// LoggedInBox menu objects
 	public UILabel UsernameLabel;
@@ -361,6 +374,7 @@ public class MainMenu : MonoBehaviour {
 			if (CurrentMenuLevel == MenuLevel.Base) ChangeMenu(MenuLevel.Quit);
 			else if (CurrentMenuLevel == MenuLevel.FileBrowser && !FileBrowserMenu.RecentlyPlayedActive) FileBrowser.SendMessage("OnUpClicked");
 			else if (CurrentMenuLevel == MenuLevel.Credits) OnCreditsBackClicked();
+			else if (CurrentMenuLevel == MenuLevel.RedeemCodeWindow) OnRedeemCodeBackClicked();
 			else OnBackClicked();
 		}
 		gameObject.audio.volume = Game.MusicVolume;
@@ -395,6 +409,8 @@ public class MainMenu : MonoBehaviour {
 		if (MainMenuAnalysisNotePanel.enabled) UITools.SetActiveState(MainMenuAnalysisNotePanel, false);
 		if (MainMenuFirstPlayPanel.enabled) UITools.SetActiveState(MainMenuFirstPlayPanel, false);
 		if (MainMenuGoOnlinePanel.enabled) UITools.SetActiveState(MainMenuGoOnlinePanel, false);
+		if (MainMenuRedeemCodePanel.enabled) UITools.SetActiveState(MainMenuRedeemCodePanel, false);
+		if (MainMenuRedeemCodeButtonPanel.enabled) UITools.SetActiveState(MainMenuRedeemCodeButtonPanel, false);
 	}
 
 	/// <summary>
@@ -422,6 +438,10 @@ public class MainMenu : MonoBehaviour {
 				if (MainMenuAnalysisNotePanel.enabled) UITools.SetActiveState(MainMenuAnalysisNotePanel, false);
 				if (MainMenuFirstPlayPanel.enabled) UITools.SetActiveState(MainMenuFirstPlayPanel, false);
 				if (MainMenuGoOnlinePanel.enabled) UITools.SetActiveState(MainMenuGoOnlinePanel, false);
+				if (MainMenuRedeemCodePanel.enabled) UITools.SetActiveState(MainMenuRedeemCodePanel, false);
+				if (MainMenuRedeemCodeButtonPanel.enabled) UITools.SetActiveState(MainMenuRedeemCodeButtonPanel, false);
+				OptionsButton.isEnabled = true;
+				CreditsButton.isEnabled = true;
 				UITools.SetActiveState(MainMenuExtrasPanel, true);
 				UITools.SetActiveState(MainMenuBasePanel, true);
 				UITools.SetActiveState(MainMenuPlayPanel, true);
@@ -439,9 +459,14 @@ public class MainMenu : MonoBehaviour {
 				UITools.SetActiveState(MainMenuModePanel, true);
 				break;
 			case MenuLevel.Options:
+				OptionsBackButton.isEnabled = true;
+				RedeemCodeButton.isEnabled = true;
 				UITools.SetActiveState(MainMenuPlayPanel, false);
+				UITools.SetActiveState(MainMenuRedeemCodePanel, false);
 				UITools.SetActiveState(MainMenuOptionsPanel, true);
+				UITools.SetActiveState(MainMenuExtrasPanel, true);
 				if (Game.IsLoggedIn && Game.OnlineMode) UITools.SetActiveState(MainMenuLoggedInBoxPanel, true);
+				if (!Game.isUnlockedVersion) UITools.SetActiveState(MainMenuRedeemCodeButtonPanel, true);
 				UsernameLabel.text = Game.PlayerName;
 				break;
 			case MenuLevel.Quit:
@@ -529,6 +554,17 @@ public class MainMenu : MonoBehaviour {
 				OptionsButton.isEnabled = false;
 				CreditsButton.isEnabled = false;
 				UITools.SetActiveState(MainMenuGoOnlinePanel, true);
+				break;
+			case MenuLevel.RedeemCodeWindow:
+				OptionsBackButton.isEnabled = false;
+				RedeemCodeButton.isEnabled = false;
+				RedeemCodeInputBG.color = Color.white;
+				RedeemCodeInput.enabled = true;
+				RedeemSubmitButton.isEnabled = true;
+				RedeemSubmitLabel.text = "Submit";
+				RedeemErrorLabel.text = "";
+				UITools.SetActiveState(MainMenuExtrasPanel, false);
+				UITools.SetActiveState(MainMenuRedeemCodePanel, true);
 				break;
 		}
 	}
@@ -752,6 +788,75 @@ public class MainMenu : MonoBehaviour {
 		button.isEnabled = false;
 		yield return new WaitForSeconds(time);
 		button.isEnabled = true;
+	}
+	#endregion
+
+	#region Redeem Code buttons
+	void OnRedeemCodeClicked() {
+		ChangeMenu(MenuLevel.RedeemCodeWindow);
+	}
+
+	void OnRedeemCodeBackClicked() {
+		ChangeMenu(MenuLevel.Options);
+	}
+
+	void OnRedeemSubmit() {
+		// Change the submit button function to "OK" button once the verification was succesfull.
+		if (VerifiedSuccess) {
+			ChangeMenu(MenuLevel.Options);
+			return;
+		}
+
+		string codeString = RedeemCodeInput.text.Trim();
+		Regex regex = new Regex(@"^[0-9]+$");
+
+		if (codeString.Length < 10) {
+			RedeemErrorLabel.text = "Error: Code too short.";
+			return;
+		} else if (!regex.IsMatch(codeString)) {
+			RedeemErrorLabel.text = "Error: The code should only be numbers!";
+			return;
+		}
+		int code;
+		bool isNum = Int32.TryParse(codeString, out code);
+		Debug.Log("code: " + code);
+		if (isNum && code < 1000000000) {
+			RedeemErrorLabel.text = "Error: Code too short.";
+			return;
+		} else if (!isNum) {
+			RedeemErrorLabel.text = "Error: The code should only be numbers!";
+			return;
+		}
+
+		RedeemCodeInput.enabled = false;
+		RedeemCodeInputBG.color = new Color(0.6f, 0.6f, 0.6f, 1.0f);
+		RedeemSubmitButton.isEnabled = false;
+		RedeemSubmitLabel.text = "Verifying...";
+		StartCoroutine(verifyCode(code));
+	}
+
+	private IEnumerator verifyCode(int code) {
+		yield return StartCoroutine(KeyCodeController.CheckCode(code));
+		if (VerifiedSuccess) {
+			RedeemCodeInputBG.alpha = 0;
+			RedeemSubmitLabel.text = "[55FFAA]Success!";
+			RedeemMessageLabel.text = "Your game is now upgraded to the full version! Thank you for playing Rytmos!";
+			RedeemErrorLabel.text = "";
+			RedeemSubmitLabel.text = "OK";
+		} else {
+			RedeemCodeInput.enabled = true;
+			RedeemCodeInputBG.color = Color.white;
+			RedeemSubmitButton.isEnabled = true;
+			RedeemSubmitLabel.text = "Submit";
+		}
+	}
+
+	public static void SetRedeemErrorText(string text) {
+		instance.RedeemErrorLabel.text = text;
+	}
+
+	public static void SetRedeemButtonText(string text) {
+		instance.RedeemSubmitLabel.text = text;
 	}
 	#endregion
 
@@ -1076,5 +1181,6 @@ public enum MenuLevel {
 	Credits,
 	Forgot,
 	ForgotMessage,
-	GoOnlineWindow
+	GoOnlineWindow,
+	RedeemCodeWindow
 }
