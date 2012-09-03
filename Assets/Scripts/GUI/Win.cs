@@ -96,10 +96,10 @@ public class Win : MonoBehaviour {
 	#region Functions
 	void Awake() {
 
-		if (!Game.ArcadeUnlocked && Game.GameMode == Game.Mode.Casual) {
-			int tempValue = PlayerPrefs.GetInt("casualplayed");
-			PlayerPrefs.SetInt("casualplayed", tempValue + 1);
-		}
+		//if (!Game.ArcadeUnlocked && Game.GameMode == Game.Mode.Casual) {
+		//    int tempValue = PlayerPrefs.GetInt("casualplayed");
+		//    PlayerPrefs.SetInt("casualplayed", tempValue + 1);
+		//}
 
 		Game.GameState = Game.State.Menu;
 		ChangeMenu(WinMenuLevel.Base);

@@ -50,7 +50,7 @@ public class Game : MonoBehaviour
 	public static float cameraScaleFactor;
 
 	// Progression settings
-	public static bool ArcadeUnlocked = false;
+	public static bool ArcadeUnlocked = true;
 	
 	// Trial/Full version related settings
 	private static readonly bool isFullVersion = false;
@@ -74,8 +74,8 @@ public class Game : MonoBehaviour
 		isUnlockedVersion = CheckForUnlockedVersion();
 		//cameraScaleFactor = GetCameraScaleFactor();
 
-		if (PlayerPrefs.GetInt("casualplayed") > 4)
-			ArcadeUnlocked = true;
+		//if (PlayerPrefs.GetInt("casualplayed") > 4)
+		//    ArcadeUnlocked = true;
 	}
 
 	void Start ()

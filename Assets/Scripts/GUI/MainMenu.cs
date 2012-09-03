@@ -174,17 +174,17 @@ public class MainMenu : MonoBehaviour {
 
 	void Start() {
 
-		if (!Game.ArcadeUnlocked) {
-			ArcadeModeButton.isEnabled = false;
-			ArcadeModeLockedLabel.text = "(Locked)";
-			ArcadeModeLabel.GetComponent<TweenColor>().enabled = false;
-			ArcadeModeLabel.color = Color.gray;
-		} else {
-			ArcadeModeButton.isEnabled = true;
-			ArcadeModeLockedLabel.text = "";
-			ArcadeModeLabel.color = Color.white;
-			ArcadeModeLabel.GetComponent<TweenColor>().enabled = true;
-		}
+		//if (!Game.ArcadeUnlocked) {
+		//    ArcadeModeButton.isEnabled = false;
+		//    ArcadeModeLockedLabel.text = "(Locked)";
+		//    ArcadeModeLabel.GetComponent<TweenColor>().enabled = false;
+		//    ArcadeModeLabel.color = Color.gray;
+		//} else {
+		//    ArcadeModeButton.isEnabled = true;
+		//    ArcadeModeLockedLabel.text = "";
+		//    ArcadeModeLabel.color = Color.white;
+		//    ArcadeModeLabel.GetComponent<TweenColor>().enabled = true;
+		//}
 
 		//cameraSize.orthographicSize = Game.GetCameraScaleFactor();
 		float aspect = Camera.mainCamera.aspect;
