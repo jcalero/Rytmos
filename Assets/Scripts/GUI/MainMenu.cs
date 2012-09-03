@@ -84,6 +84,9 @@ public class MainMenu : MonoBehaviour {
 
 	// Mode menu objects
 	public UIButton ModeBackButton;
+	public UIButton ArcadeModeButton;
+	public UILabel ArcadeModeLabel;
+	public UILabel ArcadeModeLockedLabel;
 
 	// Login Menu Objects
 	public UIButton LoginBackButton;
@@ -161,12 +164,28 @@ public class MainMenu : MonoBehaviour {
 		Game.GameState = Game.State.Menu;
 		ChangeMenu(MenuLevel.Base);
 
+		if (PlayerPrefs.GetInt("casualplayed") > 4)
+			Game.ArcadeUnlocked = true;
+
 #if UNITY_WEBPLAYER
 		Game.Song = "";
 #endif
 	}
 
 	void Start() {
+
+		if (!Game.ArcadeUnlocked) {
+			ArcadeModeButton.isEnabled = false;
+			ArcadeModeLockedLabel.text = "(Locked)";
+			ArcadeModeLabel.GetComponent<TweenColor>().enabled = false;
+			ArcadeModeLabel.color = Color.gray;
+		} else {
+			ArcadeModeButton.isEnabled = true;
+			ArcadeModeLockedLabel.text = "";
+			ArcadeModeLabel.color = Color.white;
+			ArcadeModeLabel.GetComponent<TweenColor>().enabled = true;
+		}
+
 		//cameraSize.orthographicSize = Game.GetCameraScaleFactor();
 		float aspect = Camera.mainCamera.aspect;
 

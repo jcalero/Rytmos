@@ -48,6 +48,9 @@ public class Game : MonoBehaviour
 	private static bool askOnlineMode = true;
 	
 	public static float cameraScaleFactor;
+
+	// Progression settings
+	public static bool ArcadeUnlocked = false;
 	
 	// Trial/Full version related settings
 	private static readonly bool isFullVersion = false;
@@ -70,6 +73,9 @@ public class Game : MonoBehaviour
 		
 		isUnlockedVersion = CheckForUnlockedVersion();
 		//cameraScaleFactor = GetCameraScaleFactor();
+
+		if (PlayerPrefs.GetInt("casualplayed") > 4)
+			ArcadeUnlocked = true;
 	}
 
 	void Start ()
@@ -77,6 +83,7 @@ public class Game : MonoBehaviour
 		if (PlayerPrefs.GetString ("playername") != null)
 			PlayerName = PlayerPrefs.GetString ("playername");
 		IsLoggedIn = RememberLogin;
+
 		DontDestroyOnLoad (gameObject);      // Makes sure this object is persistent between all scenes of the game
 	}
 
