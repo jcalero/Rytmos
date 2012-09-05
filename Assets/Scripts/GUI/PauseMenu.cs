@@ -26,7 +26,7 @@ public class PauseMenu : MonoBehaviour {
 		UITools.SetActiveState(instance.PausePanel, false);
 		UITools.SetActiveState(instance.OptionsPanel,false);
 		UITools.SetActiveState(instance.BackgroundPanel,false);
-		UITools.SetActiveState(TrialMessagePanel, false);
+		if (Application.loadedLevelName == "Game") UITools.SetActiveState(TrialMessagePanel, false);
 	}
 	
 	public static bool InOptions {
