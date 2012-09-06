@@ -205,6 +205,11 @@ function AdjustForScreenAspect () {
 //		Debug.Log("Setting up file browser for resolution: 1280x768");
         defaultFileWindowRect = Rect(-20, 107, 1312, 725);
 	}
+	// 1280x720
+    else if (Screen.width == 1280.0f && Screen.height == 720.0f) {
+//		Debug.Log("Setting up file browser for resolution: 1280x720");
+        defaultFileWindowRect = Rect(19, 92, 1238, 693);
+	}
     else {
         Debug.LogError("Resolution not supported! (" + Screen.width + "x" + Screen.height + ") File browser will not work properly.");
     }
