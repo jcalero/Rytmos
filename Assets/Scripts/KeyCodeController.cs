@@ -10,7 +10,7 @@ public class KeyCodeController : MonoBehaviour {
 
 	#region Functions
 
-	public static IEnumerator CheckCode(int code) {
+	public static IEnumerator CheckCode(long code) {
 		string deviceID = SystemInfo.deviceUniqueIdentifier;
 		string cheatHash = MD5Utils.MD5FromString(deviceID + code + secretKey);
 

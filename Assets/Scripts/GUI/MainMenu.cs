@@ -860,8 +860,8 @@ public class MainMenu : MonoBehaviour {
 			RedeemErrorLabel.text = "Error: The code should only be numbers!";
 			return;
 		}
-		int code;
-		bool isNum = Int32.TryParse(codeString, out code);
+		long code;
+		bool isNum = Int64.TryParse(codeString, out code);
 		Debug.Log("code: " + code);
 		if (isNum && code < 1000000000) {
 			RedeemErrorLabel.text = "Error: Code too short.";
@@ -878,7 +878,7 @@ public class MainMenu : MonoBehaviour {
 		StartCoroutine(verifyCode(code));
 	}
 
-	private IEnumerator verifyCode(int code) {
+	private IEnumerator verifyCode(long code) {
 		yield return StartCoroutine(KeyCodeController.CheckCode(code));
 		if (VerifiedSuccess) {
 			RedeemCodeInputBG.alpha = 0;
